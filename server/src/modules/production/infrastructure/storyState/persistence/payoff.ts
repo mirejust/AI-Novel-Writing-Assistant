@@ -30,7 +30,7 @@ export const writePayoff: ConsumerWriter = async ({ tx, context, output, previou
       payoffChapterId: reference(item.payoffChapterId ?? item.payoffChapterOrder, item.currentStatus === "paid_off" ? chapterId : null) ?? existing?.payoffChapterId ?? null,
       lastSnapshotId: snapshotId ?? existing?.lastSnapshotId ?? null,
       sourceRefsJson: JSON.stringify(item.sourceRefs.length ? item.sourceRefs.map(ref => ({ ...ref, chapterId: ref.chapterId ?? lastTouchedChapterId,
-        chapterOrder: ref.chapterOrder ?? order })) : [{ kind: "chapter_payoff_ref", refId: null, refLabel: `第${order}章`, chapterId, chapterOrder: order, volumeId: null, volumeSortOrder: null }]),
+        chapterOrder: ref.chapterOrder ?? order })) : [{ kind: "chapter_payoff_ref", refId: null, refLabel: `Cap.${order}cap.`, chapterId, chapterOrder: order, volumeId: null, volumeSortOrder: null }]),
       evidenceJson: JSON.stringify(item.evidence.length ? item.evidence.map(ref => ({ ...ref, chapterId: ref.chapterId ?? chapterId, chapterOrder: ref.chapterOrder ?? order }))
         : [{ summary: item.summary, chapterId, chapterOrder: order }]),
       riskSignalsJson: JSON.stringify(clearStaleRiskSignal(dedupeRiskSignals(item.riskSignals))), statusReason: item.statusReason?.trim() || null, confidence: item.confidence ?? null };
@@ -77,10 +77,10 @@ export function createFullPayoffConsumer(deps: { checkpoints: Pick<PrismaArtifac
       for (const row of existing) {
         if (superseded.has(row.ledgerKey)) {
           await tx.payoffLedgerItem.update({ where: { id: row.id }, data: { currentStatus: "failed",
-            riskSignalsJson: JSON.stringify(dedupeRiskSignals([...clearStaleRiskSignal(row.riskSignals), { code: "source_superseded", severity: "low", summary: "Book Contract 阶段回报已修改或移除，这条旧承诺已退出当前执行义务。", stale: true }])),
-            statusReason: "Book Contract 来源已被新的阶段回报替换或移除。" } });
+            riskSignalsJson: JSON.stringify(dedupeRiskSignals([...clearStaleRiskSignal(row.riskSignals), { code: "source_superseded", severity: "low", summary: "La etapa de devolución del Contrato de Libro ha sido modificada o eliminada, y este antiguo compromiso ha salido de la obligación de ejecución actual.", stale: true }])),
+            statusReason: "Las fuentes del contrato de libros han sido reemplazadas o eliminadas por devoluciones de nuevas etapas." } });
         } else if (!resolved.has(row.ledgerKey) && row.currentStatus !== "paid_off" && row.currentStatus !== "failed") {
-          await tx.payoffLedgerItem.update({ where: { id: row.id }, data: { riskSignalsJson: JSON.stringify(appendStaleRiskSignal(row.riskSignals, "本轮 AI 对账没有再次命中这条伏笔，已保留旧账本并标记为 stale，等待下一次同步确认。")) } });
+          await tx.payoffLedgerItem.update({ where: { id: row.id }, data: { riskSignalsJson: JSON.stringify(appendStaleRiskSignal(row.riskSignals, "Este presagio no se ha vuelto a ver afectado en esta ronda de conciliación de IA, y el antiguo libro de contabilidad se ha retenido y marcado como obsoleto, a la espera de la próxima confirmación de sincronización.")) } });
         }
       }
       const items = (await tx.payoffLedgerItem.findMany({ where: { novelId } })).map(mapPayoffLedgerRow);

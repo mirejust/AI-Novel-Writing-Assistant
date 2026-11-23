@@ -57,7 +57,7 @@ export class PlannerReplanService {
           select: { id: true, order: true },
         });
     if (!targetChapter) {
-      throw new Error("当前小说没有可重规划的章节。");
+      throw new Error("Actualmente no hay capítulos de la novela que puedan reprogramarse.");
     }
     const [allChapters, recentAuditReports, pendingReviewProposalCount, payoffLedger] = await Promise.all([
       prisma.chapter.findMany({
@@ -159,7 +159,7 @@ export class PlannerReplanService {
       affectedChapterOrderSet.has(item.order) && !(item.content ?? "").trim()
     ));
     if (affectedChapters.length === 0) {
-      throw new Error("当前小说没有可重规划的章节。");
+      throw new Error("Actualmente no hay capítulos de la novela que puedan reprogramarse.");
     }
 
     const generatedPlans: ReplanResult["generatedPlans"] = [];
@@ -196,7 +196,7 @@ export class PlannerReplanService {
 
     const primaryPlan = generatedPlans[0];
     if (!primaryPlan) {
-      throw new Error("章节规划生成失败。");
+      throw new Error("Error en la generación del plan del capítulo.");
     }
     const runPayload = {
       affectedChapterIds: affectedChapters.map((item) => item.id),

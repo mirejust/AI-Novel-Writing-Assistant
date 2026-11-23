@@ -35,15 +35,15 @@ function getReadinessIcon(state: SettingsReadinessItem["state"]) {
 function getReadinessBadge(state: SettingsReadinessItem["state"]) {
   switch (state) {
     case "ready":
-      return "可用";
+      return "Disponible";
     case "untested":
-      return "尚未检测";
+      return "Aún no probado";
     case "checking":
-      return "检查中";
+      return "Comprobando";
     case "optional":
-      return "可选增强";
+      return "Mejoras opcionales";
     case "warning":
-      return "需要处理";
+      return "Requiere atención";
   }
 }
 
@@ -82,36 +82,36 @@ export function buildSettingsReadinessItems(input: {
   return [
     {
       key: "model",
-      title: "正文模型",
+      title: "Modelo de texto",
       state: runnableProviders.length > 0 ? "ready" : "warning",
       description: runnableProviders.length > 0
-        ? `已可使用 ${runnableProviders[0].name} 进行正文与规划生成。`
-        : "先配置一个可用模型，就可以开始开书和生成章节。",
+        ? `Ya disponible ${runnableProviders[0].name} Generar texto y planos.`
+        : "Primero configure un modelo disponible y luego podrá comenzar a abrir el libro y generar capítulos.",
     },
     {
       key: "routes",
-      title: "模型路由",
+      title: "Enrutamiento del modelo",
       state: input.routeReadFailed ? "warning" : isModelRoutesChecking ? "checking" : !routeStatuses.length ? "untested" : failedRouteCount ? "warning" : "ready",
-      description: input.routeReadFailed ? "读取模型路由或上次检测结果失败，请到模型路由页查看。"
-        : isModelRoutesChecking ? "正在读取模型设置和上次检测结果。"
-        : !modelRouteConnectivity ? `${hasRoutes ? "已配置任务模型。" : "创作任务使用默认路由。"}可到模型路由页检测连接。`
-        : `上次检测于 ${new Date(modelRouteConnectivity.testedAt).toLocaleString()}，${failedRouteCount ? `${failedRouteCount} 条路由异常` : "路由连接正常"}。`,
+      description: input.routeReadFailed ? "No se pudo leer la ruta del modelo o el último resultado de la detección; vaya a la página de ruta del modelo para verificar."
+        : isModelRoutesChecking ? "Cargando la configuración del modelo y los últimos resultados de detección."
+        : !modelRouteConnectivity ? `${hasRoutes ? "Modelo de tarea configurado." : "Las tareas de creación utilizan la ruta predeterminada."}Puede verificar la conexión yendo a la página de enrutamiento del modelo.`
+        : `Detectado por última vez el ${new Date(modelRouteConnectivity.testedAt).toLocaleString()},${failedRouteCount ? `${failedRouteCount} Excepción de ruta` : "La conexión de enrutamiento es normal"}.`,
     },
     {
       key: "rag",
-      title: "知识库增强",
+      title: "Mejora de la base de conocimientos",
       state: ragSettings?.enabled && currentRagProvider?.isConfigured && currentRagProvider?.isActive ? "ready" : "optional",
       description: ragSettings?.enabled && currentRagProvider?.isConfigured && currentRagProvider?.isActive
-        ? "知识库检索已启用，可帮助长篇写作保持资料和设定连续。"
-        : "不配置也可以开始创作；启用后会增强设定、资料和上下文召回。",
+        ? "La búsqueda en la base de conocimientos está habilitada para ayudar a que la redacción extensa mantenga los datos y la configuración continuos."
+        : "Puedes empezar a crear sin configuración; permitiendo ajustes mejorados, datos y recuperación de contexto.",
     },
     {
       key: "style",
-      title: "写法引擎",
+      title: "Motor de escritura",
       state: !isStyleSettingsLoaded ? "checking" : styleReady ? "ready" : "warning",
       description: styleReady
-        ? "写法提取等待时间在可用范围内，可用于学习样本文风。"
-        : "请确认写法提取等待时间在可用范围内。",
+        ? "El tiempo de espera para la extracción del estilo de escritura está dentro del rango disponible y se puede utilizar para aprender estilos de escritura de muestra."
+        : "Confirme que el tiempo de espera para la extracción del método de escritura esté dentro del rango disponible.",
     },
   ];
 }
@@ -127,18 +127,18 @@ export default function SettingsReadinessCard(props: {
   const blockingCount = items.filter((item) => item.key !== "rag" && item.state === "warning").length;
   const canStart = hasModel && hasHealthyRoutes && blockingCount === 0;
   const primaryAction = !hasModel
-    ? { label: "配置正文模型", to: "/settings/models" }
+    ? { label: "Configurar modelo de cuerpo", to: "/settings/models" }
     : !hasHealthyRoutes
-      ? { label: "检查模型路由", to: "/settings/model-routes" }
-      : { label: "开始创建小说", to: "/novels/create" };
+      ? { label: "Comprobar ruta del modelo", to: "/settings/model-routes" }
+      : { label: "Empieza a crear una novela.", to: "/novels/create" };
 
   return (
     <Card className="min-w-0 overflow-hidden border-primary/20 bg-primary/5">
       <CardHeader className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
         <div className="min-w-0 space-y-1">
-          <CardTitle>创作可用性检查</CardTitle>
+          <CardTitle>Verificación de disponibilidad de autoría</CardTitle>
           <CardDescription className={AUTO_DIRECTOR_MOBILE_CLASSES.wrapText}>
-            先确认开始写小说必需的模型和路由是否可用；知识库属于增强项，可以稍后再补。
+            Primero confirmar si están disponibles los modelos y rutas necesarios para empezar a escribir novelas; la base de conocimientos es una mejora y se puede agregar más adelante.
           </CardDescription>
         </div>
         <Button asChild className={AUTO_DIRECTOR_MOBILE_CLASSES.fullWidthAction}>
@@ -169,8 +169,8 @@ export default function SettingsReadinessCard(props: {
         </div>
         <div className={`text-sm ${canStart ? "text-emerald-700" : "text-muted-foreground"} ${AUTO_DIRECTOR_MOBILE_CLASSES.wrapText}`}>
           {canStart
-            ? "可以开始创作，也可以先到模型路由页检测连接。"
-            : "先处理标记为“需要处理”的项目，完成后再进入自动导演或章节生产会更稳。"}
+            ? "Puede comenzar a crear o puede ir primero a la página de enrutamiento del modelo para verificar la conexión."
+            : "Será más estable trabajar primero en elementos marcados como \"necesita trabajo\" y luego pasar a la producción automática de director o capítulo cuando esté terminado."}
         </div>
       </CardContent>
     </Card>

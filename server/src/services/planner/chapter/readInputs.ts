@@ -104,7 +104,7 @@ export async function readChapterPlanInputs(novelId: string, chapterId: string, 
     }),
   ]);
   if (!novel || !chapter) {
-    throw new Error("小说或章节不存在。");
+    throw new Error("La novela o capítulo no existe.");
   }
 
   return {novel,chapter,bible,plotBeats,summaries,characters,bookPlan,arcPlans,volumePlans,recentAuditReports,recentDecisions,storyMacroPlanRow,styleEngine,pendingReviewProposalCount};

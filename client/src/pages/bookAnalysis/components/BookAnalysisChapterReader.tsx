@@ -109,7 +109,7 @@ const BookAnalysisChapterReader = forwardRef<BookAnalysisChapterReaderHandle, Bo
     if (sortedChapters.length === 0) {
       return (
         <aside className="rounded-md border bg-background p-4 text-sm text-muted-foreground">
-          当前文档还没有可用于对照阅读的章节缓存。
+          El documento actual no tiene un caché de capítulos disponible para lectura cruzada.
         </aside>
       );
     }
@@ -120,12 +120,12 @@ const BookAnalysisChapterReader = forwardRef<BookAnalysisChapterReaderHandle, Bo
           <div className="shrink-0 border-b bg-background px-4 py-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
-                <div className="text-sm font-semibold">原文章节</div>
-                <div className="mt-1 text-xs text-muted-foreground">{sortedChapters.length} 章可对照</div>
+                <div className="text-sm font-semibold">Extracto del artículo original.</div>
+                <div className="mt-1 text-xs text-muted-foreground">{sortedChapters.length} Los capítulos se pueden comparar.</div>
               </div>
               {currentChapterIndex !== null ? (
                 <div className="rounded-md border bg-muted/20 px-2 py-1 text-xs text-muted-foreground">
-                  当前第 {currentChapterIndex + 1} 章
+                  No actual {currentChapterIndex + 1} capítulo
                 </div>
               ) : null}
             </div>
@@ -155,7 +155,7 @@ const BookAnalysisChapterReader = forwardRef<BookAnalysisChapterReaderHandle, Bo
                     >
                       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
                         <h3 className="text-base font-semibold">{chapter.title}</h3>
-                        <span className="text-xs text-muted-foreground">{chapter.charCount} 字</span>
+                        <span className="text-xs text-muted-foreground">{chapter.charCount} Palabras</span>
                       </div>
                       <ChapterContent
                         chapterContent={content}

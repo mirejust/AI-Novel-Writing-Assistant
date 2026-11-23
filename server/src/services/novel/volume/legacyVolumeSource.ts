@@ -40,7 +40,7 @@ export async function getLegacyVolumeSource(novelId: string): Promise<LegacyVolu
     }),
   ]);
   if (!novel) {
-    throw new Error("小说不存在。");
+    throw new Error("La novela no existe.");
   }
   return {
     outline: novel.outline,

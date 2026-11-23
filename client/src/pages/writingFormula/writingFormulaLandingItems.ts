@@ -62,17 +62,17 @@ function firstNonEmptyText(...values: unknown[]): string {
 function formatSourceTypeLabel(sourceType: StyleProfile["sourceType"]): string {
   switch (sourceType) {
     case "manual":
-      return "手动整理";
+      return "Clasificación manual";
     case "from_text":
-      return "从文本提取";
+      return "Extracto del texto";
     case "from_book_analysis":
-      return "拆书生成";
+      return "Generación de libros divididos";
     case "from_knowledge_document":
-      return "知识库原文";
+      return "Texto original de la base de conocimientos.";
     case "from_current_work":
-      return "当前工作提炼";
+      return "Resumen del trabajo actual";
     default:
-      return "其他来源";
+      return "Otras fuentes";
   }
 }
 
@@ -92,19 +92,19 @@ function formatUpdatedAtLabel(value: string): string {
 }
 
 function buildNarrativeSummary(profile: StyleProfile): string {
-  return buildReadableRuleSummary("narrativeRules", profile.narrativeRules, "还没有明确剧情推进摘要。");
+  return buildReadableRuleSummary("narrativeRules", profile.narrativeRules, "El resumen de la progresión de la trama aún no se ha aclarado.");
 }
 
 function buildCharacterSummary(profile: StyleProfile): string {
-  return buildReadableRuleSummary("characterRules", profile.characterRules, "还没有明确人物表达摘要。");
+  return buildReadableRuleSummary("characterRules", profile.characterRules, "Aún no hay un resumen claro de la expresión del personaje.");
 }
 
 function buildLanguageSummary(profile: StyleProfile): string {
-  return buildReadableRuleSummary("languageRules", profile.languageRules, "还没有明确语言质感摘要。");
+  return buildReadableRuleSummary("languageRules", profile.languageRules, "Aún no hay un resumen explícito de la textura del lenguaje.");
 }
 
 function buildRhythmSummary(profile: StyleProfile): string {
-  return buildReadableRuleSummary("rhythmRules", profile.rhythmRules, "还没有明确节奏控制摘要。");
+  return buildReadableRuleSummary("rhythmRules", profile.rhythmRules, "El resumen del control del ritmo aún no se ha aclarado.");
 }
 
 function buildSourceContentPreview(sourceContent?: string | null): string | null {
@@ -149,7 +149,7 @@ export function buildLandingProfileItems(params: BuildLandingProfileItemsParams)
       const description = firstNonEmptyText(
         profile.description,
         profileSummary?.readingFeel,
-        "未填写读感定位，可在编辑设定中补充。",
+        "Si la posición del sentido de lectura no está completa, puede agregarla en la configuración de edición.",
       );
       const recentNovelBinding = recentNovelBindingsByProfileId.get(profile.id);
       const selectedPresetLabel = profile.selectedExtractionPresetKey

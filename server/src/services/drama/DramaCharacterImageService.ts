@@ -183,7 +183,7 @@ export class DramaCharacterImageService {
       where: { id: characterId },
     });
     if (!character) {
-      throw new AppError(`未找到短剧角色：${characterId}`, 404);
+      throw new AppError(`Papel dramático corto no encontrado:${characterId}`, 404);
     }
 
     const prompt = buildCharacterSheetPrompt(character);
@@ -209,7 +209,7 @@ export class DramaCharacterImageService {
       prompt,
       referenceImages: [] as import("../image/runtime").GeneratedReferenceImageMeta[],
       size: "1536x1024" as const,
-      title: `生成短剧角色设计稿：${character.name}`,
+      title: `Generar boceto de diseño de personaje:${character.name}`,
     };
   }
 
@@ -308,7 +308,7 @@ export class DramaCharacterImageService {
       select: { portraitData: true, threeViewData: true },
     });
     if (!character) {
-      throw new AppError(`未找到短剧角色：${characterId}`, 404);
+      throw new AppError(`Papel dramático corto no encontrado:${characterId}`, 404);
     }
 
     const portrait: PortraitData = character.portraitData

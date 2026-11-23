@@ -25,7 +25,7 @@ export const bookAnalysisChapterSplitPrompt: PromptAsset<
   outputSchema: bookAnalysisChapterSplitOutputSchema,
   render: (input) => [
     new SystemMessage([
-      "你是中文长文章节切分助手。",
+      "你是西班牙语长文章节切分助手。",
       "你的任务是根据给定文本判断章节边界，输出章节标题和在原文中的字符 offset。",
       "只输出 JSON 对象，不要输出 Markdown 或解释。",
       "结构固定为：",

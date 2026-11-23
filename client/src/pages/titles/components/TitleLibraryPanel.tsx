@@ -48,7 +48,7 @@ export default function TitleLibraryPanel({ genreOptions }: TitleLibraryPanelPro
     mutationFn: (id: string) => deleteTitleLibraryEntry(id),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: queryKeys.titles.all });
-      toast.success("标题已删除。");
+      toast.success("Título eliminado.");
     },
   });
 
@@ -56,13 +56,13 @@ export default function TitleLibraryPanel({ genreOptions }: TitleLibraryPanelPro
     mutationFn: (id: string) => markTitleLibraryUsed(id),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: queryKeys.titles.all });
-      toast.success("标题使用次数已更新。");
+      toast.success("Se actualizó el recuento de uso del título.");
     },
   });
 
   const handleCopy = async (title: string) => {
     await navigator.clipboard.writeText(title);
-    toast.success("标题已复制到剪贴板。");
+    toast.success("Título copiado al portapapeles.");
   };
 
   const rows = libraryQuery.data?.data?.items ?? [];
@@ -72,22 +72,22 @@ export default function TitleLibraryPanel({ genreOptions }: TitleLibraryPanelPro
     <div className="space-y-5">
       <div className="grid gap-3 rounded-2xl bg-muted/20 p-4 md:grid-cols-[minmax(0,1fr)_220px_180px]">
         <label className="space-y-2 text-sm">
-          <span className="font-medium text-foreground">搜索</span>
+          <span className="font-medium text-foreground">Buscar</span>
           <Input
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="匹配标题、说明或关键词"
+            placeholder="Coincidir título, descripción o palabras clave"
             className={controlClassName}
           />
         </label>
         <label className="space-y-2 text-sm">
-          <span className="font-medium text-foreground">类型</span>
+          <span className="font-medium text-foreground">Tipo</span>
           <SelectControl
             className={selectClassName}
             value={genreId}
             onChange={(event) => setGenreId(event.target.value)}
           >
-            <option value="">全部类型</option>
+            <option value="">Todos los tipos</option>
             {genreOptions.map((option) => (
               <option key={option.id} value={option.id}>
                 {option.path}
@@ -96,30 +96,30 @@ export default function TitleLibraryPanel({ genreOptions }: TitleLibraryPanelPro
           </SelectControl>
         </label>
         <label className="space-y-2 text-sm">
-          <span className="font-medium text-foreground">排序</span>
+          <span className="font-medium text-foreground">Ordenar</span>
           <SelectControl
             className={selectClassName}
             value={sort}
             onChange={(event) => setSort(event.target.value as "newest" | "hot" | "clickRate")}
           >
-            <option value="newest">最新加入</option>
-            <option value="hot">使用次数</option>
-            <option value="clickRate">点击潜力</option>
+            <option value="newest">Última incorporación</option>
+            <option value="hot">Número de usos</option>
+            <option value="clickRate">Potencial de clic</option>
           </SelectControl>
         </label>
       </div>
 
       {libraryQuery.isLoading ? (
         <div className="py-10 text-center text-sm text-muted-foreground">
-          正在加载标题库...
+          Cargando biblioteca de títulos...
         </div>
       ) : null}
 
       {!libraryQuery.isLoading && rows.length === 0 ? (
         <div className="py-10 text-center">
-          <div className="text-sm font-medium text-foreground">标题库还是空的</div>
+          <div className="text-sm font-medium text-foreground">La biblioteca de títulos todavía está vacía.</div>
           <div className="mt-1 text-sm text-muted-foreground">
-            先去标题工坊生成一批候选，再把值得复用的标题沉淀进来。
+            Primero vaya al taller de títulos para generar un lote de candidatos y luego precipite los títulos que valga la pena reutilizar.
           </div>
         </div>
       ) : null}
@@ -131,11 +131,11 @@ export default function TitleLibraryPanel({ genreOptions }: TitleLibraryPanelPro
                 <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
                   <div className="flex flex-wrap gap-x-2 gap-y-1">
                   {entry.genre?.name ? <span>{entry.genre.name}</span> : null}
-                  <span>使用 {entry.usedCount}</span>
+                  <span>usar {entry.usedCount}</span>
                   <span>{new Date(entry.createdAt).toLocaleDateString("zh-CN")}</span>
                   </div>
                   <span className="rounded-full bg-muted/60 px-2.5 py-1 font-medium tabular-nums text-foreground">
-                    潜力 {typeof entry.clickRate === "number" ? entry.clickRate : "-"}
+                    potencial {typeof entry.clickRate === "number" ? entry.clickRate : "-"}
                   </span>
                 </div>
                 <div className="pt-2 text-xl font-semibold leading-8 tracking-normal text-foreground">{entry.title}</div>
@@ -152,7 +152,7 @@ export default function TitleLibraryPanel({ genreOptions }: TitleLibraryPanelPro
               <div className="mt-auto flex flex-wrap items-center gap-2 pt-5">
                 <Button type="button" size="sm" className="gap-1.5 rounded-full" onClick={() => void handleCopy(entry.title)}>
                   <Copy className="h-3.5 w-3.5" />
-                  复制
+                  Copiar
                 </Button>
                 <Button
                   type="button"
@@ -163,7 +163,7 @@ export default function TitleLibraryPanel({ genreOptions }: TitleLibraryPanelPro
                   onClick={() => markUsedMutation.mutate(entry.id)}
                 >
                   <Check className="h-3.5 w-3.5" />
-                  {markUsedMutation.isPending && markUsedMutation.variables === entry.id ? "更新中" : "采用"}
+                  {markUsedMutation.isPending && markUsedMutation.variables === entry.id ? "Actualizando" : "Usar"}
                 </Button>
                 <Button
                   type="button"
@@ -172,14 +172,14 @@ export default function TitleLibraryPanel({ genreOptions }: TitleLibraryPanelPro
                   className="gap-1.5 rounded-full text-muted-foreground hover:text-destructive"
                   disabled={deleteMutation.isPending && deleteMutation.variables === entry.id}
                   onClick={() => {
-                    const confirmed = window.confirm(`确认删除标题「${entry.title}」？`);
+                    const confirmed = window.confirm(`Confirmar para eliminar el título "${entry.title}»?`);
                     if (confirmed) {
                       deleteMutation.mutate(entry.id);
                     }
                   }}
                 >
                   <Trash2 className="h-3.5 w-3.5" />
-                  {deleteMutation.isPending && deleteMutation.variables === entry.id ? "删除中" : "删除"}
+                  {deleteMutation.isPending && deleteMutation.variables === entry.id ? "Eliminando" : "Eliminar"}
                 </Button>
               </div>
           </article>
@@ -189,11 +189,11 @@ export default function TitleLibraryPanel({ genreOptions }: TitleLibraryPanelPro
       {pagination && pagination.totalPages > 1 ? (
         <div className="flex items-center justify-between border-t border-border/60 pt-4 text-sm">
           <div className="text-muted-foreground">
-            第 {pagination.page} / {pagination.totalPages} 页，共 {pagination.total} 条
+            Cap. {pagination.page} / {pagination.totalPages} Páginas, total {pagination.total} banda
           </div>
           <div className="flex items-center gap-2">
             <Button type="button" variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage((prev) => prev - 1)}>
-              上一页
+              Pagina anterior
             </Button>
             <Button
               type="button"
@@ -202,7 +202,7 @@ export default function TitleLibraryPanel({ genreOptions }: TitleLibraryPanelPro
               disabled={page >= pagination.totalPages}
               onClick={() => setPage((prev) => prev + 1)}
             >
-              下一页
+              Página siguiente
             </Button>
           </div>
         </div>

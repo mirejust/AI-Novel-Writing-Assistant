@@ -24,19 +24,19 @@ export class NovelWorldManualService {
       },
     });
     if (!novel) {
-      throw new Error("小说不存在。");
+      throw new Error("La novela no existe.");
     }
 
-    const title = input.title?.trim() || `${novel.title}世界`;
+    const title = input.title?.trim() || `${novel.title}mundo`;
     const coverSummary = input.coverSummary?.trim()
       || novel.description?.trim()
-      || `围绕《${novel.title}》展开的本书世界。`;
+      || `alrededor"${novel.title}»El mundo de este libro se desarrolla.`;
     const structuredData = normalizeWorldStructuredData(null);
     structuredData.profile = {
       ...structuredData.profile,
       summary: coverSummary,
-      identity: "本书自定义世界",
-      themes: structuredData.profile.themes.length > 0 ? structuredData.profile.themes : ["待完善"],
+      identity: "Este libro personaliza el mundo.",
+      themes: structuredData.profile.themes.length > 0 ? structuredData.profile.themes : ["Para mejorar"],
     };
     structuredData.metadata = {
       ...structuredData.metadata,

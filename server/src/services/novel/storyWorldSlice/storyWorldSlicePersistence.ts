@@ -80,7 +80,7 @@ function normalizeRuleRefs(
       id,
       name: available.name,
       summary: available.summary,
-      whyItMatters: "这是小说侧明确要求保留的规则。",
+      whyItMatters: "Ésta es una regla que la novela exige explícitamente que se preserve.",
     });
   }
   return picked.slice(0, 8);
@@ -118,7 +118,7 @@ function normalizeForceRefs(
       id,
       name: available.name,
       summary: available.summary,
-      roleInStory: "这是小说侧明确要求保留的组织或势力。",
+      roleInStory: "Se trata de una organización o fuerza que la novela claramente requiere que se mantenga.",
       pressure: available.pressure,
     });
   }
@@ -161,7 +161,7 @@ function normalizeLocationRefs(
       id,
       name: available.name,
       summary: available.summary,
-      storyUse: id === primaryLocationId ? "这是小说当前的主舞台。" : "这是小说侧明确要求保留的地点。",
+      storyUse: id === primaryLocationId ? "Esta es la etapa principal actual de la novela." : "Esta es una ubicación que se solicita explícitamente que se preserve en el lado de la novela.",
       risk: available.risk,
     });
   }
@@ -285,7 +285,7 @@ export function normalizeStoryWorldSlice(input: {
   const fallbackScope = [
     input.overrides.scopeNote?.trim(),
     input.bindingSupport.forbiddenCombinations.length > 0
-      ? `需要避开：${input.bindingSupport.forbiddenCombinations.join("；")}`
+      ? `Necesidad de evitar:${input.bindingSupport.forbiddenCombinations.join(";")}`
       : "",
   ].filter(Boolean).join(" ");
 
@@ -304,7 +304,7 @@ export function normalizeStoryWorldSlice(input: {
     pressureSources: uniqueStrings([
       ...normalizeStringArray(record.pressureSources, 8),
       ...input.bindingSupport.highPressureForces.slice(0, 4),
-      ...activeForces.map((item) => `${item.name}：${item.pressure}`).filter((item) => !item.endsWith("：")),
+      ...activeForces.map((item) => `${item.name}:${item.pressure}`).filter((item) => !item.endsWith(":")),
     ], 8),
     mysterySources: uniqueStrings(normalizeStringArray(record.mysterySources, 6), 6),
     suggestedStoryAxes: uniqueStrings(normalizeStringArray(record.suggestedStoryAxes, 6), 6),

@@ -20,14 +20,14 @@ import CharacterVisibleProfileTab from "./characterWorkspace/CharacterVisiblePro
 import type { CharacterAssetWorkspaceProps } from "./characterWorkspace/characterWorkspace.types";
 
 const WORKSPACE_TABS: Array<{ value: string; label: string; icon: LucideIcon }> = [
-  { value: "overview", label: "总览", icon: ScrollText },
-  { value: "profile", label: "档案", icon: UserRound },
-  { value: "visible", label: "外显", icon: Eye },
-  { value: "resources", label: "资源", icon: Package },
-  { value: "timeline", label: "时间线", icon: Clock3 },
-  { value: "relations", label: "关系", icon: Network },
-  { value: "dynamics", label: "动态", icon: Activity },
-  { value: "intelligence", label: "智能层", icon: Brain },
+  { value: "overview", label: "Descripción general", icon: ScrollText },
+  { value: "profile", label: "Archivos", icon: UserRound },
+  { value: "visible", label: "Explícito", icon: Eye },
+  { value: "resources", label: "Recursos", icon: Package },
+  { value: "timeline", label: "Línea de tiempo", icon: Clock3 },
+  { value: "relations", label: "Relación", icon: Network },
+  { value: "dynamics", label: "Dinámico", icon: Activity },
+  { value: "intelligence", label: "Capa de inteligencia", icon: Brain },
 ];
 
 export default function CharacterAssetWorkspace(props: CharacterAssetWorkspaceProps) {
@@ -88,20 +88,20 @@ export default function CharacterAssetWorkspace(props: CharacterAssetWorkspacePr
       <CardHeader className="border-b border-border/60 bg-[linear-gradient(180deg,hsl(var(--muted)/0.35)_0%,hsl(var(--background))_100%)]">
         <div className="flex flex-col gap-2 lg:flex-row lg:items-end lg:justify-between">
           <div className="space-y-1">
-            <CardTitle>角色资产控制台</CardTitle>
+            <CardTitle>Consola de recursos de personajes</CardTitle>
             <div className="text-sm text-muted-foreground">
-              左侧切换阵容，右侧按场景查看和维护当前角色，减少长篇表单滚动。
+              Cambie la alineación a la izquierda y vea y mantenga los roles actuales por escena a la derecha, lo que reduce el desplazamiento de formularios largos.
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Badge variant="outline">{characters.length} 个已建角色</Badge>
-            {selectedCharacter ? <Badge variant="secondary">当前编辑：{selectedCharacter.name}</Badge> : null}
-            {isSelectedProtagonist ? <Badge variant="outline">主角</Badge> : null}
+            <Badge variant="outline">{characters.length} Roles creados</Badge>
+            {selectedCharacter ? <Badge variant="secondary">Editor actual:{selectedCharacter.name}</Badge> : null}
+            {isSelectedProtagonist ? <Badge variant="outline">Protagonista</Badge> : null}
           </div>
         </div>
       </CardHeader>
       <WorkspaceColumns layoutId="character-assets" className="grid gap-4 bg-[linear-gradient(90deg,hsl(var(--muted)/0.18)_0%,hsl(var(--background))_38%)] p-4 xl:workspace-split" minCenter={440}
-        left={{ label: "调整角色阵容宽度", initial: "280px", min: 160 }}>
+        left={{ label: "Ajustar el ancho de la alineación de personajes", initial: "280px", min: 160 }}>
         <aside className="xl:max-h-[calc(100dvh-220px)] xl:overflow-y-auto xl:pr-1">
           <CharacterAssetSidebar
             characters={characters}
@@ -115,7 +115,7 @@ export default function CharacterAssetWorkspace(props: CharacterAssetWorkspacePr
 
         {!selectedCharacter ? (
           <div className="flex min-h-[360px] items-center justify-center rounded-xl border border-dashed px-6 text-center text-sm text-muted-foreground">
-            先从左侧选择一个角色，再进入档案、外显、资源、时间线和关系维护。
+            Primero seleccione una función a la izquierda, luego ingrese Archivos, Exposiciones, Recursos, Cronograma y Mantenimiento de relaciones.
           </div>
         ) : (
           <div className="min-w-0 space-y-4">

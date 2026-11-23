@@ -86,7 +86,7 @@ export class CharacterResourceApplicationService {
   async confirmProposal(novelId: string, proposalId: string) {
     const row = await characterResourceReviewStore.findPending(novelId, proposalId);
     if (!row) {
-      throw new AppError("没有找到可确认的角色资源变更。", 404);
+      throw new AppError("No se encontraron cambios confirmables en los recursos de personajes.", 404);
     }
 
     const payload = characterResourceUpdatePayloadSchema.parse(row.payload);
@@ -103,7 +103,7 @@ export class CharacterResourceApplicationService {
       reason: "character_resource_manual_confirm",
     });
     if (result.committed.length === 0) {
-      throw new AppError("没有找到可确认的角色资源变更。", 404);
+      throw new AppError("No se encontraron cambios confirmables en los recursos de personajes.", 404);
     }
 
     return this.getLedger(novelId);
@@ -112,7 +112,7 @@ export class CharacterResourceApplicationService {
   async rejectProposal(novelId: string, proposalId: string) {
     const updated = await characterResourceReviewStore.rejectPending(novelId, proposalId);
     if (updated.count === 0) {
-      throw new AppError("没有找到可忽略的角色资源变更。", 404);
+      throw new AppError("No se encontraron cambios de recursos de personajes ignorables.", 404);
     }
     return this.getLedger(novelId);
   }

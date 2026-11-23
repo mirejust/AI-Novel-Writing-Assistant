@@ -42,29 +42,29 @@ import {
 const FULL_CHAPTER_REVISION_LIMIT = 8000;
 
 const OPERATION_LABELS: Record<ChapterEditorOperation, string> = {
-  polish: "优化表达",
-  expand: "扩写细节",
-  compress: "精简压缩",
-  emotion: "强化情绪",
-  conflict: "强化冲突",
-  custom: "自定义指令改写",
+  polish: "Optimizar la expresión",
+  expand: "Ampliar detalles",
+  compress: "Compresión fina",
+  emotion: "Fortalecer el estado de ánimo",
+  conflict: "intensificar el conflicto",
+  custom: "Reescritura de instrucciones personalizadas",
 };
 
 const CURSOR_OPERATION_LABELS: Record<ChapterEditorCursorOperation, string> = {
-  continue: "继续写下一段",
-  transition: "生成过渡段",
-  dialogue: "增加对话",
-  description: "增加环境描写",
-  inner_thought: "增加心理描写",
-  conflict: "推进冲突",
+  continue: "Continuar escribiendo un párrafo",
+  transition: "Generar segmentos de transición",
+  dialogue: "Agregar diálogo",
+  description: "Agregar descripción del entorno",
+  inner_thought: "Agregar descripción psicológica",
+  conflict: "Avanzando el conflicto",
 };
 
 function buildConstraintsText(input: ChapterEditorAiRevisionRequest["constraints"]): string {
   const lines = [
-    input.keepFacts ? "- 保留现有剧情事实" : "- 可调整部分事实",
-    input.keepPov ? "- 保持当前人称与叙事视角" : "- 可调整叙事视角",
-    input.noUnauthorizedSetting ? "- 不新增未授权设定" : "- 可引入补充设定",
-    input.preserveCoreInfo ? "- 尽量保留原段核心信息" : "- 可重组核心信息",
+    input.keepFacts ? "- Preservar los hechos de la trama existentes." : "- Hechos parciales ajustables",
+    input.keepPov ? "- Mantener la persona actual y la perspectiva narrativa." : "- Perspectiva narrativa ajustable",
+    input.noUnauthorizedSetting ? "- No agregue configuraciones no autorizadas" : "- Se pueden introducir configuraciones suplementarias",
+    input.preserveCoreInfo ? "- Intente conservar la información central del párrafo original." : "- Información central reorganizable",
   ];
   return lines.join("\n");
 }
@@ -85,21 +85,21 @@ function dedupeCandidates(candidates: ChapterEditorCandidate[]): ChapterEditorCa
 
 function buildIntentSummary(intent: ChapterEditorAiRevisionIntent): string {
   return [
-    `目标：${intent.editGoal}`,
-    `语气：${intent.toneShift}`,
-    `节奏：${intent.paceAdjustment}`,
-    `冲突：${intent.conflictAdjustment}`,
-    `情绪：${intent.emotionAdjustment}`,
-    `强度：${intent.strength}`,
-    `保留项：${intent.mustPreserve.join("；") || "保持核心事实与承接"}`,
-    `避免项：${intent.mustAvoid.join("；") || "不要破坏章节承接"}`,
-    `说明：${intent.reasoningSummary}`,
+    `Objetivo:${intent.editGoal}`,
+    `Tono:${intent.toneShift}`,
+    `Ritmo:${intent.paceAdjustment}`,
+    `conflicto:${intent.conflictAdjustment}`,
+    `ánimo:${intent.emotionAdjustment}`,
+    `fortaleza:${intent.strength}`,
+    `Artículos reservados:${intent.mustPreserve.join(";") || "Mantener los hechos centrales y la continuidad."}`,
+    `Cosas que se deben evitar:${intent.mustAvoid.join(";") || "No rompas la sucesión de capítulos"}`,
+    `ilustrar:${intent.reasoningSummary}`,
   ].join("\n");
 }
 
 function resolveSelectionTargetRange(content: string, targetRange?: ChapterEditorTargetRange, preserveExact=false): ChapterEditorTargetRange {
   if (!targetRange) {
-    throw new Error("片段修正需要先选中正文内容。");
+    throw new Error("La corrección de fragmentos requiere seleccionar primero el contenido del texto.");
   }
   if (
     typeof targetRange.from !== "number"
@@ -108,14 +108,14 @@ function resolveSelectionTargetRange(content: string, targetRange?: ChapterEdito
     || targetRange.to <= targetRange.from
     || targetRange.to > content.length
   ) {
-    throw new Error("选区范围无效，请重新选择后再试。");
+    throw new Error("El rango de selección no es válido, seleccione nuevamente e inténtelo nuevamente.");
   }
   const selectedText = content.slice(targetRange.from, targetRange.to);
   if (!selectedText.trim()) {
-    throw new Error("选中文本不能为空。");
+    throw new Error("El texto seleccionado no puede estar vacío.");
   }
   if ((preserveExact ? targetRange.text : normalizeEditorText(targetRange.text)) !== selectedText) {
-    throw new Error("选中文本已发生变化，请重新选择后再试。");
+    throw new Error("El texto seleccionado ha cambiado, selecciónelo nuevamente e inténtelo nuevamente.");
   }
   return {
     from: targetRange.from,
@@ -140,18 +140,18 @@ export class NovelChapterEditorService {
     const rawContent = input.contentSnapshot ?? context.chapter.content ?? "";
     const content = manuscriptContext ? rawContent : normalizeChapterContent(rawContent);
     if (!content.trim()) {
-      throw new Error("当前章节正文为空，无法发起 AI 修正。");
+      throw new Error("El texto del capítulo actual está vacío y no se puede iniciar la corrección de IA.");
     }
 
     if (input.scope === "chapter" && countEditorWords(content) > FULL_CHAPTER_REVISION_LIMIT) {
-      throw new Error(`整章修正当前限制为 ${FULL_CHAPTER_REVISION_LIMIT} 个非空白字符以内，请改为片段修正。`);
+      throw new Error(`Las revisiones de capítulos completos están actualmente limitadas a ${FULL_CHAPTER_REVISION_LIMIT} Dentro de los caracteres que no sean espacios en blanco, modifíquelo como un fragmento.`);
     }
 
     const targetRange = input.scope === "chapter"
       ? (manuscriptContext ? {from:0,to:content.length,text:content} : createTargetRangeForWholeChapter(content))
       : resolveSelectionTargetRange(content, input.selection, !!manuscriptContext);
 
-    const resolvedIntent = manuscriptContext ? buildPresetIntent(input.presetOperation??"polish",["保留已发生事实、人物身份、因果、视角和原有结局；全书规划不等于本章事实。"],input.instruction) : await this.resolveRevisionIntent(input, context.macroContext, targetRange.text);
+    const resolvedIntent = manuscriptContext ? buildPresetIntent(input.presetOperation??"polish",["Conservar los hechos ocurridos, identidad de los personajes, causa y efecto, perspectiva y final original; El plan de todo el libro no iguala los hechos de este capítulo."],input.instruction) : await this.resolveRevisionIntent(input, context.macroContext, targetRange.text);
     const contextWindow = input.scope === "selection"
       ? input.context ?? buildParagraphWindow(content, targetRange)
       : { beforeParagraphs: [], afterParagraphs: [] };
@@ -161,7 +161,7 @@ export class NovelChapterEditorService {
       promptInput: {
         manuscriptContext,
         operation: input.presetOperation ?? (input.source === "freeform" ? "custom" : "polish"),
-        operationLabel: input.presetOperation ? OPERATION_LABELS[input.presetOperation] : "按用户要求修正",
+        operationLabel: input.presetOperation ? OPERATION_LABELS[input.presetOperation] : "Modificado según los requisitos del usuario.",
         scope: input.scope,
         customInstruction: input.instruction?.trim() || undefined,
         repairBrief: input.repairBrief,
@@ -173,7 +173,7 @@ export class NovelChapterEditorService {
         styleSummary: context.styleSummary || null,
         characterStateSummary: manuscriptContext ? null : buildCharacterStateSummary(context.latestStateSnapshot),
         worldConstraintSummary: manuscriptContext ? null : context.macroContext.worldConstraintSummary,
-        macroContextSummary: manuscriptContext ? "全书约束与已发生前文按原稿专用上下文区分。" : buildMacroContextSummary(context.macroContext),
+        macroContextSummary: manuscriptContext ? "Las limitaciones a lo largo del libro se distinguen de lo que ya sucedió en el contexto del manuscrito original." : buildMacroContextSummary(context.macroContext),
         resolvedIntentSummary: buildIntentSummary(resolvedIntent),
         constraintsText: buildConstraintsText(input.constraints),
       } satisfies ChapterEditorRewriteCandidatesPromptInput,
@@ -187,7 +187,7 @@ export class NovelChapterEditorService {
     const candidates = dedupeCandidates(
       result.output.candidates.slice(0, 3).map((candidate, index) => ({
         id: randomUUID(),
-        label: candidate.label?.trim() || `方案 ${index + 1}`,
+        label: candidate.label?.trim() || `plan ${index + 1}`,
         content: candidate.content.trim(),
         summary: candidate.summary?.trim() || null,
         rationale: candidate.rationale?.trim() || null,
@@ -198,7 +198,7 @@ export class NovelChapterEditorService {
     );
 
     if (candidates.length < 2) {
-      throw new Error("AI 未返回足够的候选版本，请重试。");
+      throw new Error("AI no devolvió suficientes versiones candidatas. Inténtelo de nuevo.");
     }
 
     return {
@@ -248,10 +248,10 @@ export class NovelChapterEditorService {
     const context = await this.workspaceService.loadContext(novelId, chapterId);
     const content = normalizeChapterContent(input.contentSnapshot ?? context.chapter.content ?? "");
     if (!content.trim()) {
-      throw new Error("当前章节正文为空，无法发起 AI 续写。请先写下至少一段正文。");
+      throw new Error("El texto del capítulo actual está vacío y no se puede iniciar la continuación de la IA. Primero escriba al menos un párrafo de texto.");
     }
     if (!Number.isInteger(input.cursorOffset) || input.cursorOffset < 0 || input.cursorOffset > content.length) {
-      throw new Error("正文光标位置已变化，请重新定位光标后再试。");
+      throw new Error("La posición del cursor de texto ha cambiado. Vuelva a colocar el cursor e inténtelo de nuevo.");
     }
 
     const result = await this.promptRunner({
@@ -284,7 +284,7 @@ export class NovelChapterEditorService {
     const candidates = dedupeCandidates(
       result.output.candidates.slice(0, 3).map((candidate, index) => ({
         id: randomUUID(),
-        label: candidate.label?.trim() || `续写方案 ${index + 1}`,
+        label: candidate.label?.trim() || `Plan de continuación ${index + 1}`,
         content: candidate.content.trim(),
         summary: candidate.summary?.trim() || null,
         rationale: candidate.rationale?.trim() || null,
@@ -295,7 +295,7 @@ export class NovelChapterEditorService {
     );
 
     if (candidates.length < 2) {
-      throw new Error("AI 未返回足够的续写候选版本，请重试。");
+      throw new Error("AI no devolvió suficientes candidatos de continuación. Inténtelo de nuevo.");
     }
 
     return {
@@ -328,7 +328,7 @@ export class NovelChapterEditorService {
     }
 
     if (!input.instruction?.trim()) {
-      throw new Error("请先写下你希望 AI 如何修改。");
+      throw new Error("Empiece por escribir cómo desea que se modifique la IA.");
     }
 
     const result = await this.promptRunner({

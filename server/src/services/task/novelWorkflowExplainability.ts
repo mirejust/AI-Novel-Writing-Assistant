@@ -49,27 +49,27 @@ const WORKFLOW_ITEM_STAGE_MAP: Partial<Record<string, NovelWorkflowStage>> = {
 };
 
 const CHECKPOINT_DISPLAY_STATUS: Record<NovelWorkflowCheckpoint, string> = {
-  candidate_selection_required: "等待确认书级方向",
-  book_contract_ready: "Book Contract 已就绪",
-  character_setup_required: "角色准备待审核",
-  volume_strategy_ready: "卷战略待审核",
-  production_experience_required: "已可开写，等待选择生产方式",
-  chapter_batch_ready: "已准备章节可进入执行",
-  step_review_required: "当前步骤待检查",
-  replan_required: "等待处理重规划",
-  workflow_completed: "自动导演已完成",
+  candidate_selection_required: "Esperando confirmación de la dirección del libro",
+  book_contract_ready: "El contrato del libro está listo",
+  character_setup_required: "Preparación de personajes pendiente de revisión",
+  volume_strategy_ready: "Estrategia de volumen pendiente de revisión",
+  production_experience_required: "Listo para empezar a escribir, esperando seleccionar el método de producción.",
+  chapter_batch_ready: "Los capítulos han sido preparados y se pueden ejecutar.",
+  step_review_required: "Paso actual a comprobar",
+  replan_required: "Esperando replanificación",
+  workflow_completed: "Autodirector completado",
 };
 
 const CHECKPOINT_BLOCKING_REASON: Record<NovelWorkflowCheckpoint, string> = {
-  candidate_selection_required: "需要先确认书级方向，自动导演才能继续推进后续主链。",
-  book_contract_ready: "Book Contract 已生成，需先确认核心承诺后再继续后续规划。",
-  character_setup_required: "角色准备已生成，需先审核角色阵容后再继续推进。",
-  volume_strategy_ready: "卷战略与卷骨架已就绪，需先确认卷级推进方案后再继续。",
-  production_experience_required: "自动导演已完成正文生产前的准备，需要选择简易创作或专业创作。",
-  chapter_batch_ready: "章节范围的拆章与执行资源已经准备好，可以进入章节执行或继续自动执行当前范围。",
-  step_review_required: "当前导演步骤已生成，检查或确认后才能继续下一个步骤。",
-  replan_required: "审计结果要求先处理重规划，后续章节才能继续推进。",
-  workflow_completed: "默认主流程已跑通，你可以直接进入章节执行继续写作。",
+  candidate_selection_required: "La dirección a nivel de libro debe confirmarse primero antes de que el director automático pueda continuar avanzando en la cadena principal posterior.",
+  book_contract_ready: "Se ha generado el Contrato de Libro y es necesario confirmar los compromisos principales antes de continuar con la planificación posterior.",
+  character_setup_required: "Se ha generado la preparación de los personajes y es necesario revisar la alineación de los personajes antes de continuar.",
+  volume_strategy_ready: "La estrategia de volumen y el esqueleto de volumen están listos y es necesario confirmar el plan de promoción de volumen antes de continuar.",
+  production_experience_required: "El director automático ha completado los preparativos para la producción de texto y debe elegir entre creación simple o creación profesional.",
+  chapter_batch_ready: "Se han preparado los recursos de apertura y ejecución del capítulo para todo el capítulo, y puede ingresar a la ejecución del capítulo o continuar ejecutando automáticamente el alcance actual.",
+  step_review_required: "El paso director actual se ha generado y debe verificarse o confirmarse antes de continuar con el siguiente paso.",
+  replan_required: "Los resultados de la auditoría requieren una gran planificación antes de poder continuar con los capítulos siguientes.",
+  workflow_completed: "De forma predeterminada, el proceso principal se ha ejecutado y puede ingresar directamente a la ejecución del capítulo para continuar escribiendo.",
 };
 
 const CHECKPOINT_LAST_HEALTHY_STAGE: Record<NovelWorkflowCheckpoint, NovelWorkflowStage> = {
@@ -84,37 +84,37 @@ const CHECKPOINT_LAST_HEALTHY_STAGE: Record<NovelWorkflowCheckpoint, NovelWorkfl
   workflow_completed: "quality_repair",
 };
 
-function getExecutionScopeLabel(input: WorkflowExplainabilityInput, fallback = "第 1-10 章"): string {
+function getExecutionScopeLabel(input: WorkflowExplainabilityInput, fallback = "Capítulo 1-10"): string {
   return input.executionScopeLabel?.trim() || fallback;
 }
 
 function buildAutoExecutionPreparedStatus(input: WorkflowExplainabilityInput): string {
-  return `${getExecutionScopeLabel(input)}已可进入章节执行`;
+  return `${getExecutionScopeLabel(input)}Se puede ingresar la ejecución del capítulo.`;
 }
 
 function buildAutoExecutionRunningStatus(input: WorkflowExplainabilityInput): string {
-  return `${getExecutionScopeLabel(input)}自动执行中`;
+  return `${getExecutionScopeLabel(input)}Ejecutando automáticamente`;
 }
 
 function buildAutoExecutionPausedStatus(input: WorkflowExplainabilityInput): string {
-  return `${getExecutionScopeLabel(input)}自动执行已暂停`;
+  return `${getExecutionScopeLabel(input)}La ejecución automatizada está en pausa`;
 }
 
 function buildAutoExecutionCancelledStatus(input: WorkflowExplainabilityInput): string {
-  return `${getExecutionScopeLabel(input)}自动执行已取消`;
+  return `${getExecutionScopeLabel(input)}Ejecución automática cancelada`;
 }
 
 function buildAutoExecutionResumeAction(input: WorkflowExplainabilityInput): string {
-  return `继续自动执行${getExecutionScopeLabel(input)}`;
+  return `Continuar la ejecución automática${getExecutionScopeLabel(input)}`;
 }
 
 function buildAutoExecutionPreparedReason(input: WorkflowExplainabilityInput): string {
   const scopeLabel = getExecutionScopeLabel(input);
-  return `${scopeLabel}细化已准备完成，你可以进入章节执行，或继续让系统自动执行${scopeLabel}。`;
+  return `${scopeLabel}El refinamiento está listo. Puede ingresar al capítulo para ejecutar o continuar dejando que el sistema lo ejecute automáticamente.${scopeLabel}.`;
 }
 
 function buildAutoExecutionPausedReason(input: WorkflowExplainabilityInput): string {
-  return `${getExecutionScopeLabel(input)}自动执行在批量阶段暂停了，建议先看结果，再决定是否继续自动执行当前范围。`;
+  return `${getExecutionScopeLabel(input)}La ejecución automática se ha suspendido durante la fase por lotes. Se recomienda verificar los resultados antes de decidir si continuar ejecutando automáticamente el rango actual.`;
 }
 
 function isPreparedChapterBatchCheckpoint(input: WorkflowExplainabilityInput): boolean {
@@ -172,58 +172,58 @@ export function buildWorkflowResumeAction(
   } satisfies WorkflowExplainabilityInput;
   if (status === "waiting_approval") {
     if (checkpointType === "candidate_selection_required") {
-      return "继续确认书级方向";
+      return "Continúe confirmando la dirección a nivel de libro.";
     }
     if (checkpointType === "book_contract_ready") {
-      return "查看 Book Contract";
+      return "Ver contrato de reserva";
     }
     if (checkpointType === "character_setup_required") {
-      return "去审核角色准备";
+      return "Ir a revisar la preparación del rol";
     }
     if (checkpointType === "volume_strategy_ready") {
-      return "查看卷战略";
+      return "Ver estrategia de volumen";
     }
     if (checkpointType === "chapter_batch_ready") {
       return buildAutoExecutionResumeAction(explainabilityInput);
     }
     if (checkpointType === "replan_required") {
-      return "处理重规划";
+      return "Manejar una planificación pesada";
     }
     if (checkpointType === "workflow_completed") {
-      return "进入章节执行";
+      return "Ir a la ejecución del capítulo";
     }
-    return "继续小说主流程";
+    return "Continúa el flujo principal de la novela.";
   }
   if (explainabilityInput.pendingManualRecovery) {
-    return "从最近检查点恢复";
+    return "Restaurar desde el último punto de control";
   }
   if (status === "failed" || status === "cancelled") {
     if (checkpointType === "chapter_batch_ready") {
       return buildAutoExecutionResumeAction(explainabilityInput);
     }
     if (checkpointType === "workflow_completed") {
-      return "进入章节执行";
+      return "Ir a la ejecución del capítulo";
     }
-    return "从最近检查点恢复";
+    return "Restaurar desde el último punto de control";
   }
   if (status === "running" || status === "queued") {
-    return "查看当前进度";
+    return "Ver el progreso actual";
   }
   if (status === "succeeded" && checkpointType === "workflow_completed") {
-    return "进入章节执行";
+    return "Ir a la ejecución del capítulo";
   }
   return null;
 }
 
 function buildDisplayStatus(input: WorkflowExplainabilityInput): string | null {
   if (input.pendingManualRecovery) {
-    return "等待手动恢复";
+    return "Esperando recuperación manual";
   }
   if (isAutoDirectorRecoveryInProgress(input)) {
     const currentStageLabel = getCurrentStageLabel(input);
     return currentStageLabel
-      ? `${currentStageLabel}恢复中`
-      : "自动导演恢复中";
+      ? `${currentStageLabel}Recuperante`
+      : "Recuperación automática del director en curso";
   }
   if (
     (input.status === "queued" || input.status === "running")
@@ -237,47 +237,47 @@ function buildDisplayStatus(input: WorkflowExplainabilityInput): string | null {
     }
     return input.checkpointType
       ? CHECKPOINT_DISPLAY_STATUS[input.checkpointType]
-      : "等待继续小说主流程";
+      : "Esperando continuar el flujo principal de la novela.";
   }
   if (input.status === "running") {
     const currentStageLabel = getCurrentStageLabel(input);
     return currentStageLabel
-      ? `${currentStageLabel}进行中`
-      : "自动导演进行中";
+      ? `${currentStageLabel}En curso`
+      : "Director automático en progreso";
   }
   if (input.status === "queued") {
-    return "自动导演排队中";
+    return "Director automático en cola";
   }
   if (input.status === "failed") {
     if (input.checkpointType === "chapter_batch_ready") {
       return buildAutoExecutionPausedStatus(input);
     }
-    return "自动导演执行失败";
+    return "La ejecución automática del director falló";
   }
   if (input.status === "cancelled") {
     if (input.checkpointType === "chapter_batch_ready") {
       return buildAutoExecutionCancelledStatus(input);
     }
-    return "自动导演已取消";
+    return "Director automático cancelado";
   }
   if (input.checkpointType === "workflow_completed") {
-    return "自动导演已完成";
+    return "Autodirector completado";
   }
-  return input.status === "succeeded" ? "小说主流程已完成" : null;
+  return input.status === "succeeded" ? "El flujo principal de la novela se ha completado." : null;
 }
 
 function buildBlockingReason(input: WorkflowExplainabilityInput): string | null {
   if (input.pendingManualRecovery) {
-    return input.lastError?.trim() || "服务重启后任务已暂停，等待手动恢复。";
+    return input.lastError?.trim() || "Una vez reiniciado el servicio, la tarea se suspendió y está esperando la recuperación manual.";
   }
   if (isAutoDirectorRecoveryInProgress(input)) {
-    return input.lastError?.trim() || "自动导演任务正在从服务重启中恢复。";
+    return input.lastError?.trim() || "Las tareas automáticas del director se reanudan tras el reinicio del servicio.";
   }
   if (input.status === "running" || input.status === "succeeded") {
     return null;
   }
   if (input.status === "queued") {
-    return "任务已进入队列，正在等待工作线程和模型资源可用。";
+    return "La tarea se ha puesto en cola y está esperando que los subprocesos de trabajo y los recursos del modelo estén disponibles.";
   }
   if (input.status === "waiting_approval") {
     if (input.checkpointType === "chapter_batch_ready") {
@@ -285,19 +285,19 @@ function buildBlockingReason(input: WorkflowExplainabilityInput): string | null 
     }
     return input.checkpointType
       ? CHECKPOINT_BLOCKING_REASON[input.checkpointType]
-      : "当前流程已停在安全检查点，处理完当前阶段后才能继续。";
+      : "El proceso actual se detuvo en un punto de control de seguridad y no puede continuar hasta que se procese la etapa actual.";
   }
   if (input.status === "failed") {
     if (input.checkpointType === "chapter_batch_ready") {
-      return `${getExecutionScopeLabel(input)}自动执行在批量阶段中断了，建议从最近健康阶段继续恢复。`;
+      return `${getExecutionScopeLabel(input)}La ejecución automática se interrumpió durante la fase por lotes y se recomienda reanudar la recuperación desde la fase saludable más reciente.`;
     }
-    return normalizeFailureSummary(input.lastError, "当前阶段执行失败，建议从最近检查点恢复。");
+    return normalizeFailureSummary(input.lastError, "La ejecución de la etapa actual falló; se recomienda restaurar desde el último punto de control.");
   }
   if (input.status === "cancelled") {
     if (input.checkpointType === "chapter_batch_ready") {
-      return `${getExecutionScopeLabel(input)}自动执行已取消，如需继续可从最近健康阶段恢复。`;
+      return `${getExecutionScopeLabel(input)}La ejecución automática ha sido cancelada. Si necesita continuar, puede reanudar desde la etapa de salud más reciente.`;
     }
-    return "任务已取消，如仍需继续，可从最近检查点恢复。";
+    return "La tarea ha sido cancelada. Si aún necesita continuar, puede continuar desde el último punto de control.";
   }
   return null;
 }

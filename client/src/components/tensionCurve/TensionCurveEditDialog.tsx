@@ -120,24 +120,24 @@ export function TensionCurveEditDialog(props: TensionCurveEditDialogProps) {
               {showReferenceCurve && referenceTemplate ? (
                 <span className="inline-flex items-center gap-1.5">
                   <span className="h-px w-5 border-t border-dashed border-slate-500" />
-                  {referenceTemplate.label}参考
+                  {referenceTemplate.label}referirse a
                 </span>
               ) : null}
-              {userAnchorCount > 0 ? <span>{userAnchorCount} 个手动固定点</span> : <span>暂无手动固定点</span>}
+              {userAnchorCount > 0 ? <span>{userAnchorCount} Puntos fijos manuales</span> : <span>Aún no hay puntos fijos manuales</span>}
             </div>
             <div className="flex flex-wrap items-center justify-end gap-2">
               {userAnchorCount > 0 ? (
                 <Button type="button" size="sm" variant="outline" onClick={() => releaseScope("all")}>
-                  整卷交还 AI
+                  Devolver todo el volumen a AI
                 </Button>
               ) : null}
               {selectedViewportKey !== "all" && selectedUserAnchorCount > 0 ? (
                 <Button type="button" size="sm" variant="outline" onClick={() => releaseScope("selected")}>
-                  当前节奏段交还 AI
+                  Devuelve la sección de ritmo actual a la IA.
                 </Button>
               ) : null}
               <Button type="button" size="sm" variant="secondary" onClick={() => onOpenChange(false)}>
-                完成编辑
+                Edición completa
               </Button>
             </div>
           </>
@@ -155,15 +155,15 @@ export function TensionCurveEditDialog(props: TensionCurveEditDialogProps) {
           <div className="min-w-0 space-y-3">
             <div className="flex flex-col gap-3 rounded-xl border border-border/70 bg-background p-3 lg:flex-row lg:items-center lg:justify-between">
               <div className="text-sm text-muted-foreground">
-                拖动章节节点会固定该章强度；点选节点可在右侧查看章节摘要。
+                Arrastrar un nodo de capítulo fijará la fuerza del capítulo; haga clic en el nodo para ver el resumen del capítulo a la derecha.
               </div>
               {primaryPointCount > 1 ? (
                 <div className="flex items-center gap-2 rounded-md border border-border/70 px-2 py-1">
-                  <span className="text-xs text-muted-foreground">参考线</span>
+                  <span className="text-xs text-muted-foreground">Línea de referencia</span>
                   <Switch
                     checked={showReferenceCurve}
                     onCheckedChange={setShowReferenceCurve}
-                    aria-label="显示紧张度参考线"
+                    aria-label="Mostrar líneas guía de tensión"
                     className="h-5 w-9"
                   />
                   {showReferenceCurve ? (
@@ -199,7 +199,7 @@ export function TensionCurveEditDialog(props: TensionCurveEditDialogProps) {
             />
 
             {canvasWidth > 900 ? (
-              <div className="text-xs text-muted-foreground">拖动画布或滚轮可横向浏览更多章节；拖动点时按住 Shift 可按 1 点精度调整。</div>
+              <div className="text-xs text-muted-foreground">Arrastre el lienzo o la rueda para navegar por más capítulos; Mantenga presionada la tecla Mayús mientras arrastra puntos para ajustar con precisión de 1 punto.</div>
             ) : null}
 
             <CompactLegend />

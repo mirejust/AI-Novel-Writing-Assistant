@@ -86,11 +86,11 @@ function normalizeSceneCardPayload(raw: unknown): unknown {
     entryState: ["startState", "sceneEntry", "openingState"],
     exitState: ["endState", "sceneExit", "closingState"],
     forbiddenExpansion: ["forbiddenExpansions", "mustAvoid", "forbidden"],
-    targetWordCount: ["target_word_count", "targetWords", "wordCount", "budget", "字数"],
-    resistance: ["obstacle", "opposition", "sceneResistance", "阻力"],
-    turn: ["turningPoint", "reversal", "sceneTurn", "转折"],
-    emotionalShift: ["emotionShift", "emotionalTurn", "情绪位移"],
-    readerValue: ["readerReward", "scenePayoff", "读者价值", "读者回报"],
+    targetWordCount: ["target_word_count", "targetWords", "wordCount", "budget", "recuento de palabras"],
+    resistance: ["obstacle", "opposition", "sceneResistance", "resistencia"],
+    turn: ["turningPoint", "reversal", "sceneTurn", "momento crucial"],
+    emotionalShift: ["emotionShift", "emotionalTurn", "desplazamiento emocional"],
+    readerValue: ["readerReward", "scenePayoff", "valor del lector", "Comentarios de los lectores"],
   });
   if (!normalized || typeof normalized !== "object" || Array.isArray(normalized)) {
     return normalized;
@@ -107,9 +107,9 @@ function normalizeSceneCardPayload(raw: unknown): unknown {
 
 function normalizeScenePlanPayload(raw: unknown): unknown {
   const normalized = normalizeObjectAlias(raw, {
-    taskSheet: ["任务单", "task_sheet", "writingTask", "执行任务单"],
+    taskSheet: ["Hoja de tareas", "task_sheet", "writingTask", "Ejecutar orden de tarea"],
     sceneCards: ["scenePlan", "scenes", "scene_cards", "sceneCardList"],
-    readerExperience: ["readerExperienceContract", "reader_experience", "读者体验合同"],
+    readerExperience: ["readerExperienceContract", "reader_experience", "Contrato de experiencia del lector"],
   });
   if (!normalized || typeof normalized !== "object" || Array.isArray(normalized)) {
     return normalized;
@@ -125,14 +125,14 @@ function normalizeScenePlanPayload(raw: unknown): unknown {
 
 function normalizeBoundaryPayload(raw: unknown): unknown {
   const normalized = normalizeObjectAlias(raw, {
-    exclusiveEvent: ["exclusive_event", "chapterExclusiveEvent", "独占事件", "核心独占事件"],
-    endingState: ["ending_state", "chapterEndingState", "章末状态", "本章结束状态"],
-    nextChapterEntryState: ["next_chapter_entry_state", "nextEntryState", "下章起始状态", "下章入口状态"],
-    conflictLevel: ["冲突等级", "conflict_level", "conflict"],
-    revealLevel: ["揭露等级", "reveal_level", "reveal"],
-    targetWordCount: ["目标字数", "target_word_count", "wordCount", "字数"],
-    mustAvoid: ["禁止事项", "避免事项", "must_avoid"],
-    payoffRefs: ["兑现关联", "payoff_refs", "payoffs", "关联兑现"],
+    exclusiveEvent: ["exclusive_event", "chapterExclusiveEvent", "evento exclusivo", "evento exclusivo principal"],
+    endingState: ["ending_state", "chapterEndingState", "Estado de fin de capítulo", "Estado final de este capítulo"],
+    nextChapterEntryState: ["next_chapter_entry_state", "nextEntryState", "Estado inicial del próximo capítulo.", "Estado de entrada al próximo capítulo"],
+    conflictLevel: ["nivel de conflicto", "conflict_level", "conflict"],
+    revealLevel: ["revelar nivel", "reveal_level", "reveal"],
+    targetWordCount: ["Palabras objetivo", "target_word_count", "wordCount", "recuento de palabras"],
+    mustAvoid: ["Asuntos prohibidos", "Cosas a evitar", "must_avoid"],
+    payoffRefs: ["Canjear asociación", "payoff_refs", "payoffs", "Redención de afiliados"],
   });
   if (!normalized || typeof normalized !== "object" || Array.isArray(normalized)) {
     return normalized;
@@ -144,7 +144,7 @@ function normalizeBoundaryPayload(raw: unknown): unknown {
     revealLevel: normalizeInteger(record.revealLevel),
     targetWordCount: normalizeInteger(record.targetWordCount),
     mustAvoid: Array.isArray(record.mustAvoid)
-      ? record.mustAvoid.map((item) => String(item).trim()).filter(Boolean).join("；")
+      ? record.mustAvoid.map((item) => String(item).trim()).filter(Boolean).join(";")
       : record.mustAvoid,
     payoffRefs: normalizeStringArray(record.payoffRefs),
   };
@@ -153,7 +153,7 @@ function normalizeBoundaryPayload(raw: unknown): unknown {
 export function createChapterPurposeSchema() {
   return z.preprocess(
     (raw) => normalizeObjectAlias(raw, {
-      purpose: ["章节目标", "chapterGoal", "goal", "objective"],
+      purpose: ["Objetivo del capítulo", "chapterGoal", "goal", "objective"],
     }),
     z.object({
       purpose: conciseRequiredText,
@@ -185,7 +185,7 @@ export function createChapterTaskSheetSchema() {
 export function createChapterExecutionContractSchema() {
   return z.preprocess(
     (raw) => normalizeScenePlanPayload(normalizeBoundaryPayload(normalizeObjectAlias(raw, {
-      purpose: ["章节目标", "chapterGoal", "goal", "objective"],
+      purpose: ["Objetivo del capítulo", "chapterGoal", "goal", "objective"],
     }))),
     z.object({
       purpose: conciseRequiredText,

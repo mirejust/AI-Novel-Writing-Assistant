@@ -64,7 +64,7 @@ function toErrorMessage(error: unknown): string {
   if (error instanceof Error && error.message.trim()) {
     return error.message.trim();
   }
-  return "连接测试失败。";
+  return "La prueba de conexión falló.";
 }
 
 function getProtocolCandidates(preferred?: ModelRouteRequestProtocol): ModelRouteRequestProtocol[] {
@@ -128,11 +128,11 @@ async function testPlainConnection(input: {
       requestProtocol: resolved.requestProtocol,
     });
     const start = Date.now();
-    const stream = await llm.stream([new HumanMessage("请只回复 ok")]);
+    const stream = await llm.stream([new HumanMessage("Por favor solo responde ok")]);
     let content = "";
     for await (const chunk of stream) content += toText(chunk.content);
     if (!content.trim()) {
-      throw new Error("模型连接已建立，但返回了空正文，无法确认渠道可用。请检查渠道协议、模型能力及思考设置。");
+      throw new Error("Se estableció la conexión del modelo, pero se devolvió un cuerpo vacío y no se pudo confirmar que el canal estuviera disponible. Revise los acuerdos de canal, las capacidades del modelo y la configuración de pensamiento.");
     }
     const plain = {
       ok: true,
@@ -206,8 +206,8 @@ async function testStructuredConnection(input: {
       label: "llm.connectivity.structured_probe",
       schema: STRUCTURED_PROBE_SCHEMA,
       messages: [
-        new SystemMessage("你正在执行结构化输出兼容性探针。必须只输出合法 JSON。"),
-        new HumanMessage("请输出一个 JSON 对象，字段 status 的值必须是 ok。"),
+        new SystemMessage("Está ejecutando una prueba de compatibilidad de salida estructurada. Sólo se debe generar JSON válido."),
+        new HumanMessage("Por favor genere un objeto JSON. El valor del estado del campo debe ser correcto."),
       ],
       maxRepairAttempts: 1,
       disableFallbackModel: true,
@@ -279,7 +279,7 @@ async function mergeProbeStatuses(input: {
   const top = input.plain?.plain ?? input.structured?.structured ?? {
     ok: false,
     latency: null,
-    error: "连接测试失败。",
+    error: "La prueba de conexión falló.",
     requestProtocol: null,
   };
   return {

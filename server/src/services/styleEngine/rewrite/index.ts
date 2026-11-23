@@ -48,10 +48,10 @@ export function guardStylePatches(input: {
     sourceContentHash: styleContentHash(input.original), candidateContentHash: styleContentHash(applied.content),
     policyRevision: STYLE_REWRITE_POLICY_REVISION, touchedRatio, addedCharacters, lengthChangeRatio,
     checks: [
-      { code: "patch_scope", status: scopeValid ? "passed" : "blocked", reason: scopeValid ? "本次需要修改的片段已核对。" : "修订包含尚未确认的修改或无法可靠定位的片段，保留原稿。" },
-      { code: "edit_budget", status: budgetValid ? "passed" : "blocked", reason: budgetValid ? "修改范围与篇幅在保护范围内。" : "修改范围或新增篇幅过大，保留原稿。" },
-      { code: "protected_terms", status: protectedValid ? "passed" : "blocked", reason: protectedValid ? "表达补丁保留了明确保护的原文词项。" : "表达补丁改变了数字或受保护专名，保留原稿。" },
-      { code: "semantic_facts", status: "not_checked", reason: "原文词项保护不代表人物行为与设定一致，语义由候选复验核对。" },
+      { code: "patch_scope", status: scopeValid ? "passed" : "blocked", reason: scopeValid ? "Se han comprobado los fragmentos que deben modificarse esta vez." : "Las revisiones que contienen cambios no confirmados o fragmentos que no pueden localizarse de manera confiable conservan el manuscrito original." },
+      { code: "edit_budget", status: budgetValid ? "passed" : "blocked", reason: budgetValid ? "El alcance y la duración de las modificaciones están dentro del alcance de la protección." : "Si el alcance de la modificación o la extensión de las nuevas adiciones es demasiado grande, se conservará el manuscrito original." },
+      { code: "protected_terms", status: protectedValid ? "passed" : "blocked", reason: protectedValid ? "Los parches de expresión conservan los términos del texto original protegidos explícitamente." : "Los parches de expresión cambian números o nombres propios protegidos, conservando el original." },
+      { code: "semantic_facts", status: "not_checked", reason: "La protección del término del texto original no significa que el comportamiento del personaje sea consistente con el escenario, y la semántica será verificada mediante un nuevo examen del candidato." },
     ],
   };
   return {

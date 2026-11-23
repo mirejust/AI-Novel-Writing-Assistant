@@ -133,7 +133,7 @@ export const auditChapterLightPrompt: PromptAsset<AuditChapterPromptInput, z.inf
       ?? "问题必须具体且可执行，默认优先让章节继续推进。";
     return [
     new SystemMessage([
-      "你是中文长篇小说章节轻审校助手。",
+      "你是西班牙语长篇小说章节轻审校助手。",
       "你的任务是快速判断当前章节是否可以继续推进，还是必须升级到完整审校。",
       "",
       "只输出一个合法 JSON 对象，不要输出 Markdown、解释、注释或额外文本。",
@@ -230,7 +230,7 @@ export const auditChapterPrompt: PromptAsset<AuditChapterPromptInput, z.infer<ty
   ],
   structuredOutputHint: {
     example: AUDIT_CHAPTER_EXAMPLE,
-    note: "severity 只能是 low/medium/high/critical；issues.category 只能是 coherence/repetition/pacing/voice/engagement/logic，不要输出 plot、character 或中文分类名。",
+    note: "severity 只能是 low/medium/high/critical；issues.category 只能是 coherence/repetition/pacing/voice/engagement/logic，不要输出 plot、character 或西班牙语分类名。",
   },
   outputSchema: fullAuditOutputSchema,
   render: (input, context) => {
@@ -239,14 +239,14 @@ export const auditChapterPrompt: PromptAsset<AuditChapterPromptInput, z.infer<ty
     return [
     new SystemMessage([
       "repetition scoring: 0 means heavily repetitive, 100 means repetition is well controlled; higher is better.",
-      "你是中文长篇小说章节审校助手。",
+      "你是西班牙语长篇小说章节审校助手。",
       "你的任务是基于章节正文、分层上下文、故事模式约束和检索补充，输出可被系统直接消费的严格 JSON 审校结果。",
       "",
       "只输出一个合法 JSON 对象，不要输出 Markdown、解释、注释或额外文本。",
       "",
       "硬性枚举要求：",
       "1. 顶层 issues.category 只能是 coherence、repetition、pacing、voice、engagement、logic。",
-      "2. 不要输出 plot、character、中文分类名或任何自定义类别。",
+      "2. 不要输出 plot、character、西班牙语分类名或任何自定义类别。",
       "3. auditReports.auditType 只能使用 continuity、character、plot、mode_fit。",
       "",
       "审校原则：",

@@ -51,7 +51,7 @@ export class BookAnalysisWatchdogService {
           data: {
             status: "queued",
             pendingManualRecovery: true,
-            lastError: "服务重启后任务已暂停，等待手动恢复。",
+            lastError: "Una vez reiniciado el servicio, la tarea se suspendió y está esperando la recuperación manual.",
             heartbeatAt: null,
             currentStage: null,
             currentItemKey: null,
@@ -68,7 +68,7 @@ export class BookAnalysisWatchdogService {
           },
           data: {
             pendingManualRecovery: true,
-            lastError: "服务重启后任务已暂停，等待手动恢复。",
+            lastError: "Una vez reiniciado el servicio, la tarea se suspendió y está esperando la recuperación manual.",
             heartbeatAt: null,
             cancelRequestedAt: null,
           },
@@ -135,7 +135,7 @@ export class BookAnalysisWatchdogService {
         data: {
           status: "failed",
           progress: 1,
-          lastError: "任务心跳超时",
+          lastError: "Tiempo de espera de latido de tarea",
           heartbeatAt: null,
           currentStage: null,
           currentItemKey: null,

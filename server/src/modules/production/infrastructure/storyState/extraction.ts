@@ -5,7 +5,7 @@ import { hashProductionContent, ProductionSnapshotConflictError } from "../../ap
 import type { ArtifactContext, ArtifactExtractionPort, PreparedArtifactExtraction } from "./consumerPorts";
 
 export class ProductionContextBudgetError extends Error {
-  constructor() { super("完整正文与审校上下文超出有效输入预算，请选择上下文更大的模型。"); this.name = "ProductionContextBudgetError"; }
+  constructor() { super("El texto completo y el contexto de revisión exceden el presupuesto de entrada válido; elija un modelo con mayor contexto."); this.name = "ProductionContextBudgetError"; }
 }
 export interface ArtifactPromptDescription {
   identity: string;

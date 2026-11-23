@@ -100,7 +100,7 @@ export function deriveAutoDirectorFollowUpState(
       taskId: row.id,
       novelId: row.novelId,
       novelTitle: getNovelTitle(row),
-      summary: row.checkpointSummary?.trim() || row.currentItemLabel?.trim() || "自动导演状态已更新",
+      summary: row.checkpointSummary?.trim() || row.currentItemLabel?.trim() || "Estado del autodirector actualizado",
       reason: null,
       reasonLabel: null,
       availableMutationActions: [],

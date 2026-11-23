@@ -92,7 +92,7 @@ const querySchema = z.object({
 
 function sendValidationError(res: Response, error: z.ZodError): void {
   void error;
-  res.status(400).json({ success: false, error: "请求参数校验失败。", message: "请检查请求参数后重试。" });
+  res.status(400).json({ success: false, error: "Error en la verificación del parámetro de solicitud.", message: "Verifique los parámetros de la solicitud e inténtelo nuevamente." });
 }
 
 function sendKnownError(res: Response, error: unknown): boolean {
@@ -101,13 +101,13 @@ function sendKnownError(res: Response, error: unknown): boolean {
     return true;
   }
   if (error instanceof DirectorRunNotFoundError) {
-    res.status(404).json({ success: false, error: "找不到对应的创作记录。" });
+    res.status(404).json({ success: false, error: "No se puede encontrar el registro de creación correspondiente." });
     return true;
   }
   if (error && typeof error === "object" && "statusCode" in error) {
     const statusCode = (error as { statusCode?: unknown }).statusCode;
     if (typeof statusCode === "number" && Number.isInteger(statusCode) && statusCode >= 400 && statusCode < 500) {
-      res.status(statusCode).json({ success: false, error: error instanceof Error ? error.message : "请求无法处理。" });
+      res.status(statusCode).json({ success: false, error: error instanceof Error ? error.message : "La solicitud no se puede procesar." });
       return true;
     }
   }
@@ -165,7 +165,7 @@ export function createDirectorNextRouter(deps: DirectorNextHttpDeps): Router {
   router.get("/novels/:novelId/generation-stream", (req, res) => {
     const id = nonEmpty.safeParse(req.params.novelId);
     if (!id.success) { sendValidationError(res, id.error); return; }
-    if (!deps.observeGeneration) { res.status(404).json({success:false,error:"正文预览入口未配置。"}); return; }
+    if (!deps.observeGeneration) { res.status(404).json({success:false,error:"La entrada de vista previa de texto no está configurada."}); return; }
     res.setHeader("Content-Type", "text/event-stream");
     res.setHeader("Cache-Control", "no-cache, no-transform");
     res.setHeader("X-Accel-Buffering", "no");
@@ -187,7 +187,7 @@ export function createDirectorNextRouter(deps: DirectorNextHttpDeps): Router {
   router.get("/novels/:novelId/workspace",asyncRoute(async(req,res)=>{
     const id=nonEmpty.safeParse(req.params.novelId);
     if (!id.success) {sendValidationError(res,id.error);return;}
-    if (!deps.readWorkspace) {res.status(404).json({success:false,error:"小说内容入口未配置。"});return;}
+    if (!deps.readWorkspace) {res.status(404).json({success:false,error:"La entrada de contenido novedoso no está configurada."});return;}
     res.json({success:true,data:await deps.readWorkspace(id.data)});
   }));
   router.post("/novels/:novelId/volume-summary-emphasis",asyncRoute(async(req,res)=>{
@@ -195,13 +195,13 @@ export function createDirectorNextRouter(deps: DirectorNextHttpDeps): Router {
     if (!id.success) {sendValidationError(res,id.error);return;}
     const input = z.object({volumeIds:z.array(nonEmpty).min(1).max(8)}).safeParse(req.body);
     if (!input.success) {sendValidationError(res,input.error);return;}
-    if (!deps.annotateVolumeSummaries) {res.status(404).json({success:false,error:"卷纲重点标注不可用。"});return;}
+    if (!deps.annotateVolumeSummaries) {res.status(404).json({success:false,error:"Los aspectos destacados del esquema no están disponibles."});return;}
     res.json({success:true,data:await deps.annotateVolumeSummaries(id.data, input.data.volumeIds)});
   }));
   router.get("/novels/:novelId/ledgers",asyncRoute(async(req,res)=>{
     const id=nonEmpty.safeParse(req.params.novelId);
     if (!id.success) {sendValidationError(res,id.error);return;}
-    if (!deps.readLedgers) {res.status(404).json({success:false,error:"本书伏笔与资源读取入口不可用。"});return;}
+    if (!deps.readLedgers) {res.status(404).json({success:false,error:"La entrada a los presagios y recursos de este libro no está disponible."});return;}
     res.json({success:true,data:await deps.readLedgers(id.data)});
   }));
   router.get("/legacy-records", asyncRoute(async (req, res) => {
@@ -222,7 +222,7 @@ export function createDirectorNextRouter(deps: DirectorNextHttpDeps): Router {
       res.status(202).json({
         success: true,
         data: { runId: result.runId, controlVersion: result.controlVersion },
-        message: "创作命令已接收。",
+        message: "Comando de creación recibido.",
       });
     } catch (error) {
       if (!sendKnownError(res, error)) throw error;
@@ -238,12 +238,12 @@ export function createDirectorNextRouter(deps: DirectorNextHttpDeps): Router {
     const activeRunId = deps.readCurrentRunId ? await deps.readCurrentRunId(novelId.data) : await deps.runRepository.findActiveRunIdByNovel(novelId.data);
     const runId = deps.readCurrentRunId ? activeRunId : activeRunId ?? (await deps.runRepository.listRunIds({ novelId: novelId.data, limit: 1 }))[0];
     if (!runId) {
-      res.status(404).json({ success: false, error: "这本小说没有创作记录。" });
+      res.status(404).json({ success: false, error: "No hay ningún registro de escritura para esta novela." });
       return;
     }
     try {
       const data = await deps.projectionService.get(runId);
-      res.json({ success: true, data, message: "当前创作已加载。" });
+      res.json({ success: true, data, message: "La creación actual está cargada." });
     } catch (error) {
       if (!sendKnownError(res, error)) throw error;
     }
@@ -256,7 +256,7 @@ export function createDirectorNextRouter(deps: DirectorNextHttpDeps): Router {
       : await deps.runRepository.findActiveRunIdByNovel(novelId.data);
     const runId = deps.readCurrentRunId ? current
       : current ?? (await deps.runRepository.listRunIds({novelId: novelId.data, limit: 1}))[0];
-    if (!runId) {res.status(404).json({success: false, error: "这本小说没有创作记录。"}); return;}
+    if (!runId) {res.status(404).json({success: false, error: "No hay ningún registro de escritura para esta novela."}); return;}
     try {res.json({success: true, data: await readDirectorRuntimeStatus(deps, runId, novelId.data)});}
     catch (error) {if (!sendKnownError(res, error)) throw error;}
   }));
@@ -272,7 +272,7 @@ export function createDirectorNextRouter(deps: DirectorNextHttpDeps): Router {
     }).safeParse(req.query);
     if (!id.success) { sendValidationError(res, id.error); return; }
     if (!query.success) { sendValidationError(res, query.error); return; }
-    if (!deps.readNovelUsage) { res.status(503).json({success: false, error: "本书 AI 用量暂不可读取。"}); return; }
+    if (!deps.readNovelUsage) { res.status(503).json({success: false, error: "El uso de IA en este libro no está disponible temporalmente."}); return; }
     try {
       res.json({success: true, data: await deps.readNovelUsage(id.data, query.data)});
     } catch (error) { if (!sendKnownError(res, error)) throw error; }
@@ -281,7 +281,7 @@ export function createDirectorNextRouter(deps: DirectorNextHttpDeps): Router {
   router.get("/novels/:novelId/usage/:invocationId", asyncRoute(async (req, res) => {
     const params = z.object({ novelId: nonEmpty, invocationId: nonEmpty }).safeParse(req.params);
     if (!params.success) { sendValidationError(res, params.error); return; }
-    if (!deps.readNovelInvocation) { res.status(503).json({ success: false, error: "调用详情暂不可读取。" }); return; }
+    if (!deps.readNovelInvocation) { res.status(503).json({ success: false, error: "Los detalles de la llamada no están disponibles actualmente." }); return; }
     try { res.json({ success: true, data: await deps.readNovelInvocation(params.data.novelId, params.data.invocationId) }); }
     catch (error) { if (!sendKnownError(res, error)) throw error; }
   }));
@@ -292,11 +292,11 @@ export function createDirectorNextRouter(deps: DirectorNextHttpDeps): Router {
     if(!query.success){sendValidationError(res,query.error);return;}
     try{
       if(query.data.cursor) {
-        if (!deps.validateUsageCursor) {res.status(503).json({success:false,error:"调用用量分页暂不可读取。"}); return;}
+        if (!deps.validateUsageCursor) {res.status(503).json({success:false,error:"La paginación del uso de llamadas es temporalmente ilegible."}); return;}
         deps.validateUsageCursor(runId, query.data.cursor);
       }
-      if(!await deps.runRepository.getContract(runId)){res.status(404).json({success:false,error:"找不到对应的创作记录。"});return;}
-      if(!deps.readUsage){res.status(503).json({success:false,error:"调用用量暂不可读取。"});return;}
+      if(!await deps.runRepository.getContract(runId)){res.status(404).json({success:false,error:"No se puede encontrar el registro de creación correspondiente."});return;}
+      if(!deps.readUsage){res.status(503).json({success:false,error:"El uso de llamadas no se puede leer en este momento."});return;}
       res.json({success:true,data:await deps.readUsage(runId,query.data)});
     }catch(error){if(!sendKnownError(res,error))throw error;}
   }));
@@ -312,7 +312,7 @@ export function createDirectorNextRouter(deps: DirectorNextHttpDeps): Router {
         deps.projectionService.get(runId.data),
         deps.eventLog.list(runId.data),
       ]);
-      res.json({ success: true, data: { ...data, timeline }, message: "创作记录已加载。" });
+      res.json({ success: true, data: { ...data, timeline }, message: "Registro de creación cargado." });
     } catch (error) {
       if (!sendKnownError(res, error)) throw error;
     }
@@ -326,7 +326,7 @@ export function createDirectorNextRouter(deps: DirectorNextHttpDeps): Router {
     }
     const runIds = await deps.runRepository.listRunIds(parsed.data);
     const data = await Promise.all(runIds.map((runId) => deps.projectionService.get(runId)));
-    res.json({ success: true, data, message: "创作记录已加载。" });
+    res.json({ success: true, data, message: "Registro de creación cargado." });
   }));
 
   router.get("/records", asyncRoute(async (req, res) => {
@@ -336,10 +336,10 @@ export function createDirectorNextRouter(deps: DirectorNextHttpDeps): Router {
     const results = await Promise.allSettled(runIds.map(runId => records.get(runId)));
     const data = results.flatMap(result => result.status === "fulfilled" ? [result.value] : []);
     const warnings = results.flatMap((result, index) => result.status === "rejected" ? [{
-      runId: runIds[index], code: "director_projection_unavailable", message: "此条创作记录暂时无法读取。",
+      runId: runIds[index], code: "director_projection_unavailable", message: "Este registro de creación no se puede leer en este momento.",
     }] : []);
     res.status(runIds.length > 0 && data.length === 0 ? 503 : 200).json({success: data.length > 0 || runIds.length === 0,
-      data, warnings, ...(runIds.length > 0 && data.length === 0 ? {code: "director_projection_unavailable", error: "创作记录暂时无法读取。"} : {})});
+      data, warnings, ...(runIds.length > 0 && data.length === 0 ? {code: "director_projection_unavailable", error: "Los registros de creación son temporalmente ilegibles."} : {})});
   }));
 
   return router;

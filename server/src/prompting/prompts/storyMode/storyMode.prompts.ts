@@ -114,7 +114,7 @@ export const storyModeTreePrompt: PromptAsset<
       "6. 输出结果要可直接供后续创作系统消费，因此字段内容应具体、稳定、避免空泛修辞。",
       "",
       "风格规则：",
-      "1. 全部内容使用简体中文。",
+      "1. 全部内容使用西班牙语。",
       "2. 数组字段应使用简洁短语，不要写成长段解释。",
       "3. 字符串字段要具体、可执行，避免抽象套话。",
       "4. 各字段之间必须一致，不得互相冲突。",
@@ -192,7 +192,7 @@ export const storyModeChildPrompt: PromptAsset<
       "11. antiSignals：写会让模式跑偏、削弱体验或误导读者预期的反信号。",
       "",
       "风格规则：",
-      "1. 全部内容使用简体中文。",
+      "1. 全部内容使用西班牙语。",
       "2. 数组字段使用简洁短语，不要写成长段解释。",
       "3. 字符串字段要具体、可执行，避免抽象套话。",
       "4. 各字段之间必须一致，不得互相冲突。",
@@ -275,7 +275,7 @@ export const storyModeExpansionPrompt: PromptAsset<
       "候选之间要在读者回报、推进单元、冲突组织、兑现方式或章节节奏上形成明确差异。",
       "不能复述现有库中的模式，不能与现有同级节点重名，也不能脱离父类的核心驱动。",
       "profile 必须完整填写 coreDrive、readerReward、progressionUnits、allowedConflictForms、forbiddenConflictForms、conflictCeiling、resolutionStyle、chapterUnit、volumeReward、mandatorySignals、antiSignals。",
-      "名称简洁稳定；描述和模板必须具体可执行；全部使用简体中文。",
+      "名称简洁稳定；描述和模板必须具体可执行；全部使用西班牙语。",
     ].join("\n")),
     new HumanMessage([
       input.parentName.trim()

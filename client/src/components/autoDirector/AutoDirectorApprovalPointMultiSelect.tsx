@@ -17,9 +17,9 @@ interface AutoDirectorApprovalPointMultiSelectProps {
 }
 
 function riskLabel(riskLevel: DirectorAutoApprovalPoint["riskLevel"]): string {
-  if (riskLevel === "high") return "高风险";
-  if (riskLevel === "medium") return "中风险";
-  return "低风险";
+  if (riskLevel === "high") return "Alto riesgo";
+  if (riskLevel === "medium") return "Riesgo medio";
+  return "Bajo riesgo";
 }
 
 function riskClassName(riskLevel: DirectorAutoApprovalPoint["riskLevel"]): string {
@@ -41,15 +41,15 @@ function toggleCodes(current: string[], targetCodes: string[], checked: boolean)
 export function summarizeDirectorAutoApprovalPoints(codes: string[]): string {
   const normalized = normalizeDirectorAutoApprovalPointCodes(codes, []);
   if (normalized.length === 0) {
-    return "不会自动通过审批点";
+    return "No pasará automáticamente el punto de aprobación.";
   }
   const labels: string[] = normalized
     .map((code) => DIRECTOR_AUTO_APPROVAL_POINTS.find((item) => item.code === code)?.label)
     .filter((label): label is NonNullable<typeof label> => Boolean(label));
   if (labels.length <= 2) {
-    return labels.join("、");
+    return labels.join(",");
   }
-  return `${labels.slice(0, 2).join("、")} 等 ${labels.length} 项`;
+  return `${labels.slice(0, 2).join(",")} esperar ${labels.length} artículo`;
 }
 
 export default function AutoDirectorApprovalPointMultiSelect({

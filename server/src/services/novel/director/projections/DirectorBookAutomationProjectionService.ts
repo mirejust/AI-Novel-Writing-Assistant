@@ -131,16 +131,16 @@ function buildWorkerHealth(input: {
   })();
   const message = (() => {
     if (derivedState === "queued_waiting_worker") {
-      return "任务已进入后台队列，正在等待后台执行器接手。";
+      return "La tarea ha entrado en la cola en segundo plano y está esperando que el ejecutor en segundo plano se haga cargo.";
     }
     if (derivedState === "leased_starting") {
-      return "后台执行器正在接手任务，马上会进入实际执行。";
+      return "El ejecutor en segundo plano se está haciendo cargo de la tarea y pronto entrará en ejecución real.";
     }
     if (derivedState === "running_step") {
-      return "后台执行器正在推进这本书的自动导演流程。";
+      return "Un ejecutor en segundo plano está avanzando en el proceso de dirección automatizada del libro.";
     }
     if (derivedState === "auto_recovering") {
-      return "后台执行器连接中断后正在恢复，系统会优先从最近进度继续。";
+      return "La conexión del ejecutor en segundo plano se está restaurando después de haber sido interrumpida y el sistema dará prioridad a continuar desde el último progreso.";
     }
     return null;
   })();
@@ -484,10 +484,10 @@ export class DirectorBookAutomationProjectionService {
       ...usageTelemetry.recentUsage.slice(0, 8).map((usage) => ({
         id: `usage:${usage.id}`,
         type: "usage" as const,
-        title: `AI 用量：${getDirectorNodeDisplayLabel({
+        title: `Uso de IA:${getDirectorNodeDisplayLabel({
           label: usage.promptAssetKey,
           nodeKey: usage.nodeKey,
-          fallback: "推进步骤",
+          fallback: "Pasos avanzados",
         })}`,
         detail: usage.promptAssetKey
           ? `${usage.promptAssetKey}${usage.promptVersion ? `@${usage.promptVersion}` : ""}`
@@ -504,7 +504,7 @@ export class DirectorBookAutomationProjectionService {
       ...approvalRecords.map((record) => ({
         id: `approval:${record.id}`,
         type: "approval" as const,
-        title: `AI 自动确认：${record.approvalPointLabel}`,
+        title: `La IA confirma automáticamente:${record.approvalPointLabel}`,
         detail: record.summary || record.checkpointSummary || record.scopeLabel,
         status: record.stage,
         taskId: record.taskId,
@@ -574,7 +574,7 @@ export class DirectorBookAutomationProjectionService {
         autoApprovalRecordCount,
         usageSummary: usageTelemetry.summary,
         }),
-      ].filter((value): value is string => Boolean(value?.trim())).join("；"),
+      ].filter((value): value is string => Boolean(value?.trim())).join(";"),
       progressSummary: displayRuntimeProjection?.progressSummary ?? null,
       artifactSummary,
       usageSummary: usageTelemetry.summary,

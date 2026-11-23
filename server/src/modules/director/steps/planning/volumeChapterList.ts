@@ -41,11 +41,11 @@ export function isSavedVolumeChapterListComplete(volume: {status: string; chapte
 }
 
 function requireCompleteList(document: ChapterListWorkspace, novelId: string, volumeId: string) {
-  if (document.novelId !== novelId) throw new Error("拆章工作区不属于当前小说。");
+  if (document.novelId !== novelId) throw new Error("El espacio de trabajo de división de capítulos no pertenece a la novela actual.");
   const volume = document.volumes.find(row => row.id === volumeId);
-  if (!volume || volume.chapters.length === 0) throw new Error("目标卷没有可用的章节列表。");
+  if (!volume || volume.chapters.length === 0) throw new Error("No hay una lista de capítulos disponible para el volumen de destino.");
   if (!isSavedVolumeChapterListComplete(volume)) {
-    throw new Error("目标卷章节列表尚未完整保存，不能登记为完成产物。");
+    throw new Error("La lista de capítulos del volumen de destino no se ha guardado por completo y no se puede registrar como un producto completo.");
   }
   return volume.chapters;
 }
@@ -54,10 +54,10 @@ export function createVolumeChapterListStepHandler<Provider extends string, Docu
   return async context => {
     const input = await dependencies.inputProvider(context);
     const novelId = context.contract.novelId;
-    if (input.workspace.novelId !== novelId) throw new Error("拆章工作区不属于当前小说。");
-    if (!input.workspace.volumes.some(volume => volume.id === input.targetVolumeId)) throw new Error("缺少待拆章的目标卷。");
+    if (input.workspace.novelId !== novelId) throw new Error("El espacio de trabajo de división de capítulos no pertenece a la novela actual.");
+    if (!input.workspace.volumes.some(volume => volume.id === input.targetVolumeId)) throw new Error("Falta el volumen de destino que se va a abrir.");
     if (!input.workspace.beatSheets.some(sheet => sheet.volumeId === input.targetVolumeId && sheet.beats.length > 0)) {
-      throw new Error("目标卷缺少节奏板，不能生成章节列表。");
+      throw new Error("Al volumen de destino le falta un tablero de ritmo y no puede generar una lista de capítulos.");
     }
     const titleDiversityDebts: {chapterOrder: number; code: string; action: string}[] = [];
     const generated = await dependencies.volumeService.generateVolumes(novelId, {

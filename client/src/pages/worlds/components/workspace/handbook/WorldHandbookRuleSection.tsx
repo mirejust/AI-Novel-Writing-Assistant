@@ -40,18 +40,18 @@ export default function WorldHandbookRuleSection(props: {
     <section className="rounded-md border p-4">
       <SectionHeader
         icon={WandSparkles}
-        title="核心规则"
-        description="这些规则会约束角色身份、力量边界和冲突来源，属于本书写作时最需要遵守的底层设定。"
+        title="Reglas esenciales"
+        description="Estas reglas limitarán las identidades de los personajes, los límites de poder y las fuentes de conflicto, y son los escenarios subyacentes que más deben seguirse al escribir este libro."
         count={draftStructure.rules.axioms.length}
       />
       <div className="mt-4 space-y-3">
-        <HandbookField title="规则总纲" hint="用一段话说明力量、资源、禁忌和后果如何共同限制这个世界。">
+        <HandbookField title="Reglas generales" hint="En un párrafo, explique cómo el poder, los recursos, los tabúes y las consecuencias trabajan juntos para limitar el mundo.">
           <HandbookTextarea
             value={draftStructure.rules.summary}
             onChange={(value) =>
               setDraftStructure((prev) => (prev ? { ...prev, rules: { ...prev.rules, summary: value } } : prev))
             }
-            placeholder="例如：所有超凡力量都来自星核借贷，越级使用会透支寿命，并被天机阁记录。"
+            placeholder="Por ejemplo: todos los poderes extraordinarios provienen de préstamos centrales estelares. Si se usa más allá del nivel, se excederá la vida útil y será registrada por el Pabellón Tianji."
             minRows={3}
           />
         </HandbookField>
@@ -59,7 +59,7 @@ export default function WorldHandbookRuleSection(props: {
           {draftStructure.rules.axioms.map((rule: WorldRule, index) => (
             <div key={rule.id || index} className="rounded-md border bg-muted/20 p-3">
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <div className="text-sm font-medium">规则 {index + 1}</div>
+                <div className="text-sm font-medium">regla {index + 1}</div>
                 <Button
                   type="button"
                   size="sm"
@@ -70,11 +70,11 @@ export default function WorldHandbookRuleSection(props: {
                     )
                   }
                 >
-                  移除
+                  Eliminar
                 </Button>
               </div>
               <div className="mt-3 grid gap-3">
-                <HandbookField title="规则名称" hint="短句即可，方便作者在写作时反复引用。">
+                <HandbookField title="Nombre de la regla" hint="Una frase corta es suficiente para que el autor pueda citarla repetidamente al escribir.">
                   <Input
                     value={rule.name}
                     onChange={(event) =>
@@ -90,10 +90,10 @@ export default function WorldHandbookRuleSection(props: {
                           : prev,
                       )
                     }
-                    placeholder="星核借贷、血脉不可逆、禁城不得施法"
+                    placeholder="Préstamo de núcleo estelar, el linaje es irreversible y no se pueden lanzar hechizos en la ciudad prohibida."
                   />
                 </HandbookField>
-                <HandbookField title="故事含义" hint="写清角色、势力和章节事件会怎样被这条规则影响。">
+                <HandbookField title="Significado de la historia" hint="Escribe cómo los personajes, facciones y eventos del capítulo se verán afectados por esta regla.">
                   <HandbookTextarea
                     value={rule.summary}
                     onChange={(value) =>
@@ -106,11 +106,11 @@ export default function WorldHandbookRuleSection(props: {
                           : prev,
                       )
                     }
-                    placeholder="这条规则在故事里意味着什么？"
+                    placeholder="¿Qué significa esta regla en la historia?"
                     minRows={3}
                   />
                 </HandbookField>
-                <HandbookField title="代价" hint="使用、违反或绕开规则时必须付出的代价。">
+                <HandbookField title="Costo" hint="El precio que tienes que pagar por usar, romper o eludir las reglas.">
                   <Input
                     value={rule.cost}
                     onChange={(event) =>
@@ -126,10 +126,10 @@ export default function WorldHandbookRuleSection(props: {
                           : prev,
                       )
                     }
-                    placeholder="寿命、记忆、身份、资源、阵营信任..."
+                    placeholder="Esperanza de vida, memoria, identidad, recursos, confianza en el campo..."
                   />
                 </HandbookField>
-                <HandbookField title="不可随意突破的边界" hint="防止后续剧情为了解决问题而破坏世界可信度。">
+                <HandbookField title="Límites que no se pueden traspasar a voluntad" hint="Evitar que complots posteriores destruyan la credibilidad del mundo para poder resolver el problema.">
                   <Input
                     value={rule.boundary}
                     onChange={(event) =>
@@ -145,7 +145,7 @@ export default function WorldHandbookRuleSection(props: {
                           : prev,
                       )
                     }
-                    placeholder="谁也不能无代价复活；低阶角色不能越过封印规则。"
+                    placeholder="Nadie puede resucitar sin pagar un precio; Los personajes de bajo nivel no pueden exceder las reglas de sellado."
                   />
                 </HandbookField>
               </div>
@@ -154,7 +154,7 @@ export default function WorldHandbookRuleSection(props: {
         </div>
         <Button type="button" variant="outline" onClick={addRule}>
           <Plus className="mr-2 h-4 w-4" aria-hidden="true" />
-          增加核心规则
+          Agregar reglas básicas
         </Button>
       </div>
     </section>

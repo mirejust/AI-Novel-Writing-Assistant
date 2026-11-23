@@ -12,7 +12,7 @@ export async function queueManualChapterTimeline(
   await supersedeChapterTimeline(db, input);
   await db.chapterTimeAnchor.updateMany({
     where: input,
-    data: { storyDayIndex: null, timeLabel: "待按正文同步", endedWithIdsJson: "[]", nextHookIdsJson: "[]" },
+    data: { storyDayIndex: null, timeLabel: "Para ser presionado sincronización de texto", endedWithIdsJson: "[]", nextHookIdsJson: "[]" },
   });
   await db.chapterArtifactSyncCheckpoint.updateMany({
     where: { ...input, artifactType: "timeline_finalization" },

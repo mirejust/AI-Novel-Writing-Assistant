@@ -15,7 +15,7 @@ export function InitialScheduleAction({book,preview=false}:{book:WorkspaceBook;p
   const mutation=useMutation({mutationFn:()=>fillDirectorInitialCharacterSchedule(book.novel.id,{provider,model}),
     onSuccess:async response=>{
       const result=response.data;
-      setMessage(result ? `补齐 ${result.updated} 章的角色出场安排${result.remaining ? `，另有 ${result.remaining} 章可继续补齐` : ""}。` : "角色出场安排已保存。");
+      setMessage(result ? `completo ${result.updated} Disposición de la apariencia del papel de Zhang${result.remaining ? `, y otro ${result.remaining} Los capítulos pueden continuar hasta completarse.` : ""}.` : "Se ha guardado el calendario de aparición de personajes.");
       await Promise.all([
         queries.invalidateQueries({queryKey:["directorBookWorkspace",book.novel.id]}),
         queries.invalidateQueries({queryKey:["director-character-appearances",book.novel.id]}),
@@ -23,10 +23,10 @@ export function InitialScheduleAction({book,preview=false}:{book:WorkspaceBook;p
     }});
   if(preview || !book.materials.characters.length || !missing.length) return message ? <p role="status" className="text-sm text-muted-foreground">{message}</p> : null;
   return <div className="space-y-2 text-sm">
-    <p className="text-muted-foreground">{missing.length} 章缺少角色初排。使用顶部所选模型补齐，每次最多 24 章；保留章节规划和正文。</p>
+    <p className="text-muted-foreground">{missing.length} Al capítulo le faltan vistas previas de los personajes. Completa con el modelo seleccionado en la parte superior, hasta 24 capítulos a la vez; conservar la planificación y el texto del capítulo.</p>
     <Button variant="secondary" disabled={mutation.isPending || !provider || !model}
-      onClick={()=>{setMessage(null);mutation.mutate();}}>{mutation.isPending ? "正在安排角色出场…" : `补齐角色出场安排（${Math.min(24,missing.length)} 章）`}</Button>
-    <p className="text-xs text-muted-foreground">此操作会调用 AI；请在本书创作结束后使用。</p>
+      onClick={()=>{setMessage(null);mutation.mutate();}}>{mutation.isPending ? "Organizar roles para aparecer..." : `Completa los arreglos de apariencia del personaje (${Math.min(24,missing.length)} capítulo)`}</Button>
+    <p className="text-xs text-muted-foreground">Esta acción invoca a la IA; Úselo después de que haya terminado de escribir este libro.</p>
     {mutation.isError ? <p role="alert" className="text-destructive">{mutation.error.message}</p> : message ? <p role="status" className="text-muted-foreground">{message}</p> : null}
   </div>;
 }

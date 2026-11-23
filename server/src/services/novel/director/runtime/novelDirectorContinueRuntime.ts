@@ -96,7 +96,7 @@ function shouldSkipCurrentQualityRepair(input: {
   }
   return input.checkpointType === "replan_required"
     || input.currentItemKey === "quality_repair"
-    || Boolean(input.currentStage?.includes("质量"));
+    || Boolean(input.currentStage?.includes("calidad"));
 }
 
 export class NovelDirectorContinueRuntime {
@@ -214,7 +214,7 @@ export class NovelDirectorContinueRuntime {
   }): Promise<void> {
     const row = await this.deps.workflowService.getTaskById(taskId);
     if (!row) {
-      throw new Error("自动导演任务不存在。");
+      throw new Error("Las tareas automáticas de director no existen.");
     }
     if (row.lane !== "auto_director") {
       await this.deps.workflowService.continueTask(taskId);
@@ -241,14 +241,14 @@ export class NovelDirectorContinueRuntime {
       policyMode: continuationMode !== "resume" || isFullBookAutopilotRunMode(storedRunMode)
         ? "auto_safe_scope"
         : "run_until_gate",
-      summary: "自动导演任务从统一运行时继续。",
+      summary: "Las tareas automáticas del director continúan desde el tiempo de ejecución de Unity.",
     });
     await this.deps.directorRuntime.recordRunResumed({
       taskId,
       novelId,
       summary: row.pendingManualRecovery
-        ? "用户确认后，自动导演从待恢复状态继续。"
-        : "自动导演按当前工作区内容重新判断后继续运行。",
+        ? "Después de que el usuario confirma, el director automático continúa desde el estado de recuperación pendiente."
+        : "El director automático volverá a juzgar según el contenido del espacio de trabajo actual y continuará ejecutándose.",
       reason: row.pendingManualRecovery ? "manual_recovery_confirmed" : "continue_requested",
     });
     const resumedCandidateStage = await this.continueCandidateStageTask(taskId, {
@@ -262,7 +262,7 @@ export class NovelDirectorContinueRuntime {
       return;
     }
     if (!directorInput || !novelId) {
-      throw new Error("自动导演任务缺少恢复所需上下文。");
+      throw new Error("A la tarea de Autodirector le falta el contexto necesario para la recuperación.");
     }
 
     const requestedReplanRecovery = row.checkpointType === "replan_required"
@@ -335,8 +335,8 @@ export class NovelDirectorContinueRuntime {
         stage: assetFirstRecovery.resumeCheckpointType === "replan_required" ? "quality_repair" : "chapter_execution",
         itemKey: assetFirstRecovery.resumeCheckpointType === "replan_required" ? "quality_repair" : "chapter_execution",
         itemLabel: assetFirstRecovery.resumeCheckpointType === "replan_required"
-          ? "正在根据当前内容恢复质量修复"
-          : "正在根据当前内容恢复章节执行",
+          ? "Restaurar correcciones de calidad basadas en el contenido actual"
+          : "Reanudar la ejecución del capítulo según el contenido actual",
         progress: assetFirstRecovery.resumeCheckpointType === "replan_required" ? 0.975 : 0.93,
         clearCheckpoint: assetFirstRecovery.resumeCheckpointType === "chapter_batch_ready",
       });
@@ -352,7 +352,7 @@ export class NovelDirectorContinueRuntime {
               chapterId: resumedChapterId ?? undefined,
               triggerType: "director_replan_recovery",
               windowSize: 3,
-              reason: row.lastError?.trim() || "当前章节与相邻章节的计划需要重新对齐。",
+              reason: row.lastError?.trim() || "Es necesario realinear los planes para el capítulo actual y los capítulos adyacentes.",
               provider: effectiveDirectorInput.provider,
               model: effectiveDirectorInput.model,
               temperature: effectiveDirectorInput.temperature,

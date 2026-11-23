@@ -17,7 +17,7 @@ function requestAllowance(request: RagHttpRequest, configuration: KernelRagConfi
     : Array.isArray(request.input.documents) ? request.input.documents.map(row => `${request.input.query}\n${(row as {text?: unknown}).text}`) : null;
   if (!Array.isArray(inputs) || !inputs.length || inputs.some(input => typeof input !== "string"
     || !checkContextBudget({input, contextWindow: window, outputTokens: 0, safetyTokens: 256}).ok)) {
-    throw new InvalidProductionRequestError("检索请求超过已配置模型的输入窗口。");
+    throw new InvalidProductionRequestError("La solicitud de recuperación superó la ventana de entrada del modelo configurado.");
   }
   // The window applies to each embedding / query-document pair; the chapter pays for the complete batch.
   return new TextEncoder().encode(canonical(request.input)).length + 256;

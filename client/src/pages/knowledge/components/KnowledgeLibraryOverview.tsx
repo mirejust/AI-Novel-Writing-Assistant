@@ -48,71 +48,71 @@ function getRecommendation(props: KnowledgeLibraryOverviewProps): Recommendation
   if (props.isError) {
     return {
       action: "retry",
-      description: "资料列表暂时无法读取。重新加载不会修改已有资料或索引任务。",
+      description: "La lista de datos no se puede leer en este momento. La recarga no modificará los datos existentes ni las tareas de indexación.",
       icon: CircleAlert,
-      title: "重新加载知识资料",
+      title: "Recargar datos de conocimiento",
       tone: "danger",
     };
   }
   if (props.isLoading) {
     return {
       action: "open_documents",
-      description: "正在整理资料状态与索引结果，加载完成后会给出可执行的下一步。",
+      description: "El estado de los datos y los resultados del índice se están ordenando y el siguiente paso ejecutable se dará una vez que se complete la carga.",
       icon: LoaderCircle,
-      title: "正在读取知识资料",
+      title: "Leer información de conocimientos",
       tone: "neutral",
     };
   }
   if (props.activeJobCount > 0) {
     return {
       action: "open_ops",
-      description: `${props.activeJobCount} 个索引任务正在执行，可查看进度；创作时优先选择已完成索引的资料。`,
+      description: `${props.activeJobCount} Se está ejecutando una tarea de indexación y se puede ver el progreso; al crear se dará prioridad a los datos que hayan sido indexados.`,
       icon: RefreshCw,
-      title: "查看资料同步进度",
+      title: "Ver el progreso de la sincronización de datos",
       tone: "info",
     };
   }
   if (props.failedIndexDocumentCount > 0 || props.failedJobCount > 0) {
     return {
       action: "open_ops",
-      description: "部分资料尚未完成索引。先查看失败原因并重建索引，其他可用资料仍可继续参与创作。",
+      description: "Algunos datos aún no han sido indexados. Primero verifique la causa del error y reconstruya el índice. Otros datos disponibles aún pueden seguir participando en la creación.",
       icon: CircleAlert,
-      title: "处理未完成的资料索引",
+      title: "Procesar indexación de datos sin terminar",
       tone: "warning",
     };
   }
   if (props.visibleDocumentCount === 0 && props.hasFilters) {
     return {
       action: "clear_filters",
-      description: "当前搜索或状态条件没有匹配结果，清除筛选即可返回完整资料列表。",
+      description: "No hay resultados coincidentes para los criterios de búsqueda o estado actuales. Borre el filtro para volver a la lista de información completa.",
       icon: SearchCheck,
-      title: "查看其他知识资料",
+      title: "Ver otros materiales de conocimiento",
       tone: "neutral",
     };
   }
   if (props.visibleDocumentCount === 0) {
     return {
       action: "upload",
-      description: "上传一份 TXT 资料，系统会建立索引，供拆书、规划和正文创作调用。",
+      description: "Cargue un documento TXT y el sistema creará un índice para usarlo en la apertura, planificación y creación de texto de libros.",
       icon: Upload,
-      title: "先添加一份创作资料",
+      title: "Primero agrega un material creativo.",
       tone: "info",
     };
   }
   if (props.searchableDocumentCount === 0) {
     return {
       action: "open_documents",
-      description: "列表中还没有已启用且完成索引的资料。选择一份资料启用或重建索引后即可用于创作。",
+      description: "Aún no hay materiales habilitados e indexados en la lista. Seleccione un dato para habilitar o reconstruir el índice antes de que pueda usarse para la creación.",
       icon: Database,
-      title: "准备一份可检索资料",
+      title: "Preparar un documento con capacidad de búsqueda",
       tone: "warning",
     };
   }
   return {
     action: "open_documents",
-    description: `${props.searchableDocumentCount} 份资料可以参与检索。可查看版本、测试召回，或选择资料继续创作。`,
+    description: `${props.searchableDocumentCount} Se puede incluir un dato en la búsqueda. Puede ver versiones, probar retiradas o seleccionar materiales para seguir creando.`,
     icon: BookOpenCheck,
-    title: "选择资料继续创作",
+    title: "Selecciona datos para seguir creando",
     tone: "success",
   };
 }
@@ -127,39 +127,39 @@ export default function KnowledgeLibraryOverview(props: KnowledgeLibraryOverview
         return (
           <Button type="button" size="sm" onClick={props.onUpload}>
             <Upload className="h-4 w-4" />
-            上传资料
+            Subir información
           </Button>
         );
       case "retry":
         return (
           <Button type="button" size="sm" variant="outline" onClick={props.onRetry}>
             <RefreshCw className="h-4 w-4" />
-            重新加载
+            recargar
           </Button>
         );
       case "clear_filters":
         return (
           <Button type="button" size="sm" variant="outline" onClick={props.onClearFilters}>
-            清除筛选
+            Limpiar filtros
           </Button>
         );
       case "open_ops":
         return (
           <Button type="button" size="sm" variant="outline" onClick={props.onOpenOps}>
-            查看索引状态
+            Ver estado del índice
           </Button>
         );
       default:
         if (props.isLoading) {
           return (
             <Button type="button" size="sm" variant="outline" disabled>
-              正在加载
+              Cargando
             </Button>
           );
         }
         return (
           <Button type="button" size="sm" variant="outline" onClick={props.onOpenDocuments}>
-            查看资料
+            Ver perfil
           </Button>
         );
     }
@@ -169,29 +169,29 @@ export default function KnowledgeLibraryOverview(props: KnowledgeLibraryOverview
     <>
       <AssetLibraryHeader
         icon={Database}
-        context="创作资产 · 知识与检索"
-        title="知识资料库"
-        description="集中管理可复用的创作资料，确认索引状态，再把可靠内容带入拆书、规划和正文创作。"
+        context="Activos de Creación · Conocimiento y Recuperación"
+        title="Base de datos de conocimientos"
+        description="Administre de forma centralizada materiales creativos reutilizables, confirme el estado del índice y luego incorpore contenido confiable a la apertura, planificación y creación de textos de libros."
         actions={(
           <>
             <Button type="button" onClick={props.onUpload}>
               <Upload className="h-4 w-4" />
-              上传资料
+              Subir información
             </Button>
             <OpenInCreativeHubButton
               bindings={{ knowledgeDocumentIds: props.selectedDocumentId ? [props.selectedDocumentId] : [] }}
-              label="发送到创作中枢"
+              label="Enviar al centro creativo"
             />
           </>
         )}
       />
 
-      <section aria-label="知识资料状态" className="flex flex-wrap items-center gap-x-6 gap-y-3 rounded-2xl bg-muted/25 px-5 py-3">
+      <section aria-label="estado de los datos de conocimiento" className="flex flex-wrap items-center gap-x-6 gap-y-3 rounded-2xl bg-muted/25 px-5 py-3">
         {[
-          { label: props.hasFilters ? "筛选结果" : "全部资料", value: documentStatusUnavailable ? "—" : props.visibleDocumentCount, dot: "bg-muted-foreground/45" },
-          { label: "已启用", value: documentStatusUnavailable ? "—" : props.enabledCount, dot: "bg-success" },
-          { label: "可检索", value: documentStatusUnavailable ? "—" : props.searchableDocumentCount, dot: "bg-success" },
-          { label: "同步中", value: props.activeJobCount, dot: props.failedJobCount > 0 ? "bg-destructive" : "bg-info" },
+          { label: props.hasFilters ? "Filtrar resultados" : "Toda la información", value: documentStatusUnavailable ? "—" : props.visibleDocumentCount, dot: "bg-muted-foreground/45" },
+          { label: "Activado", value: documentStatusUnavailable ? "—" : props.enabledCount, dot: "bg-success" },
+          { label: "Buscable", value: documentStatusUnavailable ? "—" : props.searchableDocumentCount, dot: "bg-success" },
+          { label: "Sincronizando", value: props.activeJobCount, dot: props.failedJobCount > 0 ? "bg-destructive" : "bg-info" },
         ].map((item) => (
           <div key={item.label} className="flex items-center gap-2 text-sm">
             <span className={`h-2 w-2 rounded-full ${item.dot}`} aria-hidden="true" />
@@ -200,7 +200,7 @@ export default function KnowledgeLibraryOverview(props: KnowledgeLibraryOverview
           </div>
         ))}
         {props.failedJobCount > 0 ? (
-          <span className="text-xs text-destructive">{props.failedJobCount} 个索引任务需要处理</span>
+          <span className="text-xs text-destructive">{props.failedJobCount} las tareas de indexación deben procesarse</span>
         ) : null}
       </section>
 

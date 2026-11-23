@@ -74,7 +74,7 @@ export class CreativeHubLangGraph {
   private getInvocation(state: CreativeHubGraphStateValue): CreativeHubGraphInvocation {
     const invocation = this.invocations.get(state.invocationId);
     if (!invocation) {
-      throw new Error("创作中枢图调用上下文不存在。");
+      throw new Error("El contexto de llamada del gráfico del centro de creación no existe.");
     }
     return invocation;
   }
@@ -159,7 +159,7 @@ export class CreativeHubLangGraph {
       data: {
         runId: run.id,
         status: "running",
-        message: "开始规划",
+        message: "Empezar a planificar",
       },
     });
 
@@ -196,7 +196,7 @@ export class CreativeHubLangGraph {
     try {
       plannerResult = await createStructuredPlan(plannerInput);
     } catch (error) {
-      const message = error instanceof Error ? error.message : "LLM 意图识别失败。";
+      const message = error instanceof Error ? error.message : "Falló el reconocimiento de la intención de LLM.";
       await this.store.addStep({
         runId: run.id,
         agentName: "Planner",
@@ -277,7 +277,7 @@ export class CreativeHubLangGraph {
 
   private async toolExecuteNode(state: CreativeHubGraphStateValue) {
     if (!state.runId || !state.plannerResult) {
-      throw new Error("创作中枢图缺少 runId 或 plannerResult。");
+      throw new Error("Al gráfico del centro de creación le faltan runId o PlannerResult.");
     }
 
     const interrupts: CreativeHubInterrupt[] = [];
@@ -328,7 +328,7 @@ export class CreativeHubLangGraph {
       onRunStatus: (payload) => {
         this.getInvocation(state).runStatus = payload.status;
         threadStatus = deriveThreadStatusFromRunStatus(payload.status);
-        latestError = payload.status === "failed" ? payload.message ?? "创作中枢运行失败。" : null;
+        latestError = payload.status === "failed" ? payload.message ?? "El centro de creación no pudo ejecutarse." : null;
         this.emitFrame(state, {
           event: "creative_hub/run_status",
           data: payload,
@@ -338,7 +338,7 @@ export class CreativeHubLangGraph {
 
     const { allowedActions, blockedTools } = filterCreativeHubActions(state.plannerResult.actions);
     if (blockedTools.length > 0) {
-      const warning = `创作中枢只提供查询、诊断和引导；以下写入或执行操作请从正式小说工作台或自动导演入口发起：${blockedTools.join("、")}`;
+      const warning = `El centro de creación únicamente brinda consulta, diagnóstico y orientación; inicie las siguientes operaciones de escritura o ejecución desde el banco de trabajo oficial de novelas o la entrada automática del director:${blockedTools.join(",")}`;
       this.emitFrame(state, {
         event: "metadata",
         data: { governance: { blockedTools, warning } },
@@ -383,7 +383,7 @@ export class CreativeHubLangGraph {
 
   private async approvalGateNode(state: CreativeHubGraphStateValue) {
     if (!state.executionResult) {
-      throw new Error("创作中枢图缺少 executionResult。");
+      throw new Error("Al diagrama del centro de creación le falta el resultado de ejecución.");
     }
     return {
       interrupts: state.interrupts,
@@ -396,7 +396,7 @@ export class CreativeHubLangGraph {
 
   private async answerFinalizeNode(state: CreativeHubGraphStateValue) {
     if (!state.executionResult) {
-      throw new Error("创作中枢图缺少 executionResult。");
+      throw new Error("Al diagrama del centro de creación le falta el resultado de ejecución.");
     }
     const finalMessages = appendAssistantMessage(
       state.messages,
@@ -509,7 +509,7 @@ export class CreativeHubLangGraph {
         limit: 10,
       });
       if (activeRuns.some((item) => item.status === "waiting_approval")) {
-        throw new Error("当前已有运行在等待审批，请先处理审批。");
+        throw new Error("Actualmente hay ejecuciones esperando aprobación; procese la aprobación primero.");
       }
       // Creative Hub runs in this API process. The thread guard above protects live calls;
       // persisted running records without a live call were interrupted by a prior failure/restart.
@@ -517,7 +517,7 @@ export class CreativeHubLangGraph {
         await this.store.updateRun(staleRun.id, {
           status: "failed",
           currentStep: "failed",
-          error: "上一次会话运行已中断，可以重新提问。",
+          error: "La última sesión ha sido interrumpida y puedes volver a preguntar.",
           finishedAt: new Date(),
         });
       }
@@ -558,7 +558,7 @@ export class CreativeHubLangGraph {
       };
     } catch (error) {
       if (invocation.runId && invocation.runStatus !== "waiting_approval") {
-        const message = error instanceof Error ? error.message : "创作中枢运行失败。";
+        const message = error instanceof Error ? error.message : "El centro de creación no pudo ejecutarse.";
         try {
           if (invocation.runStatus !== "failed") {
             await this.store.updateRun(invocation.runId, {

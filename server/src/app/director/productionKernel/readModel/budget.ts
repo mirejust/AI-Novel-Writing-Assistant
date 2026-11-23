@@ -14,7 +14,7 @@ export async function readKernelPausedChapterBudget(db: KernelBudgetReader, cont
   if (control.status !== "paused" || control.pause?.kind !== "manual_recovery") return null;
   const rows = await db.productionUnitRun.findMany({where:{ownerKey:productionBatchOwnerKey(contract.runId)}});
   const pending = rows.map(parseProductionUnitRun).filter(run=>run.artifacts.deferredDescriptor);
-  if (pending.length > 1) throw new Error("预算暂停的章节记录不一致，请检查运行记录。");
+  if (pending.length > 1) throw new Error("El registro del capítulo de suspensión del presupuesto es inconsistente; verifique el registro actual.");
   const run = pending[0];
   if (!run || run.activeStage || run.progress.qualityPause && !run.progress.qualityPause.acknowledged) return null;
   const unit = run.progress.unit, stage = run.artifacts.deferredDescriptor!.stage;
@@ -23,7 +23,7 @@ export async function readKernelPausedChapterBudget(db: KernelBudgetReader, cont
   if (!blocked.length) return null;
   const record = JSON.parse(blocked[0].metadataJson ?? "null") as Reserved;
   if (!record || record.version !== 1 || record.runId !== contract.runId || record.requestKey !== blocked[0].contentHash
-    || !Number.isSafeInteger(record.tokens) || record.tokens < 1) throw new Error("章节预算暂停记录损坏，请检查运行记录。");
+    || !Number.isSafeInteger(record.tokens) || record.tokens < 1) throw new Error("El registro de pausa del presupuesto del capítulo está dañado; verifique el registro en ejecución.");
   const budget = await readKernelChapterBudget(db,contract,unit);
   const recommendedLimit = recommendDirectorChapterTokenLimit(budget.limit, budget.used, record.tokens);
   return {jobId:run.id,chapterId:unit.chapterId,chapterOrder:unit.order,metric:budget.metric,

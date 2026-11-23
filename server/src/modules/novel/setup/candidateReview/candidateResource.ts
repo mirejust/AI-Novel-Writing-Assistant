@@ -7,7 +7,7 @@ import { mergeSeedPayload } from "../../../../services/novel/workflow/novelWorkf
 export interface CandidateAddress { taskId: string; batchId: string; candidateId: string }
 export const scopeOf = ({ taskId, batchId, candidateId }: CandidateAddress) =>
   JSON.stringify(["opening-candidate", taskId, batchId, candidateId]);
-export const versionConflict = () => new AppError("这套方向有更新，请刷新方向候选，再继续讨论或采纳。", 409);
+export const versionConflict = () => new AppError("Este conjunto de instrucciones se ha actualizado; actualice los candidatos de dirección antes de continuar la discusión o adopción.", 409);
 
 const selection = {
   lane: "auto_director", status: "waiting_approval", checkpointType: "candidate_selection_required",
@@ -19,12 +19,12 @@ export async function readCandidate(db: Prisma.TransactionClient, address: Candi
   const row = await db.novelWorkflowTask.findFirst({
     where: { id: address.taskId, ...selection }, select: { seedPayloadJson: true, resumeTargetJson: true },
   });
-  if (!row) throw new AppError("这次开书未在等待选择方向，请返回开书页查看进度。", 409);
+  if (!row) throw new AppError("El libro que se abre esta vez no está esperando la selección de dirección. Regrese a la página de apertura del libro para verificar el progreso.", 409);
   const state = readDirectorTaskState(row);
   if (state.launch.directorInput?.candidate) throw versionConflict();
   const batch = state.run.batches?.find(item => item.id === address.batchId);
   const candidate = batch?.candidates.find(item => item.id === address.candidateId);
-  if (!batch || !candidate) throw new AppError("找不到这轮开书中的候选方向。", 404);
+  if (!batch || !candidate) throw new AppError("No puedo encontrar las direcciones candidatas en esta ronda de libros de aperturas.", 404);
   return { row, state, batch, candidate, revision: candidate.reviewRevision ?? 0 };
 }
 

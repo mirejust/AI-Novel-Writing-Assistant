@@ -40,12 +40,12 @@ const MIN_ANCHOR_COUNT = 4;
 export function buildReferenceModeLabel(mode: WorldReferenceMode): string {
   switch (mode) {
     case "extract_base":
-      return "提取原作世界基底";
+      return "Extrae la base mundial original.";
     case "tone_rebuild":
-      return "借用原作气质与结构重建";
+      return "Tomando prestado el temperamento y la estructura de la obra original para reconstruirla.";
     case "adapt_world":
     default:
-      return "基于原作做架空改造";
+      return "Una transformación aérea basada en el trabajo original.";
   }
 }
 
@@ -111,26 +111,26 @@ function buildFallbackAnchors(input: GenerateReferenceInspirationInput): WorldRe
   };
 
   if (input.worldTypeHint?.trim()) {
-    push("题材基底", `本次改造仍应落在“${input.worldTypeHint.trim()}”这一世界类型范围内。`);
+    push("Base temática", `Esta transformación debería seguir entrando dentro del "${input.worldTypeHint.trim()}"Dentro de este tipo de mundo.`);
   }
   if (input.preserveElements && input.preserveElements.length > 0) {
-    push("必须保留", `原作不可丢的核心基底包括：${input.preserveElements.join("、")}。`);
+    push("debe ser retenido", `Los fundamentos centrales del trabajo original que no se pueden perder incluyen:${input.preserveElements.join(",")}.`);
   }
   if (input.allowedChanges && input.allowedChanges.length > 0) {
-    push("允许改造", `允许围绕以下维度做架空变化：${input.allowedChanges.join("、")}。`);
+    push("Modificaciones permitidas", `Se permiten cambios generales alrededor de las siguientes dimensiones:${input.allowedChanges.join(",")}.`);
   }
   if (input.forbiddenElements && input.forbiddenElements.length > 0) {
-    push("禁止偏离", `以下边界不能被改坏：${input.forbiddenElements.join("、")}。`);
+    push("La desviación está prohibida", `No se pueden modificar los siguientes límites:${input.forbiddenElements.join(",")}.`);
   }
-  push("参考摘要", compactText(input.sourceText, 140));
+  push("Resumen de referencia", compactText(input.sourceText, 140));
   push(
-    "世界边界",
+    "frontera mundial",
     input.referenceMode === "tone_rebuild"
-      ? "可以重建具体事实，但仍需保留原作的人际张力、生活质感与叙事手感。"
-      : "改造必须建立在原作世界基底之上，不能直接跳成无关题材或失真模板。",
+      ? "Se pueden reconstruir hechos específicos, pero aún se deben preservar la tensión interpersonal, la textura de la vida y la sensación narrativa de la obra original."
+      : "La transformación debe basarse en el mundo original y no puede saltar directamente a temas irrelevantes o plantillas distorsionadas.",
   );
-  push("社会基底", "需要先识别原作所依赖的社会现实、行业生态与生活压力结构。");
-  push("改造焦点", "优先围绕地点系统、势力网络、隐性规则与公开秩序边界来做改造。");
+  push("base social", "Es necesario identificar primero la realidad social, la ecología industrial y la estructura de presión vital en las que se basa el trabajo original.");
+  push("Enfoque de renovación", "Priorizar la transformación en torno al sistema de ubicación, la red eléctrica, las reglas implícitas y los límites del orden abierto.");
 
   return anchors.slice(0, 6);
 }
@@ -151,20 +151,20 @@ function normalizeConceptCard(
     : [];
 
   const fallbackSummary = input.referenceMode === "extract_base"
-    ? `该世界应先提炼原作的稳定世界基底，再决定后续扩写方向。当前识别出的关键锚点包括：${anchors.map((item) => item.label).join("、")}。`
+    ? `Este mundo debería primero refinar la base mundial estable de la obra original antes de decidir la dirección de la expansión posterior. Los puntos de anclaje clave actualmente identificados incluyen:${anchors.map((item) => item.label).join(",")}.`
     : input.referenceMode === "tone_rebuild"
-      ? `本次目标不是照搬原作事实，而是保留其城市气质、关系结构与叙事手感，再重建一套新的世界组织方式。关键参考锚点包括：${anchors.map((item) => item.label).join("、")}。`
-      : `本次世界应建立在原作基底之上进行架空改造，先保住原作气质与现实骨架，再围绕允许改造的维度重新组织世界规则。关键锚点包括：${anchors.map((item) => item.label).join("、")}。`;
+      ? `El objetivo esta vez no es copiar los hechos de la obra original, sino conservar su temperamento urbano, su estructura de relaciones y su sentimiento narrativo, y luego reconstruir una nueva forma de organizar el mundo. Los anclajes de referencia clave incluyen:${anchors.map((item) => item.label).join(",")}.`
+      : `Este mundo debe construirse sobre la base de la obra original y someterse a una transformación general. Primero, se debe preservar el temperamento y el esqueleto realista de la obra original, y luego se deben reorganizar las reglas del mundo en torno a las dimensiones que permitan la transformación. Los anclajes clave incluyen:${anchors.map((item) => item.label).join(",")}.`;
 
   return {
     worldType: typeof record.worldType === "string" && record.worldType.trim()
       ? record.worldType.trim()
-      : input.worldTypeHint?.trim() || "参考作品改造世界",
+      : input.worldTypeHint?.trim() || "Las obras de referencia transforman el mundo",
     templateKey: "custom",
     coreImagery: coreImagery.length > 0 ? coreImagery : anchors.map((item) => item.label).slice(0, 5),
     tone: typeof record.tone === "string" && record.tone.trim()
       ? record.tone.trim()
-      : "保留原作气质并进行受控改造",
+      : "Conservando el espíritu del original con una transformación controlada",
     keywords: keywords.length > 0 ? keywords : uniqueStrings(anchors.flatMap((item) => [item.label, item.content])).slice(0, 8),
     summary: typeof record.summary === "string" && record.summary.trim()
       ? record.summary.trim()
@@ -174,18 +174,18 @@ function normalizeConceptCard(
 
 function buildPrompt(input: GenerateReferenceInspirationInput): string {
   return [
-    `参考方式：${buildReferenceModeLabel(input.referenceMode)}`,
-    input.worldTypeHint?.trim() ? `世界类型提示：${input.worldTypeHint.trim()}` : "",
+    `Método de referencia:${buildReferenceModeLabel(input.referenceMode)}`,
+    input.worldTypeHint?.trim() ? `Consejos de tipo mundial:${input.worldTypeHint.trim()}` : "",
     input.preserveElements && input.preserveElements.length > 0
-      ? `必须保留：${input.preserveElements.join("、")}`
+      ? `Debe conservarse:${input.preserveElements.join(",")}`
       : "",
     input.allowedChanges && input.allowedChanges.length > 0
-      ? `允许改造：${input.allowedChanges.join("、")}`
+      ? `Modificaciones permitidas:${input.allowedChanges.join(",")}`
       : "",
     input.forbiddenElements && input.forbiddenElements.length > 0
-      ? `禁止偏离：${input.forbiddenElements.join("、")}`
+      ? `Desviaciones prohibidas de:${input.forbiddenElements.join(",")}`
       : "",
-    `参考材料：${input.sourceText}`,
+    `Materiales de referencia:${input.sourceText}`,
   ]
     .filter(Boolean)
     .join("\n");
@@ -196,10 +196,10 @@ export async function generateReferenceInspirationAnalysis(
 ): Promise<ReferenceInspirationPayload> {
   const retryPrompt = `${buildPrompt(input)}
 
-请注意：
-1. 如果是“基于原作做架空改造”，重点是提炼原作世界锚点、可直接沿用的原作设定和改造边界，而不是生成新的题材模板。
-2. 如果是“提取原作世界基底”，重点是稳定事实与世界组织方式，不要主动放大改造。
-3. 如果是“借用原作气质与结构重建”，重点是保留氛围、关系结构和生活质感，不要求保留全部具体事实。`;
+Tenga en cuenta:
+1. Si se trata de una "transformación general basada en la obra original", el objetivo es refinar los puntos de anclaje del mundo de la obra original, la configuración original y los límites de transformación que se pueden utilizar directamente, en lugar de generar nuevas plantillas de temas.
+2. Si se trata de "extraer la base mundial de la obra original", el objetivo es estabilizar los hechos y la organización mundial, y no ampliarlos ni transformarlos activamente.
+3. Si se trata de "reconstruir tomando prestado el temperamento y la estructura de la obra original", la atención se centra en conservar la atmósfera, la estructura de las relaciones y la calidad de vida, y no es necesario conservar todos los hechos específicos.`;
 
   for (const prompt of [buildPrompt(input), retryPrompt]) {
     try {

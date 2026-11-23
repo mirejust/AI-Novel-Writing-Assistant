@@ -1,9 +1,9 @@
 import type { Character, CharacterTimeline } from "@ai-novel/shared/types/novel";
 
-const RELATION_POSITIVE_KEYWORDS = ["伙伴", "盟友", "信任", "守护", "亲密", "喜欢", "合作"];
-const RELATION_NEGATIVE_KEYWORDS = ["敌对", "对立", "怀疑", "背叛", "利用", "冲突", "压制"];
-const TREND_UP_KEYWORDS = ["升温", "缓和", "靠近", "修复", "合作加深", "信任增加"];
-const TREND_DOWN_KEYWORDS = ["恶化", "破裂", "紧张", "决裂", "冲突升级", "敌意加深"];
+const RELATION_POSITIVE_KEYWORDS = ["Socio", "Aliados", "Confianza", "Proteger", "Intimidad", "Me gusta", "Cooperación"];
+const RELATION_NEGATIVE_KEYWORDS = ["Hostil", "Oposición", "Duda", "Traición", "Aprovechar", "Conflicto", "Reprimir"];
+const TREND_UP_KEYWORDS = ["Calentando", "Facilidad", "Cerrar", "Reparación", "La cooperación se profundiza", "La confianza aumenta"];
+const TREND_DOWN_KEYWORDS = ["Empeorar", "Ruptura", "Nervioso", "Romper", "El conflicto se intensifica", "La hostilidad se profundiza"];
 
 function compactText(input: string | null | undefined): string {
   return (input ?? "").trim();
@@ -13,7 +13,7 @@ function joinSegments(segments: Array<string | null | undefined>): string {
   return segments
     .map((segment) => compactText(segment))
     .filter((segment) => segment.length > 0)
-    .join("；");
+    .join(";");
 }
 
 function countHits(source: string, keywords: string[]): number {
@@ -55,57 +55,57 @@ export function buildCharacterProfileFromWizard(payload: QuickCharacterCreatePay
     .split(/[，,\s]+/g)
     .map((item) => item.trim())
     .filter((item) => item.length > 0);
-  const keywordText = keywordList.length > 0 ? keywordList.join("、") : "待补充";
+  const keywordText = keywordList.length > 0 ? keywordList.join(",") : "Pendiente";
 
-  const personality = `核心特征：${keywordText}`;
+  const personality = `Características principales:${keywordText}`;
   const background = joinSegments([
-    payload.relationToProtagonist ? `与主角关系：${payload.relationToProtagonist}` : "",
-    payload.storyFunction ? `故事作用：${payload.storyFunction}` : "",
+    payload.relationToProtagonist ? `Relación con el protagonista:${payload.relationToProtagonist}` : "",
+    payload.storyFunction ? `Función de historia:${payload.storyFunction}` : "",
   ]);
   const development = joinSegments([
-    payload.storyFunction ? `角色成长主轴：围绕“${payload.storyFunction}”推进。` : "",
-    keywordList.length > 0 ? `潜在冲突点：${keywordList.slice(0, 3).join("、")}` : "",
-    keywordList.length > 0 ? `可埋伏笔点：${keywordList.slice(-2).join("、")}` : "",
-    keywordList.length > 0 ? `说话风格建议：偏向${keywordList[0]}语气。` : "",
+    payload.storyFunction ? `El eje principal del crecimiento del personaje: alrededor de "${payload.storyFunction}"Avance.` : "",
+    keywordList.length > 0 ? `Posibles puntos de conflicto:${keywordList.slice(0, 3).join(",")}` : "",
+    keywordList.length > 0 ? `Posibles puntos presagios:${keywordList.slice(-2).join(",")}` : "",
+    keywordList.length > 0 ? `Consejos de estilo de discurso: sesgo${keywordList[0]}Tono.` : "",
   ]);
 
   return {
     personality: personality || undefined,
     background: background || undefined,
     development: development || undefined,
-    currentState: payload.relationToProtagonist ? `关系推进中（${payload.relationToProtagonist}）` : "待上场",
-    currentGoal: payload.storyFunction || "推动主线关键节点",
+    currentState: payload.relationToProtagonist ? `La relación está progresando (${payload.relationToProtagonist})` : "Esperando para jugar",
+    currentGoal: payload.storyFunction || "Promocionar nodos clave de la línea principal.",
   };
 }
 
 function inferCurrentRelation(source: string): string {
   if (!source) {
-    return "待定义";
+    return "Por definir";
   }
   const positiveHits = countHits(source, RELATION_POSITIVE_KEYWORDS);
   const negativeHits = countHits(source, RELATION_NEGATIVE_KEYWORDS);
   if (positiveHits > negativeHits) {
-    return "合作 / 亲近";
+    return "Cooperación / intimidad";
   }
   if (negativeHits > positiveHits) {
-    return "对立 / 紧张";
+    return "Oposición / tensión";
   }
-  return "复杂 / 待观察";
+  return "Complejo / por ver";
 }
 
 function inferTrend(source: string): string {
   if (!source) {
-    return "待观察";
+    return "para ser visto";
   }
   const upHits = countHits(source, TREND_UP_KEYWORDS);
   const downHits = countHits(source, TREND_DOWN_KEYWORDS);
   if (upHits > downHits) {
-    return "升温";
+    return "Calentando";
   }
   if (downHits > upHits) {
-    return "恶化";
+    return "Empeorar";
   }
-  return "平稳";
+  return "Suave";
 }
 
 function includesCharacterName(source: string, characterName: string): boolean {
@@ -117,7 +117,7 @@ function includesCharacterName(source: string, characterName: string): boolean {
 
 function buildLatestEvidence(event?: CharacterTimeline): string {
   if (!event) {
-    return "暂无章节证据";
+    return "Aún no hay evidencia del capítulo";
   }
   const excerpt = compactText(event.content).slice(0, 36);
   return excerpt.length > 0 ? excerpt : event.title;

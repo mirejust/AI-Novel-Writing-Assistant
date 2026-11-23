@@ -16,45 +16,45 @@ type WorkflowTaskLike = {
 export const LIVE_TASK_STATUSES = new Set<TaskStatus>(["queued", "running", "waiting_approval"]);
 export const BACKGROUND_RUNNING_TASK_STATUSES = new Set<TaskStatus>(["running"]);
 
-function getExecutionScopeLabel(scopeLabel?: string | null, fallback = "第 1-10 章"): string {
+function getExecutionScopeLabel(scopeLabel?: string | null, fallback = "Capítulo 1-10"): string {
   return scopeLabel?.trim() || fallback;
 }
 
 function buildAutoExecutionRunningLabel(scopeLabel?: string | null): string {
-  return `${getExecutionScopeLabel(scopeLabel)}自动执行中`;
+  return `${getExecutionScopeLabel(scopeLabel)}Ejecutando automáticamente`;
 }
 
 function buildAutoExecutionPausedLabel(scopeLabel?: string | null): string {
-  return `${getExecutionScopeLabel(scopeLabel)}自动执行已暂停`;
+  return `${getExecutionScopeLabel(scopeLabel)}La ejecución automatizada está en pausa`;
 }
 
 function buildAutoExecutionCancelledLabel(scopeLabel?: string | null): string {
-  return `${getExecutionScopeLabel(scopeLabel)}自动执行已取消`;
+  return `${getExecutionScopeLabel(scopeLabel)}Ejecución automática cancelada`;
 }
 
 export function formatWorkflowCheckpoint(checkpoint?: NovelWorkflowCheckpoint | null, scopeLabel?: string | null): string {
   if (checkpoint === "candidate_selection_required") {
-    return "等待确认书级方向";
+    return "Esperando confirmación de la dirección del libro";
   }
   if (checkpoint === "book_contract_ready") {
-    return "Book Contract 已就绪";
+    return "El contrato del libro está listo";
   }
   if (checkpoint === "character_setup_required") {
-    return "角色准备待审核";
+    return "Preparación de personajes pendiente de revisión";
   }
   if (checkpoint === "volume_strategy_ready") {
-    return "卷战略待审核";
+    return "Estrategia de volumen pendiente de revisión";
   }
   if (checkpoint === "chapter_batch_ready") {
     return buildAutoExecutionPausedLabel(scopeLabel);
   }
   if (checkpoint === "replan_required") {
-    return "等待重规划";
+    return "Esperando una nueva planificación";
   }
   if (checkpoint === "workflow_completed") {
-    return "自动导演已完成";
+    return "Autodirector completado";
   }
-  return "自动导演";
+  return "Director automático";
 }
 
 export function getWorkflowBadge(task?: NovelAutoDirectorTaskSummary | null): {
@@ -90,31 +90,31 @@ export function getWorkflowBadge(task?: NovelAutoDirectorTaskSummary | null): {
   }
   if (task.status === "running") {
     return {
-      label: displayStatus ?? "自动导演进行中",
+      label: displayStatus ?? "Director automático en progreso",
       variant: "default",
     };
   }
   if (task.status === "queued") {
     return {
-      label: displayStatus ?? "自动导演排队中",
+      label: displayStatus ?? "Director automático en cola",
       variant: "secondary",
     };
   }
   if (task.status === "failed") {
     return {
-      label: displayStatus ?? "自动导演失败",
+      label: displayStatus ?? "El director automático falló",
       variant: "destructive",
     };
   }
   if (task.status === "cancelled") {
     return {
-      label: displayStatus ?? "自动导演已取消",
+      label: displayStatus ?? "Director automático cancelado",
       variant: "outline",
     };
   }
   return {
     label: displayStatus ?? (task.checkpointType === "workflow_completed"
-      ? "自动导演已完成"
+      ? "Autodirector completado"
       : formatWorkflowCheckpoint(task.checkpointType, task.executionScopeLabel)),
     variant: "outline",
   };
@@ -128,10 +128,10 @@ export function getWorkflowDescription(task?: NovelAutoDirectorTaskSummary | nul
     (task.status === "queued" || task.status === "running")
     && task.checkpointType === "chapter_batch_ready"
   ) {
-    return `AI 正在后台继续执行${getExecutionScopeLabel(task.executionScopeLabel)}，当前进度 ${Math.round(task.progress * 100)}%。`;
+    return `La IA continúa ejecutándose en segundo plano${getExecutionScopeLabel(task.executionScopeLabel)}, progreso actual ${Math.round(task.progress * 100)}%.`;
   }
   if ((task.status === "failed" || task.status === "cancelled") && task.checkpointType === "chapter_batch_ready") {
-    return `${getExecutionScopeLabel(task.executionScopeLabel)}自动执行在批量阶段暂停了，建议先查看任务，再决定是否继续自动执行。`;
+    return `${getExecutionScopeLabel(task.executionScopeLabel)}La ejecución automática se ha suspendido durante la fase por lotes. Se recomienda revisar las tareas antes de decidir si continuar con la ejecución automática.`;
   }
   if (task.blockingReason?.trim()) {
     return task.blockingReason.trim();
@@ -143,10 +143,10 @@ export function getWorkflowDescription(task?: NovelAutoDirectorTaskSummary | nul
     return task.currentItemLabel.trim();
   }
   if (task.resumeAction?.trim()) {
-    return `推荐继续：${task.resumeAction.trim()}`;
+    return `Las recomendaciones continúan:${task.resumeAction.trim()}`;
   }
   if (task.nextActionLabel?.trim()) {
-    return `下一步：${task.nextActionLabel.trim()}`;
+    return `Siguiente paso:${task.nextActionLabel.trim()}`;
   }
   return null;
 }

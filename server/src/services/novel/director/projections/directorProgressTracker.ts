@@ -65,7 +65,7 @@ export async function runDirectorTrackedStep<T>(input: {
 
   const abortAsCancelled = () => {
     if (!abortController.signal.aborted) {
-      abortController.abort(new Error("当前自动导演任务已取消。"));
+      abortController.abort(new Error("La tarea actual del director automático ha sido cancelada."));
     }
   };
 
@@ -116,7 +116,7 @@ export async function runDirectorTrackedStep<T>(input: {
       input.taskId,
       input.stage,
       currentItemKey,
-      `${currentLabel}（已等待 ${elapsed}）`,
+      `${currentLabel}(Espera ${elapsed})`,
       currentProgress,
       {
         chapterId: input.chapterId ?? null,

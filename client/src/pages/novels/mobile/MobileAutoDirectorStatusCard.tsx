@@ -14,16 +14,16 @@ interface MobileAutoDirectorStatusCardProps {
 function modeLabel(mode: NovelEditTakeoverState["mode"]): string {
   switch (mode) {
     case "loading":
-      return "加载中";
+      return "Cargando";
     case "running":
-      return "接管中";
+      return "Bajo adquisición";
     case "waiting":
-      return "等待确认";
+      return "Esperando confirmación";
     case "action_required":
-      return "待处理";
+      return "Pendiente";
     case "failed":
     default:
-      return "异常";
+      return "Incidencia";
   }
 }
 
@@ -84,7 +84,7 @@ export default function MobileAutoDirectorStatusCard({ takeover }: MobileAutoDir
             <div className="truncate text-foreground">{takeover.currentAction}</div>
           ) : null}
           {takeover.checkpointLabel ? (
-            <div className="truncate text-muted-foreground">检查点：{takeover.checkpointLabel}</div>
+            <div className="truncate text-muted-foreground">Control:{takeover.checkpointLabel}</div>
           ) : null}
         </div>
       ) : null}

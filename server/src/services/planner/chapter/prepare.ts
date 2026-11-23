@@ -96,7 +96,7 @@ export async function prepareChapterPlan(novelId: string, chapterId: string, opt
     expectation: chapter.expectation ?? null,
   });
   const openAuditIssues = recentAuditReports.flatMap((report) => report.issues.map((issue) => (
-    `${issue.auditType}/${issue.severity}: ${issue.description} | 证据=${issue.evidence}`
+    `${issue.auditType}/${issue.severity}: ${issue.description} | Evidencia =${issue.evidence}`
   )));
   const resolvedStateDrivenContext = await deps.buildStateContext({
     novelId,
@@ -129,32 +129,32 @@ export async function prepareChapterPlan(novelId: string, chapterId: string, opt
   });
   const replanContextBlock = options.replanContext
     ? [
-        `重规划原因：${options.replanContext.reason}`,
-        `触发类型：${options.replanContext.triggerType}`,
+        `Razones para la replanificación:${options.replanContext.reason}`,
+        `Tipo de disparador:${options.replanContext.triggerType}`,
         options.replanContext.triggerReason
-          ? `状态触发理由：${options.replanContext.triggerReason}`
+          ? `Motivo del activador de estado:${options.replanContext.triggerReason}`
           : "",
         options.replanContext.windowReason
-          ? `选窗理由：${options.replanContext.windowReason}`
+          ? `Razones para seleccionar la ventana:${options.replanContext.windowReason}`
           : "",
         options.replanContext.whyTheseChapters
-          ? `为何改这几章：${options.replanContext.whyTheseChapters}`
+          ? `¿Por qué cambiar estos capítulos?${options.replanContext.whyTheseChapters}`
           : "",
-        `重规划窗口：第 ${options.replanContext.affectedChapterOrders.join("、")} 章`,
+        `Ventana de replanificación: No. ${options.replanContext.affectedChapterOrders.join(",")}`,
         typeof options.replanContext.anchorChapterOrder === "number"
-          ? `锚点章节：第 ${options.replanContext.anchorChapterOrder} 章`
+          ? `Capítulo ancla: Capítulo ${options.replanContext.anchorChapterOrder}`
           : "",
         options.replanContext.sourceIssueIds.length > 0
-          ? `来源问题：${options.replanContext.sourceIssueIds.join("、")}`
+          ? `Pregunta fuente:${options.replanContext.sourceIssueIds.join(",")}`
           : "",
         options.replanContext.blockingLedgerKeys?.length
-          ? `账本风险：${options.replanContext.blockingLedgerKeys.join("、")}`
+          ? `Riesgo de libro mayor:${options.replanContext.blockingLedgerKeys.join(",")}`
           : "",
         options.replanContext.replannedFromPlanId
-          ? `上一版计划：${options.replanContext.replannedFromPlanId}`
+          ? `Versión anterior del plan:${options.replanContext.replannedFromPlanId}`
           : "",
       ].filter(Boolean).join("\n")
-    : "无";
+    : "Ninguno";
   const contextBlocks = buildChapterPlanContextBlocks({
     novelTitle: novel.title,
     description: novel.description,
@@ -170,7 +170,7 @@ export async function prepareChapterPlan(novelId: string, chapterId: string, opt
     chapterExpectation: chapter.expectation,
     chapterTaskSheet: chapter.taskSheet,
     chapterTargetWordCount: chapter.targetWordCount,
-    bible: bible?.rawContent ?? "无",
+    bible: bible?.rawContent ?? "Ninguno",
     styleEngine,
     outline: novel.outline,
     structuredOutline: novel.structuredOutline,
@@ -183,19 +183,19 @@ export async function prepareChapterPlan(novelId: string, chapterId: string, opt
       updatedAt: volume.updatedAt,
       chapters: volume.chapters,
     })),
-    bookPlan: bookPlan ? `${bookPlan.title} | ${bookPlan.objective}${bookPlan.phaseLabel ? ` | 阶段=${bookPlan.phaseLabel}` : ""}` : "无",
+    bookPlan: bookPlan ? `${bookPlan.title} | ${bookPlan.objective}${bookPlan.phaseLabel ? ` | etapa =${bookPlan.phaseLabel}` : ""}` : "Ninguno",
     arcPlans: arcPlans.length > 0
-      ? arcPlans.map((plan) => `${plan.externalRef ?? "-"} ${plan.title} | ${plan.objective}${plan.phaseLabel ? ` | 阶段=${plan.phaseLabel}` : ""}`).join("\n")
-      : "无",
+      ? arcPlans.map((plan) => `${plan.externalRef ?? "-"} ${plan.title} | ${plan.objective}${plan.phaseLabel ? ` | etapa =${plan.phaseLabel}` : ""}`).join("\n")
+      : "Ninguno",
     characters: characters.map((item) => [
       `${item.id}|${item.name}|${item.role}|goal=${item.currentGoal ?? ""}|state=${item.currentState ?? ""}`,
-      item.development ? `成长方向=${item.development.slice(0, 480)}` : "",
-    ].filter(Boolean).join("|")).join("\n") || "无",
-    recentSummaries: chapterSummaries.map((item) => `${item.summary}`).join("\n") || "无",
-    plotBeats: plotBeats.map((item) => `${item.chapterOrder ?? "-"} ${item.title} ${item.content}`).join("\n") || "无",
+      item.development ? `Dirección de crecimiento =${item.development.slice(0, 480)}` : "",
+    ].filter(Boolean).join("|")).join("\n") || "Ninguno",
+    recentSummaries: chapterSummaries.map((item) => `${item.summary}`).join("\n") || "Ninguno",
+    plotBeats: plotBeats.map((item) => `${item.chapterOrder ?? "-"} ${item.title} ${item.content}`).join("\n") || "Ninguno",
     stateSnapshot: buildStateContextBlockFromCanonical(resolvedStateDrivenContext.snapshot),
-    openAuditIssues: openAuditIssues.join("\n") || "无",
-    recentDecisions: recentDecisions.map((item) => `${item.category}/${item.importance}: ${item.content}`).join("\n") || "无",
+    openAuditIssues: openAuditIssues.join("\n") || "Ninguno",
+    recentDecisions: recentDecisions.map((item) => `${item.category}/${item.importance}: ${item.content}`).join("\n") || "Ninguno",
     characterDynamicsSummary: characterDynamicsContext.summary,
     characterVolumeAssignments: characterDynamicsContext.volumeAssignments,
     characterRelationStages: characterDynamicsContext.relationStages,
@@ -207,21 +207,21 @@ export async function prepareChapterPlan(novelId: string, chapterId: string, opt
     }),
     stateDrivenGoal: plannerStateGoalText,
     defaultMetadata: [
-      `planRole=${defaultMetadata.planRole ?? "progress"} | phase=${defaultMetadata.phaseLabel ?? "无"}`,
-      `mustAdvance=${defaultMetadata.mustAdvance.join("；") || "无"}`,
-      `mustPreserve=${defaultMetadata.mustPreserve.join("；") || "无"}`,
+      `planRole=${defaultMetadata.planRole ?? "progress"} | phase=${defaultMetadata.phaseLabel ?? "Ninguno"}`,
+      `mustAdvance=${defaultMetadata.mustAdvance.join(";") || "Ninguno"}`,
+      `mustPreserve=${defaultMetadata.mustPreserve.join(";") || "Ninguno"}`,
     ].join("\n"),
     replanContext: replanContextBlock,
     replanConflictLevelAnchors: options.replanContext
       ? buildPlannerConflictLevelAnchorContext(plannerVolumes, options.replanContext.affectedChapterOrders)
-      : "无",
+      : "Ninguno",
     storyMacroSummary: buildStoryMacroSummary(storyMacroPlan),
     currentVolumeWindow: buildCurrentVolumeWindowSummary(plannerVolumes, chapter.order),
     payoffLedgerSummary: buildPlannerPayoffLedgerContext(payoffLedger, chapter.order),
     storyModeBlock,
   });
 
-  return {request:buildPlannerPromptRequest({options,scopeLabel:`章节规划：第${chapter.order}章《${chapter.title}》`,novelId,chapterId,planLevel:"chapter",contextBlocks}),
+  return {request:buildPlannerPromptRequest({options,scopeLabel:`Plan del Capítulo: Capítulo${chapter.order}capítulo"${chapter.title}»`,novelId,chapterId,planLevel:"chapter",contextBlocks}),
     projection:{novelId,chapter:{...chapter,updatedAt:chapter.updatedAt.toISOString()},defaultMetadata,characters,characterDynamicsOverview,resolvedStateDrivenContext,anchoredVolumeChapter:anchoredVolumeChapter ?? null,replanContext:options.replanContext,
       ...(options.preserveExecutionContract ? {preserveExecutionContract: true} : {})}};
 }

@@ -39,7 +39,7 @@ interface PayoffLedgerReadOptions extends PayoffLedgerSyncOptions {
   syncIfMissing?: boolean;
 }
 
-function compactText(value: string | null | undefined, fallback = "无"): string {
+function compactText(value: string | null | undefined, fallback = "Ninguno"): string {
   const normalized = String(value ?? "").replace(/\s+/g, " ").trim();
   return normalized || fallback;
 }
@@ -104,7 +104,7 @@ function formatMajorPayoffs(rawPlanJson: string | null | undefined): string {
     : [];
   return majorPayoffs.length > 0
     ? majorPayoffs.map((item, index) => `${index + 1}. ${item}`).join("\n")
-    : "无";
+    : "Ninguno";
 }
 
 export class PayoffLedgerSyncService {
@@ -210,7 +210,7 @@ export class PayoffLedgerSyncService {
     ]);
 
     if (!novel) {
-      throw new Error("小说不存在。");
+      throw new Error("La novela no existe.");
     }
 
     const activeVolume = typeof chapterOrder === "number"
@@ -219,21 +219,21 @@ export class PayoffLedgerSyncService {
 
     const activeVolumeSummary = activeVolume
       ? [
-          `当前卷：第${activeVolume.sortOrder}卷《${activeVolume.title}》`,
-          `卷摘要：${compactText(activeVolume.summary)}`,
-          `卷 open payoffs：${safeParseJson<string[]>(activeVolume.openPayoffsJson, []).join("；") || "无"}`,
+          `Volumen actual: No.${activeVolume.sortOrder}rollo"${activeVolume.title}»`,
+          `Resumen del volumen:${compactText(activeVolume.summary)}`,
+          `Pagos abiertos por volumen:${safeParseJson<string[]>(activeVolume.openPayoffsJson, []).join(";") || "Ninguno"}`,
           activeVolume.chapters.length > 0
-            ? `卷章节范围：${activeVolume.chapters[0]?.chapterOrder ?? "-"}-${activeVolume.chapters[activeVolume.chapters.length - 1]?.chapterOrder ?? "-"}`
-            : "卷章节范围：无",
+            ? `Rango de capítulos de volumen:${activeVolume.chapters[0]?.chapterOrder ?? "-"}-${activeVolume.chapters[activeVolume.chapters.length - 1]?.chapterOrder ?? "-"}`
+            : "Rango de capítulos de volumen: Ninguno",
         ].join("\n")
-      : `当前暂无激活卷窗口。${volumeRows.length > 0 ? `已有卷：${volumeRows.map((item) => `第${item.sortOrder}卷《${item.title}》`).join("；")}` : ""}`;
+      : `Actualmente no hay ninguna ventana de volumen activa.${volumeRows.length > 0 ? `Ya tengo volúmenes:${volumeRows.map((item) => `Cap.${item.sortOrder}rollo"${item.title}»`).join(";")}` : ""}`;
 
     const latestChapterContext = [
-      typeof chapterOrder === "number" ? `当前章节序号：第${chapterOrder}章` : "当前章节序号：未知",
+      typeof chapterOrder === "number" ? `Número de capítulo actual: Capítulo${chapterOrder}cap.` : "Número de capítulo actual: desconocido",
       snapshot?.sourceChapter
-        ? `最新状态快照来源：第${snapshot.sourceChapter.order}章《${snapshot.sourceChapter.title}》`
-        : "最新状态快照来源：无",
-      snapshot?.summary ? `状态快照摘要：${snapshot.summary}` : "",
+        ? `Fuente de la última instantánea de estado: No.${snapshot.sourceChapter.order}capítulo"${snapshot.sourceChapter.title}»`
+        : "Fuente de la última instantánea de estado: Ninguna",
+      snapshot?.summary ? `Resumen de instantáneas de estado:${snapshot.summary}` : "",
     ].filter(Boolean).join("\n");
 
     const openPayoffsText = volumeRows.length > 0
@@ -242,46 +242,46 @@ export class PayoffLedgerSyncService {
           if (openPayoffs.length === 0) {
             return "";
           }
-          return `【第${volume.sortOrder}卷 ${volume.title}】 ${openPayoffs.map((item) => compactText(item, "无")).join("；")}`;
-        }).filter(Boolean).join("\n\n") || "无"
-      : "无";
+          return `[No.${volume.sortOrder}rollo ${volume.title}] ${openPayoffs.map((item) => compactText(item, "Ninguno")).join(";")}`;
+        }).filter(Boolean).join("\n\n") || "Ninguno"
+      : "Ninguno";
 
     const chapterPayoffRefsText = volumeRows.flatMap((volume) => volume.chapters.map((chapter) => {
       const refs = safeParseJson<string[]>(chapter.payoffRefsJson, []);
       if (refs.length === 0) {
         return "";
       }
-      return `第${chapter.chapterOrder}章《${chapter.title}》 | ${refs.map((item) => compactText(item, "无")).join("；")}`;
-    })).filter(Boolean).join("\n\n") || "无";
+      return `Cap.${chapter.chapterOrder}capítulo"${chapter.title}» | ${refs.map((item) => compactText(item, "Ninguno")).join(";")}`;
+    })).filter(Boolean).join("\n\n") || "Ninguno";
 
     const foreshadowStatesText = snapshot?.foreshadowStates.length
       ? snapshot.foreshadowStates.map((item) => (
         [
-          `标题：${item.title}`,
-          `状态：${compactText(item.status)}`,
-          item.summary ? `摘要：${item.summary}` : "",
-          item.setupChapterId ? `setupChapterId：${item.setupChapterId}` : "",
-          item.payoffChapterId ? `payoffChapterId：${item.payoffChapterId}` : "",
+          `título:${item.title}`,
+          `estado:${compactText(item.status)}`,
+          item.summary ? `resumen:${item.summary}` : "",
+          item.setupChapterId ? `ID de capítulo de configuración:${item.setupChapterId}` : "",
+          item.payoffChapterId ? `ID del capítulo de pago:${item.payoffChapterId}` : "",
         ].filter(Boolean).join(" | ")
       )).join("\n")
-      : "无";
+      : "Ninguno";
 
     const payoffConflictsText = openConflicts.length > 0
       ? openConflicts.map((row) => {
           const conflict = normalizeConflict(row);
           return [
-            `${conflict.conflictType}/${conflict.severity}：${conflict.title}`,
+            `${conflict.conflictType}/${conflict.severity}:${conflict.title}`,
             compactText(conflict.summary),
-            conflict.resolutionHint ? `修复建议：${compactText(conflict.resolutionHint)}` : "",
+            conflict.resolutionHint ? `Sugerencias de reparación:${compactText(conflict.resolutionHint)}` : "",
           ].filter(Boolean).join(" | ");
         }).join("\n")
-      : "无";
+      : "Ninguno";
 
     const payoffAuditIssuesText = recentAuditReports.length > 0
       ? recentAuditReports.flatMap((report) => report.issues.map((issue) => (
-        `${issue.code} (${issue.severity})：${compactText(issue.description)} | 证据：${compactText(issue.evidence)}`
-      ))).join("\n") || "无"
-      : "无";
+        `${issue.code} (${issue.severity}):${compactText(issue.description)} | Evidencia:${compactText(issue.evidence)}`
+      ))).join("\n") || "Ninguno"
+      : "Ninguno";
 
     return {
       chapterOrder,
@@ -401,7 +401,7 @@ export class PayoffLedgerSyncService {
         const sanitizedItem = sanitizePayoffLedgerSyncItem(rawItem);
         const planned = resolveOutlinePayoffSource(sanitizedItem, outline?.plans ?? [], writtenChapters, chapterOrder);
         const ledgerKey = planned?.ledgerKey ?? resolvePayoffLedgerSyncLedgerKey(sanitizedItem, existingRows.filter(row => !row.ledgerKey.startsWith("outline:")));
-        if (planned && resolvedItemsByKey.has(ledgerKey)) throw new Error("同一计划伏笔的实际结果重复。");
+        if (planned && resolvedItemsByKey.has(ledgerKey)) throw new Error("Se repiten los resultados reales del mismo plan.");
         resolvedItemsByKey.set(ledgerKey, {
           ...sanitizedItem,
           ledgerKey,
@@ -510,7 +510,7 @@ export class PayoffLedgerSyncService {
         if (outline && links.size) {
           const mapping = {...outline.mapping, payoffs: outline.mapping.payoffs.map(p => links.has(p.ledgerKey) ? {...p, ledgerItemId: links.get(p.ledgerKey)!} : p)};
           const updated = await tx.outlineBookBinding.updateMany({where: {id: outline.binding.id, policyVersion: outline.binding.policyVersion, mappingJson: outline.binding.mappingJson}, data: {mappingJson: JSON.stringify(mapping)}});
-          if (updated.count !== 1) throw new Error("伏笔计划来源在对账期间变化，请重试。");
+          if (updated.count !== 1) throw new Error("La fuente del plan de presagio cambió durante la reconciliación. Inténtelo de nuevo.");
         }
 
         for (const row of existingRows) {
@@ -520,7 +520,7 @@ export class PayoffLedgerSyncService {
               {
                 code: "source_superseded",
                 severity: "low",
-                summary: "Book Contract 阶段回报已修改或移除，这条旧承诺已退出当前执行义务。",
+                summary: "La etapa de devolución del Contrato de Libro ha sido modificada o eliminada, y este antiguo compromiso ha salido de la obligación de ejecución actual.",
                 stale: true,
               },
             ]);
@@ -529,7 +529,7 @@ export class PayoffLedgerSyncService {
               data: {
                 currentStatus: "failed",
                 riskSignalsJson: serializeLedgerJson(riskSignals),
-                statusReason: "Book Contract 来源已被新的阶段回报替换或移除。",
+                statusReason: "Las fuentes del contrato de libros han sido reemplazadas o eliminadas por devoluciones de nuevas etapas.",
                 updatedAt: now,
               },
             });
@@ -544,7 +544,7 @@ export class PayoffLedgerSyncService {
           }
           const staleSignals = appendStaleRiskSignal(
             safeParseJson(row.riskSignalsJson, [] as Array<{ code: string; severity: "low" | "medium" | "high" | "critical"; summary: string; stale?: boolean }>),
-            "本轮 AI 对账没有再次命中这条伏笔，已保留旧账本并标记为 stale，等待下一次同步确认。",
+            "Este presagio no se ha vuelto a ver afectado en esta ronda de conciliación de IA, y el antiguo libro de contabilidad se ha retenido y marcado como obsoleto, a la espera de la próxima confirmación de sincronización.",
           );
           await tx.payoffLedgerItem.update({
             where: { id: row.id },
@@ -567,7 +567,7 @@ export class PayoffLedgerSyncService {
           for (const row of existingRows) {
             const staleSignals = appendStaleRiskSignal(
               safeParseJson(row.riskSignalsJson, [] as Array<{ code: string; severity: "low" | "medium" | "high" | "critical"; summary: string; stale?: boolean }>),
-              "伏笔账本同步失败，已保留上次成功结果。",
+              "Error en la sincronización del libro mayor de presagios y se ha conservado el último resultado exitoso.",
             );
             await tx.payoffLedgerItem.update({
               where: { id: row.id },
@@ -596,7 +596,7 @@ export class PayoffLedgerSyncService {
       chapterId,
       auditType: "plot",
       overallScore: null,
-      summary: "系统根据伏笔账本补充了需要继续跟踪的兑现风险。",
+      summary: "El sistema agrega riesgos de retiro de efectivo que deben rastrearse en función del libro de presagios.",
       legacyScoreJson: null,
       issues: issues.map((issue) => ({
         id: `${reportId}:${issue.ledgerKey}:${issue.code}`,

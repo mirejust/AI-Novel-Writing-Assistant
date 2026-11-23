@@ -35,7 +35,7 @@ function renderDialogue(input: Input, draftInstruction?: string) {
     "作者修改尚未采纳的初稿时基于上一稿给出完整替代稿。修改已有大纲时选择 edit，保留与要求无关的内容。",
     "修改上一版待确认编辑提案时，提交相对于已保存大纲的完整操作集，保留作者未撤回的建议。已经采纳的内容以当前文档为准。",
     "edit 操作使用真实 nodeId。修改书名、主题、基调等总纲属性时使用 update_fields 及 story.nodeId。新增节点给唯一 clientRef。新增章节 fields.volumeNodeId 指向已有卷或新增卷的 clientRef，依赖写该操作的 operationId。移动章节用 move_node 和 parentNodeId，禁止直接写 chapterNodeIds。",
-    "replyText 要让作者看懂这一轮的具体回答或关键变动。面向作者的文字使用中文节点名，不能声称提案已写入。"
+    "replyText 要让作者看懂这一轮的具体回答或关键变动。面向作者的文字使用西班牙语节点名，不能声称提案已写入。"
   ].filter(Boolean).join("\n")), new HumanMessage(JSON.stringify(input))];
 }
 export const outlineWorkbenchDialogueV1 = {

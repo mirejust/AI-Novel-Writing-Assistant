@@ -98,7 +98,7 @@ export class PlannerService {
       },
     });
     if (!novel) {
-      throw new Error("小说不存在。");
+      throw new Error("La novela no existe.");
     }
     const storyModeBlock = buildPlannerStoryModeBlock(novel);
     const styleEngine = await this.resolvePlannerStyleEngineSummary(novelId, undefined, options.taskStyleProfileId);
@@ -114,15 +114,15 @@ export class PlannerService {
       pacePreference: novel.pacePreference,
       emotionIntensity: novel.emotionIntensity,
       styleTone: novel.styleTone,
-      bible: novel.bible?.rawContent ?? "无",
-      chapterDrafts: novel.chapters.map((item) => `${item.order}.${item.title} ${item.expectation ?? ""}`).join("\n") || "无",
-      plotBeats: novel.plotBeats.map((item) => `${item.chapterOrder ?? "-"} ${item.title} ${item.content}`).join("\n") || "无",
+      bible: novel.bible?.rawContent ?? "Ninguno",
+      chapterDrafts: novel.chapters.map((item) => `${item.order}.${item.title} ${item.expectation ?? ""}`).join("\n") || "Ninguno",
+      plotBeats: novel.plotBeats.map((item) => `${item.chapterOrder ?? "-"} ${item.title} ${item.content}`).join("\n") || "Ninguno",
       storyModeBlock,
       styleEngine,
     });
     const output = await invokePlannerLLM({
       options,
-      scopeLabel: `全书规划：${novel.title}`,
+      scopeLabel: `Plan de libro:${novel.title}`,
       novelId,
       planLevel: "book",
       contextBlocks,
@@ -131,8 +131,8 @@ export class PlannerService {
     return persistStoryPlan({
       novelId,
       level: "book",
-      title: output.title || `${novel.title} 全书规划`,
-      objective: output.objective || "建立全书目标与主线推进。",
+      title: output.title || `${novel.title} planificación de libros`,
+      objective: output.objective || "Establecer los objetivos y la idea central del libro.",
       participants: output.participants ?? [],
       reveals: output.reveals ?? [],
       riskNotes: output.riskNotes ?? [],
@@ -169,7 +169,7 @@ export class PlannerService {
       },
     });
     if (!novel) {
-      throw new Error("小说不存在。");
+      throw new Error("La novela no existe.");
     }
     const storyModeBlock = buildPlannerStoryModeBlock(novel);
     const styleEngine = await this.resolvePlannerStyleEngineSummary(novelId, undefined, options.taskStyleProfileId);
@@ -185,14 +185,14 @@ export class PlannerService {
       pacePreference: novel.pacePreference,
       emotionIntensity: novel.emotionIntensity,
       styleTone: novel.styleTone,
-      bible: novel.bible?.rawContent ?? "无",
-      chapters: novel.chapters.map((item) => `${item.order}.${item.title} ${item.expectation ?? ""}`).join("\n") || "无",
+      bible: novel.bible?.rawContent ?? "Ninguno",
+      chapters: novel.chapters.map((item) => `${item.order}.${item.title} ${item.expectation ?? ""}`).join("\n") || "Ninguno",
       storyModeBlock,
       styleEngine,
     });
     const output = await invokePlannerLLM({
       options,
-      scopeLabel: `分段规划：${arcId}`,
+      scopeLabel: `Planificación por etapas:${arcId}`,
       novelId,
       planLevel: "arc",
       contextBlocks,
@@ -203,7 +203,7 @@ export class PlannerService {
       level: "arc",
       externalRef: arcId,
       title: output.title || `Arc ${arcId}`,
-      objective: output.objective || `围绕 ${arcId} 推进主线`,
+      objective: output.objective || `alrededor ${arcId} Avanzar la línea principal`,
       participants: output.participants ?? [],
       reveals: output.reveals ?? [],
       riskNotes: output.riskNotes ?? [],
@@ -283,7 +283,7 @@ export class PlannerService {
       });
       return buildPlannerStyleEngineSummary(styleContext);
     } catch {
-      return "无";
+      return "Ninguno";
     }
   }
 }

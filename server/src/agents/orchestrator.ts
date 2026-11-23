@@ -19,7 +19,7 @@ export async function createStructuredPlan(input: PlannerInput): Promise<Planner
       interactionMode: "query" as const,
       assistantResponse: "explain" as const,
       shouldAskFollowup: false,
-      note: parsedIntent.note ?? "请从正式小说工作台或自动导演入口执行该操作。",
+      note: parsedIntent.note ?? "Haga esto desde el banco de trabajo oficial de novelas o desde la entrada automatizada del director.",
     }
     : parsedIntent;
   const compiledPlan = compileIntentToPlan(structuredIntent, input);

@@ -79,14 +79,14 @@ export const stateSnapshotPrompt: PromptAsset<
   outputSchema: snapshotExtractionOutputSchema,
   render: (input) => [
     new SystemMessage([
-      "你是长篇中文小说的状态快照提取器。",
+      "你是长篇西班牙语小说的状态快照提取器。",
       "你的任务是基于当前章节材料，提取“本章结束后”的全局状态快照，供后续规划、续写与一致性校验直接使用。",
       "",
       "只输出一个合法 JSON 对象，不要输出 Markdown、解释、注释、代码块或任何额外文本。",
       "顶层只能包含：summary、characterStates、relationStates、informationStates、foreshadowStates。",
       "",
       "全局硬规则：",
-      "1. 所有内容必须使用简体中文。",
+      "1. 所有内容必须使用西班牙语。",
       "2. 只能依据提供的材料提取，不得补写正文里没有出现或无法稳定推出的新事实。",
       "3. 输出的是“章节结束后的状态”，不是剧情复述，也不是摘要扩写。",
       "4. 信息不足时宁可省略该条，也不要把猜测写成事实。",

@@ -76,7 +76,7 @@ function ColumnDivider({ side, column, layoutId, minCenter }: { side: Side; colu
       const { width, max } = bounds(handle);
       handle.setAttribute("aria-valuenow", String(Math.round(width)));
       handle.setAttribute("aria-valuemax", String(Math.round(max)));
-      handle.setAttribute("aria-valuetext", `${Math.round(width)} 像素`);
+      handle.setAttribute("aria-valuetext", `${Math.round(width)} Píxel`);
       const visible = panels.filter(node => node.offsetWidth).sort((a, b) => a.offsetLeft - b.offsetLeft);
       const panel = side === "left" ? visible[0] : visible.at(-1);
       if (panel) {
@@ -92,7 +92,7 @@ function ColumnDivider({ side, column, layoutId, minCenter }: { side: Side; colu
   }, [key, side, variable, column.min, minCenter, panelId]);
 
   return <div ref={ref} data-column-divider={side} role="separator" tabIndex={0} aria-orientation="vertical"
-    aria-label={column.label} aria-valuemin={column.min} title={`${column.label}，双击恢复默认宽度，方向键微调`}
+    aria-label={column.label} aria-valuemin={column.min} title={`${column.label}, haga doble clic para restaurar el ancho predeterminado y use las teclas de flecha para ajustar`}
     onPointerDown={event => {
       if (!event.isPrimary || event.button !== 0) return;
       const handle = event.currentTarget;

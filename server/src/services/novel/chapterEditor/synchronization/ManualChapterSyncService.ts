@@ -43,28 +43,28 @@ export class ManualChapterSyncService {
   private async execute(payload: ManualChapterSyncPayload): Promise<ChapterArtifactSyncResult> {
     const empty = { contentHash: payload.contentHash, completedArtifacts: [] };
     const release = await claimManualChapterSyncLease(payload.novelId, payload.chapterId);
-    if (!release) return {...empty, status: "pending", reason: "章节资料正在同步。"};
+    if (!release) return {...empty, status: "pending", reason: "Los datos del capítulo se están sincronizando."};
     try {
       const chapter = await prisma.chapter.findFirst({ where: { id: payload.chapterId, novelId: payload.novelId },
         include: { novel: { select: { directorVersion: true, directorEpoch: true } } } });
       const activeChapters = await readActiveManuscriptChapters(prisma as never, payload.novelId);
       if (activeChapters && !activeChapters.some(item => item.id === payload.chapterId)) {
-        return { ...empty, status: "completed", reason: "章节已退出原稿有效单元。" };
+        return { ...empty, status: "completed", reason: "El capítulo ha salido de la unidad válida original." };
       }
       if (!chapter || buildChapterArtifactContentHash(chapter.content ?? "") !== payload.contentHash) {
-        return { ...empty, status: "completed", reason: "旧修订已被新正文替代。" };
+        return { ...empty, status: "completed", reason: "La antigua revisión ha sido sustituida por el nuevo texto." };
       }
       const marker = await readManualChapterSync(payload.novelId, payload.chapterId, chapter.content ?? "");
       if (!isCurrentSyncMarker(marker) || JSON.parse(marker!.metadataJson ?? "{}").revision !== payload.revision) {
-        return { ...empty, status: "completed", reason: "旧修订已被新正文替代。" };
+        return { ...empty, status: "completed", reason: "La antigua revisión ha sido sustituida por el nuevo texto." };
       }
-      if (!marker) return { ...empty, status: "completed", reason: "旧修订已被新正文替代。" };
+      if (!marker) return { ...empty, status: "completed", reason: "La antigua revisión ha sido sustituida por el nuevo texto." };
       if (marker.status === "succeeded") return { ...empty, status: "completed", completedArtifacts: ["artifact_delta"] };
       const identity = { id: marker.id, metadataJson: JSON.stringify({...payload, attemptId: randomUUID()}) };
       const claimed = await prisma.chapterArtifactSyncCheckpoint.updateMany({ where: { id: marker.id, metadataJson: marker.metadataJson,
         OR: [{ status: { not: "running" } }, { updatedAt: { lt: new Date(Date.now() - RUNNING_STALE_MS) } }] },
         data: { status: "running", metadataJson: identity.metadataJson, updatedAt: new Date() } });
-      if (!claimed.count) return { ...empty, status: "pending", reason: "正文已保存，章节资料正在同步。" };
+      if (!claimed.count) return { ...empty, status: "pending", reason: "El texto principal se ha guardado y los datos del capítulo se están sincronizando." };
       const heartbeat = setInterval(() => {
         void prisma.chapterArtifactSyncCheckpoint.updateMany({ where: { ...identity, status: "running" },
           data: { updatedAt: new Date() } }).catch(() => {});
@@ -133,7 +133,7 @@ export class ManualChapterSyncService {
       if (!marker || (marker.status === "succeeded" && currentBoundary)) return;
       const payload = JSON.parse(marker.metadataJson ?? "null") as ManualChapterSyncPayload;
       if (!payload?.revision || payload.novelId !== novelId || payload.chapterId !== chapterId) {
-        throw new Error("本章同步记录无法读取，请保存正文后再继续。");
+        throw new Error("El registro de sincronización de este capítulo no se puede leer; guarde el texto antes de continuar.");
       }
       const result = await this.run(payload);
       await checkCancelled();
@@ -146,11 +146,11 @@ export class ManualChapterSyncService {
       }
       if (result.status !== "completed" && result.status !== "degraded") {
         throw new ChapterArtifactSyncBoundaryError({ ...result,
-          reason: result.characterReviewId ? result.reason : `正文已保存，章节资料同步未完成。请从保存进度继续重试。${result.reason ? ` ${result.reason}` : ""}` });
+          reason: result.characterReviewId ? result.reason : `El texto principal se ha guardado, pero no se ha completado la sincronización de los datos del capítulo. Continúe guardando el progreso e inténtelo de nuevo.${result.reason ? ` ${result.reason}` : ""}` });
       }
       // Re-read the latest committed revision before allowing production to continue.
     }
-    throw new Error("正文已保存，章节资料仍在同步，请稍后从保存进度继续。");
+    throw new Error("El texto principal se ha guardado, pero los datos del capítulo aún se están sincronizando. Continúe desde el progreso de guardado más tarde.");
   }
 }
 

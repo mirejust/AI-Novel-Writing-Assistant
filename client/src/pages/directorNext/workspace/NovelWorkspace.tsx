@@ -73,20 +73,20 @@ export function NovelWorkspace({ book, preview = false, review, onLeaveReview, o
   }
   const directory = <aside className={directoryOpen ? "flex h-full min-h-0 flex-col" : "shrink-0"}>
       <div className="mb-2 flex shrink-0 items-center justify-between gap-2 px-2">
-        {directoryOpen && <h2 className="text-lg font-semibold tracking-tight">本书目录</h2>}
+        {directoryOpen && <h2 className="text-lg font-semibold tracking-tight">Contenido de este libro</h2>}
         <button type="button" onClick={()=>setDirectoryOpen(open=>!open)} aria-expanded={directoryOpen}
-          aria-label={directoryOpen ? "收起本书目录" : "显示本书目录"} title={directoryOpen ? "收起本书目录" : "显示本书目录"}
+          aria-label={directoryOpen ? "Cerrar el índice de este libro" : "Mostrar el índice del libro"} title={directoryOpen ? "Cerrar el índice de este libro" : "Mostrar el índice del libro"}
           className="inline-flex min-h-9 min-w-9 items-center justify-center gap-2 rounded-md px-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring">
-          {directoryOpen ? <PanelLeftClose aria-hidden="true" className="size-4"/> : <><PanelLeftOpen aria-hidden="true" className="size-4"/>显示本书目录</>}
+          {directoryOpen ? <PanelLeftClose aria-hidden="true" className="size-4"/> : <><PanelLeftOpen aria-hidden="true" className="size-4"/>Mostrar el índice del libro</>}
         </button>
       </div>
       {directoryOpen ? <ResourceDirectory book={displayBook} selected={directorySelected} onSelect={select} /> : null}
     </aside>;
   const content = savedReview ? <section key={review?.toString()} className="h-full max-h-[75dvh] min-h-0 min-w-0 flex-1 overflow-y-auto overscroll-contain pb-6 md:max-h-none"><ReviewDetail book={book} review={savedReview} readingDisplay={readingDisplay} onReadingDisplayChange={onReadingDisplayChange} onOpenChapter={onLeaveReview ? id=>select({kind:"chapter",id}) : undefined} onEditChapter={editChapter}/></section> : <section ref={contentViewport} data-chapter-scroll-viewport key={selected.kind + (selected.kind === "beat" ? selected.volumeId : "") + ("id" in selected ? selected.id : "")} className="h-full max-h-[75dvh] min-h-0 min-w-0 flex-1 overflow-y-auto overscroll-contain pb-6 md:max-h-none">
-      {followTarget && sameSelection(selected, followTarget.selection) && selected.kind !== "chapter" && activity?.focus ? <p role="status" className="mb-4 px-2 text-xs leading-6 text-muted-foreground sm:px-6">正在查看「{activity.focus.label}」；生成的资料保存后会自动显示。</p> : null}
+      {followTarget && sameSelection(selected, followTarget.selection) && selected.kind !== "chapter" && activity?.focus ? <p role="status" className="mb-4 px-2 text-xs leading-6 text-muted-foreground sm:px-6">Viendo "{activity.focus.label}”; los datos generados se mostrarán automáticamente después de ser guardados.</p> : null}
       <PlanningDetail book={book} selected={selected} onSelect={select} onOpenChapterReview={onOpenChapterReview} />
-      {selected.kind === "world_map" ? <Suspense fallback={<p className="px-6 text-sm text-muted-foreground">正在读取世界地图…</p>}><WorldMapView book={book} onOpenWorld={()=>select({kind:"world"})}/></Suspense>
-        : selected.kind === "character_graph" ? <Suspense fallback={<p className="px-6 text-sm text-muted-foreground">正在读取角色关系图…</p>}><CharacterGraphView book={book} preview={preview} onOpenCharacter={id=>select({kind:"character",id})}/></Suspense>
+      {selected.kind === "world_map" ? <Suspense fallback={<p className="px-6 text-sm text-muted-foreground">Cargando mapa mundial…</p>}><WorldMapView book={book} onOpenWorld={()=>select({kind:"world"})}/></Suspense>
+        : selected.kind === "character_graph" ? <Suspense fallback={<p className="px-6 text-sm text-muted-foreground">Cargando diagrama de roles...</p>}><CharacterGraphView book={book} preview={preview} onOpenCharacter={id=>select({kind:"character",id})}/></Suspense>
         : selected.kind === "character_timeline" ? <CastTimeline book={book} onSelect={select} preview={preview}/>
         : selected.kind === "foreshadowing" || selected.kind === "resources" || selected.kind === "character_resources" ? <LedgerView book={book} selection={selected} onSelect={select} preview={preview}/>
         : chapter ? <ChapterReader key={`${chapter.id}:${editedChapter?.id===chapter.id ? editedChapter.revision : 0}`} chapter={chapter} chapters={displayBook.chapters} characters={book.materials.characters} onCharacter={openCharacter} onChapter={id => select({kind:"chapter",id})} generation={live?.chapterId===chapter.id ? live : null} followGeneration={followGeneration} readingDisplay={readingDisplay} onReadingDisplayChange={onReadingDisplayChange} onEdit={canEditChapter ? editChapter : undefined}/>
@@ -95,7 +95,7 @@ export function NovelWorkspace({ book, preview = false, review, onLeaveReview, o
   const showVolumeSummary = savedReview ? savedReview.type === "volume_strategy" : selected.kind === "volumes" || selected.kind === "volume";
   const readingPane = showVolumeSummary && !preview ? <VolumeEmphasisProvider book={book}>{content}</VolumeEmphasisProvider> : content;
   return <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-    {directoryOpen ? <ResizableWorkspace id="director-resource-layout" className="min-h-0 flex-1" label="调整目录与正文宽度" defaultLeft={20} minLeft={180} minRight={340} breakpoint={560} left={directory} right={readingPane}/> : <>{directory}{readingPane}</>}
+    {directoryOpen ? <ResizableWorkspace id="director-resource-layout" className="min-h-0 flex-1" label="Ajustar la tabla de contenidos y el ancho del texto" defaultLeft={20} minLeft={180} minRight={340} breakpoint={560} left={directory} right={readingPane}/> : <>{directory}{readingPane}</>}
     {character ? <CharacterDrawer key={character.id} book={book} character={character} readingOrder={chapter?.order ?? readingOrder} preview={preview} onClose={() => {if (!characterAdjustment) setCharacterId(null);}} onChapter={id => select({kind:"chapter",id})} onPlan={id => select({kind:"plan",id})} onResources={id=>{setCharacterId(null);select({kind:"character_resources",id});}} onAdjust={preview ? undefined : setAdjustment}/> : null}
     {character && characterAdjustment ? <CharacterForwardAdjustDialog novelId={book.novel.id} character={character} initialPreview={characterAdjustment} onClose={() => setAdjustment(null)}/> : null}
   </div>;

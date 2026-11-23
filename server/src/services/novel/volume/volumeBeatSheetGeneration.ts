@@ -69,7 +69,7 @@ export async function generateBeatSheet(params: {
     novelId: document.novelId,
     scope: "beat_sheet",
     phase: "prompt",
-    label: `正在生成第 ${targetVolume.sortOrder} 卷节奏板`,
+    label: `Generando el ${targetVolume.sortOrder} tablero de ritmo rodante`,
     options,
   });
   const promptInput = {

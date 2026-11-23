@@ -13,7 +13,7 @@ export function createDirectorVersionRouter(): Router {
   });
   router.put("/:novelId/director-version", async (req, res, next) => {
     const body = z.object({version: z.enum(["v1", "v2"]), expectedEpoch: z.number().int().nonnegative()}).safeParse(req.body);
-    if (!body.success) {res.status(400).json({success: false, error: "请选择导演版本并刷新本书设置。"}); return;}
+    if (!body.success) {res.status(400).json({success: false, error: "Seleccione la versión del director y actualice la configuración del libro."}); return;}
     try {res.json({success: true, data: await switchNovelDirectorVersion(String(req.params.novelId), body.data.version, body.data.expectedEpoch)});} catch (error) {next(error);}
   });
   return router;

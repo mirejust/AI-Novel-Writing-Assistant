@@ -112,9 +112,9 @@ export function BookMapCamera({ layout, selected, touring, jump, pause }: {
   }, [layout, selected, touring, jump, width, height, ready, viewportInitialized, getViewport, setViewport, setCenter]);
 
   return <Panel position="bottom-right" className="book-zoom">
-    <button type="button" aria-label="缩小全书流程图" title="缩小" onClick={() => { pause(); void zoomOut(travel(150)); }}><Minus size={15} /></button>
+    <button type="button" aria-label="Reducir el diagrama de flujo de todo el libro." title="Alejar" onClick={() => { pause(); void zoomOut(travel(150)); }}><Minus size={15} /></button>
     <span className="book-zoom-value">{percent}%</span>
-    <button type="button" aria-label="放大全书流程图" title="放大" onClick={() => { pause(); void zoomIn(travel(150)); }}><Plus size={15} /></button>
-    <button type="button" onClick={() => { pause(); void fitBounds(layout.bounds, { padding: 0.08, ...travel(360) }); }}><Maximize size={14} />全图</button>
+    <button type="button" aria-label="Ampliar el diagrama de flujo del libro." title="Acercar" onClick={() => { pause(); void zoomIn(travel(150)); }}><Plus size={15} /></button>
+    <button type="button" onClick={() => { pause(); void fitBounds(layout.bounds, { padding: 0.08, ...travel(360) }); }}><Maximize size={14} />Imagen completa</button>
   </Panel>;
 }

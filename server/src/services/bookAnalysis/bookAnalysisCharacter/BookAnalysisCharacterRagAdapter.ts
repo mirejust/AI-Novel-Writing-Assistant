@@ -42,17 +42,17 @@ export function buildBookAnalysisCharacterDimensionQuery(
 ): string {
   const label = BOOK_ANALYSIS_CHARACTER_DIMENSION_LABELS[dimension] ?? dimension;
   const chapterHint = input.occurringChapters?.length
-    ? ` 出场章节 ${input.occurringChapters.slice(0, 8).join(" ")}`
+    ? ` Capítulo de apariencia ${input.occurringChapters.slice(0, 8).join(" ")}`
     : "";
   if (dimension === "appearance") {
     return [
       input.characterName,
       label,
-      "外貌 容貌 身形 发色 瞳色 衣着 服装 配饰 伤痕 表情 气质 姿态 本章形象",
+      "Apariencia, apariencia, forma del cuerpo, color de cabello, color de ojos, ropa, accesorios, cicatrices, expresión, temperamento, postura, imagen de este capítulo.",
       chapterHint,
     ].filter(Boolean).join(" ");
   }
-  return `${input.characterName} ${label} 原文 细节 台词 行动 心理${chapterHint}`;
+  return `${input.characterName} ${label} Texto original detalla líneas acción psicología${chapterHint}`;
 }
 
 export class BookAnalysisCharacterRagAdapter {
@@ -79,10 +79,10 @@ export class BookAnalysisCharacterRagAdapter {
 
     const chunks = [...chunksById.values()];
     const evidence = chunks.map((chunk, index): BookAnalysisCharacterEvidenceItem => ({
-      label: `${BOOK_ANALYSIS_CHARACTER_DIMENSION_LABELS[chunk.dimension] ?? chunk.dimension} 原文 ${index + 1}`,
+      label: `${BOOK_ANALYSIS_CHARACTER_DIMENSION_LABELS[chunk.dimension] ?? chunk.dimension} original ${index + 1}`,
       excerpt: compactSnippet(chunk.chunkText, 220),
       quote: compactSnippet(chunk.chunkText, 220),
-      sourceLabel: chunk.title ?? "原文 chunk",
+      sourceLabel: chunk.title ?? "fragmento de texto original",
       sourceType: "chapter_chunk",
       chunkId: chunk.id,
       chapterIndex: readChapterIndex(chunk),

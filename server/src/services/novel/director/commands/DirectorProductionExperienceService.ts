@@ -26,7 +26,7 @@ export function buildProductionExperienceSeed(
 ): DirectorWorkflowSeedPayload {
   const directorInput = seed.directorInput;
   if (!directorInput) {
-    throw new AppError("自动导演任务缺少继续生产所需的上下文。", 409);
+    throw new AppError("Las tareas automáticas del director carecen del contexto necesario para continuar con la producción.", 409);
   }
   const nextInput = applyDirectorRunModeContract({
     ...directorInput,
@@ -59,10 +59,10 @@ export class DirectorProductionExperienceService {
       select: { id: true, lane: true, novelId: true, status: true, checkpointType: true },
     });
     if (!task || task.lane !== "auto_director") {
-      throw new AppError("自动导演任务不存在。", 404);
+      throw new AppError("Las tareas automáticas de director no existen.", 404);
     }
     if (!task.novelId) {
-      throw new AppError("自动导演任务还没有绑定小说项目。", 409);
+      throw new AppError("La tarea automática del director aún no está vinculada al proyecto novedoso.", 409);
     }
     const novelId = task.novelId;
 
@@ -91,7 +91,7 @@ export class DirectorProductionExperienceService {
 
     if (!selected) {
       if (task.checkpointType !== "production_experience_required") {
-        throw new AppError("自动导演还没有完成正文生产前的准备。", 409);
+        throw new AppError("El director automático aún no ha completado los preparativos para la producción del texto principal.", 409);
       }
       buildProductionExperienceSeed(seed, experience);
 
@@ -105,9 +105,9 @@ export class DirectorProductionExperienceService {
             status: "waiting_approval",
             currentStage: "chapter_execution",
             currentItemKey: "chapter_batch_ready",
-            currentItemLabel: "已选择创作界面，准备开始全书生产",
+            currentItemLabel: "La interfaz de creación ha sido seleccionada y lista para comenzar la producción completa del libro.",
             checkpointType: "chapter_batch_ready",
-            checkpointSummary: "章节执行资源已准备完成，AI 将开始全书生产。",
+            checkpointSummary: "Los recursos de ejecución del capítulo están listos y la IA comenzará la producción completa del libro.",
           },
         }, { productionExperience: experience }, { transaction: tx });
         if (updated.count === 0) {

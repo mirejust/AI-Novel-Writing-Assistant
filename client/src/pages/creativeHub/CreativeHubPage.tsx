@@ -152,7 +152,7 @@ export default function CreativeHubPage() {
       }
     },
     onError: (error) => {
-      toast.error(error instanceof Error ? error.message : "创作线程创建失败，请重试。");
+      toast.error(error instanceof Error ? error.message : "Error al crear el hilo del autor, inténtelo de nuevo.");
     },
   });
 
@@ -343,7 +343,7 @@ export default function CreativeHubPage() {
       await updateCreativeHubThread(threadId, { archived });
       await queryClient.invalidateQueries({ queryKey: queryKeys.creativeHub.threads });
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "线程归档操作失败，请重试。");
+      toast.error(error instanceof Error ? error.message : "La operación de archivado del hilo falló, inténtelo de nuevo.");
     } finally {
       threadActionInFlightRef.current = false;
       setThreadActionPendingId("");
@@ -375,7 +375,7 @@ export default function CreativeHubPage() {
         }, { replace: true });
       }
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "小说工作区切换失败，请重试。");
+      toast.error(error instanceof Error ? error.message : "No se pudo cambiar el nuevo espacio de trabajo. Inténtelo de nuevo.");
     } finally {
       bindingInFlightRef.current = false;
       setBindingPending(false);
@@ -415,7 +415,7 @@ export default function CreativeHubPage() {
       }
       await queryClient.invalidateQueries({ queryKey: queryKeys.creativeHub.threads });
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "创作线程删除失败，请重试。");
+      toast.error(error instanceof Error ? error.message : "Error al eliminar el hilo de creación, inténtalo de nuevo.");
     } finally {
       threadActionInFlightRef.current = false;
       setThreadActionPendingId("");
@@ -444,7 +444,7 @@ export default function CreativeHubPage() {
         runtimeState.setInterrupt(undefined);
       }
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "待确认操作提交失败，请重试。");
+      toast.error(error instanceof Error ? error.message : "El envío de la operación de confirmación pendiente falló, inténtelo nuevamente.");
     } finally {
       approvalInFlightRef.current = false;
       setApprovalPending(false);
@@ -548,7 +548,7 @@ export default function CreativeHubPage() {
       await queryClient.invalidateQueries({ queryKey: queryKeys.creativeHub.history(activeThreadId) });
     }).catch((error: unknown) => {
       if (activeThreadIdRef.current === activeThreadId) {
-        toast.error(error instanceof Error ? error.message : "世界观绑定同步失败，请重新加载当前线程后重试。");
+        toast.error(error instanceof Error ? error.message : "Error en la sincronización del enlace de la vista mundial. Vuelva a cargar el hilo actual e inténtelo de nuevo.");
       }
     });
   }, [activeThreadId, productionStatus?.worldId, queryClient, rawThreadBindings]);
@@ -557,17 +557,17 @@ export default function CreativeHubPage() {
     <div className="space-y-4">
       <WorkspaceHeader
         icon={MessagesSquare}
-        context="当前小说与创作线程"
-        title="创作中枢"
-        description="绑定一本小说后，可查询创作状态、诊断阻塞，并获得可操作的下一步建议。"
+        context="Novelas actuales e hilos creativos"
+        title="Centro creativo"
+        description="Después de vincular una novela, puede verificar el estado de creación, diagnosticar el bloqueo y obtener sugerencias prácticas para el siguiente paso."
         meta={(
           <>
-            <span>小说：{workspacePresentation.objectTitle}</span>
-            <span>阶段：{workspacePresentation.stageLabel}</span>
-            <span>线程：{currentThread?.title ?? "正在准备"}</span>
-            <span>状态：{workspacePresentation.threadStatusLabel}</span>
+            <span>Novedoso:{workspacePresentation.objectTitle}</span>
+            <span>Escenario:{workspacePresentation.stageLabel}</span>
+            <span>Hilo:{currentThread?.title ?? "Preparando"}</span>
+            <span>Estado:{workspacePresentation.threadStatusLabel}</span>
             {currentBindings.knowledgeDocumentIds?.length ? (
-              <span>已绑定知识资料：{currentBindings.knowledgeDocumentIds.length} 份</span>
+              <span>Materiales de conocimiento encuadernados:{currentBindings.knowledgeDocumentIds.length} Porción</span>
             ) : null}
           </>
         )}
@@ -578,23 +578,23 @@ export default function CreativeHubPage() {
             disabled={threadNavigationDisabled}
             onClick={() => void requestThreadCreation({ title: DEFAULT_THREAD_TITLE, resourceBindings: {} })}
           >
-            {createThreadMutation.isPending ? "正在创建..." : "新建创作线程"}
+            {createThreadMutation.isPending ? "Creando..." : "Crear un nuevo hilo de creación"}
           </Button>
         )}
       />
 
-      <section className="rounded-lg bg-info/5 p-4" aria-label="创作中枢后续开发说明">
+      <section className="rounded-lg bg-info/5 p-4" aria-label="Instrucciones para el posterior desarrollo del Centro de Creación">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <h2 className="text-sm font-semibold text-foreground">关于创作中枢的后续开发</h2>
+            <h2 className="text-sm font-semibold text-foreground">Respecto al desarrollo posterior del Centro Creativo</h2>
             <p className="mt-1 max-w-3xl text-sm leading-6 text-muted-foreground">
-              创作中枢用于查询小说状态、诊断问题和查看下一步建议，后续可能不会继续深入开发。更完整的 Agent 创作能力，会在专门的 Agent 应用中继续推进。
+              El centro de creación se utiliza para comprobar el estado de la novela, diagnosticar problemas y ver sugerencias para los siguientes pasos. Es posible que no se desarrolle más en el futuro. Se seguirán promoviendo capacidades de creación de Agentes más completas en aplicaciones de Agentes dedicadas.
             </p>
-            <p className="mt-2 text-xs text-muted-foreground">可以通过右侧入口了解独立应用；两个应用各自保存小说资料和运行记录。</p>
+            <p className="mt-2 text-xs text-muted-foreground">Puede conocer las aplicaciones independientes a través de la entrada a la derecha; Cada una de las dos aplicaciones guarda datos novedosos y registros de operaciones.</p>
           </div>
           <Button asChild size="sm" variant="outline" className="shrink-0">
             <a href="https://github.com/ExplosiveCoderflome/ani-book-agent" target="_blank" rel="noreferrer">
-              了解 Agent 应用
+              Más información sobre las aplicaciones de agentes
               <ExternalLink className="ml-1.5 h-3.5 w-3.5" aria-hidden="true" />
             </a>
           </Button>
@@ -607,8 +607,8 @@ export default function CreativeHubPage() {
         <WorkspaceStateNotice
           loading
           tone="info"
-          title="正在准备当前创作现场"
-          description="系统正在读取线程和小说状态，完成后会给出唯一推荐下一步。"
+          title="Preparando el sitio de creación actual"
+          description="El sistema está leyendo el hilo y el estado de la novela, y dará el único siguiente paso recomendado cuando se complete."
         />
       ) : (
         <WorkspaceNextAction
@@ -627,15 +627,15 @@ export default function CreativeHubPage() {
               {workspacePresentation.recommendation.action.startsWith("retry_") ? (
                 <RefreshCw className="mr-1.5 h-3.5 w-3.5" aria-hidden="true" />
               ) : null}
-              {recommendationPending ? "正在重试..." : workspacePresentation.recommendation.actionLabel}
+              {recommendationPending ? "Intentando de nuevo..." : workspacePresentation.recommendation.actionLabel}
             </Button>
           )}
         />
       )}
 
       <WorkspaceColumns layoutId="creative-hub" className="grid min-h-[72vh] gap-4 lg:grid-cols-[minmax(0,1fr)_320px] xl:h-[calc(100vh-13rem)] xl:workspace-split"
-        left={{ label: "调整创作线程列表宽度", initial: "240px", min: 160 }}
-        right={{ label: "调整创作上下文宽度", initial: "320px", min: 220 }}>
+        left={{ label: "Ajustar el ancho de la lista de hilos de creación", initial: "240px", min: 160 }}
+        right={{ label: "Ajustar el ancho del contexto de creación", initial: "320px", min: 220 }}>
         <div id="creative-hub-activity" className="min-h-0 scroll-mt-4 lg:col-start-1 lg:row-start-1 xl:col-start-2">
           <CreativeHubConversation
             runtime={runtimeState.runtime}
@@ -673,7 +673,7 @@ export default function CreativeHubPage() {
             defaultRuntimeDetailsCollapsed={defaultRuntimeDetailsCollapsed}
             actionDisabled={workspaceActionDisabled}
             novelsLoading={novelsQuery.isLoading}
-            novelsErrorMessage={novelsQuery.error instanceof Error ? novelsQuery.error.message : novelsQuery.error ? "小说列表加载失败。" : ""}
+            novelsErrorMessage={novelsQuery.error instanceof Error ? novelsQuery.error.message : novelsQuery.error ? "La lista de novelas no se pudo cargar." : ""}
             novelsRetrying={novelsQuery.isFetching}
             onToggleRuntimeDetailsDefault={() => {
               setDefaultRuntimeDetailsCollapsed((value) => !value);
@@ -689,7 +689,7 @@ export default function CreativeHubPage() {
             threads={threads}
             activeThreadId={activeThreadId}
             loading={threadsQuery.isLoading}
-            errorMessage={threadsQuery.error instanceof Error ? threadsQuery.error.message : threadsQuery.error ? "创作线程加载失败。" : ""}
+            errorMessage={threadsQuery.error instanceof Error ? threadsQuery.error.message : threadsQuery.error ? "No se pudo cargar el hilo de creación." : ""}
             retryPending={threadsQuery.isFetching}
             actionPending={createThreadMutation.isPending}
             actionDisabled={threadNavigationDisabled}

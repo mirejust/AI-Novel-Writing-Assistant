@@ -19,7 +19,7 @@ function publish(turn: LiveTurn, snapshot: AgentReplyPreview) {
 
 export const agentReplyLive = {
   begin(turnId: string) {
-    turns.set(turnId, {snapshot: {turnId, stage: "正在整理你的想法…", text: "", done: false}, listeners: new Set()});
+    turns.set(turnId, {snapshot: {turnId, stage: "Cotejando tus pensamientos...", text: "", done: false}, listeners: new Set()});
   },
   subscribe(turnId: string, send: Listener) {
     const turn = turns.get(turnId);

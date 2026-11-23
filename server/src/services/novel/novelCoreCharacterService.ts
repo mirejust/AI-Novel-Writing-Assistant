@@ -29,7 +29,7 @@ export class NovelCoreCharacterService {
         where: { id: input.baseCharacterId },
       });
       if (!baseCharacter) {
-        throw new Error("基础角色不存在");
+        throw new Error("El rol básico no existe.");
       }
       payload = {
         ...payload,
@@ -58,7 +58,7 @@ export class NovelCoreCharacterService {
       select: { id: true, currentState: true, currentGoal: true },
     });
     if (!exists) {
-      throw new Error("角色不存在");
+      throw new Error("el rol no existe");
     }
 
     const hasStateChanged = typeof input.currentState === "string" && input.currentState !== exists.currentState;
@@ -81,7 +81,7 @@ export class NovelCoreCharacterService {
     queueRagDelete("character", characterId);
     const deleted = await prisma.character.deleteMany({ where: { id: characterId, novelId } });
     if (deleted.count === 0) {
-      throw new Error("角色不存在");
+      throw new Error("el rol no existe");
     }
   }
 
@@ -101,7 +101,7 @@ export class NovelCoreCharacterService {
       where: { id: characterId, novelId },
     });
     if (!character) {
-      throw new Error("角色不存在");
+      throw new Error("el rol no existe");
     }
 
     const chapters = await prisma.chapter.findMany({
@@ -235,19 +235,19 @@ export class NovelCoreCharacterService {
     ]);
 
     if (!novel || !character) {
-      throw new Error("小说或角色不存在");
+      throw new Error("La novela o el personaje no existe.");
     }
 
     const timelineText = timelines.length > 0
       ? timelines
         .map((item) => `${item.title}: ${item.content}`)
         .join("\n")
-      : "暂无时间线事件";
+      : "Aún no hay eventos en la línea de tiempo";
 
     let ragContext = "";
     try {
       ragContext = await ragServices.hybridRetrievalService.buildContextBlock(
-        `角色演进 ${character.name}\n${timelineText}`,
+        `Evolución del personaje ${character.name}\n${timelineText}`,
         {
           novelId,
           ownerTypes: ["character", "character_timeline", "chapter_summary", "consistency_fact", "novel", "bible"],
@@ -262,14 +262,14 @@ export class NovelCoreCharacterService {
       asset: characterEvolutionPrompt,
       promptInput: {
         novelTitle: novel.title,
-        bibleContent: novel.bible?.rawContent ?? "暂无",
+        bibleContent: novel.bible?.rawContent ?? "Sin datos",
         characterName: character.name,
         characterRole: character.role,
-        personality: character.personality ?? "暂无",
-        background: character.background ?? "暂无",
-        development: character.development ?? "暂无",
-        currentState: character.currentState ?? "暂无",
-        currentGoal: character.currentGoal ?? "暂无",
+        personality: character.personality ?? "Sin datos",
+        background: character.background ?? "Sin datos",
+        development: character.development ?? "Sin datos",
+        currentState: character.currentState ?? "Sin datos",
+        currentGoal: character.currentGoal ?? "Sin datos",
         timelineText,
         ragContext: ragContext || "",
       },
@@ -297,8 +297,8 @@ export class NovelCoreCharacterService {
       data: {
         novelId,
         characterId,
-        title: `角色演进更新 · ${new Date().toLocaleString("zh-CN")}`,
-        content: `状态：${updated.currentState ?? "暂无"}；目标：${updated.currentGoal ?? "暂无"}`,
+        title: `Actualizaciones de evolución de personajes · ${new Date().toLocaleString("zh-CN")}`,
+        content: `estado:${updated.currentState ?? "Sin datos"};Objetivo:${updated.currentGoal ?? "Sin datos"}`,
         source: "ai_evolve",
       },
     });
@@ -321,7 +321,7 @@ export class NovelCoreCharacterService {
       }),
     ]);
     if (!novel || !character) {
-      throw new Error("小说或角色不存在");
+      throw new Error("La novela o el personaje no existe.");
     }
     const worldContextBlock = await this.worldContextGateway.getWorldContextBlock(novelId, {
       purpose: "character",
@@ -332,7 +332,7 @@ export class NovelCoreCharacterService {
     if (!worldContextBlock) {
       return {
         status: "pass" as const,
-        warnings: ["当前没有可用的本书世界上下文，无法执行严格世界规则检查。"],
+        warnings: ["Actualmente no hay un contexto mundial disponible para que este libro realice comprobaciones estrictas de las reglas mundiales."],
         issues: [],
       };
     }
@@ -367,7 +367,7 @@ export class NovelCoreCharacterService {
     } catch {
       return {
         status: "warn" as const,
-        warnings: ["AI 检查失败，返回规则回退结果"],
+        warnings: ["La verificación de IA falla y se devuelve el resultado de la reversión de las reglas"],
         issues: [] as Array<{ severity: "warn" | "error"; message: string; suggestion?: string }>,
       };
     }

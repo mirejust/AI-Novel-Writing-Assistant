@@ -33,14 +33,14 @@ export default function ChapterEditorDirectorPanel(props: ChapterEditorDirectorP
   return (
     <div className="flex min-h-0 flex-col overflow-hidden bg-background xl:h-full">
       <div className="flex shrink-0 items-center justify-between gap-3 border-b border-border/50 px-4 py-3">
-        <div className="text-sm font-medium">AI 修改与续写</div>
+        <div className="text-sm font-medium">Modificación y continuación de la IA.</div>
         <div className="flex items-center gap-2">
           {!isIdle ? <>
-            <Button size="sm" variant={session.viewMode === "block" ? "default" : "outline"} onClick={() => onChangeViewMode("block")}>段落对比</Button>
-            <Button size="sm" variant={session.viewMode === "inline" ? "default" : "outline"} onClick={() => onChangeViewMode("inline")}>细节标记</Button>
+            <Button size="sm" variant={session.viewMode === "block" ? "default" : "outline"} onClick={() => onChangeViewMode("block")}>Comparación de párrafos</Button>
+            <Button size="sm" variant={session.viewMode === "inline" ? "default" : "outline"} onClick={() => onChangeViewMode("inline")}>Marca de detalle</Button>
           </> : null}
           {props.onCollapse ? (
-            <Button size="icon" variant="ghost" className="h-8 w-8" title="收起右栏" onClick={props.onCollapse}>
+            <Button size="icon" variant="ghost" className="h-8 w-8" title="Contraer columna derecha" onClick={props.onCollapse}>
               <PanelRightClose className="h-4 w-4" />
             </Button>
           ) : null}
@@ -48,18 +48,18 @@ export default function ChapterEditorDirectorPanel(props: ChapterEditorDirectorP
       </div>
       <div className="min-h-0 flex-1 space-y-5 overflow-y-auto px-4 py-4">
         {isIdle ? <>
-          {props.workspaceStatus === "loading" ? <p className="text-xs leading-5 text-muted-foreground">AI 正在分析本章问题，你可以继续选段或填写修改要求。</p> : null}
+          {props.workspaceStatus === "loading" ? <p className="text-xs leading-5 text-muted-foreground">AI está analizando las preguntas de este capítulo. Puede continuar seleccionando pasajes o completando requisitos de modificación.</p> : null}
           <ChapterEditorActions {...props} />
         </> : null}
         {session.status === "loading" ? (
           <div className="rounded-2xl border border-dashed border-border/70 bg-muted/10 p-4 text-sm text-muted-foreground">
-            AI 正在结合章节宏观定位和你的修改要求生成 2 到 3 个候选版本。
+            La IA genera de 2 a 3 versiones candidatas según el posicionamiento macro del capítulo y sus requisitos de revisión.
           </div>
         ) : null}
 
         {session.status === "error" ? (
           <div className="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-900">
-            {session.errorMessage || "候选生成失败，请重试。"}
+            {session.errorMessage || "Error al generar el candidato. Inténtelo de nuevo."}
           </div>
         ) : null}
 
@@ -67,25 +67,25 @@ export default function ChapterEditorDirectorPanel(props: ChapterEditorDirectorP
           <>
             <div className="rounded-xl bg-muted/10 p-4">
               <div className="text-sm font-medium text-foreground">
-                {session.mode === "continuation" ? "AI 续写方向" : "AI 理解到的修改目标"}
+                {session.mode === "continuation" ? "Dirección de continuación de la IA" : "Objetivo de modificación entendido por la IA"}
               </div>
               {session.mode === "continuation" ? (
                 <div className="mt-3 text-sm leading-6 text-muted-foreground">
-                  光标处将插入一段“{session.continuationOperation === "continue" ? "自然续写" : session.requestLabel?.replace(/^正在生成|方案$/g, "") || "续写"}”。你可以先比较候选，再决定是否写回正文。
+                  Un párrafo "{session.continuationOperation === "continue" ? "Continuación natural" : session.requestLabel?.replace(/^正在生成|方案$/g, "") || "Continuar escribiendo"}". Puede comparar los candidatos primero y luego decidir si desea volver a escribir en el texto principal.
                 </div>
               ) : (
                 <div className="mt-3 space-y-2 text-sm leading-6 text-muted-foreground">
-                  <div>目标：{session.resolvedIntent?.editGoal}</div>
-                  <div>语气：{session.resolvedIntent?.toneShift}</div>
-                  <div>节奏：{session.resolvedIntent?.paceAdjustment}</div>
-                  <div>冲突：{session.resolvedIntent?.conflictAdjustment}</div>
-                  <div>情绪：{session.resolvedIntent?.emotionAdjustment}</div>
-                  <div>说明：{session.resolvedIntent?.reasoningSummary}</div>
+                  <div>Objetivo:{session.resolvedIntent?.editGoal}</div>
+                  <div>Tono:{session.resolvedIntent?.toneShift}</div>
+                  <div>Ritmo:{session.resolvedIntent?.paceAdjustment}</div>
+                  <div>Conflicto:{session.resolvedIntent?.conflictAdjustment}</div>
+                  <div>Ánimo:{session.resolvedIntent?.emotionAdjustment}</div>
+                  <div>Ilustrar:{session.resolvedIntent?.reasoningSummary}</div>
                 </div>
               )}
               {session.macroAlignmentNote ? (
                 <div className="mt-3 rounded-2xl border border-emerald-200 bg-emerald-50/90 p-3 text-sm leading-6 text-emerald-900">
-                  与本章/本卷目标的对齐：{session.macroAlignmentNote}
+                  Alineación con los objetivos del capítulo/volumen:{session.macroAlignmentNote}
                 </div>
               ) : null}
             </div>
@@ -109,11 +109,11 @@ export default function ChapterEditorDirectorPanel(props: ChapterEditorDirectorP
                 <div className="text-sm leading-6 text-muted-foreground">{activeCandidate.summary}</div>
               ) : null}
               {activeCandidate.rationale ? (
-                <div className="text-sm leading-6 text-foreground/80">为什么这样改：{activeCandidate.rationale}</div>
+                <div className="text-sm leading-6 text-foreground/80">¿Por qué cambiar esto?{activeCandidate.rationale}</div>
               ) : null}
               {activeCandidate.riskNotes && activeCandidate.riskNotes.length > 0 ? (
                 <div className="rounded-2xl border border-amber-200 bg-amber-50/90 p-3 text-sm leading-6 text-amber-900">
-                  需要注意：{activeCandidate.riskNotes.join("；")}
+                  Necesito prestar atención a:{activeCandidate.riskNotes.join(";")}
                 </div>
               ) : null}
             </div>
@@ -125,11 +125,11 @@ export default function ChapterEditorDirectorPanel(props: ChapterEditorDirectorP
             <div className="space-y-3 rounded-xl bg-muted/10 p-4">
               <div className="flex items-center justify-between gap-3">
                 <div>
-                  <div className="text-sm font-medium text-foreground">选择要写回正文的改动</div>
+                  <div className="text-sm font-medium text-foreground">Seleccione cambios para volver a escribir en el texto</div>
                   <div className="mt-1 text-xs text-muted-foreground">
                     {diffChanges.length > 0
-                      ? `已选择 ${selectedDiffCount}/${diffChanges.length} 项，未选择的部分会保留原文。`
-                      : "这份候选没有检测到可单独采纳的差异。"}
+                      ? `Seleccionado ${selectedDiffCount}/${diffChanges.length} elemento, la parte no seleccionada conservará el texto original.`
+                      : "Este candidato no detectó diferencias que pudieran adoptarse individualmente."}
                   </div>
                 </div>
                 {diffChanges.length > 0 ? (
@@ -138,7 +138,7 @@ export default function ChapterEditorDirectorPanel(props: ChapterEditorDirectorP
                     variant="ghost"
                     onClick={() => onSelectAllChanges(selectedDiffCount !== diffChanges.length)}
                   >
-                    {selectedDiffCount === diffChanges.length ? "全部取消" : "全部选择"}
+                    {selectedDiffCount === diffChanges.length ? "Cancelar todo" : "Seleccionar todo"}
                   </Button>
                 ) : null}
               </div>
@@ -146,8 +146,8 @@ export default function ChapterEditorDirectorPanel(props: ChapterEditorDirectorP
                 <div className="space-y-2">
                   {diffChanges.map((change, index) => {
                     const checked = selectedDiffChangeIds.has(change.id);
-                    const before = change.originalText.trim() || "（新增内容）";
-                    const after = change.candidateText.trim() || "（删除内容）";
+                    const before = change.originalText.trim() || "(nuevo contenido)";
+                    const after = change.candidateText.trim() || "(Contenido eliminado)";
                     return (
                       <label
                         key={change.id}
@@ -160,7 +160,7 @@ export default function ChapterEditorDirectorPanel(props: ChapterEditorDirectorP
                           onChange={() => onToggleDiffChange(change.id)}
                         />
                         <span className="min-w-0 flex-1 text-xs leading-5">
-                          <span className="font-medium text-foreground">改动 {index + 1} · {change.kind === "replace" ? "替换" : change.kind === "insert" ? "新增" : "删除"}</span>
+                          <span className="font-medium text-foreground">cambiar {index + 1} · {change.kind === "replace" ? "Reemplazar" : change.kind === "insert" ? "Nuevo" : "Eliminar"}</span>
                           <span className="mt-1 block break-words text-rose-800 line-through">{before}</span>
                           <span className="mt-1 block break-words text-emerald-800">{after}</span>
                         </span>
@@ -176,13 +176,13 @@ export default function ChapterEditorDirectorPanel(props: ChapterEditorDirectorP
       {!isIdle ? (
       <div className="shrink-0 flex flex-wrap items-center justify-end gap-2 border-t border-border/70 px-4 py-4">
         <Button size="sm" variant="outline" onClick={onReject} disabled={isIdle || session.status === "loading" || isApplying}>
-          拒绝全部
+          rechazar todo
         </Button>
         <Button size="sm" variant="outline" onClick={onRegenerate} disabled={isIdle || session.status === "loading" || isApplying}>
-          再生成
+          regenerado
         </Button>
         <Button size="sm" onClick={onAccept} disabled={session.status !== "ready" || !activeCandidate || isApplying || selectedDiffCount === 0 || !hasSelectedChanges}>
-          {isApplying ? "保存中..." : session.mode === "continuation" ? (selectedDiffCount === diffChanges.length ? "插入正文" : "插入已选") : selectedDiffCount === diffChanges.length ? "接受全部" : "接受已选"}
+          {isApplying ? "Guardando..." : session.mode === "continuation" ? (selectedDiffCount === diffChanges.length ? "Insertar texto" : "Insertar seleccionado") : selectedDiffCount === diffChanges.length ? "Aceptar todo" : "Aceptar seleccionado"}
         </Button>
       </div>
       ) : null}

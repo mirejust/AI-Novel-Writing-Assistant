@@ -9,7 +9,7 @@ export function createKernelModelWindowReader(snapshot: unknown):(provider:LLMPr
   const entries=kernelModelWindowsSchema.parse(snapshot),windows=new Map<string,number>();
   for(const row of entries){
     const key=JSON.stringify([row.provider,row.model]);
-    if(windows.has(key))throw new Error("模型上下文窗口配置重复。");
+    if(windows.has(key))throw new Error("Configuración de ventana de contexto de modelo duplicado.");
     windows.set(key,row.contextWindow);
   }
   return async(provider,model)=>windows.get(JSON.stringify([provider,model])) ?? null;

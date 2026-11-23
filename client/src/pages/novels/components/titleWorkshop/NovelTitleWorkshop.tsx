@@ -44,7 +44,7 @@ export default function NovelTitleWorkshop({
       const next = [...(response.data?.titles ?? [])].sort((left, right) => right.clickRate - left.clickRate);
       setSuggestions(next);
       setSelectedTitle(next[0]?.title ?? currentTitle);
-      toast.success(`已生成 ${next.length} 个标题候选。`);
+      toast.success(`Generado ${next.length} candidatos al título.`);
     },
   });
 
@@ -58,7 +58,7 @@ export default function NovelTitleWorkshop({
     }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: queryKeys.titles.all });
-      toast.success("标题已加入标题库。");
+      toast.success("El título se ha agregado a la biblioteca de títulos.");
     },
   });
 
@@ -71,20 +71,20 @@ export default function NovelTitleWorkshop({
     }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: queryKeys.titles.all });
-      toast.success("当前标题已加入标题库。");
+      toast.success("El título actual se ha agregado a la biblioteca de títulos.");
     },
   });
 
   const handleCopy = async (suggestion: TitleFactorySuggestion) => {
     await navigator.clipboard.writeText(suggestion.title);
     setSelectedTitle(suggestion.title);
-    toast.success("标题已复制到剪贴板。");
+    toast.success("Título copiado al portapapeles.");
   };
 
   const handleApply = (suggestion: TitleFactorySuggestion) => {
     setSelectedTitle(suggestion.title);
     onApplyTitle(suggestion.title);
-    toast.success("标题已写入基本信息表单，记得保存。");
+    toast.success("El título ha sido escrito en el formulario de información básica, recuerda guardarlo.");
   };
 
   return (
@@ -92,20 +92,20 @@ export default function NovelTitleWorkshop({
       <div className="space-y-4">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
           <div className="space-y-1">
-            <div className="text-sm font-semibold text-foreground">项目内标题工坊</div>
+            <div className="text-sm font-semibold text-foreground">Taller de título dentro del proyecto.</div>
             <div className="text-sm leading-6 text-muted-foreground">
-              基于当前已保存的小说简介和类型生成候选。如果刚修改过简介或类型，建议先保存基本信息再生成。
+              Genere candidatos según la sinopsis y el género de la novela actualmente guardada. Si acaba de modificar la introducción o el tipo, se recomienda guardar la información básica antes de generarla.
             </div>
           </div>
           <Button type="button" variant="outline" disabled={!currentTitle.trim() || saveCurrentMutation.isPending} onClick={() => saveCurrentMutation.mutate()}>
-            {saveCurrentMutation.isPending ? "保存中..." : "保存当前标题"}
+            {saveCurrentMutation.isPending ? "Guardando..." : "Guardar título actual"}
           </Button>
         </div>
         <div className="space-y-3">
           <LLMSelector />
           <div className="flex justify-end">
             <AiButton type="button" onClick={() => generateMutation.mutate()} disabled={generateMutation.isPending}>
-              {generateMutation.isPending ? "生成中..." : "生成标题候选"}
+              {generateMutation.isPending ? "Generando..." : "Generar candidatos a título"}
             </AiButton>
           </div>
         </div>
@@ -114,12 +114,12 @@ export default function NovelTitleWorkshop({
       <TitleSuggestionList
         suggestions={suggestions}
         selectedTitle={selectedTitle}
-        primaryActionLabel="应用到项目"
+        primaryActionLabel="Aplicar al proyecto"
         onPrimaryAction={handleApply}
         onCopy={handleCopy}
         onSave={(suggestion) => saveMutation.mutate(suggestion)}
         savingTitle={saveMutation.isPending ? saveMutation.variables?.title ?? "" : ""}
-        emptyMessage="点一次生成，就能得到一批基于当前项目设定的标题候选。"
+        emptyMessage="Haga clic en Generar una vez para obtener un lote de candidatos a títulos según la configuración actual del proyecto."
       />
     </div>
   );

@@ -73,55 +73,55 @@ function resolveAutoDirectorInitialItem(stage: NovelWorkflowStage): {
   if (stage === "story_macro") {
     return {
       itemKey: "book_contract",
-      itemLabel: "正在准备 Book Contract 与故事宏观规划",
+      itemLabel: "Preparación del contrato del libro y planificación macro de la historia.",
       progress: DIRECTOR_PROGRESS.bookContract,
     };
   }
   if (stage === "character_setup") {
     return {
       itemKey: "character_setup",
-      itemLabel: "正在补齐角色准备",
+      itemLabel: "Se está completando la preparación del rol.",
       progress: DIRECTOR_PROGRESS.characterSetup,
     };
   }
   if (stage === "world_setup") {
     return {
       itemKey: "world_setup",
-      itemLabel: "正在准备本书世界观",
+      itemLabel: "Preparando la cosmovisión de este libro",
       progress: DIRECTOR_PROGRESS.worldSetup,
     };
   }
   if (stage === "volume_strategy") {
     return {
       itemKey: "volume_strategy",
-      itemLabel: "正在继续生成卷战略",
+      itemLabel: "Se sigue generando estrategia de volumen",
       progress: DIRECTOR_PROGRESS.volumeStrategy,
     };
   }
   if (stage === "structured_outline") {
     return {
       itemKey: "beat_sheet",
-      itemLabel: "正在继续生成第 1 卷节奏板与细化",
+      itemLabel: "Continúa la producción de tablas rítmicas y elaboraciones del Volumen 1",
       progress: DIRECTOR_PROGRESS.beatSheet,
     };
   }
   if (stage === "chapter_execution") {
     return {
       itemKey: "chapter_execution",
-      itemLabel: "正在恢复当前章节批次",
+      itemLabel: "Restaurando el lote de capítulos actual",
       progress: 0.93,
     };
   }
   if (stage === "quality_repair") {
     return {
       itemKey: "quality_repair",
-      itemLabel: "正在恢复当前质量修复批次",
+      itemLabel: "Restaurar el lote de reparación de calidad actual",
       progress: 0.975,
     };
   }
   return {
     itemKey: "auto_director",
-    itemLabel: "等待生成候选方向",
+    itemLabel: "Esperando generación de direcciones candidatas",
     progress: defaultProgressForStage("auto_director"),
   };
 }

@@ -9,7 +9,7 @@ import { toneTextClass } from "./homeTone";
 export function HomeAttentionQueue({ items, onReload }: { items: HomeAttentionItem[]; onReload: () => void }) {
   return (
     <Card className="home-attention-queue border-0 bg-muted/35 shadow-none">
-      <CardHeader className="pb-2"><CardTitle className="flex items-center gap-2 text-base tracking-normal"><ListChecks className="h-4 w-4 text-info" aria-hidden="true" />创作提醒</CardTitle></CardHeader>
+      <CardHeader className="pb-2"><CardTitle className="flex items-center gap-2 text-base tracking-normal"><ListChecks className="h-4 w-4 text-info" aria-hidden="true" />Recordatorio creativo</CardTitle></CardHeader>
       <CardContent>
         <ul className="divide-y divide-border">
           {items.map((item) => (
@@ -22,7 +22,7 @@ export function HomeAttentionQueue({ items, onReload }: { items: HomeAttentionIt
               {item.to ? (
                 <Button asChild size="sm" variant="outline"><Link to={item.to}>{item.actionLabel}</Link></Button>
               ) : (
-                <Button size="sm" variant="outline" onClick={onReload}>重新读取创作入口</Button>
+                <Button size="sm" variant="outline" onClick={onReload}>Vuelva a leer la entrada de creación.</Button>
               )}
             </li>
           ))}

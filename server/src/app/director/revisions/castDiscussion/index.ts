@@ -11,14 +11,14 @@ export { confirmedCastForPlanning } from "./planningContext";
 async function read(db: Prisma.TransactionClient, {novelId, resourceId}: Address) {
   const character = await db.character.findFirst({ where: { novelId, id: resourceId },
     select: { name: true, role: true, background: true, personality: true, storyFunction: true, currentGoal: true } });
-  if (!character) throw new AppError("在本书阵容中找不到这位角色。", 404);
+  if (!character) throw new AppError("Este personaje no se puede encontrar en la alineación de este libro.", 404);
   const {personality, currentGoal, storyFunction} = character;
   return {novelId, resourceId, character, base: {personality: personality ?? "", currentGoal: currentGoal ?? "", storyFunction: storyFunction ?? ""}};
 }
 
 export function castConversationRouter() {
   return reviewConversationRouter("/novels/:novelId/runs/:runId/cast-review/:version/characters/:resourceId/conversation", {
-    artifact: "character_cast", scope: "director-cast", stage: "character_setup", progress: "正在读角色设定和你的想法…",
+    artifact: "character_cast", scope: "director-cast", stage: "character_setup", progress: "Leyendo sobre diseño de personajes y tus pensamientos...",
     draft: castDraftSchema, reply: castReplySchema, changes: castProposalChanges, read,
     async generate({novelId, resourceId, character}, draft, context, options) {
       const [cast, links] = await Promise.all([

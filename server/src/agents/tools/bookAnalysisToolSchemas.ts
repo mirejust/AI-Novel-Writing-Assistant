@@ -76,8 +76,8 @@ export const getBookAnalysisFailureReasonOutputSchema = z.object({
 
 export const auditChapterContinuityInputSchema = z.object({
   novelId: toolRequiredIdSchema,
-  startOrder: z.number().int().min(1).optional().describe("起始章节序号，默认 1"),
-  endOrder: z.number().int().min(1).optional().describe("结束章节序号，默认小说最后一章"),
+  startOrder: z.number().int().min(1).optional().describe("Número de capítulo inicial, predeterminado 1"),
+  endOrder: z.number().int().min(1).optional().describe("Número de capítulo final, por defecto es el último capítulo de la novela."),
 });
 
 export const continuityMilestoneBreakSchema = z.object({
@@ -113,8 +113,8 @@ export const auditChapterContinuityOutputSchema = z.object({
 
 export const analyzeQualityDebtAttributionInputSchema = z.object({
   novelId: toolRequiredIdSchema,
-  startOrder: z.number().int().min(1).optional().describe("起始章节序号，默认 1"),
-  endOrder: z.number().int().min(1).optional().describe("结束章节序号，默认全部"),
+  startOrder: z.number().int().min(1).optional().describe("Número de capítulo inicial, predeterminado 1"),
+  endOrder: z.number().int().min(1).optional().describe("Número de capítulo final, predeterminado todo"),
 });
 
 export const qualityDebtChapterAttributionSchema = z.object({
@@ -141,11 +141,11 @@ export const analyzeQualityDebtAttributionOutputSchema = z.object({
   attributedChapters: toolCountSchema,
   /** 根因占比（0~1，仅计有归因章节） */
   rootCauseRatios: z.object({
-    A: z.number().describe("开环修复：同义务重复失败"),
-    B: z.number().describe("patch 锚点失配"),
-    D: z.number().describe("义务不可达 / 计划错位"),
-    E: z.number().describe("签名漂移：length→content"),
-    unknown: z.number().describe("无法归因"),
+    A: z.number().describe("Reparación de bucle abierto: la misma tarea falla repetidamente"),
+    B: z.number().describe("discrepancia en el anclaje del parche"),
+    D: z.number().describe("Las obligaciones son inalcanzables/desalineación del plan"),
+    E: z.number().describe("Deriva de la firma: longitud → contenido"),
+    unknown: z.number().describe("no atribuible"),
   }),
   /** 最常见失败 issue code TOP5 */
   topFailureIssueCodes: z.array(z.object({

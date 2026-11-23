@@ -62,7 +62,7 @@ export class NovelCoreReviewService {
       include: { novel: true },
     });
     if (!chapter) {
-      throw new Error("章节不存在");
+      throw new Error("El capitulo no existe");
     }
 
     const review = await this.reviewChapterWithAudit(
@@ -236,8 +236,8 @@ export class NovelCoreReviewService {
         issues: [{
           severity: "critical",
           category: "coherence",
-          evidence: "章节内容为空",
-          fixSuggestion: "先生成或补充正文，再进行审校",
+          evidence: "El contenido del capítulo está vacío.",
+          fixSuggestion: "Primero genere o complemente el texto y luego revíselo.",
         }],
       };
     }
@@ -247,7 +247,7 @@ export class NovelCoreReviewService {
       if (novelId) {
         try {
           ragContext = await ragServices.hybridRetrievalService.buildContextBlock(
-            `章节审校 ${novelTitle}\n${chapterTitle}\n${content.slice(0, 1500)}`,
+            `Revisión del capítulo ${novelTitle}\n${chapterTitle}\n${content.slice(0, 1500)}`,
             {
               novelId,
               ownerTypes: ["novel", "chapter", "chapter_summary", "consistency_fact", "character", "bible"],
@@ -303,8 +303,8 @@ export class NovelCoreReviewService {
         issues: [{
           severity: "critical",
           category: "coherence",
-          evidence: "章节内容为空",
-          fixSuggestion: "先生成或补全正文，再进行审校",
+          evidence: "El contenido del capítulo está vacío.",
+          fixSuggestion: "Primero genere o complete el texto y luego revíselo",
         }],
         auditReports: [],
       };

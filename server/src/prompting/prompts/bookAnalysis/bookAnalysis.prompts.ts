@@ -44,7 +44,7 @@ function buildSectionStructuredDataContract(sectionKey: BookAnalysisSectionKey):
     "structuredData 必须是一个 JSON 对象。",
     "优先使用当前 section 约定的固定键名，不要擅自改写、删减或新增近义键名。",
     "如某项信息依据不足，字符串字段返回空字符串，数组字段返回空数组。",
-    "数组元素使用简洁中文短语，不要写成长段解释。",
+    "数组元素使用简洁西班牙语短语，不要写成长段解释。",
     "不要把 markdown 里的大段分析原样搬进 structuredData；structuredData 应更适合作为程序读取、筛选、展示和后续复用的数据层。",
     "所有内容都必须基于现有 notes 或分析中已经成立的归纳，不得补写无依据的信息。",
   ].join("\n");
@@ -106,7 +106,7 @@ function buildSectionStructuredDataContract(sectionKey: BookAnalysisSectionKey):
 
 function buildOverviewMarkdownRequirements(sectionTitle: string, promptFocus: string): string {
   return [
-    `markdown 必须写成一份可直接展示给用户阅读的《${sectionTitle}》分析稿，全篇使用简体中文。`,
+    `markdown 必须写成一份可直接展示给用户阅读的《${sectionTitle}》分析稿，全篇使用西班牙语。`,
     "正文必须按以下顺序输出二级标题：",
     "## 一句话定位",
     "## 题材标签",
@@ -127,7 +127,7 @@ function buildOverviewMarkdownRequirements(sectionTitle: string, promptFocus: st
 
 function buildGenericSectionMarkdownRequirements(sectionTitle: string, promptFocus: string): string {
   return [
-    `markdown 必须写成一份可直接展示给用户阅读的《${sectionTitle}》分析稿，全篇使用简体中文。`,
+    `markdown 必须写成一份可直接展示给用户阅读的《${sectionTitle}》分析稿，全篇使用西班牙语。`,
     "正文应有清晰层次，但不要写成审计报告腔的空泛模板。",
     "结论必须具体，尽量说明“体现在哪里、为什么成立、会带来什么阅读效果或创作价值”。",
     "允许基于多条 notes 做低风险归纳，但不得虚构 notes 之外的新事实、原文细节、作者意图或隐性因果。",
@@ -168,7 +168,7 @@ export const bookAnalysisSourceNotePrompt: PromptAsset<
   outputSchema: bookAnalysisSourceNoteOutputSchema,
   render: (input) => [
     new SystemMessage([
-      "你是中文网文拆书助手。",
+      "你是西班牙语网文拆书助手。",
       "你的任务不是写书评，也不是做文学赏析，而是把“单个原文片段”整理成可供后续章节分析复用的结构化笔记。",
       "",
       "你只可基于当前片段中明确出现的信息进行提取，允许做低风险、贴近原文的归纳，但禁止补写原文没有直接体现的人物深层动机、隐藏因果、作者意图、整书级结论或过强市场判断。",
@@ -176,7 +176,7 @@ export const bookAnalysisSourceNotePrompt: PromptAsset<
       "只输出一个 JSON 对象，不要输出 Markdown、解释、注释或额外文本。",
       "结构固定为：",
       "{",
-      '  "summary": "1-2句中文摘要",',
+      '  "summary": "1-2句西班牙语摘要",',
       '  "plotPoints": ["..."],',
       '  "timelineEvents": ["..."],',
       '  "characters": ["..."],',
@@ -203,7 +203,7 @@ export const bookAnalysisSourceNotePrompt: PromptAsset<
       "11. evidence：提供最多 3 条证据。label 是证据信息点名称，excerpt 必须是尽量贴近原文的短摘录，优先保留原句措辞，不要改写成长分析。",
       "",
       "硬规则：",
-      "1. 所有值必须使用简体中文。",
+      "1. 所有值必须使用西班牙语。",
       "2. 只提取片段里明确存在或可做低风险归纳的信息，不要脑补。",
       "3. 每个数组最多 5 项；evidence 最多 3 项。",
       "4. 若某一类信息不明显，返回空数组，不要硬编。",
@@ -239,7 +239,7 @@ export const bookAnalysisSectionPrompt: PromptAsset<
   outputSchema: bookAnalysisSectionOutputSchema,
   render: (input) => [
     new SystemMessage([
-      `你是资深中文网文拆书分析师。你当前只负责撰写拆书章节《${input.sectionTitle}》。`,
+      `你是资深西班牙语网文拆书分析师。你当前只负责撰写拆书章节《${input.sectionTitle}》。`,
       "你的任务是基于给定 notes，产出一份可直接展示给用户阅读的正式分析稿，以及一份便于程序消费的 structuredData。",
       "你不是在复述原文，不是在写读后感，也不是在补全 notes 之外的内容。",
       "",
@@ -251,7 +251,7 @@ export const bookAnalysisSectionPrompt: PromptAsset<
       "}",
       "",
       "全局硬规则：",
-      "1. 所有内容必须使用简体中文。",
+      "1. 所有内容必须使用西班牙语。",
       "2. 只能基于给定 notes 中已出现的事实、归纳和摘录进行分析，不得补写 notes 之外的原文细节、作者意图、隐藏因果或人物深层动机。",
       "3. 允许基于多条 notes 做低风险综合判断，但不得把综合判断伪装成确定事实。",
       "4. 若某条结论属于推断，请用“更偏向”“相对适合”“可能会”“容易让……读者买单”等谨慎措辞降低强度。",
@@ -270,7 +270,7 @@ export const bookAnalysisSectionPrompt: PromptAsset<
       "1. structuredData 必须更适合作为程序读取、筛选、展示和复用的数据层，不要把 markdown 大段分析原样搬进去。",
       "2. 若某项信息依据不足，字符串字段返回空字符串，数组字段返回空数组；不要省略字段，不要返回 null，不要自造近义键名。",
       `3. 普通字符串数组字段最多保留 ${BOOK_ANALYSIS_STRUCTURED_ARRAY_LIMIT} 项；时间线节点数组最多保留 ${BOOK_ANALYSIS_TIMELINE_NODE_LIMIT} 项；如可用信息更多，请按重要度和叙事顺序筛选保留。`,
-      "4. 数组项使用简洁中文短语，避免长解释；数组内避免同义重复。",
+      "4. 数组项使用简洁西班牙语短语，避免长解释；数组内避免同义重复。",
       "5. 输出时尽量保持字段顺序与约定结构一致。",
       "",
       "evidence 规则：",
@@ -348,10 +348,10 @@ export const bookAnalysisOptimizedDraftPrompt: PromptAsset<
       "4. 尽量保留当前草稿中已成立的有效判断，不要无故推翻；若必须调整，应优先做局部修正，而不是整体重写。",
       "5. 若用户要求超出 notes 可支撑范围，可缩写、删减、改写为更谨慎表述，或明确写“材料不足”“现有笔记无法支持更强判断”，不要编造。",
       "6. 若当前草稿中存在与 notes 不一致、证据不足、表达过强、重复啰嗦或偏离本节主题的内容，应主动修正。",
-      "7. optimizedDraft 必须是可直接展示给用户的中文 Markdown 正文，不是 JSON 解释，不是修改说明，也不是提纲。",
+      "7. optimizedDraft 必须是可直接展示给用户的西班牙语 Markdown 正文，不是 JSON 解释，不是修改说明，也不是提纲。",
       "",
       "正文要求：",
-      "1. 全文使用简体中文。",
+      "1. 全文使用西班牙语。",
       "2. 结论必须具体，避免“人物鲜明”“节奏不错”“张力很强”这类空话；尽量写清楚体现在哪里、为什么成立、意味着什么。",
       "3. 不要复述全部 notes 或原文，要做筛选、归纳、比较和判断。",
       "4. 若多个观点本质重复，应合并表达，避免同义反复。",

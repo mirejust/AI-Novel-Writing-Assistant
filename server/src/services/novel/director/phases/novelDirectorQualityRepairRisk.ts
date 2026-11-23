@@ -22,12 +22,12 @@ function buildDeferredQualityDebtReason(input: {
   remainingChapterCount: number;
 }): string {
   const affectedSummary = input.affectedChapterCount > 0
-    ? `本次已记录 ${input.affectedChapterCount} 章质量债务`
-    : "本次已记录质量债务";
+    ? `Este tiempo ha sido registrado. ${input.affectedChapterCount} deuda de calidad del capítulo`
+    : "Esta vez se ha registrado deuda de calidad";
   const remainingSummary = input.remainingChapterCount > 0
-    ? `，仍有 ${input.remainingChapterCount} 章可继续推进`
+    ? `, todavía hay ${input.remainingChapterCount} El capítulo puede seguir avanzando.`
     : "";
-  return `${affectedSummary}${remainingSummary}。`;
+  return `${affectedSummary}${remainingSummary}.`;
 }
 
 export function buildDirectorQualityRepairRisk(
@@ -48,7 +48,7 @@ export function buildDirectorQualityRepairRisk(
     return {
       riskLevel: "replan",
       autoContinuable: false,
-      reason: "质量检查明确要求先处理重规划，后续章节需要确认计划后再继续。",
+      reason: "La inspección de calidad claramente requiere que primero se procese una planificación exhaustiva, y los capítulos posteriores deben confirmar el plan antes de continuar.",
       noticeCode: PIPELINE_REPLAN_NOTICE_CODE,
       repairMode,
       affectedChapterCount: replanCount,

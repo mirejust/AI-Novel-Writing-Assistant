@@ -26,13 +26,13 @@ export async function approveFinalManuscript(novelId: string, input: FinalApprov
       const receipt = await tx.directorFinalApproval.findUnique({ where: { novelId } });
       if (receipt?.requestHash === requestHash && receipt.confirmedVersion === manuscriptVersion)
         return { confirmedVersion: manuscriptVersion, changed: [] };
-      if (version !== input.version) throw new AppError("稿件有新版本，请重新打开全书检查后核对。", 409);
-      if (chapters.some((c) => c.findings === null)) throw new AppError("请先检查完全部章节，再确认导出。", 409);
+      if (version !== input.version) throw new AppError("Hay una nueva versión del manuscrito, vuelva a abrir el libro completo y compruébelo.", 409);
+      if (chapters.some((c) => c.findings === null)) throw new AppError("Por favor revise todos los capítulos antes de confirmar la exportación.", 409);
       const byId = new Map(rows.map((row) => [row.id, row]));
       const changed: string[] = [];
       for (const edit of input.edits) {
         const row = byId.get(edit.chapterId);
-        if (!row) throw new AppError("修改包含其他章节，请重新核对。", 409);
+        if (!row) throw new AppError("La modificación incluye otros capítulos, verifique nuevamente.", 409);
         if (row.content === edit.content) continue;
         await saveManualChapterContent(tx, row, edit.content);
         row.content = edit.content;
@@ -57,7 +57,7 @@ export async function exportFinalManuscript(novelId: string, version: string) {
       const { book, rows, manuscriptVersion } = await readFinalManuscript(tx, novelId);
       const approval = await tx.directorFinalApproval.findUnique({ where: { novelId } });
       if (approval?.confirmedVersion !== version || manuscriptVersion !== version)
-        throw new AppError("请先确认当前全书稿件，再下载 TXT。", 409);
+        throw new AppError("Confirme el manuscrito actual del libro antes de descargar el TXT.", 409);
       return buildNovelTxtExport({ title: book.title, description: book.description, confirmedManuscript: true, chapters: rows });
     },
     { isolationLevel: "Serializable" },

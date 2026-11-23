@@ -11,15 +11,15 @@ import DirectorVersionControl from "@/components/directorVersion/DirectorVersion
 export default function BasicInfoTab(props: BasicTabProps) {
   return (
     <div className="space-y-5">
-      <SectionBlock title="导演版本" description="选择负责本书创作的流程；各版本独立运行和恢复。"><DirectorVersionControl novelId={props.novelId}/></SectionBlock>
+      <SectionBlock title="Versión del director" description="Elija el proceso responsable de la creación del libro; cada versión se ejecuta y se restaura de forma independiente."><DirectorVersionControl novelId={props.novelId}/></SectionBlock>
       <DirectorTakeoverEntryPanel
-        title="让 AI 从当前项目继续接管"
-        description="如果基础信息较完整，可以直接从选定步骤开始自动接管，并选择继续已有进度或重跑当前步。"
+        title="Deje que la IA se haga cargo del proyecto actual"
+        description="Si la información básica está completa, puede continuar automáticamente desde el paso seleccionado y elegir continuar con el progreso existente o volver a ejecutar el paso actual."
         entry={props.directorTakeoverEntry}
       />
       <SectionBlock
-        title="书级定位"
-        description="先确认这本书面向谁、靠什么吸引读者、前期必须兑现什么，再让后续世界、角色和章节围绕同一组承诺展开。"
+        title="posicionamiento a nivel de libro"
+        description="Primero confirme para quién es el libro, qué atrae a los lectores y qué se debe cumplir en las primeras etapas, y luego deje que el mundo, los personajes y los capítulos posteriores giren en torno al mismo conjunto de promesas."
       >
         <NovelBasicInfoForm
           basicForm={props.basicForm}
@@ -34,7 +34,7 @@ export default function BasicInfoTab(props: BasicTabProps) {
           onFormChange={props.onFormChange}
           onSubmit={props.onSave}
           isSubmitting={props.isSaving}
-          submitLabel="保存基本信息"
+          submitLabel="Guardar información básica"
           titleQuickFill={(
             <NovelCreateTitleQuickFill
               basicForm={props.basicForm}
@@ -63,9 +63,9 @@ export default function BasicInfoTab(props: BasicTabProps) {
       </SectionBlock>
 
       <DetailDisclosure
-        title="写法建议"
-        description="确认本书的叙述口味、表达密度和风格参考，帮助后续章节保持统一。"
-        meta="写法参考"
+        title="Sugerencias de escritura"
+        description="Identifique el tono narrativo, la densidad expresiva y las referencias estilísticas del libro para ayudar a mantener la unidad en los capítulos siguientes."
+        meta="Referencia de escritura"
       >
         <NovelStyleRecommendationCard novelId={props.novelId} />
       </DetailDisclosure>

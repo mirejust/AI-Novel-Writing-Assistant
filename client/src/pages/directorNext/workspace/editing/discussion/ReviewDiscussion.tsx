@@ -39,47 +39,47 @@ function Suggestions({ proposal, draft, disabled, onAccept, fieldLabels }: {
             }); }}/>
           {fieldLabels[item.field]}
         </label>
-        <p className="whitespace-pre-wrap text-muted-foreground">原文　{item.before || "尚未填写"}</p>
-        <p className="whitespace-pre-wrap">建议　{item.value}</p>
+        <p className="whitespace-pre-wrap text-muted-foreground">Texto original　{item.before || "Aún no completado"}</p>
+        <p className="whitespace-pre-wrap">sugerencia　{item.value}</p>
         <p className="text-sm text-muted-foreground">{item.reason}</p>
-        {!available && <p className="text-xs">{accepted ? "已加入编辑稿" : "这项编辑稿有变化，可以按新稿继续讨论。"}</p>}
+        {!available && <p className="text-xs">{accepted ? "Agregado para editar" : "Hay cambios en este borrador editorial y puede continuar la discusión como un nuevo borrador."}</p>}
       </div>;
     })}
     {proposal.changes.some(item => draft[item.field] === item.before) && <Button type="button" size="sm" disabled={disabled || !selected.length} onClick={() => onAccept(selected)}>
-      采纳所选修改（{selected.length}）
+      Adoptar cambios seleccionados ({selected.length})
     </Button>}
   </div>;
 }
 
 function presentation(scope: Scope, version: number | undefined, title: string) {
-  if(scope.type==="final_review") return {path:"final-review",key:"director-final-review",assistant:"完稿助手",
-    welcome:{title:scope.finding==="all"?"想再核对哪一段？":"这个问题会怎样影响阅读？",body:"可以先问原因，也可以请助手给出改法。",starters:[{label:"请给出逐段改法",text:scope.finding==="all"?"通读本章，对需要打磨的段落给出具体修改建议。":"针对选中的检查问题，给出可以逐段采纳的修改建议。"}]},hint:"采纳的段落会进入确认稿。",placeholder:"写下想保留的句子，或你对改法的想法…"};
+  if(scope.type==="final_review") return {path:"final-review",key:"director-final-review",assistant:"Asistente de acabado",
+    welcome:{title:scope.finding==="all"?"¿Qué párrafo quieres revisar nuevamente?":"¿Cómo afecta este problema a la lectura?",body:"Puedes preguntar el motivo primero o pedirle a un asistente que te indique una manera de corregirlo.",starters:[{label:"Por favor haga una revisión paso a paso.",text:scope.finding==="all"?"Lea este capítulo detenidamente y haga sugerencias específicas para revisiones de los párrafos que necesitan pulir.":"Para los temas de inspección seleccionados, se dan sugerencias de modificaciones que pueden adoptarse párrafo por párrafo."}]},hint:"Los párrafos adoptados pasarán al borrador de confirmación.",placeholder:"Escriba las sentencias que desea mantener o sus pensamientos sobre cambiar la ley..."};
   if (scope.type === "chapter_batch_closed") return {
-    path:`prose-review/${version}/versions/${encodeURIComponent(scope.bodyHash)}/chapters`,key:"director-prose",assistant:"正文助手",
-    welcome:{title:"这一章读起来怎么样？",body:"可以先问读后感，也可以指出想改的地方。",starters:[
-      {label:"哪里读起来拖沓？",text:"读一遍本章，告诉我哪里节奏慢，为什么。"},
-      {label:"让结尾更有余味",text:"保留本章发生的事，帮我改一改结尾，给读者留一点余味。"},
-    ]},hint:"逐段比较原文和建议，采纳后可以撤回。",placeholder:"想讨论哪段正文，或希望读者读到什么感受？",
+    path:`prose-review/${version}/versions/${encodeURIComponent(scope.bodyHash)}/chapters`,key:"director-prose",assistant:"Asistente de texto",
+    welcome:{title:"¿Cómo se lee este capítulo?",body:"Primero puedes preguntar qué piensas después de leerlo, o puedes señalar las áreas que deseas cambiar.",starters:[
+      {label:"¿Dónde suena incómodo de leer?",text:"Lee este capítulo y dime dónde el ritmo es lento y por qué."},
+      {label:"Haz que el final sea más memorable",text:"Guarda lo que pasó en este capítulo y ayúdame a cambiar el final para dejar un pequeño regusto a los lectores."},
+    ]},hint:"Comparar el texto original y la sugerencia párrafo por párrafo, que podrán retirarse después de su aprobación.",placeholder:"¿Qué pasaje del texto quieres discutir o cómo quieres que se sientan los lectores después de leerlo?",
   };
   if (scope.type === "chapter_task_sheet") return {
-    path: `chapter-review/${version}/plans/${encodeURIComponent(scope.planVersionId)}/chapters`, key: "director-chapter", assistant:"章节助手",
-    welcome:{ title: "想怎么写这一章？", body:"可以讨论本章要发生什么，也可以只改其中一场。", starters:[
-      {label:"这一章要推进什么？", text:"结合本章路线，解释主角要做什么、会遇到什么阻力。"},
-      {label:"让第二场的转折更有代价", text:"帮我调整第二场的转折，让主角必须做一个有代价的选择。"},
-    ]}, hint:"采纳会填入本章编辑稿，可以继续手改，再一起确认。", placeholder:"写下你想讨论的章节任务或场景…",
+    path: `chapter-review/${version}/plans/${encodeURIComponent(scope.planVersionId)}/chapters`, key: "director-chapter", assistant:"Asistente de capítulo",
+    welcome:{ title: "¿Cómo quieres escribir este capítulo?", body:"Puedes discutir lo que va a pasar en este capítulo, o simplemente puedes cambiar una escena.", starters:[
+      {label:"¿Qué avanza este capítulo?", text:"Combinado con la ruta de este capítulo, explica qué quiere hacer el protagonista y qué resistencia encontrará."},
+      {label:"Hacer más costoso el turno del segundo juego", text:"Ayúdame a ajustar el giro de la segunda escena para que el protagonista deba tomar una decisión costosa."},
+    ]}, hint:"Si se acepta, se completará el borrador editado de este capítulo. Podéis continuar modificándolo manualmente y confirmarlo juntos.", placeholder:"Escribe una misión de capítulo o una escena que quieras discutir...",
   };
   if (scope.type === "volume_strategy") return {
-    path:`volume-review/${version}/plans/${encodeURIComponent(scope.planVersionId)}/volumes`, key:"director-volume", assistant:"卷纲助手",
-    welcome:{ title:`想怎么调整《${title}》？`, body:"可以先聊读者最期待什么，再决定要改哪一项。", starters:[
-      {label:"高潮能兑现期待吗？",text:"这卷的高潮能兑现前面给读者的期待吗？说说你的判断。"},
-      {label:"让卷末的选择更有代价",text:"保留本卷的主线，让主角在高潮做一个更有代价的选择。"},
-    ]}, hint:"采纳会填入本卷编辑稿，确认卷纲后再拆章。", placeholder:"写下你想讨论的情节或改法…",
+    path:`volume-review/${version}/plans/${encodeURIComponent(scope.planVersionId)}/volumes`, key:"director-volume", assistant:"Asistente de esquema",
+    welcome:{ title:`¿Cómo desea ajustar el${title}»?`, body:"Puede comenzar hablando sobre lo que los lectores más esperan y luego decidir qué elementos cambiar.", starters:[
+      {label:"¿Podrá el clímax estar a la altura de las expectativas?",text:"¿Puede el clímax de este volumen estar a la altura de las expectativas dadas anteriormente a los lectores? Dime tu criterio."},
+      {label:"Haga que la elección al final del artículo sea más valiosa",text:"Mantenga la trama principal de este volumen y deje que el protagonista tome una decisión más costosa en el clímax."},
+    ]}, hint:"Si se acepta, se completará el borrador editado de este volumen y se abrirá el capítulo después de confirmar el esquema del volumen.", placeholder:"Escribe la trama o los cambios que quieras discutir...",
   };
-  return {path:`cast-review/${version}/characters`, key:"director-cast", assistant:"角色助手",
-    welcome:{title:`想怎么写${title}？`, body:"说说你希望保留的地方，或希望这个人做出怎样的选择。", starters:[
-      {label:"这个角色想要什么？",text:"结合开书方向，说说这个角色最想做成什么事，为什么。"},
-      {label:"让这个角色更主动",text:"保留现有的人物关系，让这个角色主动做一个影响剧情的选择。"},
-    ]}, hint:"采纳会填入编辑稿，保存后导演继续。", placeholder:"写下你对这个角色的想法…",
+  return {path:`cast-review/${version}/characters`, key:"director-cast", assistant:"Asistente de rol",
+    welcome:{title:`¿Cómo quieres escribir?${title}?`, body:"Hable sobre lo que le gustaría conservar o qué decisiones le gustaría que tomara esta persona.", starters:[
+      {label:"¿Qué quiere este personaje?",text:"Combinado con la dirección del libro, hable sobre lo que este personaje más quiere lograr y por qué."},
+      {label:"Haz que este personaje sea más proactivo.",text:"Mantén las relaciones existentes entre los personajes y deja que este personaje tome la iniciativa para tomar una decisión que afecte la trama."},
+    ]}, hint:"El borrador editado se completará después de la aceptación y el director continuará después de guardarlo.", placeholder:"Escribe tu opinión sobre este personaje...",
   };
 }
 
@@ -95,12 +95,12 @@ export function ReviewDiscussion({ novelId, runId, version, subject, scope, base
     streamUrl: id => apiClient.getUri({ url: url + "/turns/" + encodeURIComponent(id) + "/stream" }),
   };
   return <div className="min-w-0 [container-type:inline-size] lg:flex lg:min-h-0 lg:[&_.agent-feed]:overflow-y-auto">
-    <AgentConversation adapter={adapter} title={config.assistant} context={`正在讨论 · ${subject.title}`}
-      welcome={config.welcome} confirmationHint={config.hint} inputLabel={`与助手讨论${subject.title}`}
-      placeholder={config.placeholder} followUpPlaceholder="这份建议里，想保留或改动什么？"
-      initialAction={`发送给${config.assistant}`} followUpAction={(_, n) => `追问第 ${n} 轮建议`} followUpTopic={(_, n) => `讨论第 ${n} 轮建议`}
+    <AgentConversation adapter={adapter} title={config.assistant} context={`Discutiendo · ${subject.title}`}
+      welcome={config.welcome} confirmationHint={config.hint} inputLabel={`Discutir con el asistente${subject.title}`}
+      placeholder={config.placeholder} followUpPlaceholder="¿Qué desea mantener o cambiar en esta sugerencia?"
+      initialAction={`Enviar a${config.assistant}`} followUpAction={(_, n) => `Pregunta No. ${n} sugerencia redonda`} followUpTopic={(_, n) => `Discusión No. ${n} sugerencia redonda`}
       versionLabel={() => subject.title} disabled={disabled} maxLength={4000}
-      value={message} onChange={onMessage} canContinue={() => true} describeResult={result => `${result.changes.length} 项建议`}
+      value={message} onChange={onMessage} canContinue={() => true} describeResult={result => `${result.changes.length} sugerencias`}
       renderResult={(proposal, busy) => <Suggestions fieldLabels={fieldLabels} key={proposal.id} proposal={proposal} draft={draft}
         disabled={busy || disabled} onAccept={onAccept}/>}/>
   </div>;

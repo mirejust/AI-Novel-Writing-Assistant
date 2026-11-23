@@ -17,7 +17,7 @@ export async function readProductionProjection({contract, control}: {contract: R
   const nextLaunchRange = nextProseBatchRange(saved,target,Boolean(contract.launchInput?.outlineBinding));
   if (!range) return {chapterProgress:null, nextLaunchRange};
   if (!Number.isSafeInteger(range.from) || !Number.isSafeInteger(range.to) || range.from < 1 || range.to < range.from) {
-    throw new FactIntegrityError("正文进度缺少有效的授权范围。");
+    throw new FactIntegrityError("El progreso del texto carece de un alcance de autorización válido.");
   }
   if (await readProductionBatchImplementation(prisma,contract) === "kernel") {
     try {
@@ -30,20 +30,20 @@ export async function readProductionProjection({contract, control}: {contract: R
     select:{id:true,order:true,title:true,content:true,generationState:true,chapterStatus:true,riskFlags:true,
       artifactSyncCheckpoints:{where:{artifactType:CHAPTER_ARTIFACT_BOUNDARY_TYPE,status:"succeeded"},
         select:{contentHash:true,metadataJson:true},orderBy:{updatedAt:"desc"},take:6}}});
-  if (new Set(chapters.map(chapter=>chapter.order)).size !== chapters.length) throw new FactIntegrityError("正文进度存在重复章节序号。");
+  if (new Set(chapters.map(chapter=>chapter.order)).size !== chapters.length) throw new FactIntegrityError("Hay números de capítulo duplicados en el progreso del texto.");
   const chapterProgress: NonNullable<ProductionProjection["chapterProgress"]> = {...range,
     total:range.to-range.from+1, done:chapters.filter(isCurrentChapterProductionCompleted).length, current:null};
   const binding = (await new PrismaEventLog().list(contract.runId)).filter(event=>event.type === "chapter_batch_job").at(-1);
   if (!binding) return {chapterProgress,nextLaunchRange};
   const jobId = (binding.payload as {jobId?:unknown})?.jobId;
-  if (typeof jobId !== "string" || !jobId) throw new FactIntegrityError("正文进度的作业绑定损坏。");
+  if (typeof jobId !== "string" || !jobId) throw new FactIntegrityError("El enlace del trabajo para el progreso del texto está roto.");
   const job = await prisma.generationJob.findUnique({where:{id:jobId},select:{novelId:true,startOrder:true,endOrder:true,payload:true,
     status:true,pendingManualRecovery:true,currentStage:true,currentItemKey:true}});
   if (!job || job.novelId !== contract.novelId || parsePipelinePayload(job.payload).directorNext?.runId !== contract.runId
-    || job.startOrder !== range.from || job.endOrder !== range.to) throw new FactIntegrityError("正文进度的作业与本次创作范围不一致。");
+    || job.startOrder !== range.from || job.endOrder !== range.to) throw new FactIntegrityError("Las asignaciones en el progreso del texto son inconsistentes con el alcance de esta creación.");
   if (control.status === "running" && control.cursorStepId === "chapter_batch" && job.status === "running" && !job.pendingManualRecovery && job.currentItemKey) {
     const chapter = chapters.find(item=>item.id === job.currentItemKey);
-    if (!chapter) throw new FactIntegrityError("正在处理的章节不属于本书授权范围。");
+    if (!chapter) throw new FactIntegrityError("El capítulo que se trata no entra dentro del alcance de la autorización de este libro.");
     if (isPipelineActiveStage(job.currentStage) && job.currentStage !== "queued") {
       chapterProgress.current = {order:chapter.order,title:chapter.title,phase:job.currentStage};
     }
@@ -54,7 +54,7 @@ export async function readProductionProjection({contract, control}: {contract: R
   if (chapterBudget) {
     const budget = chapterBudget;
     if (!chapters.some(chapter=>chapter.id === budget.chapterId && chapter.order === budget.chapterOrder)) {
-      throw new FactIntegrityError("预算暂停的章节不属于本书授权范围。");
+      throw new FactIntegrityError("Los capítulos sobre la suspensión del presupuesto están fuera del alcance de la autoridad de este libro.");
     }
     if (!budget.closed) {
       const usage = await readChapterUsageCounters(jobId);

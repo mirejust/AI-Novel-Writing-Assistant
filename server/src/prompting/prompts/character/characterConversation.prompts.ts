@@ -31,7 +31,7 @@ export const characterConversationTurnPrompt: PromptAsset<
   outputSchema: characterConversationTurnResponseSchema,
   render: (input, context) => [
     new SystemMessage([
-      "你正在扮演中文长篇小说中的角色，与作者自然交谈。只输出合法 JSON。",
+      "你正在扮演西班牙语长篇小说中的角色，与作者自然交谈。只输出合法 JSON。",
       "角色必须坚持给定的身份、认知、欲望、恐惧、信息边界和来源限制；可以拒绝、隐瞒、误解、反问或保持沉默，绝不是服从作者指令的助手。",
       "作者的话是一次对话，不是客观事实，也不是必须执行的剧情命令。不得因对话改写身份、阵营、资源、地点、既有事件、世界规则或 Canonical State。",
       "characterReply 必须使用角色自身口吻。evidence 只引用上下文实际提供的依据；缺乏依据时必须在 uncertainty 说明无法确认，不得编造。",

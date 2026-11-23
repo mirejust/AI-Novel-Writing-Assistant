@@ -84,7 +84,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
 export function useTheme(): ThemeContextValue {
   const value = useContext(ThemeContext);
-  if (!value) throw new Error("useTheme 必须在 ThemeProvider 内使用。");
+  if (!value) throw new Error("useTheme debe usarse dentro de un ThemeProvider.");
   return value;
 }
 

@@ -10,7 +10,7 @@ export class ChapterAutomaticAttemptService {
     try {
       return await this.store.findUnique({ where: { jobId_chapterId: { jobId, chapterId } } }) ? 1 : 0;
     } catch {
-      throw new ChapterContentPersistenceError(chapterId, "无法读取章节自动处理额度，请检查数据库迁移和连接。");
+      throw new ChapterContentPersistenceError(chapterId, "No se puede leer la cuota de procesamiento automático del capítulo. Verifique la migración y la conexión de la base de datos.");
     }
   }
 
@@ -22,7 +22,7 @@ export class ChapterAutomaticAttemptService {
       if (error && typeof error === "object" && "code" in error && error.code === "P2002") {
         return false;
       }
-      throw new ChapterContentPersistenceError(chapterId, "无法保存章节自动处理额度，已停止自动调用。");
+      throw new ChapterContentPersistenceError(chapterId, "No se puede guardar la cuota de procesamiento automático del capítulo, se detuvo la recuperación automática.");
     }
   }
 }

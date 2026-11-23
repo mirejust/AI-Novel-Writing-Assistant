@@ -267,8 +267,8 @@ export async function assertHighMemoryDirectorStartAllowed(
     const conflictingTaskId = decision.conflictingTaskId ?? recentTaskId ?? null;
     throw new AppError(
       conflictingTaskId
-        ? `已有自动导演任务正在处理同一范围，请先查看任务 ${conflictingTaskId} 的进度。`
-        : "当前批量操作已启动一个高内存自动导演任务，其余任务请稍后继续。",
+        ? `Ya existe una tarea de director automática que procesa el mismo rango; verifique la tarea primero ${conflictingTaskId} progreso.`
+        : "La operación por lotes actual ha iniciado una tarea de director automático de alta memoria. Continúe con las tareas restantes más tarde.",
       409,
     );
   }
@@ -289,8 +289,8 @@ export async function assertHighMemoryDirectorStartAllowed(
   if (!reservation.acquired) {
     throw new AppError(
       reservation.ownerId
-        ? `已有自动导演任务正在处理同一范围，请先查看任务 ${reservation.ownerId} 的进度。`
-        : "当前小说已有自动导演任务正在处理同一范围，请稍后再试。",
+        ? `Ya existe una tarea de director automática que procesa el mismo rango; verifique la tarea primero ${reservation.ownerId} progreso.`
+        : "Actualmente hay una tarea de director automática que procesa el mismo rango para la novela. Vuelva a intentarlo más tarde.",
       409,
     );
   }

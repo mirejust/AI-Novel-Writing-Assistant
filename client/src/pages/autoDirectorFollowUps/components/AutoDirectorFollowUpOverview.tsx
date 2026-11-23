@@ -34,43 +34,43 @@ export function AutoDirectorFollowUpOverviewCards({
   const cards: OverviewCardConfig[] = [
     {
       section: "",
-      label: "全部",
-      description: "查看所有需要跟进的导演任务",
+      label: "Todo",
+      description: "Ver todas las tareas de dirección que requieren seguimiento",
       count: overview?.totalCount ?? list?.pagination.total ?? 0,
       tone: "neutral",
     },
     {
       section: "needs_validation",
-      label: "需校验",
-      description: "先确认任务和资产是否一致",
+      label: "Necesito verificar",
+      description: "Primero confirme si las tareas y los activos son consistentes.",
       count: counters?.needs_validation ?? 0,
       tone: "danger",
     },
     {
       section: "exception",
-      label: "异常与恢复",
-      description: blockingExceptionCount > 0 ? "失败或人工恢复需要先处理" : "取消记录可按需恢复",
+      label: "Excepción y recuperación",
+      description: blockingExceptionCount > 0 ? "La falla o la recuperación manual deben abordarse primero" : "Los registros cancelados se pueden restaurar a pedido",
       count: counters?.exception ?? 0,
       tone: blockingExceptionCount > 0 ? "danger" : "neutral",
     },
     {
       section: "pending",
-      label: "待处理",
-      description: pendingIncludesReplan ? "包含必须先处理的重规划" : "需要确认或继续的节点",
+      label: "Pendiente",
+      description: pendingIncludesReplan ? "Contiene replanificación que debe abordarse primero." : "Nodo que requiere confirmación o continuación",
       count: counters?.pending ?? 0,
       tone: pendingIncludesReplan ? "danger" : "info",
     },
     {
       section: "auto_progress",
-      label: "自动推进",
-      description: "正在推进的任务和最近自动通过记录",
+      label: "Avance automático",
+      description: "Tareas en curso y registros de pases automáticos recientes",
       count: counters?.auto_progress ?? 0,
       tone: "info",
     },
     {
       section: "replaced",
-      label: "已替代",
-      description: "被新任务接管的旧任务",
+      label: "Reemplazado",
+      description: "Tareas antiguas reemplazadas por tareas nuevas",
       count: counters?.replaced ?? 0,
       tone: "neutral",
     },
@@ -79,8 +79,8 @@ export function AutoDirectorFollowUpOverviewCards({
   return (
     <div className={AUTO_DIRECTOR_MOBILE_CLASSES.followUpOverviewGrid}>
       <TaskQueueSection
-        title="跟进分区"
-        description={`今日恢复 ${list?.summaryCounters.recoveredToday ?? 0} 项，今日完成 ${list?.summaryCounters.completedToday ?? 0} 项；阻塞、待操作与自动推进分开处理。`}
+        title="Partición de seguimiento"
+        description={`Restaurar hoy ${list?.summaryCounters.recoveredToday ?? 0} Artículo, completado hoy ${list?.summaryCounters.completedToday ?? 0} Artículo; el bloqueo, la operación pendiente y el avance automático se manejan por separado.`}
         className={AUTO_DIRECTOR_MOBILE_CLASSES.followUpOverviewCard}
       >
           <div className={AUTO_DIRECTOR_MOBILE_CLASSES.followUpOverviewSectionGrid}>

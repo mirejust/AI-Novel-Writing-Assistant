@@ -9,24 +9,24 @@ export async function commitGateResolution(tx: Prisma.TransactionClient, input: 
   const {contract, control, resolution} = input;
   if (control.status !== "waiting_gate" || !control.gate || resolution.scope !== contract.scope
     || resolution.artifacts.length !== control.gate.artifactTypes.length
-    || resolution.artifacts.some(artifact => !control.gate!.artifactTypes.includes(artifact.type))) throw new GateResolutionError("需要确认的阶段已变化，请刷新页面。");
+    || resolution.artifacts.some(artifact => !control.gate!.artifactTypes.includes(artifact.type))) throw new GateResolutionError("La etapa que requiere confirmación ha cambiado; actualice la página.");
   let approvedChapterFingerprint: string | undefined;
   for (const selected of resolution.artifacts) {
     const current = await tx.directorNextArtifact.findFirst({where: {novelId: contract.novelId, scope: contract.scope, type: selected.type}, orderBy: {version: "desc"}});
     if (!current || current.version !== selected.expectedVersion || (current.status === "stale" && !current.protectedUserContent)) throw new VersionConflictError(selected.expectedVersion, current?.version ?? -1);
     const recoveringProtected = current.status === "stale" && current.protectedUserContent;
     if (resolution.decision === "regenerate") {
-      if (current.protectedUserContent) throw new GateResolutionError("该资产包含需保留的内容，不能自动覆盖。");
+      if (current.protectedUserContent) throw new GateResolutionError("Este activo contiene contenido que debe conservarse y no se puede sobrescribir automáticamente.");
       continue;
     }
     const needsReviewRead = resolution.decision === "confirm_after_edit" || recoveringProtected || Boolean(resolution.expectedVolumePlanVersionId);
-    if (needsReviewRead && !readEdit) throw new GateResolutionError("请从资产页面保存修改，再确认本阶段。");
+    if (needsReviewRead && !readEdit) throw new GateResolutionError("Guarde los cambios de la página de activos y confirme esta etapa nuevamente.");
     // Revalidate saved planning and prose before releasing the chapter gate.
     const edited = readEdit && (needsReviewRead || current.type === "chapter_task_sheet" || current.type === "chapter_batch_closed")
       ? await readEdit({contract, type: current.type, contentRef: current.contentRef, proseReview:resolution.proseReview, chapterPlanEdit: resolution.chapterPlanEdit, assetEdit: resolution.assetEdit, expectedVolumePlanVersionId: resolution.expectedVolumePlanVersionId}, tx)
       : undefined;
     if (current.type === "chapter_task_sheet") approvedChapterFingerprint = edited?.approvedChapterFingerprint;
-    if (edited && (!edited.contentRef.trim() || !edited.contentHash.trim())) throw new GateResolutionError("未读取到已保存的修改。");
+    if (edited && (!edited.contentRef.trim() || !edited.contentHash.trim())) throw new GateResolutionError("No se leyeron cambios guardados.");
     if (edited && (resolution.decision === "confirm_after_edit" || recoveringProtected || edited.protectedUserContent)) {
       await tx.directorNextArtifact.create({data: {id: `${contract.novelId}:${current.type}:${contract.scope}:${current.version+1}`,
         novelId: contract.novelId, type: current.type, scope: contract.scope, version: current.version+1, status: "user_edited", protectedUserContent: true,

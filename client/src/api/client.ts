@@ -38,20 +38,20 @@ apiClient.interceptors.response.use(
     const backendMessage = error.response?.data?.message;
     const source = error.response?.data as (ApiResponse<unknown> & {sourceRoute?: unknown; sourceActionLabel?: unknown}) | undefined;
     const sourceRoute = typeof source?.sourceRoute === "string" && /^\/(?!\/)/.test(source.sourceRoute) ? source.sourceRoute : null;
-    const sourceAction = status === 409 && sourceRoute ? {label: typeof source?.sourceActionLabel === "string" ? source.sourceActionLabel : "打开创作页面", onClick: () => window.location.assign(sourceRoute)} : undefined;
-    let title = backendError ?? error.message ?? "请求失败。";
+    const sourceAction = status === 409 && sourceRoute ? {label: typeof source?.sourceActionLabel === "string" ? source.sourceActionLabel : "Abrir la página de creación", onClick: () => window.location.assign(sourceRoute)} : undefined;
+    let title = backendError ?? error.message ?? "La solicitud falló.";
     let description = backendMessage && backendMessage !== backendError ? backendMessage : undefined;
 
     if (!status) {
-      title = "网络连接失败，请检查网络后重试。";
+      title = "La conexión de red falló, verifique la red e inténtelo nuevamente.";
       description = undefined;
     } else if (status >= 500) {
-      title = backendError ?? "服务器错误，请稍后重试。";
+      title = backendError ?? "Error del servidor, inténtalo de nuevo más tarde.";
       description = backendMessage && backendMessage !== title ? backendMessage : undefined;
     }
 
     if (shouldToastApiError(error.config ?? {}, status)) {
-      const isGenericServerErrorToast = title === "服务器错误，请稍后重试。";
+      const isGenericServerErrorToast = title === "Error del servidor, inténtalo de nuevo más tarde.";
 
       if (sourceAction) {
         toast.error(title, {description, action: sourceAction});

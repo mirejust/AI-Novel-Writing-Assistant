@@ -110,7 +110,7 @@ export async function streamToSSE(
   } catch (error) {
     writeSSEFrame(res, {
       type: "error",
-      error: error instanceof Error ? error.message : "流式输出失败。",
+      error: error instanceof Error ? error.message : "La salida de transmisión falló.",
     });
   } finally {
     disposeHeartbeat();

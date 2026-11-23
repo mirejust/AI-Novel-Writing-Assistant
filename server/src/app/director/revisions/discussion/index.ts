@@ -49,11 +49,11 @@ export function reviewConversationRouter<F extends string, R extends { base: Rec
           .object({ artifactTypes: z.tuple([z.literal(subject.artifact)]) })
           .safeParse(JSON.parse(row.gateJson ?? "null")).success
       ) {
-        throw new AppError("确认阶段有变化，请重新打开本书导演台。", 409);
+        throw new AppError("Hay un cambio en la etapa de confirmación, vuelva a abrir el escritorio del director de este libro.", 409);
       }
       const contract = JSON.parse(row.run.contractJson) as RunContract;
       if (contract.novelId !== a.novelId || contract.runId !== a.runId)
-        throw new AppError("无法核对本书确认记录。", 409);
+        throw new AppError("No se puede verificar el registro de confirmación del libro.", 409);
       await assertNovelDirectorVersion(a.novelId, "v2", readRunExecutionEpoch(row.run.contractJson), db);
       const launch = contract.launchInput;
       return {

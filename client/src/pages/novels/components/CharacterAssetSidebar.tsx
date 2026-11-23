@@ -26,7 +26,7 @@ function getCharacterCardClass(isSelected: boolean, isProtagonist: boolean): str
 }
 
 function confirmDeleteCharacter(character: Character, onDeleteCharacter: (characterId: string) => void) {
-  const confirmed = window.confirm(`确认删除角色“${character.name}”？此操作不可恢复。`);
+  const confirmed = window.confirm(`Confirmar eliminación de rol"${character.name}"? Esta operación es irreversible.`);
   if (!confirmed) {
     return;
   }
@@ -54,10 +54,10 @@ function CharacterCard(props: {
   const isSelected = selectedCharacterId === character.id;
   const isDeletingThis = isDeletingCharacter && deletingCharacterId === character.id;
   const supportingLine = isProtagonist
-    ? character.currentGoal || character.storyFunction || character.role || "待补全主角目标"
-    : character.relationToProtagonist || character.role || "待补全角色定位";
-  const supportingLabel = character.relationToProtagonist ? "与主角关系" : "定位";
-  const avatarText = character.name.trim().slice(0, 1) || "角";
+    ? character.currentGoal || character.storyFunction || character.role || "Objetivos del protagonista por cumplir."
+    : character.relationToProtagonist || character.role || "Posicionamiento de roles por completar";
+  const supportingLabel = character.relationToProtagonist ? "Relación con el protagonista" : "Posicionamiento";
+  const avatarText = character.name.trim().slice(0, 1) || "Ángulo";
 
   return (
     <div className={getCharacterCardClass(isSelected, isProtagonist)}>
@@ -77,16 +77,16 @@ function CharacterCard(props: {
             {isProtagonist ? (
               <Badge variant="secondary" className="gap-1 px-1.5">
                 <Crown className="h-3 w-3" />
-                主角
+                personaje principal
               </Badge>
             ) : null}
           </div>
           <div className="mt-1 line-clamp-2 text-xs leading-5 text-muted-foreground">
-            {isProtagonist ? `身份：${character.role || "待补全"}` : `${supportingLabel}：${supportingLine}`}
+            {isProtagonist ? `Identidad:${character.role || "Pendiente"}` : `${supportingLabel}:${supportingLine}`}
           </div>
           {isProtagonist ? (
             <div className="mt-1 line-clamp-2 text-xs leading-5 text-muted-foreground">
-              目标：{supportingLine}
+              Objetivo:{supportingLine}
             </div>
           ) : null}
         </div>
@@ -97,7 +97,7 @@ function CharacterCard(props: {
         disabled={isDeletingThis}
         onClick={() => confirmDeleteCharacter(character, onDeleteCharacter)}
         className="h-8 w-8 shrink-0 self-center p-0 text-muted-foreground opacity-60 hover:bg-destructive/10 hover:text-destructive group-hover:opacity-100"
-        title="删除角色"
+        title="Eliminar rol"
       >
         {isDeletingThis ? "..." : <Trash2 className="h-4 w-4" />}
       </Button>
@@ -123,9 +123,9 @@ export default function CharacterAssetSidebar(props: CharacterAssetSidebarProps)
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
             <Crown className="h-3.5 w-3.5 text-emerald-600" />
-            主角位
+            Posición protagonista
           </div>
-          {protagonists.length > 0 ? <Badge variant="outline">{protagonists.length} 人</Badge> : null}
+          {protagonists.length > 0 ? <Badge variant="outline">{protagonists.length} Gente</Badge> : null}
         </div>
         {protagonists.length > 0 ? protagonists.map((protagonist) => (
           <CharacterCard
@@ -140,7 +140,7 @@ export default function CharacterAssetSidebar(props: CharacterAssetSidebarProps)
           />
         )) : (
           <div className="rounded-xl border border-dashed border-primary/30 bg-primary/5 p-3 text-xs leading-5 text-muted-foreground">
-            当前阵容还没有标记主角，可在角色定位中补充主角信息。
+            La alineación actual no tiene todavía un protagonista marcado. Puedes complementar la información del protagonista en el posicionamiento de roles.
           </div>
         )}
       </section>
@@ -148,11 +148,11 @@ export default function CharacterAssetSidebar(props: CharacterAssetSidebarProps)
       <section className="space-y-2">
         <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
           <UsersRound className="h-3.5 w-3.5 text-sky-600" />
-          配角与关系角色
+          Roles de apoyo y relación
         </div>
         {characters.length === 0 ? (
           <div className="rounded-xl border border-dashed p-4 text-sm text-muted-foreground">
-            当前小说还没有角色，先在上方向导里创建或导入角色。
+            Actualmente no hay personajes en la novela. Primero cree o importe personajes en el asistente de arriba.
           </div>
         ) : supportingCharacters.length > 0 ? (
           <div className="max-h-[460px] space-y-2 overflow-auto pr-1">
@@ -170,7 +170,7 @@ export default function CharacterAssetSidebar(props: CharacterAssetSidebarProps)
           </div>
         ) : (
           <div className="rounded-xl border border-dashed p-4 text-sm text-muted-foreground">
-            当前阵容只有主角，后续可补充对手、同盟或关系压力角色。
+            La alineación actual solo tiene el protagonista, y luego se pueden agregar oponentes, aliados o personajes que presionen las relaciones.
           </div>
         )}
       </section>

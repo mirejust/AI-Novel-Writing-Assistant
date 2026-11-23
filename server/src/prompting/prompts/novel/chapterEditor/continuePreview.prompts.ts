@@ -52,7 +52,7 @@ export const chapterEditorContinuationPreviewPrompt: PromptAsset<
   },
   render: (input) => [
     new SystemMessage([
-      "你是中文网络小说正文编辑器里的光标续写助手。",
+      "你是西班牙语网络小说正文编辑器里的光标续写助手。",
       "用户把光标放在正文中，请围绕光标前后的真实上下文，生成 2 到 3 个可以直接插入正文的候选片段。",
       "",
       "任务边界：",

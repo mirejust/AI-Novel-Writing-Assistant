@@ -95,7 +95,7 @@ export class ChapterArtifactBackgroundSyncService {
       if (options.artifactSyncPolicy === "director_v2") {
         const current = await prisma.chapter.findFirst({where: {id: chapterId, novelId}, select: {content: true}});
         if (!current || buildContentHash(current.content ?? "") !== contentHash) {
-          return {status: "failed", contentHash, completedArtifacts: [], reason: "正文版本已变化，请完成当前正文的资源回填后继续。"};
+          return {status: "failed", contentHash, completedArtifacts: [], reason: "La versión del texto ha cambiado. Complete el relleno de recursos del texto actual antes de continuar."};
         }
       }
       return {
@@ -134,7 +134,7 @@ export class ChapterArtifactBackgroundSyncService {
           result = {
             ...result,
             status: "failed",
-            reason: `无法保存当前正文的资产完成边界：${error instanceof Error ? error.message : String(error)}`,
+            reason: `No se pueden guardar los límites de finalización de activos para el cuerpo actual:${error instanceof Error ? error.message : String(error)}`,
           };
         }
       }
@@ -165,10 +165,10 @@ export class ChapterArtifactBackgroundSyncService {
       select: { id: true, order: true, title: true, content: true },
     });
     if (!chapter) {
-      return { status: "failed", contentHash, completedArtifacts: [], reason: "章节不存在，无法同步当前正文资产。" };
+      return { status: "failed", contentHash, completedArtifacts: [], reason: "El capítulo no existe y los recursos de texto actuales no se pueden sincronizar." };
     }
     if (buildContentHash(chapter.content ?? "") !== contentHash) {
-      return { status: "failed", contentHash, completedArtifacts: [], reason: "章节正文版本已变化，已拒绝过期资产同步结果。" };
+      return { status: "failed", contentHash, completedArtifacts: [], reason: "La versión del texto del capítulo cambió y los resultados de sincronización de activos vencidos fueron rechazados." };
     }
     const context: ChapterBackgroundSyncContext = {
       chapterId,
@@ -207,7 +207,7 @@ export class ChapterArtifactBackgroundSyncService {
           status: options.artifactSyncPolicy === "director_v2" || artifactSyncMode === "strict" ? "pending" : "degraded",
           contentHash,
           completedArtifacts: [],
-          reason: "同一正文版本的资产同步仍在运行。",
+          reason: "La sincronización de recursos para la misma versión del cuerpo aún se está ejecutando.",
         };
       }
       if (deltaClaim !== "already_done") {
@@ -334,7 +334,7 @@ export class ChapterArtifactBackgroundSyncService {
           status: artifactSyncMode === "strict" ? "pending" : "degraded",
           contentHash,
           completedArtifacts: ["artifact_delta"],
-          reason: "同一正文版本的伏笔账本对账仍在运行。",
+          reason: "La conciliación del libro mayor de presagios para la misma versión de texto aún se está ejecutando.",
         };
       }
       if (reconcileClaim === "claimed") {
@@ -535,14 +535,14 @@ export class ChapterArtifactBackgroundSyncService {
     const persist = async (db: Pick<typeof prisma, "chapter" | "chapterArtifactSyncCheckpoint">) => {
       if (input.revisionGuard) {
         const current = await db.chapterArtifactSyncCheckpoint.updateMany({where: {...input.revisionGuard, status: "running"}, data: {updatedAt: new Date()}});
-        if (!current.count) throw new ChapterArtifactContentVersionError("修订版本已变化，请同步最新正文。");
+        if (!current.count) throw new ChapterArtifactContentVersionError("La revisión ha cambiado, sincronice el texto más reciente.");
       }
       const chapter = await db.chapter.findFirst({
         where: { id: input.chapterId, novelId: input.novelId },
         select: { content: true },
       });
       if (!chapter || buildContentHash(chapter.content ?? "") !== input.contentHash) {
-        throw new ChapterArtifactContentVersionError("章节正文版本已变化，无法保存过期的资产完成边界。");
+        throw new ChapterArtifactContentVersionError("La versión del texto del capítulo ha cambiado y los límites de finalización de activos vencidos no se pueden guardar.");
       }
       await db.chapterArtifactSyncCheckpoint.upsert({
         where: {

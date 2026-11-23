@@ -38,7 +38,7 @@ export function extractJSONValue(source: string): string {
       : Math.min(objectStart, arrayStart);
 
   if (start < 0) {
-    throw new Error("未检测到有效 JSON 值。");
+    throw new Error("No se detectó ningún valor JSON válido.");
   }
 
   const opener = text[start];
@@ -76,13 +76,13 @@ export function extractJSONValue(source: string): string {
     }
   }
 
-  throw new Error("未检测到完整 JSON 值。");
+  throw new Error("Valor JSON completo no detectado.");
 }
 
 export function extractJSONObject(source: string): string {
   const extracted = extractJSONValue(source);
   if (!extracted.startsWith("{")) {
-    throw new Error("未检测到有效 JSON 对象。");
+    throw new Error("No se detectó ningún objeto JSON válido.");
   }
   return extracted;
 }
@@ -194,13 +194,13 @@ export function briefSummary(content: string, facts?: ExtractedFact[]): string {
   const worldFacts = unique(extractedFacts.filter((item) => item.category === "world").map((item) => item.content), 1);
   const blocks: string[] = [];
   if (plotEvents.length > 0) {
-    blocks.push(`Plot: ${plotEvents.join("；")}`);
+    blocks.push(`Plot: ${plotEvents.join(";")}`);
   }
   if (characterStates.length > 0) {
-    blocks.push(`Character: ${characterStates.join("；")}`);
+    blocks.push(`Character: ${characterStates.join(";")}`);
   }
   if (worldFacts.length > 0) {
-    blocks.push(`World: ${worldFacts.join("；")}`);
+    blocks.push(`World: ${worldFacts.join(";")}`);
   }
   if (blocks.length > 0) {
     return blocks.join("\n");

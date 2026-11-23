@@ -15,12 +15,12 @@ export const MAX_ANALYSIS_MAX_TOKENS = 32_768;
 export const UNLIMITED_NOTES_MAX_TOKENS_CACHE_KEY = 0;
 
 export const SECTION_PROMPTS: Record<BookAnalysisSectionKey, string> = {
-  overview: "请输出拆书总览，覆盖：一句话定位、题材标签、卖点标签、目标读者、整体优势、整体短板，并优先做基于整书笔记的低风险综合判断。",
-  plot_structure: "请分析剧情结构，覆盖：主线梗概、阶段推进、冲突升级、高光设计、节奏评估、章节组织、结构问题、结构亮点、可复用套路。",
-  timeline: "请分析故事时间线，覆盖：关键时间节点、事件先后关系、主线阶段划分、角色状态变化节点、时间跨度与节奏风险。",
-  character_system: "请分析人物系统，覆盖：主角定位、配角与反派功能、关系网络、成长弧线、人物高光、分工清晰度。",
-  worldbuilding: "请分析世界观与设定，覆盖：世界框架、规则系统、关键设定亮点、设定如何服务剧情、设定问题或风险。",
-  themes: "请分析主题表达，覆盖：核心主题、题眼、情绪基调、象征母题、主题呈现方式、主题表达风险。",
-  style_technique: "请分析文风与技法，覆盖：叙事视角、语言风格、描写方式、对话特征、节奏控制、钩子设计、可复用写法。",
-  market_highlights: "请分析商业化卖点，覆盖：读者爽点、点击驱动、人物卖点、题材卖点、目标读者匹配点、商业化风险。",
+  overview: "Genere una descripción general del libro que cubra: posicionamiento de una oración, etiquetas de tema, etiquetas de puntos de venta, lectores objetivo, fortalezas generales y deficiencias generales, y dé prioridad a juicios integrales de bajo riesgo basados ​​​​en las notas de todo el libro.",
+  plot_structure: "Analice la estructura de la trama, que cubre: esquema de la trama principal, avance del escenario, escalada del conflicto, diseño de aspectos destacados, evaluación del ritmo, organización del capítulo, problemas estructurales, aspectos destacados estructurales y rutinas reutilizables.",
+  timeline: "Analice la línea de tiempo de la historia, que cubre: nodos de tiempo clave, secuencia de eventos, división del escenario de la línea principal, nodos de cambio de estado de los personajes, lapso de tiempo y riesgos de ritmo.",
+  character_system: "Analice el sistema de personajes, que cubre: posicionamiento del protagonista, rol secundario y funciones del villano, red de relaciones, arco de crecimiento, aspectos destacados del personaje y claridad de la división del trabajo.",
+  worldbuilding: "Analice la visión del mundo y el entorno, abarcando: el marco mundial, el sistema de reglas, los aspectos más destacados del entorno, cómo el entorno sirve a la trama y los problemas o riesgos del entorno.",
+  themes: "Analice la expresión del tema, abarcando: tema central, título, tono emocional, motivo simbólico, método de presentación del tema y riesgos de expresión del tema.",
+  style_technique: "Analice el estilo y las técnicas de escritura, que cubren: perspectiva narrativa, estilo de lenguaje, método de descripción, características del diálogo, control del ritmo, diseño de gancho y métodos de escritura reutilizables.",
+  market_highlights: "Analice los puntos de venta comerciales, que cubren: disfrute del lector, impulso de clics, puntos de venta de los personajes, puntos de venta del tema, puntos de coincidencia del lector objetivo y riesgos de comercialización.",
 };

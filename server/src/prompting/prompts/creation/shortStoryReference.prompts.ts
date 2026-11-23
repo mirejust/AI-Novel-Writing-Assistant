@@ -23,7 +23,7 @@ export const shortStoryReferenceExtractPrompt: PromptAsset<{
   },
   render: (input) => [
     new SystemMessage([
-      "你为一篇新的中文网络小说短篇提炼参考创作合同。",
+      "你为一篇新的西班牙语网络小说短篇提炼参考创作合同。",
       "只依据提供的拆书结论，归纳适用于 3000～30000 字短篇的结构、节奏、写法和结尾兑现方法。",
       "必须覆盖结论中的完整阶段和结局信息，不能只依据开头。没有结局证据时 endingEvidence=not_available，并明确缺少的依据，禁止补造原作结局。",
       "借鉴组织方式与写作方法，重新设计角色、世界与具体剧情；不得照搬原作角色、原句、情节链或标志性设定。",

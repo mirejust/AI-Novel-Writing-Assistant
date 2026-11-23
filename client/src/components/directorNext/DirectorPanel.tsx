@@ -31,19 +31,19 @@ interface DirectorPanelProps {
 
 function formatEvent(event: DirectorTimelineEvent): string {
   const label: Record<string, string> = {
-    command_accepted: "已接收创作命令",
-    step_started: "开始处理阶段",
-    step_finished: "阶段处理完成",
-    quality_debt_recorded: "记录质量提醒",
-    stop_signal: "记录暂停原因",
-    token_usage: "完成一次 AI 调用",
+    command_accepted: "Orden de creación recibida",
+    step_started: "Iniciar fase de procesamiento",
+    step_finished: "Procesamiento de etapa completado",
+    quality_debt_recorded: "Recordatorio de calidad de grabación",
+    stop_signal: "Motivo de pausa de grabación",
+    token_usage: "Completar una llamada AI",
   };
-  return label[event.type] ?? "更新创作记录";
+  return label[event.type] ?? "Actualizar registro de creación";
 }
 
 function formatTime(value: string): string {
   const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? "时间未知" : date.toLocaleString();
+  return Number.isNaN(date.getTime()) ? "Hora desconocida" : date.toLocaleString();
 }
 
 export default function DirectorPanel({ view, novelId, timeline = [], preview = false, startForm, reviewTarget, reviewReady = false, reviewCanRegenerate = false, reviewRunId, reviewVersion, renderPlanEditor, proseApproval, outlineBound = false }: DirectorPanelProps) {
@@ -55,7 +55,7 @@ export default function DirectorPanel({ view, novelId, timeline = [], preview = 
   const launchForm = canLaunch && (typeof startForm === "function" ? startForm(view.nextLaunchRange, view.driver) : startForm);
   const badgeView = {
     ...view,
-    headline: reviewingCharacters ? "请确认本章人物后继续" : view.headline,
+    headline: reviewingCharacters ? "Confirme los personajes de este capítulo antes de continuar." : view.headline,
     availableActions: view.availableActions.filter(action =>
       !(reviewingCharacters && action.command === "resume") && !(launchForm && action.command === "open_run")),
   };
@@ -70,28 +70,28 @@ export default function DirectorPanel({ view, novelId, timeline = [], preview = 
 
   return (
     <div className="flex min-h-0 min-w-0 flex-col pb-4">
-      <section id="director-current-work" aria-label="正在做什么" className="rounded-xl bg-muted/55 p-4">
-        <DirectorBadge panel view={badgeView} novelId={novelId} preview={preview} currentNavigationTarget={reviewTarget} openRunLabel={outlineBound ? "选择下一章并确认" : undefined} />
+      <section id="director-current-work" aria-label="¿Qué estás haciendo?" className="rounded-xl bg-muted/55 p-4">
+        <DirectorBadge panel view={badgeView} novelId={novelId} preview={preview} currentNavigationTarget={reviewTarget} openRunLabel={outlineBound ? "Seleccione el siguiente capítulo y confirme" : undefined} />
         {reviewingCharacters && <p className="mt-2 text-sm text-muted-foreground">{view.headline}</p>}
         {chapterListProgress ? (
           <div className="mt-3 space-y-2 text-xs" role="status" aria-live="polite">
             <p>{chapterListProgress.label}</p>
-            <div role="progressbar" aria-label="章节拆分进度" aria-valuemin={0}
+            <div role="progressbar" aria-label="Progreso de la división del capítulo" aria-valuemin={0}
               aria-valuemax={chapterListProgress.totalChapters} aria-valuenow={chapterListProgress.completedChapters}>
               <WorkflowProgressBar progress={chapterListProgress.completedChapters / chapterListProgress.totalChapters} />
             </div>
             <p className="text-muted-foreground">
-              已生成 {chapterListProgress.completedChapters}/{chapterListProgress.totalChapters} 章
+              Generado {chapterListProgress.completedChapters}/{chapterListProgress.totalChapters} Capítulo
               {chapterListProgress.completedChapters === chapterListProgress.totalChapters
-                ? "，正在校验并保存章节列表…" : "，每完成一个节奏段更新进度。"}
+                ? ", verificando y guardando la lista de capítulos..." : ", el progreso se actualiza cada vez que se completa un segmento de ritmo."}
             </p>
           </div>
         ) : null}
-        {chapterProgress ? <p className="mt-2 text-xs text-muted-foreground">本次正文：第 {chapterProgress.from}—{chapterProgress.to} 章</p> : null}
-        <div className="mt-4" role="progressbar" aria-valuemin={0} aria-valuemax={progress.total} aria-valuenow={progress.done} aria-label={chapterProgress ? "本次正文完成进度" : "导演阶段进度"}>
+        {chapterProgress ? <p className="mt-2 text-xs text-muted-foreground">El texto de este artículo: Capítulo {chapterProgress.from}—{chapterProgress.to} Cap.</p> : null}
+        <div className="mt-4" role="progressbar" aria-valuemin={0} aria-valuemax={progress.total} aria-valuenow={progress.done} aria-label={chapterProgress ? "El progreso de la finalización de este texto." : "Progreso de la etapa del director."}>
           <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <span>{chapterProgress ? "正文已检查并保存" : "规划进度"}</span>
-            <span className="font-medium tabular-nums text-foreground">{progress.done}/{progress.total}{chapterProgress ? " 章" : " 阶段"}</span>
+            <span>{chapterProgress ? "Texto revisado y guardado" : "Progreso de la planificación"}</span>
+            <span className="font-medium tabular-nums text-foreground">{progress.done}/{progress.total}{chapterProgress ? "" : " etapa"}</span>
           </div>
           <div className="mt-2 h-1 overflow-hidden rounded-full bg-border" aria-hidden="true">
             <div className={`h-full rounded-full motion-safe:transition-[width] ${view.mode === "completed" ? "bg-success" : "bg-primary"}`} style={{ width: `${progress.total > 0 ? Math.min(100, (progress.done / progress.total) * 100) : 0}%` }} />
@@ -99,12 +99,12 @@ export default function DirectorPanel({ view, novelId, timeline = [], preview = 
         </div>
       </section>
 
-      <section id="director-next-action" aria-label="需要你做什么" className="space-y-3 py-5">
-        {!(launchForm && view.mode === "completed") && <p className="text-sm leading-6 text-muted-foreground">{reviewingCurrentGate ? "请核对左侧本阶段结果，确认后 AI 按本次授权范围继续。" : recoveringReview ? "重新生成章节任务与场景后，再确认并继续创作。" : view.nextActionGuidance}</p>}
+      <section id="director-next-action" aria-label="¿Qué necesitas hacer?" className="space-y-3 py-5">
+        {!(launchForm && view.mode === "completed") && <p className="text-sm leading-6 text-muted-foreground">{reviewingCurrentGate ? "Por favor, consulte los resultados de esta etapa a la izquierda. Después de la confirmación, AI continuará dentro del alcance de esta autorización." : recoveringReview ? "Después de regenerar las tareas y escenas del capítulo, confirme y continúe creando." : view.nextActionGuidance}</p>}
         {view.detail && <p className={`break-words rounded-md p-3 text-sm leading-6 ${reviewingCharacters ? "bg-muted/50 text-muted-foreground" : "bg-destructive/5 text-destructive"}`}>{view.detail}</p>}
         {!preview && <DirectorCharacterCandidates page={candidatePage} runId={view.runId} novelId={novelId}
           proseReview={view.availableActions.some(action => action.id === "review:chapter_batch_closed")}/>}
-        {candidates.isError && <p role="alert" className="text-sm text-destructive">人物候选暂时未能加载，请稍后重试。</p>}
+        {candidates.isError && <p role="alert" className="text-sm text-destructive">El personaje candidato no se puede cargar temporalmente, inténtalo de nuevo más tarde.</p>}
         {view.mode === "paused" && view.chapterBudget && <ChapterBudgetRecovery key={`${view.runId}:${view.sourceTrace.controlVersion}:${view.chapterBudget.chapterId}`}
           budget={view.chapterBudget} runId={view.runId} novelId={novelId} expectedVersion={view.sourceTrace.controlVersion} disabled={preview || reviewingCharacters}/>}
         {view.mode === "paused" && view.unknownClaims && <UnknownClaimsRecovery key={`${view.runId}:${view.sourceTrace.controlVersion}:${view.unknownClaims.chapterId}`}
@@ -115,17 +115,17 @@ export default function DirectorPanel({ view, novelId, timeline = [], preview = 
         {launchForm}
       </section>
 
-      <section className="border-y border-border/60 py-3" aria-label="质量提醒">
+      <section className="border-y border-border/60 py-3" aria-label="Aviso de calidad">
         {view.debts.count > 0 ? <>
-          <p className="flex items-center gap-2.5 text-sm font-semibold"><ShieldAlert className="size-4 shrink-0 text-warning" aria-hidden="true" />{view.debts.count} 项质量提醒</p>
-          {view.debts.chapterOrders.length > 0 && <p className="mt-1 pl-7 text-sm leading-6 text-muted-foreground">从左侧目录查看第 {view.debts.chapterOrders.join("、")} 章。</p>}
-        </> : <p className="flex items-center gap-2.5 text-sm text-muted-foreground"><ShieldCheck className="size-4 shrink-0" aria-hidden="true" />本次没有质量提醒</p>}
+          <p className="flex items-center gap-2.5 text-sm font-semibold"><ShieldAlert className="size-4 shrink-0 text-warning" aria-hidden="true" />{view.debts.count} Recordatorio de calidad del artículo</p>
+          {view.debts.chapterOrders.length > 0 && <p className="mt-1 pl-7 text-sm leading-6 text-muted-foreground">Ver el Capítulo 1 del catálogo de la izquierda. {view.debts.chapterOrders.join(",")} Capítulo.</p>}
+        </> : <p className="flex items-center gap-2.5 text-sm text-muted-foreground"><ShieldCheck className="size-4 shrink-0" aria-hidden="true" />Esta vez no hay recordatorio de calidad.</p>}
       </section>
 
       <div className="divide-y divide-border/60">
-        <PanelDisclosure icon={History} title="创作时间线">
+        <PanelDisclosure icon={History} title="Cronograma de creación">
           {timeline.length === 0 ? (
-            <p className="mt-2 text-sm text-muted-foreground">暂时没有可展示的时间线。</p>
+            <p className="mt-2 text-sm text-muted-foreground">Actualmente no hay una línea de tiempo para mostrar.</p>
           ) : (
             <ol className="space-y-2 pl-1">
               {timeline.slice(-8).reverse().map((event) => (
@@ -142,12 +142,12 @@ export default function DirectorPanel({ view, novelId, timeline = [], preview = 
         </PanelDisclosure>
 
         {!preview && <InvocationUsageList runId={view.runId} active={["running","queued"].includes(view.mode)}/>}
-        <PanelDisclosure icon={ListChecks} title="查看运行诊断">
+        <PanelDisclosure icon={ListChecks} title="Ver diagnósticos en ejecución">
           <dl className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-3 gap-y-2 text-xs text-muted-foreground">
-            <dt>创作方式</dt><dd className="text-foreground">{directorDriverLabel(view.driver)}</dd>
-            <dt>计划版本</dt><dd className="break-all text-foreground">{view.sourceTrace.planVersion}</dd>
-            <dt>状态版本</dt><dd className="text-foreground">{view.sourceTrace.controlVersion}</dd>
-            <dt>阶段完成</dt><dd className="text-foreground">{view.progress.done}/{view.progress.total}</dd>
+            <dt>Método de creación</dt><dd className="text-foreground">{directorDriverLabel(view.driver)}</dd>
+            <dt>Versión del plan</dt><dd className="break-all text-foreground">{view.sourceTrace.planVersion}</dd>
+            <dt>Versión de estado</dt><dd className="text-foreground">{view.sourceTrace.controlVersion}</dd>
+            <dt>Etapa completada</dt><dd className="text-foreground">{view.progress.done}/{view.progress.total}</dd>
           </dl>
         </PanelDisclosure>
       </div>

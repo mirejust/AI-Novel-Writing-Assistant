@@ -7,7 +7,7 @@ export interface PlannedChapter { plan?: VolumeChapterPlan; chapter?: WorkspaceC
 export function beatChapterLabel(chapters: readonly PlannedChapter[]): string {
   const orders = [...new Set(chapters.map(row => row.chapter?.order ?? row.plan?.chapterOrder)
     .filter((order): order is number => typeof order === "number" && Number.isSafeInteger(order) && order > 0))].sort((a, b) => a - b);
-  if (!orders.length) return "待拆章";
+  if (!orders.length) return "Capítulo por abrir";
   const ranges: string[] = [];
   let from = orders[0], to = from;
   for (const order of orders.slice(1)) {
@@ -16,7 +16,7 @@ export function beatChapterLabel(chapters: readonly PlannedChapter[]): string {
     from = to = order;
   }
   ranges.push(from === to ? String(from) : `${from}—${to}`);
-  return `第 ${ranges.join("、")} 章`;
+  return `Cap. ${ranges.join(",")}`;
 }
 
 export function chapterSelection(row: PlannedChapter): Selection {

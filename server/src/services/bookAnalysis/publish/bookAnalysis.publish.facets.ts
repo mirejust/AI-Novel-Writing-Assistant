@@ -82,8 +82,8 @@ function buildFieldFacets(fieldKey: string, values: string[], evidence: BookAnal
 
 function formatEvidenceLines(evidence: BookAnalysisEvidenceItem[]): string[] {
   return evidence.slice(0, 4).map((item) => {
-    const chapterLabel = item.chapterIndex === undefined ? "" : `第 ${item.chapterIndex + 1} 章；`;
-    return `- ${chapterLabel}${item.sourceLabel}｜${item.label}：${item.excerpt}`;
+    const chapterLabel = item.chapterIndex === undefined ? "" : `Cap. ${item.chapterIndex + 1} capítulo;`;
+    return `- ${chapterLabel}${item.sourceLabel}|${item.label}:${item.excerpt}`;
   });
 }
 
@@ -97,10 +97,10 @@ function buildFieldChunk(section: BookAnalysisSection, fieldKey: string, value: 
   const firstEvidence = evidence.find((item) => item.chapterIndex !== undefined || item.excerptOffsetRange);
   const facets = buildFieldFacets(fieldKey, values, evidence);
   const chunkText = [
-    `拆书小节：${section.title}`,
-    `结构化字段：${label}`,
-    `关键结论：${values.join("；")}`,
-    evidence.length > 0 ? "证据摘录：" : "",
+    `Desembalaje de la sección del libro:${section.title}`,
+    `Campos estructurados:${label}`,
+    `Conclusiones clave:${values.join(";")}`,
+    evidence.length > 0 ? "Extractos de la evidencia:" : "",
     ...formatEvidenceLines(evidence),
   ].filter(Boolean).join("\n");
 
@@ -126,7 +126,7 @@ function buildFieldChunk(section: BookAnalysisSection, fieldKey: string, value: 
 
 function buildSectionTextChunk(section: BookAnalysisSection, content: string): RagPreChunk {
   return {
-    chunkText: `拆书小节：${section.title}\n\n${content}`,
+    chunkText: `Desembalaje de la sección del libro:${section.title}\n\n${content}`,
     anchor: { sectionKey: section.sectionKey },
     metadata: {
       source: "book_analysis_text",

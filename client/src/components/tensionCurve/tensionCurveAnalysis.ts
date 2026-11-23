@@ -15,12 +15,12 @@ export interface TensionCurveReferenceTemplate {
 export const tensionCurveReferenceTemplates: TensionCurveReferenceTemplate[] = [
   {
     key: "escalation",
-    label: "升级流",
+    label: "Flujo de actualización",
     values: [22, 30, 42, 38, 56, 66, 62, 82, 72],
   },
   {
     key: "suspense",
-    label: "悬疑流",
+    label: "Flujo de suspenso",
     values: [35, 46, 40, 58, 52, 68, 64, 78, 88],
   },
 ];
@@ -61,8 +61,8 @@ export function analyzeTensionCurveShape(points: TensionCurvePoint[]): TensionCu
       if (index - flatStartIndex >= 2) {
         hints.push({
           key: `flat-${values[flatStartIndex].id}-${values[index].id}`,
-          label: "节奏平坝",
-          detail: `第${values[flatStartIndex].chapterOrder}-${values[index].chapterOrder}章冲突强度变化很小，可以检查这里是否需要更清晰的推进或回报。`,
+          label: "Presa plana de ritmo",
+          detail: `Cap.${values[flatStartIndex].chapterOrder}-${values[index].chapterOrder}La intensidad del conflicto del capítulo cambia muy poco, lo que le permite comprobar si aquí se necesita una progresión o una recompensa más clara.`,
         });
         break;
       }
@@ -77,8 +77,8 @@ export function analyzeTensionCurveShape(points: TensionCurvePoint[]): TensionCu
   if (peak && finalPeak && finalPeak.value < peak.value - 8) {
     hints.push({
       key: "late-peak-missing",
-      label: "卷末峰值偏弱",
-      detail: `当前最高点在第${peak.chapterOrder}章，卷末四分之一没有形成更强峰值，可以检查高潮承诺是否足够集中。`,
+      label: "El pico al final del volumen es débil.",
+      detail: `El punto más alto actual está en${peak.chapterOrder}Capítulo, el último cuarto del volumen no forma un pico más fuerte, que se puede comprobar si el compromiso culminante está lo suficientemente concentrado.`,
     });
   }
 
@@ -100,8 +100,8 @@ export function analyzeTensionCurveShape(points: TensionCurvePoint[]): TensionCu
     if (max - min <= 5) {
       hints.push({
         key: `beat-flat-${group[0].beatKey}`,
-        label: "节拍内起伏不足",
-        detail: `第${group[0].chapterOrder}-${group[group.length - 1].chapterOrder}章在同一节拍内接近持平，可以检查是否需要转折点。`,
+        label: "Fluctuación insuficiente dentro del ritmo.",
+        detail: `Cap.${group[0].chapterOrder}-${group[group.length - 1].chapterOrder}Los capítulos son casi planos dentro del mismo tiempo y se pueden verificar para ver si se necesita un punto de inflexión.`,
       });
       break;
     }

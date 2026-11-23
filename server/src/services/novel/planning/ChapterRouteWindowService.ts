@@ -60,9 +60,9 @@ export class ChapterRouteWindowService {
       : null;
     const remaining = compactTarget == null ? null : Math.max(0, compactTarget - fromChapterOrder + 1);
     const closingGuidance = remaining != null && remaining <= 3
-      ? `紧凑全书终章倒计时：剩余约 ${remaining} 章。只生成结局合同所需的收束路线，不要创建新的主线或下一阶段钩子。`
+      ? `Cuenta atrás compacta para el último capítulo del libro: quedan aprox. ${remaining} capítulo. Solo genere las rutas de cierre necesarias para el contrato final, no cree nuevas líneas principales ni ganchos de la siguiente etapa.`
       : remaining != null && remaining <= 8
-        ? `紧凑全书收束规划：剩余约 ${remaining} 章。优先完成主冲突、关系变化和未兑现回报，不扩展远期世界或新主线。`
+        ? `Plan de cierre de libros compacto: restante aprox. ${remaining} capítulo. Priorice completar el conflicto principal, los cambios en las relaciones y las recompensas no obtenidas, sin expandir el mundo futuro ni una nueva historia principal.`
         : undefined;
     let workspace = await this.volumeService.getVolumes(novelId, {hydrateCanonical: false});
     let availableRouteCount = await this.countAvailableRoute(novelId, fromChapterOrder, workspace);
@@ -107,7 +107,7 @@ export class ChapterRouteWindowService {
         });
         workspace = await this.volumeService.appendMissingRoutes(novelId, workspace);
         if (!workspace.beatSheets.some(sheet => sheet.volumeId === next.volumeId && sheet.beats.length)) {
-          throw new Error("未保存可用的节奏板，已保留原有规划，请从保存进度重试。");
+          throw new Error("El tablero de ritmo disponible no se ha guardado. Se ha mantenido el plan original. Inténtelo de nuevo desde el progreso guardado.");
         }
         availableRouteCount = await this.countAvailableRoute(novelId, fromChapterOrder, workspace);
         continue;
@@ -131,7 +131,7 @@ export class ChapterRouteWindowService {
       extended = true;
       const previousCount = availableRouteCount;
       availableRouteCount = await this.countAvailableRoute(novelId, fromChapterOrder, workspace);
-      if (availableRouteCount <= previousCount) throw new Error("未补出所需的连续章节路线，已保留原有规划，请从保存进度重试。");
+      if (availableRouteCount <= previousCount) throw new Error("La ruta de capítulo continuo requerida no se ha complementado. Se ha mantenido el plan original. Inténtalo de nuevo desde el progreso guardado.");
     }
     return { availableRouteCount, extended };
   }
@@ -164,9 +164,9 @@ export class ChapterRouteWindowService {
       taskId: options.taskId,
       entrypoint: "jit_route_window",
       guidance: [
-        "滚动生产需要补齐后续卷骨架。",
-        "已有卷及其章节已经进入生产，必须视为固定事实；只为尚未创建的后续卷安排承接、升级和兑现。",
-        `全书目标约 ${targetChapterCount} 章；当前只补卷级骨架，不拆远期章节。`,
+        "La producción de laminación requiere la finalización de esqueletos de laminación posteriores.",
+        "Los volúmenes existentes y sus capítulos han entrado en producción y deben considerarse como hechos fijos; sólo se organizan acuerdos para emprender, actualizar y cobrar los volúmenes posteriores que aún no se han creado.",
+        `objetivo del libro ${targetChapterCount} Capítulo; Actualmente, solo se está complementando el esqueleto a nivel de volumen y no se eliminarán capítulos futuros.`,
       ].join("\n"),
     });
     const futureVolumes = generatedSkeleton.volumes.slice(workspace.volumes.length);
@@ -183,7 +183,7 @@ export class ChapterRouteWindowService {
       orderBy: {order: "asc"}, select: {order: true},
     });
     const orders = new Set(chapters.map(chapter => chapter.order));
-    if (orders.size !== chapters.length) throw new Error("小说存在重复章序，不能自动补齐路线。");
+    if (orders.size !== chapters.length) throw new Error("Hay secuencias de capítulos repetidas en la novela y la ruta no se puede completar automáticamente.");
     return countPlannedRoutes(workspace, fromChapterOrder, orders);
   }
 

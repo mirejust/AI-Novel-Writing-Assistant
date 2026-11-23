@@ -195,7 +195,7 @@ export function registerNovelVolumeRoutes(input: RegisterNovelVolumeRoutesInput)
         }
       } catch (error) {
         if (streaming) {
-          res.end(`data: ${JSON.stringify({ type: "error", error: error instanceof Error ? error.message : "章节列表生成失败。" })}\n\n`);
+          res.end(`data: ${JSON.stringify({ type: "error", error: error instanceof Error ? error.message : "Error al generar la lista de capítulos." })}\n\n`);
         } else {
           next(error);
         }

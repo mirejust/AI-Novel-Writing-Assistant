@@ -93,24 +93,24 @@ const DIRECTOR_TAKEOVER_STAGE_META: Record<
   Pick<DirectorTakeoverStageReadiness, "label" | "description">
 > = {
   story_macro: {
-    label: "从故事宏观规划开始",
-    description: "先补齐 Story Macro 和 Book Contract，再继续角色、卷战略和拆章。",
+    label: "Comience con el plan de la gran historia",
+    description: "Primero complete la macro de la historia y el contrato del libro, luego pase a los personajes, la estrategia del volumen y los capítulos.",
   },
   world_setup: {
-    label: "从世界观准备开始",
-    description: "沿用故事宏观规划，先完成本书世界观，再继续角色和后续规划。",
+    label: "Comience con la preparación para la cosmovisión",
+    description: "Siguiendo el plan macro de la historia, primero completa la visión del mundo del libro, para luego continuar con los personajes y la posterior planificación.",
   },
   character_setup: {
-    label: "从角色准备开始",
-    description: "沿用已有书级方向，只让 AI 接手角色阵容和后续规划。",
+    label: "Comience con la preparación del personaje.",
+    description: "Siga la dirección existente a nivel de libro y solo deje que la IA se haga cargo de la alineación de personajes y la planificación posterior.",
   },
   volume_strategy: {
-    label: "从卷战略开始",
-    description: "沿用现有书级方向和角色，继续生成卷战略与卷骨架。",
+    label: "Comience con la estrategia de volumen",
+    description: "Continúe generando estrategias de volumen y esqueletos de volumen utilizando instrucciones y roles existentes a nivel de libro.",
   },
   structured_outline: {
-    label: "从节奏 / 拆章开始",
-    description: "沿用现有卷规划，继续生成节奏板、章节列表和章节细化。",
+    label: "Comience con capítulos de ritmo/ruptura",
+    description: "Utilice el plan de volumen existente y continúe generando tableros de ritmo, listas de capítulos y mejoras de capítulos.",
   },
 };
 
@@ -122,36 +122,36 @@ const TAKEOVER_ENTRY_META: Record<
   }
 > = {
   basic: {
-    label: "项目设定",
-    description: "从现有项目基础信息继续接管，优先补最早缺失的导演前置资产。",
+    label: "Configuración del proyecto",
+    description: "Continúe tomando el control de la información básica del proyecto existente, dando prioridad a los preactivos del director que faltan más temprano.",
   },
   story_macro: {
-    label: "故事宏观规划",
-    description: "围绕 Story Macro 和 Book Contract 继续或重跑书级规划。",
+    label: "gran plan de historia",
+    description: "Continúe o vuelva a ejecutar la planificación a nivel de libro en torno a Story Macro y Book Contract.",
   },
   world: {
-    label: "世界观准备",
-    description: "围绕本书世界规则、势力和约束继续或重跑当前步骤。",
+    label: "preparación de la cosmovisión",
+    description: "Continúe o vuelva a ejecutar los pasos actuales en torno a las reglas, fuerzas y limitaciones del mundo de este libro.",
   },
   character: {
-    label: "角色准备",
-    description: "围绕角色阵容与应用继续或重跑当前步骤。",
+    label: "Preparación de personajes",
+    description: "Continúe o vuelva a ejecutar el paso actual en torno al elenco de personajes y aplicaciones.",
   },
   outline: {
-    label: "卷战略",
-    description: "围绕卷战略与卷骨架继续或重跑当前步骤。",
+    label: "estrategia de volumen",
+    description: "Continúe o vuelva a ejecutar el paso actual sobre estrategias de volumen y esqueletos de volumen.",
   },
   structured: {
-    label: "节奏 / 拆章",
-    description: "围绕当前卷节奏板、章节列表和细化资源继续或重跑当前步骤。",
+    label: "Ritmo / Capítulo de ruptura",
+    description: "Continúe o vuelva a ejecutar el paso actual alrededor del tablero de ritmo de volumen actual, la lista de capítulos y los recursos de refinamiento.",
   },
   chapter: {
-    label: "章节执行",
-    description: "优先恢复当前章节批次或从已准备范围继续执行。",
+    label: "Ejecución del capítulo",
+    description: "Se da prioridad a restaurar el lote de capítulos actual o continuar la ejecución desde el rango preparado.",
   },
   pipeline: {
-    label: "质量修复",
-    description: "优先恢复当前修复批次，或承接待修章节继续推进。",
+    label: "arreglo de calidad",
+    description: "Se dará prioridad a restaurar el lote actual de reparaciones o continuar avanzando en los capítulos en reparación.",
   },
 };
 
@@ -175,7 +175,7 @@ function splitToneKeywords(novel: DirectorTakeoverNovelContext): string[] {
     ...novel.commercialTags,
   ]
     .filter(Boolean)
-    .join("，");
+    .join(",");
   return Array.from(
     new Set(
       raw
@@ -188,15 +188,15 @@ function splitToneKeywords(novel: DirectorTakeoverNovelContext): string[] {
 
 function buildTakeoverIdea(novel: DirectorTakeoverNovelContext): string {
   const lines = [
-    novel.description?.trim() ? `故事概述：${novel.description.trim()}` : "",
-    novel.title.trim() ? `项目标题：《${novel.title.trim()}》` : "",
-    novel.targetAudience?.trim() ? `目标读者：${novel.targetAudience.trim()}` : "",
-    novel.bookSellingPoint?.trim() ? `书级卖点：${novel.bookSellingPoint.trim()}` : "",
-    novel.competingFeel?.trim() ? `对标气质：${novel.competingFeel.trim()}` : "",
-    novel.first30ChapterPromise?.trim() ? `前30章承诺：${novel.first30ChapterPromise.trim()}` : "",
-    novel.commercialTags.length > 0 ? `商业标签：${novel.commercialTags.join("、")}` : "",
+    novel.description?.trim() ? `Resumen de la historia:${novel.description.trim()}` : "",
+    novel.title.trim() ? `Título del proyecto: "${novel.title.trim()}»` : "",
+    novel.targetAudience?.trim() ? `Lectores objetivo:${novel.targetAudience.trim()}` : "",
+    novel.bookSellingPoint?.trim() ? `Puntos de venta a nivel de libro:${novel.bookSellingPoint.trim()}` : "",
+    novel.competingFeel?.trim() ? `Temperamento objetivo:${novel.competingFeel.trim()}` : "",
+    novel.first30ChapterPromise?.trim() ? `Los primeros 30 capítulos prometen:${novel.first30ChapterPromise.trim()}` : "",
+    novel.commercialTags.length > 0 ? `Etiquetas comerciales:${novel.commercialTags.join(",")}` : "",
   ].filter(Boolean);
-  return lines.join("\n") || `项目标题：《${novel.title.trim() || "当前项目"}》`;
+  return lines.join("\n") || `Título del proyecto: "${novel.title.trim() || "Proyecto actual"}»`;
 }
 
 function buildTakeoverCandidate(input: {
@@ -207,29 +207,29 @@ function buildTakeoverCandidate(input: {
   const { novel, storyMacroPlan, bookContract } = input;
   const decomposition = storyMacroPlan?.decomposition ?? null;
   const expansion = storyMacroPlan?.expansion ?? null;
-  const workingTitle = novel.title.trim() || "当前项目";
+  const workingTitle = novel.title.trim() || "Proyecto actual";
   const sellingPoint = bookContract?.coreSellingPoint?.trim()
     || novel.bookSellingPoint?.trim()
     || decomposition?.selling_point?.trim()
-    || "围绕当前项目的核心卖点持续兑现读者回报。";
+    || "Ofrezca continuamente retornos a los lectores en torno a los principales puntos de venta de los proyectos actuales.";
   const coreConflict = decomposition?.core_conflict?.trim()
     || novel.description?.trim()
     || bookContract?.readingPromise?.trim()
-    || "围绕当前项目主线冲突持续推进。";
+    || "Continúe avanzando en torno a los conflictos de líneas principales del proyecto actual.";
   const protagonistPath = decomposition?.growth_path?.trim()
     || expansion?.protagonist_core?.trim()
     || bookContract?.protagonistFantasy?.trim()
-    || "主角在主线压力中持续成长并完成阶段转变。";
+    || "El protagonista sigue creciendo y completando cambios de escenario bajo la presión de la línea principal.";
   const hookStrategy = decomposition?.main_hook?.trim()
     || bookContract?.chapter3Payoff?.trim()
     || novel.first30ChapterPromise?.trim()
-    || "围绕当前卖点建立前期钩子和阶段回报。";
+    || "Construya ganchos tempranos y prepare retornos en torno a los puntos de venta actuales.";
   const progressionLoop = decomposition?.progression_loop?.trim()
     || bookContract?.escalationLadder?.trim()
-    || "目标推进 -> 阻力升级 -> 阶段回报 -> 新问题。";
+    || "Avance de objetivos -> Escalada de resistencia -> Recompensas de etapa -> Nuevos problemas.";
   const endingDirection = decomposition?.ending_flavor?.trim()
     || bookContract?.relationshipMainline?.trim()
-    || "沿当前项目既定气质和主线方向收束。";
+    || "Concluir siguiendo el temperamento establecido y la dirección principal del proyecto actual.";
 
   return {
     id: `takeover-${novel.id}`,
@@ -242,7 +242,7 @@ function buildTakeoverCandidate(input: {
     endingDirection,
     hookStrategy,
     progressionLoop,
-    whyItFits: "沿用当前项目已保存的书级信息与既有资产，继续自动导演。",
+    whyItFits: "Continúe con la dirección automática heredando la información guardada a nivel de libro y los activos existentes del proyecto actual.",
     toneKeywords: splitToneKeywords(novel),
     targetChapterCount: normalizeDirectorTargetChapterCount(novel.estimatedChapterCount),
   };
@@ -571,9 +571,9 @@ export function resolveDirectorTakeoverPlan(input: DirectorTakeoverDecisionInput
         entryStep: input.entryStep,
         strategy: input.strategy,
         effectiveStep,
-        summary: "继续已有进度，先补齐故事宏观规划。",
-        effectSummary: "会复用当前基础信息，只补缺失的 Story Macro 与 Book Contract。",
-        impactNotes: ["不会清空已有章节与正文。"],
+        summary: "Continúe el progreso y primero complete el plan general de la historia.",
+        effectSummary: "La información básica actual se reutilizará y solo se completará la macro de la historia y el contrato del libro que faltan.",
+        impactNotes: ["Los capítulos y textos existentes no se borrarán."],
       });
     }
     if (effectiveStep === "character") {
@@ -581,9 +581,9 @@ export function resolveDirectorTakeoverPlan(input: DirectorTakeoverDecisionInput
         entryStep: input.entryStep,
         strategy: input.strategy,
         effectiveStep,
-        summary: "继续已有进度，接着补角色准备。",
-        effectSummary: "会复用已完成的书级规划，只补角色阵容与角色应用。",
-        impactNotes: ["不会重跑已存在的 Story Macro / Book Contract。"],
+        summary: "Continúe con el progreso existente y luego recupere la preparación del personaje.",
+        effectSummary: "Se reutilizará la planificación completa a nivel de libro y solo se complementarán la alineación de personajes y las aplicaciones de personajes.",
+        impactNotes: ["El contrato de libro/macro de historia existente no se volverá a ejecutar."],
       });
     }
     if (effectiveStep === "world") {
@@ -591,9 +591,9 @@ export function resolveDirectorTakeoverPlan(input: DirectorTakeoverDecisionInput
         entryStep: input.entryStep,
         strategy: input.strategy,
         effectiveStep,
-        summary: "继续已有进度，接着准备世界观。",
-        effectSummary: "会复用 Story Macro 与 Book Contract，生成或绑定本书使用的世界观资产。",
-        impactNotes: ["不会清空已有书级规划与正文。"],
+        summary: "Continuar con el progreso existente y luego preparar la visión del mundo.",
+        effectSummary: "Reutilizará Story Macro y Book Contract para generar o vincular los activos de visión del mundo utilizados en este libro.",
+        impactNotes: ["Los planos y textos existentes a nivel de libro no se borrarán."],
       });
     }
     if (effectiveStep === "outline") {
@@ -601,9 +601,9 @@ export function resolveDirectorTakeoverPlan(input: DirectorTakeoverDecisionInput
         entryStep: input.entryStep,
         strategy: input.strategy,
         effectiveStep,
-        summary: "继续已有进度，接着补卷战略。",
-        effectSummary: "会复用现有书级规划与角色资产，只补卷战略和卷骨架。",
-        impactNotes: ["不会清空已存在的角色与正文。"],
+        summary: "Continúe con los avances realizados y luego siga la estrategia de recuperación de los trabajos.",
+        effectSummary: "Se reutilizarán la planificación a nivel de libro y los recursos de personajes existentes, y solo se complementarán la estrategia de volumen y el esqueleto de volumen.",
+        impactNotes: ["Los caracteres y textos existentes no se borrarán."],
       });
     }
     if (effectiveStep === "structured") {
@@ -611,13 +611,13 @@ export function resolveDirectorTakeoverPlan(input: DirectorTakeoverDecisionInput
         entryStep: input.entryStep,
         strategy: input.strategy,
         effectiveStep,
-        summary: "继续已有进度，接着补节奏 / 拆章。",
-        effectSummary: "会复用已完成的卷战略，只补当前卷节奏板、章节列表、章节细化或同步步骤。",
-        impactNotes: ["保留已有正文，不会批量删章节。"],
+        summary: "Continúe con el progreso existente y luego agregue capítulos de ritmo/pausa.",
+        effectSummary: "La estrategia de volumen completa se reutilizará y solo se complementarán el tablero de ritmo de volumen actual, la lista de capítulos, el refinamiento de capítulos o los pasos de sincronización.",
+        impactNotes: ["El texto existente se conservará y los capítulos no se eliminarán en lotes."],
       });
     }
     if (!executable) {
-      throw new Error("当前还没有可继续的章节执行范围，请先补齐节奏 / 拆章资源。");
+      throw new Error("Actualmente no hay un alcance de ejecución de capítulos que pueda continuar; primero complete los recursos de ruptura de ritmo/capítulo.");
     }
     if (effectiveStep === "pipeline") {
       return buildAutoExecutionPlan({
@@ -626,9 +626,9 @@ export function resolveDirectorTakeoverPlan(input: DirectorTakeoverDecisionInput
         effectiveStep,
         usesCurrentBatch: true,
         latestCheckpoint: input.latestCheckpoint,
-        summary: "继续已有进度，优先恢复当前质量修复批次。",
-        effectSummary: "会优先恢复当前修复中的批次或待修章节，不会新开一条重复任务。",
-        impactNotes: ["保留现有正文与规划资产。", "只会跳过已正式通过的章节。"],
+        summary: "Continúe el progreso existente y restaure primero el lote de reparación de calidad actual.",
+        effectSummary: "Se dará prioridad a restaurar los lotes o capítulos que se están reparando actualmente o los capítulos por reparar, y no se abrirán nuevas tareas duplicadas.",
+        impactNotes: ["Preservar el texto existente y los activos de planificación.", "Sólo se omitirán los capítulos que hayan sido aprobados oficialmente."],
       });
     }
     return buildAutoExecutionPlan({
@@ -637,9 +637,9 @@ export function resolveDirectorTakeoverPlan(input: DirectorTakeoverDecisionInput
       effectiveStep: "chapter",
       usesCurrentBatch: executable,
       latestCheckpoint: input.latestCheckpoint,
-      summary: "继续已有进度，优先恢复当前章节批次。",
-      effectSummary: "会优先恢复活动中的批次、检查点或已准备好的章节范围继续执行。",
-      impactNotes: ["不会清空已有正文。", "只会跳过 approved / published 的章节。"],
+      summary: "Continúe con el progreso existente y restaure primero el lote de capítulos actual.",
+      effectSummary: "Se dará prioridad a reanudar lotes activos, puntos de control o rangos de capítulos preparados para continuar con la ejecución.",
+      impactNotes: ["El texto existente no se borrará.", "Sólo se omitirán los capítulos aprobados/publicados."],
     });
   }
 
@@ -648,68 +648,68 @@ export function resolveDirectorTakeoverPlan(input: DirectorTakeoverDecisionInput
       entryStep: input.entryStep,
       strategy: input.strategy,
       effectiveStep: "story_macro",
-      summary: "重新生成当前步，从故事宏观规划重跑。",
-      effectSummary: "会先清空 Story Macro 与 Book Contract，再从故事宏观规划重跑。",
-      impactNotes: ["会刷新当前书级规划资产。", "不会删除已写正文。"],
+      summary: "Regenere el paso actual y vuelva a ejecutarlo desde el plan macro de la historia.",
+      effectSummary: "La macro de la historia y el contrato del libro se borrarán primero y luego se volverá a ejecutar el plan de la macro de la historia.",
+      impactNotes: ["Se actualizarán los activos de planificación actuales a nivel de libro.", "El texto escrito no será eliminado."],
     });
   }
   if (input.entryStep === "world") {
     if (!storyReady) {
-      throw new Error("当前缺少 Story Macro 或 Book Contract，不能直接从世界观准备重跑。");
+      throw new Error("Actualmente, no existe una macro de historia ni un contrato de libro, por lo que no puedes prepararte para una repetición directamente desde la vista del mundo.");
     }
     return buildPhasePlan({
       entryStep: input.entryStep,
       strategy: input.strategy,
       effectiveStep: "world",
-      summary: "重新生成当前步，从世界观准备重跑。",
-      effectSummary: "会重新生成或替换本书世界观资产，再让后续角色准备使用新的世界约束。",
-      impactNotes: ["保留 Story Macro 与 Book Contract。", "不会删除已有正文。"],
+      summary: "Regenera el paso actual y prepárate para correr nuevamente desde la visión del mundo.",
+      effectSummary: "Los activos de la visión del mundo de este libro se regenerarán o reemplazarán, y los personajes posteriores estarán preparados para utilizar las nuevas limitaciones del mundo.",
+      impactNotes: ["Mantener macro de historia y contrato de libro.", "El texto existente no se eliminará."],
     });
   }
   if (input.entryStep === "character") {
     if (!storyReady || !worldReady) {
-      throw new Error("当前缺少故事宏观规划或世界观资产，不能直接从角色准备重跑。");
+      throw new Error("Actualmente, falta una planificación macro de la historia o recursos de visión del mundo, y no podemos preparar una repetición directamente a partir de los personajes.");
     }
     return buildPhasePlan({
       entryStep: input.entryStep,
       strategy: input.strategy,
       effectiveStep: "character",
-      summary: "重新生成当前步，从角色准备重跑。",
-      effectSummary: "会先清空当前角色阵容、关系和角色准备候选，再重跑角色准备。",
-      impactNotes: ["保留前置书级规划。", "不会清空已有正文。"],
+      summary: "Regenera el paso actual y prepárate para huir nuevamente del personaje.",
+      effectSummary: "La alineación de personajes actual, las relaciones y los candidatos a la preparación de personajes se borrarán primero y luego se ejecutará nuevamente la preparación de personajes.",
+      impactNotes: ["Preservar la planificación a nivel de libro.", "El texto existente no se borrará."],
     });
   }
   if (input.entryStep === "outline") {
     if (!storyReady || !worldReady || !characterReady) {
-      throw new Error("当前前置资产不足，不能直接从卷战略重跑。");
+      throw new Error("Actualmente no hay suficientes activos preposicionados y no se pueden volver a ejecutar directamente desde la estrategia de volumen.");
     }
     return buildPhasePlan({
       entryStep: input.entryStep,
       strategy: input.strategy,
       effectiveStep: "outline",
-      summary: "重新生成当前步，从卷战略重跑。",
-      effectSummary: "会先清空当前卷战略与卷骨架，再从卷战略重跑。",
-      impactNotes: ["保留前置书级规划与角色。", "不会清空已有正文。"],
+      summary: "Regenere el paso actual y vuelva a ejecutar desde la estrategia de lanzamiento.",
+      effectSummary: "La estrategia de volumen actual y el esqueleto de volumen se borrarán primero y luego se reiniciará la ejecución desde la estrategia de volumen.",
+      impactNotes: ["Se conservan la planificación y los personajes a nivel anterior al libro.", "El texto existente no se borrará."],
     });
   }
   if (input.entryStep === "structured") {
     if (!storyReady || !worldReady || !characterReady || !outlineReady) {
-      throw new Error("当前前置资产不足，不能直接从节奏 / 拆章重跑。");
+      throw new Error("Actualmente no hay recursos preexistentes suficientes y no se puede volver a ejecutar directamente desde el ritmo/capítulo.");
     }
     return buildPhasePlan({
       entryStep: input.entryStep,
       strategy: input.strategy,
       effectiveStep: "structured",
-      summary: "重新生成当前步，从节奏 / 拆章重跑。",
-      effectSummary: "会先清空当前卷的节奏板、章节列表和章节细化资源，再重跑这一阶段。",
-      impactNotes: ["会清空当前卷尚未开写的拆章产物。", "不会删除已写正文。"],
+      summary: "Regenere el paso actual y reinicie desde el ritmo/capítulo.",
+      effectSummary: "El tablero de ritmo, la lista de capítulos y los recursos de refinamiento de capítulos del volumen actual se borrarán primero y luego se volverá a ejecutar esta etapa.",
+      impactNotes: ["Se borrarán los productos de capítulos no escritos del volumen actual.", "El texto escrito no será eliminado."],
     });
   }
   if (!executable) {
-    throw new Error("当前还没有可执行的章节范围，不能直接新开章节批次。");
+    throw new Error("Actualmente no existe un rango de capítulos ejecutables y no se pueden abrir nuevos lotes de capítulos directamente.");
   }
   if (input.entryStep === "pipeline" && !pendingRepair && !executable) {
-    throw new Error("当前没有可继续的质量修复上下文。");
+    throw new Error("Actualmente no existe un contexto de reparación de calidad para continuar.");
   }
   return buildAutoExecutionPlan({
     entryStep: input.entryStep,
@@ -717,13 +717,13 @@ export function resolveDirectorTakeoverPlan(input: DirectorTakeoverDecisionInput
     effectiveStep: input.entryStep === "pipeline" ? "pipeline" : "chapter",
     usesCurrentBatch: false,
     latestCheckpoint: input.latestCheckpoint,
-    summary: input.entryStep === "pipeline" ? "重新生成当前步，清空当前质量修复结果后重跑。" : "重新生成当前步，清空当前章节批次后重跑。",
+    summary: input.entryStep === "pipeline" ? "Regenere el paso actual, borre los resultados de reparación de calidad actuales y luego ejecútelo nuevamente." : "Vuelva a generar el paso actual, borre el lote de capítulos actual y luego ejecútelo nuevamente.",
     effectSummary: input.entryStep === "pipeline"
-      ? "会先清空当前质量修复结果与通过状态，再对现有正文重新审校 / 修复。"
-      : "会先清空当前章节执行范围的正文草稿、审校状态和派生摘要，再重新生成这一批。",
+      ? "Los resultados actuales de la reparación de calidad y el estado de aprobación se borrarán primero y luego se volverá a revisar/reparar el texto existente."
+      : "Primero se borrarán el borrador del texto, el estado de revisión y el resumen derivado del alcance de ejecución del capítulo actual y luego se volverá a generar este lote.",
     impactNotes: input.entryStep === "pipeline"
-      ? ["保留当前章节正文。", "会重新进入自动审校与修复。"]
-      : ["会清空当前批次正文草稿。", "保留前置规划和章节结构。"],
+      ? ["Mantenga el texto del capítulo actual.", "Volverá a entrar en revisión y reparación automática."]
+      : ["Se borrará el borrador de texto del lote actual.", "Preservar la planificación previa y la estructura de capítulos."],
   });
 }
 
@@ -733,12 +733,12 @@ function buildStoryMacroReadiness(
   if (hasMeaningfulSeedMaterial(novel)) {
     return {
       available: true,
-      reason: "当前书级信息已具备，可以从故事宏观规划开始接管。",
+      reason: "La información a nivel de libro ahora está disponible y se puede obtener de la planificación macro de la historia.",
     };
   }
   return {
     available: false,
-    reason: "请至少补充一句故事概述、书级卖点、对标气质或前30章承诺，再启动自动接管。",
+    reason: "Agregue al menos una oración de resumen de la historia, los puntos de venta a nivel de libro, las cualidades de evaluación comparativa o los compromisos en los primeros 30 capítulos antes de comenzar la adquisición automática.",
   };
 }
 
@@ -748,18 +748,18 @@ function buildCharacterSetupReadiness(
   if (!isStoryMacroReady(snapshot)) {
     return {
       available: false,
-      reason: "跳过故事宏观规划前，需要先具备 Story Macro 与 Book Contract。",
+      reason: "Antes de omitir la planificación macro de la historia, debe tener la macro de la historia y el contrato del libro.",
     };
   }
   if (!snapshot.hasWorldSetupPrepared) {
     return {
       available: false,
-      reason: "需要先完成世界观准备，才能直接从角色准备接管。",
+      reason: "Debes completar la preparación de la visión del mundo antes de poder asumir directamente la preparación del personaje.",
     };
   }
   return {
     available: true,
-    reason: "书级规划与世界观资产已齐，可以从角色准备继续接管。",
+    reason: "Los recursos de planificación y visión del mundo a nivel de libro están listos y puedes continuar haciéndote cargo de la preparación del personaje.",
   };
 }
 
@@ -769,14 +769,14 @@ function buildWorldSetupReadiness(
   if (!isStoryMacroReady(snapshot)) {
     return {
       available: false,
-      reason: "跳过故事宏观规划前，需要先具备 Story Macro 与 Book Contract。",
+      reason: "Antes de omitir la planificación macro de la historia, debe tener la macro de la historia y el contrato del libro.",
     };
   }
   return {
     available: true,
     reason: snapshot.hasWorldSetupPrepared
-      ? "本书已绑定世界观，可以检查、完善或重新生成。"
-      : "书级规划已齐，可以准备本书世界观。",
+      ? "Este libro contiene una visión del mundo que puede examinarse, refinarse o regenerarse."
+      : "La planificación a nivel de libro está completa y usted puede preparar la visión del mundo de este libro.",
   };
 }
 
@@ -786,24 +786,24 @@ function buildVolumeStrategyReadiness(
   if (!isStoryMacroReady(snapshot)) {
     return {
       available: false,
-      reason: "跳过前置阶段前，需要先具备 Story Macro 与 Book Contract。",
+      reason: "Antes de saltarse la etapa de preproducción, es necesario tener una macro de historia y un contrato de libro.",
     };
   }
   if (!snapshot.hasWorldSetupPrepared) {
     return {
       available: false,
-      reason: "从卷战略开始前，需要先完成世界观准备。",
+      reason: "Antes de comenzar con la estrategia de volumen, es necesario completar la preparación de la visión del mundo.",
     };
   }
   if (!isCharacterReady(snapshot)) {
     return {
       available: false,
-      reason: "从卷战略开始前，至少需要 1 位已确认角色。",
+      reason: "Se requiere al menos 1 personaje confirmado antes de comenzar con la estrategia de volumen.",
     };
   }
   return {
     available: true,
-    reason: "书级规划和角色资产已齐，可以从卷战略继续。",
+    reason: "La planificación a nivel de libro y los recursos de los personajes están completos y puedes continuar desde la estrategia de volumen.",
   };
 }
 
@@ -813,30 +813,30 @@ function buildStructuredOutlineReadiness(
   if (!isStoryMacroReady(snapshot)) {
     return {
       available: false,
-      reason: "跳过前置阶段前，需要先具备 Story Macro 与 Book Contract。",
+      reason: "Antes de saltarse la etapa de preproducción, es necesario tener una macro de historia y un contrato de libro.",
     };
   }
   if (!snapshot.hasWorldSetupPrepared) {
     return {
       available: false,
-      reason: "从节奏 / 拆章开始前，需要先完成世界观准备。",
+      reason: "Antes de comenzar con el ritmo o la división de capítulos, es necesario completar la preparación de la visión del mundo.",
     };
   }
   if (!isCharacterReady(snapshot)) {
     return {
       available: false,
-      reason: "从节奏 / 拆章开始前，至少需要 1 位已确认角色。",
+      reason: "Se requiere al menos 1 personaje confirmado antes de que pueda comenzar el ritmo/división.",
     };
   }
   if (!isOutlineReady(snapshot)) {
     return {
       available: false,
-      reason: "从节奏 / 拆章开始前，需要先有卷战略 / 卷骨架。",
+      reason: "Antes de comenzar con el ritmo/desempaquetado de los capítulos, es necesario tener una estrategia de volumen/esqueleto de volumen.",
     };
   }
   return {
     available: true,
-    reason: "卷级资产已存在，可以直接从节奏 / 拆章开始继续。",
+    reason: "Los recursos a nivel de volumen ya existen y se pueden continuar directamente desde el inicio del tiempo/capítulo.",
   };
 }
 
@@ -879,10 +879,10 @@ function buildPreviewOrFallback(input: {
       impactNotes: plan.impactNotes,
     };
   } catch (error) {
-    const message = error instanceof Error ? error.message : "当前条件下暂时不能从这一步接管。";
+    const message = error instanceof Error ? error.message : "En las condiciones actuales, no es posible continuar con este paso.";
     return {
       strategy: input.strategy,
-      summary: input.strategy === "continue_existing" ? "当前还不能继续已有进度。" : "当前还不能重跑这一步。",
+      summary: input.strategy === "continue_existing" ? "El progreso no puede continuar en este momento." : "No es posible rehacer este paso todavía.",
       effectSummary: message,
       effectiveStep: input.entryStep,
       effectiveStage: entryStepToWorkflowStage(input.entryStep),
@@ -960,70 +960,70 @@ function buildEntryReason(input: {
   executableRange?: DirectorTakeoverExecutableRangeSnapshot | null;
 }): string {
   if (input.step === "basic") {
-    return "会优先检查当前项目已有资产，从最早缺失步骤开始继续。";
+    return "Se dará prioridad a comprobar los activos existentes del proyecto actual, empezando por el primer paso que falta.";
   }
   if (input.step === "story_macro") {
     return input.status === "complete"
-      ? "Story Macro 与 Book Contract 已具备，继续模式会自动推进到下一缺失步骤。"
-      : "当前可以从故事宏观规划开始接管。";
+      ? "Story Macro y Book Contract están presentes y el modo de continuación avanzará automáticamente al siguiente paso que falta."
+      : "La corriente se puede tomar a partir del macroplan de la historia.";
   }
   if (input.step === "world") {
     return input.status === "blocked"
-      ? "需要先具备 Story Macro 与 Book Contract，才能直接从世界观准备接管。"
+      ? "Debe tener Story Macro y Book Contract antes de poder prepararse para tomar el control directamente desde la visión del mundo."
       : input.status === "complete"
-        ? "世界观资产已具备，继续模式会自动推进到下一缺失步骤。"
-        : "当前可以从世界观准备继续。";
+        ? "Los recursos de la visión del mundo ahora están disponibles y el modo de continuación avanzará automáticamente al siguiente paso que falta."
+        : "Ahora puedes continuar desde la preparación de la cosmovisión.";
   }
   if (input.step === "character") {
     return input.status === "blocked"
-      ? "需要先具备故事宏观规划与世界观资产，才能直接从角色准备接管。"
+      ? "Necesitas tener la planificación general de la historia y los recursos de la visión del mundo antes de poder asumir directamente la preparación del personaje."
       : input.status === "complete"
-        ? "角色资产已具备，继续模式会自动推进到下一缺失步骤。"
-        : "当前可以从角色准备继续。";
+        ? "Los recursos del personaje están disponibles y el modo de continuación avanzará automáticamente al siguiente paso que falta."
+        : "Actualmente puedes continuar desde la preparación del personaje.";
   }
   if (input.step === "outline") {
     return input.status === "blocked"
-      ? "需要先具备故事宏观规划与角色资产，才能直接从卷战略接管。"
+      ? "Debes tener el plan general de la historia y los recursos de los personajes antes de poder asumir directamente la estrategia de volumen."
       : input.status === "complete"
-        ? "卷战略资产已具备，继续模式会自动推进到下一缺失步骤。"
-        : "当前可以从卷战略继续。";
+        ? "El activo estratégico de volumen está disponible y el modo de continuación avanzará automáticamente al siguiente paso faltante."
+        : "Actualmente puedes continuar desde la estrategia de volumen.";
   }
   if (input.step === "structured") {
     return input.status === "blocked"
-      ? "需要先具备卷战略，才能直接从节奏 / 拆章接管。"
+      ? "Debe tener una estrategia de volumen antes de poder tomar el control directamente de los capítulos de ritmo/ruptura."
       : input.snapshot.hasUnpreparedChaptersInRange
-        ? "目标范围内还有章节缺少完整细化，继续模式会先回到节奏 / 拆章补齐后再续写，已写正文会保留。"
+        ? "Todavía hay capítulos dentro del rango objetivo que carecen de un refinamiento completo. El modo de continuación volverá al ritmo/dividirá los capítulos y los completará antes de continuar. Se conservará el texto redactado."
         : hasExecutableRange(input)
-          ? "当前卷节奏板、章节细化和执行区资源已具备，继续模式会直接转入章节执行。"
+          ? "El tablero de ritmo de volumen actual, el refinamiento de capítulos y los recursos del área de ejecución ya están disponibles, y el modo de continuación se transferirá directamente a la ejecución de capítulos."
           : input.snapshot.structuredOutlineRecoveryStep === "chapter_sync"
-          ? "当前卷节奏板和章节细化已具备，但还没同步到章节执行区，继续模式会先完成同步。"
+          ? "El tablero de ritmo y el refinamiento de capítulos del volumen actual están disponibles, pero aún no se han sincronizado con el área de ejecución de capítulos. El modo Continuar completará la sincronización primero."
           : input.snapshot.structuredOutlineRecoveryStep === "chapter_detail_bundle"
-            ? "当前卷已有部分章节细化资源，继续模式会从未完成的章节细化继续。"
+            ? "El volumen actual ya tiene algunos recursos de refinamiento de capítulos, y el modo de continuación continuará desde el refinamiento de capítulos inacabados."
             : input.snapshot.firstVolumeBeatSheetReady
-              ? "当前卷已有节奏板或章节列表基础，继续模式会补齐剩余拆章步骤。"
-              : "当前可以从节奏 / 拆章继续。";
+              ? "El volumen actual ya tiene un tablero de ritmo o una lista de capítulos, y el modo de continuación completará los pasos de división de capítulos restantes."
+              : "Actualmente puedes continuar desde Rhythm/Chapter Break.";
   }
   if (input.step === "chapter") {
     if (!hasExecutableRange(input)) {
-      return "需要先完成节奏 / 拆章同步，把章节资源写入执行区后，才能从章节执行接管。";
+      return "Primero debe completar la sincronización de ritmo/capítulo y escribir los recursos del capítulo en el área de ejecución antes de poder tomar el control de la ejecución del capítulo.";
     }
     if (input.activePipelineJob) {
-      return "检测到活动中的章节批次，继续模式会优先恢复当前批次。";
+      return "Cuando se detecta un lote de capítulos activo, el modo continuar restaurará primero el lote actual.";
     }
     if (input.latestCheckpoint?.checkpointType === "chapter_batch_ready" || input.executableRange) {
-      return "检测到可执行章节范围，继续模式会按当前范围恢复或续跑。";
+      return "Cuando se detecta el rango de capítulos ejecutables, el modo de continuación se reanudará o continuará ejecutándose según el rango actual.";
     }
-    return "当前可以从章节执行接管。";
+    return "Actualmente es posible ejecutar adquisiciones de capítulos.";
   }
   if (input.activePipelineJob) {
-    return "检测到活动中的质量修复批次，继续模式会优先恢复当前批次。";
+    return "Se detecta un lote de reparación de calidad activo y el modo continuar restaurará primero el lote actual.";
   }
   if (input.latestCheckpoint?.checkpointType === "chapter_batch_ready" || input.latestCheckpoint?.checkpointType === "replan_required") {
     return input.latestCheckpoint.checkpointType === "replan_required"
-      ? "检测到最近的重规划检查点，继续模式会优先恢复待处理的重规划与后续批次。"
-      : "检测到最近的章节批次检查点，继续模式会优先恢复待修章节。";
+      ? "Cuando se detecta el punto de control de replanificación más reciente, el modo de continuación dará prioridad a la reanudación de la replanificación pendiente y los lotes posteriores."
+      : "Cuando se detecta el último punto de control del lote de capítulos, el modo de continuación dará prioridad a la restauración de los capítulos que se van a revisar.";
   }
-  return "当前可以从质量修复接管。";
+  return "Actualmente es posible sustituir una reparación de calidad.";
 }
 
 export function buildDirectorTakeoverReadiness(input: {
@@ -1097,7 +1097,7 @@ export function buildDirectorTakeoverReadiness(input: {
 
   return {
     novelId: input.novel.id,
-    novelTitle: input.novel.title.trim() || "当前项目",
+    novelTitle: input.novel.title.trim() || "Proyecto actual",
     hasActiveTask: input.hasActiveTask,
     activeTaskId: input.activeTaskId ?? null,
     snapshot: {
@@ -1130,10 +1130,10 @@ export function assertDirectorTakeoverPhaseAvailable(
 ): void {
   const targetStage = readiness.stages.find((item) => item.phase === phase);
   if (!targetStage) {
-    throw new Error("当前自动导演接管阶段不存在。");
+    throw new Error("La actual fase automática de toma de posesión del director no existe.");
   }
   if (!targetStage.available) {
-    throw new Error(targetStage.reason || "当前项目还不适合从该阶段继续自动导演。");
+    throw new Error(targetStage.reason || "El proyecto actual aún no es apto para la dirección automática desde esta etapa.");
   }
 }
 

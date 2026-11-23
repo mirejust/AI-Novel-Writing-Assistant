@@ -34,24 +34,24 @@ export default function WritingFormulaCleanPanel(props: WritingFormulaCleanPanel
   return (
     <Card className="border-0 shadow-none">
       <CardHeader>
-        <CardTitle>去 AI 味</CardTitle>
+        <CardTitle>Deshazte del sabor de la IA</CardTitle>
       </CardHeader>
       <CardContent className="space-y-5">
         {selectedProfile ? (
           <div className="rounded-2xl bg-muted/30 px-4 py-3 text-sm leading-7 text-muted-foreground">
-            当前按「{selectedProfile.name}」这套写法来做检测和修正。这里只处理正文的 AI 味，不会改写法字段本身。
+            Actualmente presionando "{selectedProfile.name}"Este conjunto de métodos de escritura se utiliza para pruebas y correcciones. Aquí solo se procesa el sabor AI del texto y el campo del método en sí no se reescribirá.
           </div>
         ) : (
           <div className="rounded-2xl bg-muted/30 px-4 py-3 text-sm leading-7 text-muted-foreground">
-            先从列表里选中一套写法，再来检测正文。
+            Primero seleccione un método de escritura de la lista y luego verifique el texto.
           </div>
         )}
 
         <div className="space-y-4 py-2">
           <div className="space-y-1">
-            <div className="text-base font-semibold text-slate-950">当前会优先参考的反 AI 约束</div>
+            <div className="text-base font-semibold text-slate-950">Restricciones anti-IA a las que actualmente se hará referencia primero</div>
             <div className="text-sm leading-6 text-slate-500">
-              如果这套写法绑了反 AI 规则，检测和修正会优先按这些约束去判断问题。
+              Si este método de escritura está sujeto a reglas anti-IA, la detección y corrección darán prioridad a juzgar el problema de acuerdo con estas restricciones.
             </div>
           </div>
           {antiAiRuleNames.length > 0 ? (
@@ -64,16 +64,16 @@ export default function WritingFormulaCleanPanel(props: WritingFormulaCleanPanel
             </div>
           ) : (
             <div className="py-3 text-sm leading-6 text-muted-foreground">
-              这套写法还没有绑定明确的反 AI 规则。当前检测会更依赖通用风险判断，结果可能不够贴合你的预期。
+              Este conjunto de escritos aún no ha sido vinculado a reglas claras contra la IA. La prueba actual se basará más en un juicio de riesgo general y es posible que los resultados no sean consistentes con sus expectativas.
             </div>
           )}
         </div>
 
         <div className="space-y-4 py-2">
           <div className="space-y-1">
-            <div className="text-base font-semibold text-slate-950">检测正文</div>
+            <div className="text-base font-semibold text-slate-950">Detectar texto</div>
             <div className="text-sm leading-6 text-slate-500">
-              粘贴你想检查的正文。建议一次给一段完整场景，这样更容易看出叙述腔、对白腔和解释腔的问题。
+              Pega el texto que deseas verificar. Se recomienda dar una escena completa a la vez, para que sea más fácil ver los problemas de narrativa, diálogo y exposición.
             </div>
           </div>
 
@@ -81,17 +81,17 @@ export default function WritingFormulaCleanPanel(props: WritingFormulaCleanPanel
             data-writing-formula-detect-input
             autoFocus
             className="min-h-[220px] w-full rounded-md border p-3 text-sm"
-            placeholder="粘贴待检测正文"
+            placeholder="Pega el texto a detectar"
             value={detectInput}
             onChange={(event) => onDetectInputChange(event.target.value)}
           />
 
           <div className="flex flex-wrap gap-2">
             <Button onClick={onDetect} disabled={detectionPending || rewritePending || !selectedProfile || !detectInput.trim()}>
-              执行检测
+              Realizar detección
             </Button>
             <Button variant="secondary" onClick={onRewrite} disabled={rewritePending || detectionPending || !selectedProfile || !detectInput.trim() || Boolean(detectionReport && !detectionReport.violations.some(issue => isStyleIssueRewritable(issue)))}>
-              生成局部修订预览
+              Generar vista previa de revisión parcial
             </Button>
           </div>
 
@@ -99,7 +99,7 @@ export default function WritingFormulaCleanPanel(props: WritingFormulaCleanPanel
             <StyleRiskReport report={detectionReport} />
           ) : (
             <div className="py-3 text-sm leading-6 text-muted-foreground">
-              查看句段中的表达问题、原文依据和修改方向。
+              Verifique los problemas de expresión en el párrafo, la base del texto original y la dirección de modificación.
             </div>
           )}
 

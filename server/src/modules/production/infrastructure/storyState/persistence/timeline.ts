@@ -39,7 +39,7 @@ export function createTimelineConsumer(deps: TimelineConsumerDependencies): Arti
           extractedEvents: gate.extractedEvents, extractedHooks: gate.extractedHooks, addressedHookIds: gate.addressedHookIds, resolvedHookIds: gate.resolvedHookIds });
       } else {
         await repository.upsertChapterTimeAnchor({ novelId, chapterId, chapterIndex,
-          storyDayIndex: timelineContext.currentTime?.storyDayIndex ?? null, timeLabel: timelineContext.currentTime?.label?.trim() || `第 ${chapterIndex} 章`,
+          storyDayIndex: timelineContext.currentTime?.storyDayIndex ?? null, timeLabel: timelineContext.currentTime?.label?.trim() || `Cap. ${chapterIndex}`,
           startsAfterEventIds: timelineContext.previousEvents?.slice(-3).map(event => event.id) ?? [],
           plannedEventIds: timelineContext.plannedEventsThisChapter?.map(event => event.id) ?? [], endedWithEventIds: [],
           previousHookIds: timelineContext.openHooks?.map(hook => hook.id) ?? [], nextHookIds: [], forbiddenEventIds: timelineContext.forbiddenEvents?.map(event => event.id) ?? [] });

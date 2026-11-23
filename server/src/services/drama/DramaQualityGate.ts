@@ -30,12 +30,12 @@ function buildEpisodeRhythmDigest(episodes: EpisodeRhythmLite[], focusOrder: num
   return episodes
     .filter((episode) => episode.order >= focusOrder - 3 && episode.order <= focusOrder + 3)
     .map((episode) => [
-      `第${episode.order}集《${episode.title}》`,
-      episode.isPaywall ? "付费卡点" : "普通集",
-      `情绪净值:${episode.emotionNet ?? "待定"}`,
-      `结尾:${episode.cliffhanger ?? "待定"}`,
+      `Cap.${episode.order}colocar"${episode.title}»`,
+      episode.isPaywall ? "pagar puntos de tarjeta" : "conjunto ordinario",
+      `Patrimonio neto emocional:${episode.emotionNet ?? "Por determinar"}`,
+      `final:${episode.cliffhanger ?? "Por determinar"}`,
     ].join(" | "))
-    .join("\n") || "暂无相邻分集节奏。";
+    .join("\n") || "Actualmente no hay ritmos de episodios adyacentes.";
 }
 
 function addRepairInstruction(existing: DramaQualityOutput["repairPlan"], flags: DramaQualityFlag[]): DramaQualityOutput["repairPlan"] {
@@ -44,7 +44,7 @@ function addRepairInstruction(existing: DramaQualityOutput["repairPlan"], flags:
   }
   return {
     mode: "patch",
-    instruction: flags.map((flag) => flag.suggestion).join("；"),
+    instruction: flags.map((flag) => flag.suggestion).join(";"),
   };
 }
 
@@ -73,8 +73,8 @@ export function applyPaywallQualityRules(
       flags.push({
         severity: "high",
         code: "pre_paywall_buildup_not_lowest",
-        evidence: `第 ${input.episode.order} 集情绪净值为 ${input.episode.emotionNet}，未形成首付费前阶段低谷 ${minEmotionNet}。`,
-        suggestion: `把第 ${input.episode.order} 集结尾改成更强的受压、误解或危机蓄势，让第 ${plan.firstPaywallAt} 集付费卡点有更高释放空间。`,
+        evidence: `Cap. ${input.episode.order} El valor emocional neto del conjunto es ${input.episode.emotionNet}, no hay punto mínimo en el período previo al pago inicial ${minEmotionNet}.`,
+        suggestion: `numero uno ${input.episode.order} El final del episodio se cambia a una presión más fuerte, un malentendido o una crisis, de modo que el tercer capítulo ${plan.firstPaywallAt} La acumulación de puntos de tarjetas pagas tiene mayor espacio de liberación.`,
       });
     }
   }
@@ -83,8 +83,8 @@ export function applyPaywallQualityRules(
     flags.push({
       severity: "high",
       code: "paywall_cliffhanger_below_plan",
-      evidence: `付费卡点评分 ${output.score.paywall} 低于计划阈值 ${plan.cliffhangerStrengthThreshold}。`,
-      suggestion: "强化本集结尾的身份揭示、危机升级或反打承诺，让用户有明确理由继续付费观看下一集。",
+      evidence: `Calificación de puntos de la tarjeta de pago ${output.score.paywall} por debajo del umbral del plan ${plan.cliffhangerStrengthThreshold}.`,
+      suggestion: "Refuerce la revelación de identidad, la escalada de la crisis o la promesa de contraataque al final del episodio para brindarles a los usuarios una razón clara para seguir pagando para ver el siguiente episodio.",
     });
   }
 
@@ -105,7 +105,7 @@ export class DramaQualityGate {
   async reviewEpisode(projectId: string, episodeOrder: number, options: DramaLLMOptions = {}) {
     const context = await dramaContextAssembler.buildEpisodeContext(projectId, episodeOrder);
     if (!context.episode.content?.trim()) {
-      throw new Error(`第 ${episodeOrder} 集尚未生成台本，不能执行质量闸。`);
+      throw new Error(`Cap. ${episodeOrder} El script no se ha generado para el conjunto y no se puede ejecutar la puerta de calidad.`);
     }
     const paywallPlan = resolveDramaPaywallPlan(context.strategyJson, context.project.targetEpisodes);
     const result = await runStructuredPrompt({

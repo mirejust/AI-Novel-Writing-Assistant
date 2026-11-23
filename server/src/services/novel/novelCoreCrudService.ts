@@ -32,7 +32,7 @@ export class NovelCoreCrudService {
 
   private validateStoryModeSelection(primaryStoryModeId?: string | null, secondaryStoryModeId?: string | null): void {
     if (primaryStoryModeId && secondaryStoryModeId && primaryStoryModeId === secondaryStoryModeId) {
-      throw new AppError("主流派模式和副流派模式不能选择同一项。", 400);
+      throw new AppError("El modo principal y el modo de subgénero no pueden seleccionar el mismo elemento.", 400);
     }
   }
 
@@ -45,7 +45,7 @@ export class NovelCoreCrudService {
       select: { id: true },
     });
     if (!analysis) {
-      throw new AppError("参考拆书不存在或尚未完成。", 400);
+      throw new AppError("La división de referencia no existe o aún no se ha completado.", 400);
     }
   }
 
@@ -179,7 +179,7 @@ export class NovelCoreCrudService {
       },
     });
     if (!existing) {
-      throw new AppError("小说不存在。", 404);
+      throw new AppError("La novela no existe.", 404);
     }
 
     const nextWritingMode = input.writingMode ?? (existing.writingMode === "continuation" ? "continuation" : "original");

@@ -29,15 +29,15 @@ function getBalanceSummary(input: {
 }) {
   const { provider, balance, isBalanceLoading } = input;
   if (provider.kind === "custom") {
-    return "自定义厂商暂不接入余额查询。";
+    return "Los fabricantes personalizados no están conectados actualmente a la consulta de saldo.";
   }
   if (isBalanceLoading) {
-    return "正在查询余额...";
+    return "Consultando saldo...";
   }
   if (balance?.status === "available") {
-    return `余额 ${formatBalanceAmount(balance.availableBalance, balance.currency)}`;
+    return `balance ${formatBalanceAmount(balance.availableBalance, balance.currency)}`;
   }
-  return balance?.error ?? balance?.message ?? (provider.isConfigured ? "当前暂未获取余额信息。" : "请先配置 API Key。");
+  return balance?.error ?? balance?.message ?? (provider.isConfigured ? "La información del saldo no está disponible actualmente." : "Primero configure la clave API.");
 }
 
 export default function ProviderStatusCard(props: {
@@ -68,12 +68,12 @@ export default function ProviderStatusCard(props: {
   const [advancedOpen, setAdvancedOpen] = useState(false);
   const [modelsOpen, setModelsOpen] = useState(false);
   const imageModelLabel = provider.supportsImageGeneration
-    ? provider.currentImageModel || provider.defaultImageModel || "未设置"
-    : "不支持图像生成";
+    ? provider.currentImageModel || provider.defaultImageModel || "Sin configurar"
+    : "La generación de imágenes no es compatible";
   const visibleModels = modelsOpen ? provider.models : provider.models.slice(0, 8);
   const canUseProvider = provider.isConfigured && provider.isActive && Boolean(provider.currentModel);
-  const testDisabledReason = provider.isConfigured ? "" : "配置 API Key 后可以测试连接。";
-  const refreshDisabledReason = provider.isConfigured ? "" : "配置 API Key 后可以刷新模型列表。";
+  const testDisabledReason = provider.isConfigured ? "" : "Después de configurar la clave API, puede probar la conexión.";
+  const refreshDisabledReason = provider.isConfigured ? "" : "Después de configurar la clave API, puede actualizar la lista de modelos.";
 
   return (
     <div
@@ -86,29 +86,29 @@ export default function ProviderStatusCard(props: {
         <div className="min-w-0 space-y-1">
           <div className="flex min-w-0 flex-wrap items-center gap-2">
             <div className={`font-semibold ${AUTO_DIRECTOR_MOBILE_CLASSES.wrapText}`}>{provider.name}</div>
-            {provider.kind === "custom" ? <Badge variant="outline">自定义</Badge> : null}
+            {provider.kind === "custom" ? <Badge variant="outline">Personalizar</Badge> : null}
           </div>
           <div className={`text-xs text-muted-foreground ${AUTO_DIRECTOR_MOBILE_CLASSES.wrapText}`}>
-            {canUseProvider ? "可用于创作任务。" : "完成配置后可用于创作任务。"}
+            {canUseProvider ? "Puede utilizarse para tareas creativas." : "Después de completar la configuración, se puede utilizar para tareas creativas."}
           </div>
         </div>
         <Badge
           variant={canUseProvider ? "default" : "outline"}
           className={canUseProvider ? "bg-emerald-600 text-white hover:bg-emerald-600" : ""}
         >
-          {canUseProvider ? "可用" : provider.isConfigured ? "已配置" : "未配置"}
+          {canUseProvider ? "Disponible" : provider.isConfigured ? "Configurado" : "No configurado"}
         </Badge>
       </div>
 
       <div className="mb-3 grid min-w-0 gap-2 text-sm md:grid-cols-2">
         <div className="min-w-0 rounded-lg border bg-muted/25 p-3">
-          <div className="flex items-center gap-1.5 text-xs text-muted-foreground"><Bot className="h-3.5 w-3.5" /> 文本模型</div>
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground"><Bot className="h-3.5 w-3.5" /> Modelo de texto</div>
           <div className={`mt-1 font-medium ${AUTO_DIRECTOR_MOBILE_CLASSES.wrapText}`}>
             {provider.currentModel || "-"}
           </div>
         </div>
         <div className="min-w-0 rounded-lg border bg-muted/25 p-3">
-          <div className="flex items-center gap-1.5 text-xs text-muted-foreground"><Image className="h-3.5 w-3.5" /> 图像模型</div>
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground"><Image className="h-3.5 w-3.5" /> Modelo de imagen</div>
           <div className={`mt-1 font-medium ${AUTO_DIRECTOR_MOBILE_CLASSES.wrapText}`}>
             {imageModelLabel}
           </div>
@@ -132,7 +132,7 @@ export default function ProviderStatusCard(props: {
 
       <div className="flex flex-wrap gap-2">
         <Button size="sm" onClick={() => onOpenConfig(provider.provider)}>
-          {provider.kind === "custom" ? "管理连接" : "配置连接"}
+          {provider.kind === "custom" ? "Administrar conexiones" : "Configurar conexión"}
         </Button>
         <Button
           size="sm"
@@ -141,7 +141,7 @@ export default function ProviderStatusCard(props: {
           onClick={() => onTest(provider)}
           disabled={!provider.isConfigured || item.isTesting}
         >
-          {item.isTesting ? "测试中..." : "测试连接"}
+          {item.isTesting ? "Pruebas..." : "Conexión de prueba"}
         </Button>
       </div>
 
@@ -154,7 +154,7 @@ export default function ProviderStatusCard(props: {
           aria-expanded={advancedOpen}
           onClick={() => setAdvancedOpen((prev) => !prev)}
         >
-          <span>高级详情与维护</span>
+          <span>Detalles avanzados y mantenimiento.</span>
           <ChevronDown className={cn("h-4 w-4 transition-transform duration-200", advancedOpen ? "rotate-180" : "")} />
         </button>
       </div>
@@ -169,17 +169,17 @@ export default function ProviderStatusCard(props: {
               onClick={() => onRefreshModels(provider.provider)}
               disabled={!provider.isConfigured || isRefreshingModels}
             >
-              <RefreshCw className="h-3.5 w-3.5" /> {isRefreshingModels ? "刷新中..." : "刷新模型"}
+              <RefreshCw className="h-3.5 w-3.5" /> {isRefreshingModels ? "Refrescante..." : "Actualizar modelo"}
             </Button>
             {provider.kind === "builtin" ? (
               <Button
                 size="sm"
                 variant="outline"
-                title={item.canRefreshBalance ? "" : "当前厂商不能直接刷新余额。"}
+                title={item.canRefreshBalance ? "" : "Actualmente, los fabricantes no pueden actualizar el saldo directamente."}
                 onClick={() => onRefreshBalance(provider.provider)}
                 disabled={!item.canRefreshBalance || item.isBalanceRefreshing}
               >
-                <WalletCards className="h-3.5 w-3.5" /> {item.isBalanceRefreshing ? "余额刷新中..." : "刷新余额"}
+                <WalletCards className="h-3.5 w-3.5" /> {item.isBalanceRefreshing ? "El saldo se está actualizando..." : "Actualizar saldo"}
               </Button>
             ) : null}
             <Button
@@ -189,11 +189,11 @@ export default function ProviderStatusCard(props: {
               onClick={onRemove}
               disabled={isRemoving}
             >
-              <Trash2 className="h-3.5 w-3.5" /> {isRemoving ? "移除中..." : provider.kind === "builtin" ? "从列表移除" : "删除"}
+              <Trash2 className="h-3.5 w-3.5" /> {isRemoving ? "Eliminando..." : provider.kind === "builtin" ? "Eliminar de la lista" : "Eliminar"}
             </Button>
           </div>
           <div className={`text-xs text-muted-foreground ${AUTO_DIRECTOR_MOBILE_CLASSES.wrapText}`}>
-            API 地址：{provider.currentBaseURL || "-"}
+            Dirección API:{provider.currentBaseURL || "-"}
           </div>
           <ProviderRequestLimitSummary
             concurrencyLimit={provider.concurrencyLimit}
@@ -201,17 +201,17 @@ export default function ProviderStatusCard(props: {
           />
           <div className="flex flex-col gap-3 bg-background/60 px-3 py-2 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0 space-y-1">
-              <div className="text-xs font-medium text-muted-foreground">思考功能</div>
+              <div className="text-xs font-medium text-muted-foreground">Función de pensamiento</div>
               <div className={`text-xs text-muted-foreground ${AUTO_DIRECTOR_MOBILE_CLASSES.wrapText}`}>
                 {provider.reasoningEnabled
-                  ? "创作请求会启用模型思考；厂商返回的思考内容会显示在 AI 实况中。"
-                  : "创作请求会要求关闭思考；厂商仍返回的思考内容会保留在 AI 实况中。"}
+                  ? "La solicitud de creación permite el pensamiento modelo; El contenido de pensamiento devuelto por el fabricante se mostrará en la transmisión en vivo de IA."
+                  : "La petición de creación requerirá desconectar el pensamiento; el contenido de pensamiento aún devuelto por el fabricante permanecerá en la transmisión en vivo de IA."}
               </div>
             </div>
             {provider.supportsReasoningEffort ? (
               <select
                 className="h-9 shrink-0 rounded-md border border-input bg-background px-3 text-sm"
-                aria-label="思考深度"
+                aria-label="Profundidad de pensamiento"
                 disabled={item.isReasoningUpdating}
                 value={provider.reasoningEnabled ? provider.reasoningEffort ?? "high" : "off"}
                 onChange={(event) => {
@@ -223,14 +223,14 @@ export default function ProviderStatusCard(props: {
                   onSetReasoning(provider.provider, true, value as ReasoningEffort);
                 }}
               >
-                <option value="off">关闭</option>
-                <option value="low">低</option>
-                <option value="high">高</option>
-                <option value="max">最大</option>
+                <option value="off">Cerrar</option>
+                <option value="low">Bajo</option>
+                <option value="high">Alto</option>
+                <option value="max">Máximo</option>
               </select>
             ) : (
               <div className="flex shrink-0 items-center gap-2">
-                <span className="text-xs text-muted-foreground">{provider.reasoningEnabled ? "已开启" : "已关闭"}</span>
+                <span className="text-xs text-muted-foreground">{provider.reasoningEnabled ? "Ya encendido" : "Cerrado"}</span>
               <Switch
                 checked={provider.reasoningEnabled}
                 disabled={item.isReasoningUpdating}
@@ -242,26 +242,26 @@ export default function ProviderStatusCard(props: {
 
           <div className="rounded-md border border-dashed bg-background/60 p-3">
             <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-              <div className="text-xs font-medium text-muted-foreground">余额明细</div>
+              <div className="text-xs font-medium text-muted-foreground">Detalles del saldo</div>
               {balance?.status === "available" ? (
-                <Badge variant="outline">最近刷新 {formatBalanceTime(balance.fetchedAt)}</Badge>
+                <Badge variant="outline">Actualizado recientemente {formatBalanceTime(balance.fetchedAt)}</Badge>
               ) : null}
             </div>
             {provider.kind === "custom" ? (
               <div className={`text-sm text-muted-foreground ${AUTO_DIRECTOR_MOBILE_CLASSES.wrapText}`}>
-                自定义 OpenAI 兼容厂商暂不接入余额查询。
+                Los fabricantes personalizados compatibles con OpenAI no están conectados actualmente a la consulta de saldo.
               </div>
             ) : balance?.status === "available" ? (
               <div className="grid gap-2 text-xs text-muted-foreground sm:grid-cols-2">
-                {balance.cashBalance !== null ? <div>现金余额：{formatBalanceAmount(balance.cashBalance, balance.currency)}</div> : null}
-                {balance.voucherBalance !== null ? <div>代金券余额：{formatBalanceAmount(balance.voucherBalance, balance.currency)}</div> : null}
-                {balance.chargeBalance !== null ? <div>充值余额：{formatBalanceAmount(balance.chargeBalance, balance.currency)}</div> : null}
-                {balance.toppedUpBalance !== null ? <div>累计充值：{formatBalanceAmount(balance.toppedUpBalance, balance.currency)}</div> : null}
-                {balance.grantedBalance !== null ? <div>赠送额度：{formatBalanceAmount(balance.grantedBalance, balance.currency)}</div> : null}
+                {balance.cashBalance !== null ? <div>Saldo de caja:{formatBalanceAmount(balance.cashBalance, balance.currency)}</div> : null}
+                {balance.voucherBalance !== null ? <div>Saldo del bono:{formatBalanceAmount(balance.voucherBalance, balance.currency)}</div> : null}
+                {balance.chargeBalance !== null ? <div>Saldo de recarga:{formatBalanceAmount(balance.chargeBalance, balance.currency)}</div> : null}
+                {balance.toppedUpBalance !== null ? <div>Recarga acumulada:{formatBalanceAmount(balance.toppedUpBalance, balance.currency)}</div> : null}
+                {balance.grantedBalance !== null ? <div>Monto del regalo:{formatBalanceAmount(balance.grantedBalance, balance.currency)}</div> : null}
               </div>
             ) : (
               <div className={`text-sm text-muted-foreground ${AUTO_DIRECTOR_MOBILE_CLASSES.wrapText}`}>
-                {balance?.error ?? balance?.message ?? (provider.isConfigured ? "当前暂未获取余额信息。" : "请先配置 API Key。")}
+                {balance?.error ?? balance?.message ?? (provider.isConfigured ? "La información del saldo no está disponible actualmente." : "Primero configure la clave API.")}
               </div>
             )}
           </div>
@@ -280,13 +280,13 @@ export default function ProviderStatusCard(props: {
                   <button
                     type="button"
                     className="ml-1 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full hover:bg-background/30 disabled:cursor-not-allowed disabled:opacity-45"
-                    aria-label={`隐藏模型 ${model}`}
-                    title={model === provider.currentModel ? "当前使用模型，请先切换后再隐藏。" : `隐藏 ${model}`}
+                    aria-label={`modelo oculto ${model}`}
+                    title={model === provider.currentModel ? "El modelo está actualmente en uso, cámbielo primero y luego ocultelo." : `esconder ${model}`}
                     disabled={model === provider.currentModel || item.isReasoningUpdating}
                     onClick={() => onSetHiddenModels(
                       provider.provider,
                       [...provider.hiddenModels, model],
-                      `已隐藏模型 ${model}。`,
+                      `Modelo oculto ${model}.`,
                     )}
                   >
                     <X className="h-3 w-3" />
@@ -300,21 +300,21 @@ export default function ProviderStatusCard(props: {
                 className="text-xs font-medium text-primary transition-opacity hover:opacity-80"
                 onClick={() => setModelsOpen((prev) => !prev)}
               >
-                {modelsOpen ? "收起模型列表" : `展开全部 ${provider.models.length} 个模型`}
+                {modelsOpen ? "Contraer lista de modelos" : `Expandir todo ${provider.models.length} modelos`}
               </button>
             ) : null}
           </div>
           {provider.hiddenModels.length ? (
             <div className="space-y-2 border-t pt-3">
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <div className="text-xs font-medium text-muted-foreground">已隐藏模型</div>
+                <div className="text-xs font-medium text-muted-foreground">Modelo oculto</div>
                 <Button
                   size="sm"
                   variant="ghost"
                   disabled={item.isReasoningUpdating}
-                  onClick={() => onSetHiddenModels(provider.provider, [], "全部隐藏模型已恢复。")}
+                  onClick={() => onSetHiddenModels(provider.provider, [], "Todos los modelos ocultos han sido restaurados.")}
                 >
-                  <RotateCcw className="h-3.5 w-3.5" /> 全部恢复
+                  <RotateCcw className="h-3.5 w-3.5" /> Restaurar todo
                 </Button>
               </div>
               <div className="flex min-w-0 flex-wrap gap-1">
@@ -327,7 +327,7 @@ export default function ProviderStatusCard(props: {
                     onClick={() => onSetHiddenModels(
                       provider.provider,
                       provider.hiddenModels.filter((itemModel) => itemModel !== model),
-                      `已恢复模型 ${model}。`,
+                      `Modelo restaurado ${model}.`,
                     )}
                   >
                     <RotateCcw className="h-3 w-3 shrink-0" />

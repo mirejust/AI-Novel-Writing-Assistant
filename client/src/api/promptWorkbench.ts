@@ -122,7 +122,7 @@ export interface PromptPreviewMessage {
 export async function getCreationFlowTemplate(key: string) {
   type Template = { id: string; version: string; messages: PromptPreviewMessage[] };
   const { data } = await apiClient.get<ApiResponse<Template>>(`/prompt-workbench/creation-flow/templates/${encodeURIComponent(key)}`);
-  if (!data.data) throw new Error("未能读取此步骤的提示词。");
+  if (!data.data) throw new Error("No se pudo leer la palabra de aviso para este paso.");
   return data.data;
 }
 

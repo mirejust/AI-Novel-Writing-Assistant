@@ -9,12 +9,12 @@ export class TextImportSourceAdapter implements SourceContentPort {
   async loadBundle(ref: SourceRef): Promise<SourceBundle> {
     const rawText = ref.rawText?.trim();
     if (!rawText) {
-      throw new Error("text_import 内容源缺少导入文本。");
+      throw new Error("A la fuente de contenido text_import le falta texto importado.");
     }
     const result = await runStructuredPrompt({
       asset: dramaTextImportSourcePrompt,
       promptInput: {
-        title: ref.ref || "文本导入短剧项目",
+        title: ref.ref || "Proyecto de sketch de importación de texto",
         rawText,
         targetEpisodes: 80,
       },

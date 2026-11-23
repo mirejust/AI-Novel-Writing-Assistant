@@ -17,9 +17,9 @@ export function BookFramingSection(props: BookFramingSectionProps) {
     <div className="space-y-5">
       <div className="flex min-h-16 flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h3 className="text-sm font-semibold text-foreground">读者与追更理由</h3>
+          <h3 className="text-sm font-semibold text-foreground">Lectores y motivos para actualizar</h3>
           <div className="mt-1 text-sm leading-6 text-muted-foreground">
-            不用写专业策划词，按直觉说清楚谁会喜欢、最想看什么，以及前期会获得什么回报。
+            No es necesario escribir palabras de planificación profesional, simplemente diga intuitivamente a quién le gustará, qué es lo que más quieren ver y qué beneficios obtendrá en la etapa inicial.
           </div>
         </div>
         {quickFill ? <div className="shrink-0">{quickFill}</div> : null}
@@ -28,66 +28,66 @@ export function BookFramingSection(props: BookFramingSectionProps) {
       <div className="grid gap-x-4 gap-y-5 md:grid-cols-2">
         <div className="space-y-2">
           <FieldLabel htmlFor="basic-pen-name" hint={BASIC_INFO_FIELD_HINTS.penName}>
-            作者笔名
+            seudónimo del autor
           </FieldLabel>
           <Input
             id="basic-pen-name"
             className={controlClassName}
             value={basicForm.penName}
-            placeholder="例如：雾港夜行。留空时封面只出书名"
+            placeholder="Por ejemplo: Paseo nocturno en Fog Harbor. Si se deja en blanco, en la portada sólo aparecerá el título del libro."
             onChange={(event) => onFormChange({ penName: event.target.value })}
           />
         </div>
 
         <div className="space-y-2">
           <FieldLabel htmlFor="basic-target-audience" hint={BASIC_INFO_FIELD_HINTS.targetAudience}>
-            目标读者
+            público objetivo
           </FieldLabel>
           <Input
             id="basic-target-audience"
             className={controlClassName}
             value={basicForm.targetAudience}
-            placeholder="例如：爱看都市高压逆袭、关系拉扯和持续追更钩子的读者"
+            placeholder="Por ejemplo: lectores a quienes les gusta ver los contraataques urbanos de alta presión, los tirones de relaciones y la búsqueda constante de ganchos."
             onChange={(event) => onFormChange({ targetAudience: event.target.value })}
           />
         </div>
 
         <div className="space-y-2">
           <FieldLabel htmlFor="basic-commercial-tags" hint={BASIC_INFO_FIELD_HINTS.commercialTagsText}>
-            核心商业标签
+            etiquetas de negocio principal
           </FieldLabel>
           <Input
             id="basic-commercial-tags"
             className={controlClassName}
             value={basicForm.commercialTagsText}
-            placeholder="例如：逆袭，强冲突，悬念拉满，职场博弈"
+            placeholder="Por ejemplo: contraataque, conflicto fuerte, lleno de suspenso, juego en el lugar de trabajo."
             onChange={(event) => onFormChange({ commercialTagsText: event.target.value })}
           />
         </div>
 
         <div className="space-y-2">
           <FieldLabel htmlFor="basic-competing-feel" hint={BASIC_INFO_FIELD_HINTS.competingFeel}>
-            竞品感 / 熟悉阅读感
+            Sentido del producto competitivo/sentido de lectura familiar
           </FieldLabel>
           <Input
             id="basic-competing-feel"
             className={controlClassName}
             value={basicForm.competingFeel}
-            placeholder="例如：现实职场压迫感里带一点冷幽默和高密度关系拉扯"
+            placeholder="Por ejemplo: un poco de humor frío y tensión en las relaciones de alta densidad en la presión real del lugar de trabajo."
             onChange={(event) => onFormChange({ competingFeel: event.target.value })}
           />
         </div>
 
         <div className="space-y-2">
           <FieldLabel htmlFor="basic-book-selling-point" hint={BASIC_INFO_FIELD_HINTS.bookSellingPoint}>
-            本书核心卖点
+            El principal punto de venta de este libro.
           </FieldLabel>
           <textarea
             id="basic-book-selling-point"
             rows={3}
             className={`${controlClassName} min-h-[104px] w-full resize-y px-3 py-2.5 text-sm leading-6 outline-none`}
             value={basicForm.bookSellingPoint}
-            placeholder="例如：主角每次解决现实困局都会撬动更大的关系链和利益链，读者会一直期待下一次反压。"
+            placeholder="Por ejemplo: cada vez que el protagonista resuelve un dilema de la vida real, aprovechará una cadena más amplia de relaciones e intereses, y los lectores siempre esperarán con ansias la siguiente contrapresión."
             onChange={(event) => onFormChange({ bookSellingPoint: event.target.value })}
           />
         </div>
@@ -95,14 +95,14 @@ export function BookFramingSection(props: BookFramingSectionProps) {
 
       <div className="space-y-2">
         <FieldLabel htmlFor="basic-first30-promise" hint={BASIC_INFO_FIELD_HINTS.first30ChapterPromise}>
-          前 30 章承诺
+          Promesa de los primeros 30 capítulos
         </FieldLabel>
         <textarea
           id="basic-first30-promise"
           rows={4}
           className={`${controlClassName} min-h-[120px] w-full resize-y px-3 py-2.5 text-sm leading-6 outline-none`}
           value={basicForm.first30ChapterPromise}
-          placeholder="例如：前 30 章必须让读者看到主角站稳第一阶段立场、核心对手浮出水面、关系线第一次强反转，并明确这本书后面会越写越狠。"
+          placeholder="Por ejemplo: los primeros 30 capítulos deben permitir a los lectores ver al protagonista adoptar una postura firme en la primera etapa, emerge el oponente central y la línea de relación se invierte por primera vez, y debe quedar claro que el libro se volverá cada vez más despiadado más adelante."
           onChange={(event) => onFormChange({ first30ChapterPromise: event.target.value })}
         />
       </div>

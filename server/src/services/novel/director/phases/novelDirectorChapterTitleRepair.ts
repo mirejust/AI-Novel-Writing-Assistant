@@ -19,14 +19,14 @@ function buildRepairStatusLabel(input: {
     return normalizedLabel;
   }
   if (input.phase === "load_context") {
-    return `正在整理第 ${input.volumeOrder} 卷拆章上下文`;
+    return `organizando la primera ${input.volumeOrder} Contexto del capítulo`;
   }
-  return `正在 AI 修复第 ${input.volumeOrder} 卷章节标题`;
+  return `La IA está reparando el Capítulo 1 ${input.volumeOrder} Título del capítulo del volumen`;
 }
 
 function shouldRefreshBeatSheetForRepair(lastError: string | null | undefined): boolean {
   const normalized = lastError?.trim() ?? "";
-  return normalized.includes("当前卷节奏板的章节跨度异常");
+  return normalized.includes("La duración de capítulos del tablero de ritmo del volumen actual es anormal.");
 }
 
 function resolveRepairBeatKeys(input: {
@@ -76,7 +76,7 @@ export async function repairDirectorChapterTitles(input: {
   const currentWorkspace = await input.volumeService.getVolumes(input.novelId);
   const targetVolume = currentWorkspace.volumes.find((volume) => volume.id === input.targetVolumeId);
   if (!targetVolume) {
-    throw new Error("当前任务对应的目标卷不存在，无法继续 AI 修复章节标题。");
+    throw new Error("El volumen objetivo correspondiente a la tarea actual no existe y no se puede continuar con el título del capítulo de reparación de IA.");
   }
 
   const resumeTarget = buildNovelEditResumeTarget({
@@ -102,7 +102,7 @@ export async function repairDirectorChapterTitles(input: {
         await new DirectorTaskStateWriter(input.workflowService).markRunning(input.taskId, {
           stage: "structured_outline",
           itemKey: "beat_sheet",
-          itemLabel: event.label.trim() || `正在重整第 ${targetVolume.sortOrder} 卷节奏板`,
+          itemLabel: event.label.trim() || `Reorganizando ${targetVolume.sortOrder} tablero de ritmo rodante`,
           progress: DIRECTOR_PROGRESS.beatSheet,
         });
       },
@@ -113,7 +113,7 @@ export async function repairDirectorChapterTitles(input: {
     sheet.volumeId === targetVolume.id && sheet.beats.length > 0
   ));
   if (!targetBeatSheet) {
-    throw new Error("当前卷缺少可用节奏板，无法安全重写章节标题。");
+    throw new Error("El volumen actual carece de una placa rítmica utilizable y no puede reescribir los títulos de los capítulos de forma segura.");
   }
 
   const repairBeatKeys = resolveRepairBeatKeys({
@@ -150,7 +150,7 @@ export async function repairDirectorChapterTitles(input: {
   });
   const repairedVolume = persistedWorkspace.volumes.find((volume) => volume.id === targetVolume.id);
   if (!repairedVolume) {
-    throw new Error("AI 已返回新的章节标题结果，但保存后的当前卷丢失，无法完成修复。");
+    throw new Error("La IA ha devuelto resultados de títulos de nuevos capítulos, pero el volumen actual después de guardar se pierde y la reparación no se puede completar.");
   }
 
   const titleDiversityIssue = getChapterTitleDiversityIssue(
@@ -177,8 +177,8 @@ export async function repairDirectorChapterTitles(input: {
     stage: "structured_outline",
     itemKey: "chapter_list",
     itemLabel: titleDiversityIssue
-      ? `第 ${repairedVolume.sortOrder} 卷章节标题已重写，但结构仍建议继续分散`
-      : `第 ${repairedVolume.sortOrder} 卷章节标题已完成 AI 修复`,
+      ? `Cap. ${repairedVolume.sortOrder} Se han reescrito los títulos de los capítulos del volumen, pero aún se recomienda que la estructura permanezca fragmentada.`
+      : `Cap. ${repairedVolume.sortOrder} Se han realizado correcciones de IA en los títulos de los capítulos de volumen`,
     progress: DIRECTOR_PROGRESS.chapterList,
     volumeId: repairedVolume.id,
     clearCheckpoint: true,

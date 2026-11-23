@@ -108,7 +108,7 @@ export class VolumeChapterSyncService {
     await runVolumeWorkspaceTransaction(async (tx) => {
       if (options.reviewedPlanVersionId) {
         const range = input.executionContractChapterRange;
-        if (!range) throw new Error("缺少已确认的章节范围。");
+        if (!range) throw new Error("Falta el rango de capítulos confirmado.");
         // Claim the exact source rows before an explicitly approved sync can write the execution copy.
         const selected = mergedDocument.volumes.flatMap(volume => volume.chapters)
           .filter(chapter => chapter.chapterOrder >= range.startOrder && chapter.chapterOrder <= range.endOrder);
@@ -128,11 +128,11 @@ export class VolumeChapterSyncService {
             },
             data: { taskSheet: chapter.taskSheet ?? null },
           });
-          if (locked.count !== 1) throw new Error("章节要求在同步时有变化，请按最新规划继续。");
+          if (locked.count !== 1) throw new Error("Los requisitos del capítulo pueden cambiar durante la sincronización; continúe según el plan más reciente.");
         }
       }
       const { versionId } = await this.deps.ensureActiveVersionRecord(tx, novelId, mergedDocument);
-      if (options.reviewedPlanVersionId && versionId !== options.reviewedPlanVersionId) throw new Error("卷规划在同步时有变化，请按最新规划继续。");
+      if (options.reviewedPlanVersionId && versionId !== options.reviewedPlanVersionId) throw new Error("El plan de volumen cambia durante la sincronización; continúe con el plan más reciente.");
       const linkUpdates: Array<{ volumeChapterId: string; chapterId: string }> = [...plan.links];
       for (const item of plan.creates) {
         const created = await tx.chapter.create({
@@ -248,7 +248,7 @@ export class VolumeChapterSyncService {
           sceneCards: chapter.sceneCards,
         });
         if (!result.canEnterExecution) {
-          throw new Error(`第 ${chapter.chapterOrder} 章执行合同未通过质量门禁，不能连接到章节执行区。${formatChapterTaskSheetQualityFailure(result)}`);
+          throw new Error(`Cap. ${chapter.chapterOrder} El contrato de ejecución del capítulo no ha pasado el control de calidad y no puede conectarse al área de ejecución del capítulo.${formatChapterTaskSheetQualityFailure(result)}`);
         }
       }
     }

@@ -120,7 +120,7 @@ export function buildProseQualityAuditReport(
     severity: finding.severity,
     code: finding.code,
     description: finding.message,
-    evidence: `第 ${finding.line} 行：${finding.excerpt}`,
+    evidence: `Cap. ${finding.line} DE ACUERDO:${finding.excerpt}`,
     fixSuggestion: finding.fixSuggestion,
     status: "open",
     createdAt,
@@ -133,7 +133,7 @@ export function buildProseQualityAuditReport(
     chapterId: input.chapterId,
     auditType: "mode_fit",
     overallScore: scoreFindings(input.report.findings),
-    summary: `正文自然度/退化检测发现 ${issues.length} 个问题。`,
+    summary: `Descubrimiento de detección de naturalidad/degradación del texto ${issues.length} una pregunta.`,
     legacyScoreJson: null,
     issues,
     createdAt,
@@ -176,9 +176,9 @@ function scanNegativeFlip(
       severity: "high",
       line: segment.line,
       column: index + 1,
-      message: "正文出现高频 AI 式否定翻转句，容易显得概念化、模板化。",
+      message: "En el texto aparecen oraciones invertidas negativas de alta frecuencia estilo IA, que tienden a parecer conceptuales y basadas en plantillas.",
       excerpt: formatExcerpt(match[0]),
-      fixSuggestion: "改成具体动作、感官细节或角色判断，避免用“不是 A，而是 B”解释主题。",
+      fixSuggestion: "Reemplácelo con acciones específicas, detalles sensoriales o juicios de carácter, y evite explicar el tema en términos de \"No es A, es B\".",
     });
   }
 }
@@ -196,9 +196,9 @@ function scanDashOrEllipsis(
     severity: "high",
     line: segment.line,
     column: match.index + 1,
-    message: "正文使用破折号、省略号或双连字符，容易形成模型化停顿。",
+    message: "El uso de guiones, elipses o guiones dobles en el texto puede crear fácilmente pausas modeladas.",
     excerpt: formatExcerpt(segment.text),
-    fixSuggestion: "改写为自然的动作停顿、句读或人物反应，减少机械标点制造的情绪。",
+    fixSuggestion: "Reescríbalo en pausas de acción naturales, lecturas de oraciones o reacciones de personajes para reducir las emociones creadas por la puntuación mecánica.",
   });
 }
 
@@ -215,9 +215,9 @@ function scanAiSelfReference(
     severity: "critical",
     line: segment.line,
     column: match.index + 1,
-    message: "正文泄漏 AI 身份、拒绝话术或模型说明。",
+    message: "El texto filtra la identidad de la IA, se niega a hablar o describir el modelo.",
     excerpt: formatExcerpt(segment.text),
-    fixSuggestion: "删除 AI 自述和拒绝话术，改成符合角色与场景的正文叙述。",
+    fixSuggestion: "Elimine las palabras de autonarración y rechazo de la IA y reemplácelas con narrativas textuales que se ajusten a los personajes y escenas.",
   });
 }
 
@@ -234,9 +234,9 @@ function scanPlaceholderLeak(
     severity: "critical",
     line: segment.line,
     column: match.index + 1,
-    message: "正文包含占位、待补或省略提示。",
+    message: "El texto contiene marcadores de posición, sugerencias por completar u omitidas.",
     excerpt: formatExcerpt(segment.text),
-    fixSuggestion: "补成完整可读的剧情内容，不能把占位符留给读者。",
+    fixSuggestion: "Complete el contenido de la trama para que sea completo y legible, y no deje marcadores de posición a los lectores.",
   });
 }
 
@@ -251,9 +251,9 @@ function scanEngineeringTermLeak(
       severity: "high",
       line: segment.line,
       column: strongMatch.index + 1,
-      message: "正文泄漏任务单、细纲、提示词或运行态工程词。",
+      message: "El texto filtra órdenes de tareas, esquemas detallados, palabras clave o palabras de proyectos en ejecución.",
       excerpt: formatExcerpt(segment.text),
-      fixSuggestion: "删去工程词和写作指令，把信息改写成角色行动、环境变化或叙事结果。",
+      fixSuggestion: "Elimine palabras de ingeniería e instrucciones de escritura y reescriba la información como acciones de personajes, cambios ambientales o consecuencias narrativas.",
     });
     return;
   }
@@ -265,9 +265,9 @@ function scanEngineeringTermLeak(
       severity: "medium",
       line: segment.line,
       column: softMatch.index + 1,
-      message: "正文出现偏创作说明的元叙事词，可能削弱沉浸感。",
+      message: "La presencia de palabras metanarrativas en el texto que están sesgadas hacia una explicación creativa puede debilitar la sensación de inmersión.",
       excerpt: formatExcerpt(segment.text),
-      fixSuggestion: "把面向作者或读者的说明转成故事内部可见的行动、结果或信息差。",
+      fixSuggestion: "Convierta las instrucciones para el autor o el lector en acciones, consecuencias o lagunas de información visibles dentro de la historia.",
     });
   }
 }
@@ -290,9 +290,9 @@ function scanPeriodStutter(
     severity: "medium",
     line: segment.line,
     column: 1,
-    message: "正文连续使用过短句号，节奏显得碎裂和机械。",
+    message: "El texto utiliza períodos cortos de forma continua y el ritmo parece fragmentado y mecánico.",
     excerpt: formatExcerpt(matches.slice(0, 6).join("")),
-    fixSuggestion: "合并部分短句，并用动作链、视线转移或心理承接形成更自然的段落节奏。",
+    fixSuggestion: "Combine algunas oraciones cortas y use cadenas de acción, cambios de ojos o conexiones psicológicas para formar un ritmo de párrafo más natural.",
   });
 }
 
@@ -308,9 +308,9 @@ function scanLongParagraph(
     severity: "medium",
     line: segment.line,
     column: 1,
-    message: "正文段落过长，阅读节奏和移动端可读性下降。",
+    message: "El párrafo de texto es demasiado largo y el ritmo de lectura y la legibilidad móvil se reducen.",
     excerpt: formatExcerpt(segment.text),
-    fixSuggestion: "按动作转折、信息揭示或情绪变化拆成更短段落。",
+    fixSuggestion: "Divídalo en párrafos más cortos según las transiciones de acciones, revelaciones de información o cambios de humor.",
   });
 }
 
@@ -327,9 +327,9 @@ function scanVerbatimRepeat(
         severity: "critical",
         line: segments[index].line,
         column: 1,
-        message: "正文出现相邻段落复读。",
+        message: "El texto principal aparece y los párrafos adyacentes se vuelven a leer.",
         excerpt: formatExcerpt(segments[index].text),
-        fixSuggestion: "删除重复段落，保留信息推进更明确的一版。",
+        fixSuggestion: "Elimine los párrafos duplicados y conserve la información para avanzar en una versión más clara.",
       });
     }
   }
@@ -357,9 +357,9 @@ function scanVerbatimRepeat(
         severity: "critical",
         line: item.line,
         column: 1,
-        message: "正文多次重复同一句或高度相同的句子。",
+        message: "El texto repite la misma frase o frases muy idénticas varias veces.",
         excerpt: formatExcerpt(item.sentence),
-        fixSuggestion: "保留一次有效表达，其余位置改成新的动作、反应或信息推进。",
+        fixSuggestion: "Mantenga una expresión válida y cambie las posiciones restantes a nuevas acciones, reacciones o avance de información.",
       });
     }
   }
@@ -380,9 +380,9 @@ function scanTruncation(
     severity: "critical",
     line: lastSegment?.line ?? 1,
     column: Math.max(1, (lastSegment?.text.length ?? trimmed.length) - 20),
-    message: "正文结尾缺少完整句读，疑似生成中断或被截断。",
+    message: "Falta la frase completa al final del texto y se sospecha que la generación está interrumpida o truncada.",
     excerpt: formatExcerpt(lastSegment?.text ?? trimmed),
-    fixSuggestion: "补齐结尾句、动作结果和章节收束，确认正文不是半句停在输出末尾。",
+    fixSuggestion: "Complete la oración final, los resultados de la acción y el cierre del capítulo, y asegúrese de que el texto no se detenga al final del resultado en media oración.",
   });
 }
 
@@ -407,7 +407,7 @@ function stripQuotedText(text: string): string {
 
 function isInsideQuote(text: string, index: number): boolean {
   const pairs: Array<[string, string]> = [
-    ["「", "」"],
+    ["«", "»"],
     ["『", "』"],
     ["“", "”"],
     ["\"", "\""],

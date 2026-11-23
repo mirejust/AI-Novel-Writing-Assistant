@@ -77,23 +77,23 @@ function buildMarkdownContent(input: {
   const followUpCenterUrl = `${baseUrl}/auto-director/follow-ups${followUpCenterQuery ? `?${followUpCenterQuery}` : ""}`;
   const detailUrl = `${baseUrl}/tasks?kind=novel_workflow&id=${input.taskId}`;
   const lines = [
-    `# ${input.cardTitle?.trim() || "自动导演跟进提醒"}`,
+    `# ${input.cardTitle?.trim() || "Recordatorio automático de seguimiento del director"}`,
     "",
-    `> 小说：${input.novelTitle}`,
-    `> 事件：${input.event.summary}`,
+    `> Novelas:${input.novelTitle}`,
+    `> Evento:${input.event.summary}`,
   ];
 
   if (input.reasonLabel?.trim()) {
-    lines.push(`> 原因：${input.reasonLabel.trim()}`);
+    lines.push(`> Razón:${input.reasonLabel.trim()}`);
   }
   if (input.stage?.trim()) {
-    lines.push(`> 阶段：${input.stage.trim()}`);
+    lines.push(`> Etapa:${input.stage.trim()}`);
   }
   if (input.checkpointSummary?.trim()) {
-    lines.push(`> 摘要：${input.checkpointSummary.trim()}`);
+    lines.push(`> Resumen:${input.checkpointSummary.trim()}`);
   }
 
-  lines.push("", "## 操作");
+  lines.push("", "## operar");
 
   if (hasCallbackSupport(input.channelConfig)) {
     for (const action of input.availableActions.filter(isChannelSafeAction)) {
@@ -110,8 +110,8 @@ function buildMarkdownContent(input: {
     }
   }
 
-  lines.push(`- ${buildMarkdownLink("查看详情", detailUrl)}`);
-  lines.push(`- ${buildMarkdownLink("打开跟进中心", followUpCenterUrl)}`);
+  lines.push(`- ${buildMarkdownLink("comprobar los detalles", detailUrl)}`);
+  lines.push(`- ${buildMarkdownLink("Centro de seguimiento abierto", followUpCenterUrl)}`);
 
   return lines.join("\n");
 }

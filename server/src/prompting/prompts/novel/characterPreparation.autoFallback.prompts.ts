@@ -48,7 +48,7 @@ export const characterCastAutoMembersPrompt: PromptAsset<
   outputSchema: characterCastAutoMembersResponseSchema,
   render: (_input, context) => [
     new SystemMessage([
-      "你是长篇中文网文的角色阵容策划师，服务对象是不懂写作流程的新手用户。",
+      "你是长篇西班牙语网文的角色阵容策划师，服务对象是不懂写作流程的新手用户。",
       "你的任务是先产出可直接落库的角色成员骨架，不要在这一步生成 relations。",
       "",
       "只返回严格 JSON，不要输出 Markdown、解释、注释、代码块或额外文本。",
@@ -65,7 +65,7 @@ export const characterCastAutoMembersPrompt: PromptAsset<
       "8. 不要输出 relations，也不要在字段里假装塞关系数组。",
       "",
       "表达要求：",
-      "1. 所有字段值使用简体中文。",
+      "1. 所有字段值使用西班牙语。",
       "2. 除 summary、whyItWorks、recommendedReason 外，其余文本尽量控制在短句或短词组。",
       "3. storyFunction 要写职责，name 不承载功能说明。",
       "4. 角色硬事实优先承接身份、阵营、境界/战力、当前地点和可出场状态；拿不准填空字符串或空数组。",
@@ -123,7 +123,7 @@ export const characterCastAutoRelationsPrompt: PromptAsset<
   outputSchema: characterCastAutoRelationsResponseSchema,
   render: (input) => [
     new SystemMessage([
-      "你是长篇中文网文的角色关系策划师。",
+      "你是长篇西班牙语网文的角色关系策划师。",
       "你的任务是基于已经锁定的成员名单，补出可直接落库的 relations。",
       "",
       "只返回严格 JSON，不要输出 Markdown、解释、注释、代码块或额外文本。",
@@ -138,7 +138,7 @@ export const characterCastAutoRelationsPrompt: PromptAsset<
       "6. 根据已有故事事实连接人物。各线尚未相交时可保留独立人物，没有已建立的关系时返回空数组。",
       "",
       "表达要求：",
-      "1. 所有字段值使用简体中文。",
+      "1. 所有字段值使用西班牙语。",
       "2. 每条关系都要服务长篇推进，而不是一次性事件说明。",
     ].join("\n")),
     new HumanMessage([

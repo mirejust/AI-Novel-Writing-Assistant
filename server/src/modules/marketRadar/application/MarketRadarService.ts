@@ -137,7 +137,7 @@ function buildPlatformStatuses(snapshots: Array<{
       status: succeeded.length > 0 ? failed.length > 0 ? "stale" : "succeeded" : "failed",
       itemCount: succeeded.reduce((sum, row) => sum + row.items.length, 0),
       capturedAt: capturedAt?.toISOString() ?? null,
-      error: failed.map((row) => row.error).filter(Boolean).join("；") || null,
+      error: failed.map((row) => row.error).filter(Boolean).join(";") || null,
     };
   });
 }
@@ -152,15 +152,15 @@ function formatRankingItems(items: MarketRankingItem[]): string {
   return [...groups.values()].sort((left, right) => Number(isPrimary(right)) - Number(isPrimary(left))).map((appearances) => {
     const item = appearances.sort((left, right) => left.rank - right.rank)[0];
     return [
-    `证据层级=${isPrimary(appearances) ? "主要（新书榜或新晋作者榜）" : "辅助（成熟榜单，仅用于验证持续需求）"}`,
-    `上榜记录=${appearances.map((appearance) => `${appearance.listKey}第${appearance.rank}名`).join("、")}`,
-    `书名=${item.title}`,
-    item.author ? `作者=${item.author}` : "",
-    item.category ? `分类=${item.category}` : "",
-    item.tags.length ? `公开标签=${item.tags.join("、")}` : "",
-    item.heatLabel ? `公开热度=${item.heatLabel}` : "",
-    item.serialStatus ? `状态=${item.serialStatus}` : "",
-    item.synopsis ? `公开简介=${item.synopsis.slice(0, 320)}` : "",
+    `Nivel de evidencia =${isPrimary(appearances) ? "Principal (lista de libros nuevos o lista de autores emergentes)" : "Auxiliar (lista madura, solo utilizada para verificar la demanda continua)"}`,
+    `Registro de lista =${appearances.map((appearance) => `${appearance.listKey}Cap.${appearance.rank}nombre`).join(",")}`,
+    `Título del libro =${item.title}`,
+    item.author ? `Autor=${item.author}` : "",
+    item.category ? `Categoría=${item.category}` : "",
+    item.tags.length ? `etiqueta pública =${item.tags.join(",")}` : "",
+    item.heatLabel ? `Popularidad pública =${item.heatLabel}` : "",
+    item.serialStatus ? `estado =${item.serialStatus}` : "",
+    item.synopsis ? `Perfil público =${item.synopsis.slice(0, 320)}` : "",
     ].filter(Boolean).join(" | ");
   }).join("\n");
 }
@@ -203,18 +203,18 @@ function flattenStoryModeCatalog(nodes: StoryModeTreeNode[], path: string[] = []
 function formatFoundationCatalog(options: MarketFoundationCatalogOption[]): string {
   return options.map((option) => [
     `ID=${option.id}`,
-    `路径=${option.path}`,
-    option.description ? `说明=${option.description}` : "",
+    `camino=${option.path}`,
+    option.description ? `Descripción =${option.description}` : "",
   ].filter(Boolean).join(" | ")).join("\n");
 }
 
 function formatStoryModeCatalog(options: MarketStoryModeCatalogOption[]): string {
   return options.map((option) => [
     `ID=${option.id}`,
-    `路径=${option.path}`,
-    option.description ? `说明=${option.description}` : "",
-    `核心驱动=${option.profile.coreDrive}`,
-    `读者奖励=${option.profile.readerReward}`,
+    `camino=${option.path}`,
+    option.description ? `Descripción =${option.description}` : "",
+    `controlador principal =${option.profile.coreDrive}`,
+    `Recompensas del lector =${option.profile.readerReward}`,
   ].filter(Boolean).join(" | ")).join("\n");
 }
 
@@ -247,13 +247,13 @@ export function buildMarketBriefRuntimePromptBlock(
 ): string {
   return [
     promptBlock.trim(),
-    "【用户确认的市场信号】",
-    ...selectedSignals.map((signal) => `- ${signal.kind}｜${signal.label}：${signal.summary}`),
-    "【开书创意种子】",
-    `起始想法：${creativeSeed.openingIdea}`,
-    `金手指 / 核心优势：${creativeSeed.coreAdvantage}`,
-    `核心卖点：${creativeSeed.bookSellingPoint}`,
-    `前30章承诺：${creativeSeed.first30ChapterPromise}`,
+    "[Señales del mercado confirmadas por los usuarios]",
+    ...selectedSignals.map((signal) => `- ${signal.kind}|${signal.label}:${signal.summary}`),
+    "[Semillas creativas para abrir un libro]",
+    `Idea inicial:${creativeSeed.openingIdea}`,
+    `Ventajas del núcleo/dedo dorado:${creativeSeed.coreAdvantage}`,
+    `Puntos de venta principales:${creativeSeed.bookSellingPoint}`,
+    `Los primeros 30 capítulos prometen:${creativeSeed.first30ChapterPromise}`,
   ].join("\n");
 }
 
@@ -340,7 +340,7 @@ export class MarketRadarService {
   async recoverInterruptedRuns(): Promise<void> {
     await prisma.marketScanRun.updateMany({
       where: { status: { in: ["queued", "running", "analyzing"] } },
-      data: { status: "interrupted", lastError: "任务因应用重启而中断，请重新扫榜或分析。", finishedAt: new Date() },
+      data: { status: "interrupted", lastError: "La tarea fue interrumpida debido al reinicio de la aplicación. Escanee o analice nuevamente.", finishedAt: new Date() },
     });
   }
 
@@ -362,7 +362,7 @@ export class MarketRadarService {
       data: { requestedPlatformsJson: JSON.stringify(requestedPlatforms) },
     });
     setImmediate(() => void this.collectRankings(run.id).catch(async (error) => {
-      const message = error instanceof Error ? error.message : "扫榜失败";
+      const message = error instanceof Error ? error.message : "No se pudo escanear la lista";
       console.error("[market-radar] scan failed", error);
       await prisma.marketScanRun.updateMany({
         where: { id: run.id, status: { in: ["queued", "running"] } },
@@ -380,15 +380,15 @@ export class MarketRadarService {
       where: { id: runId },
       include: { snapshots: { include: { items: true } } },
     });
-    if (!run) throw new Error("扫榜任务不存在。");
-    if (run.status === "queued" || run.status === "running") throw new Error("榜单仍在采集中，请稍后再分析。");
+    if (!run) throw new Error("La tarea de borrar la lista no existe.");
+    if (run.status === "queued" || run.status === "running") throw new Error("La lista aún se está recopilando, analícela más tarde.");
     if (run.status === "analyzing") return this.getScan(runId) as Promise<MarketScanRun>;
-    if (!canStartMarketRadarAnalysis(run.status as MarketScanRun["status"])) throw new Error("当前扫榜任务无法启动AI分析，请重新扫榜。");
+    if (!canStartMarketRadarAnalysis(run.status as MarketScanRun["status"])) throw new Error("El análisis de IA no se puede iniciar para la tarea de escaneo de la lista actual; escanee la lista nuevamente.");
     const successful = run.snapshots.filter((snapshot) => snapshot.status === "succeeded" && snapshot.items.length > 0);
-    if (successful.length === 0) throw new Error("没有可供AI分析的榜单数据。");
+    if (successful.length === 0) throw new Error("No hay datos de lista disponibles para el análisis de IA.");
     const requestedItemIds = [...new Set(input.selectedItemIds ?? [])];
     const availableItemIds = new Set(successful.flatMap((snapshot) => snapshot.items.map((item) => item.id)));
-    if (requestedItemIds.some((id) => !availableItemIds.has(id))) throw new Error("选择中包含不属于本次榜单的作品，请重新选择。");
+    if (requestedItemIds.some((id) => !availableItemIds.has(id))) throw new Error("La selección incluye obras que no pertenecen a esta lista, por favor seleccione nuevamente.");
     const requestedSelections = requestedItemIds.length > 0
       ? successful.filter((snapshot) => snapshot.items.some((item) => requestedItemIds.includes(item.id))).map((snapshot) => ({
         platform: snapshot.platform as MarketRadarPlatform,
@@ -402,7 +402,7 @@ export class MarketRadarService {
         }));
     const uniqueSelections = [...new Map(requestedSelections.map((selection) => [marketSourceKey(selection), selection])).values()];
     const selectedSnapshots = selectMarketAnalysisSnapshots(successful, uniqueSelections);
-    if (selectedSnapshots.length !== uniqueSelections.length) throw new Error("选择中包含未成功获取的榜单，请重新选择。");
+    if (selectedSnapshots.length !== uniqueSelections.length) throw new Error("La selección incluye una lista que no se obtuvo exitosamente, seleccione nuevamente.");
 
     const claimed = await prisma.marketScanRun.updateMany({
       where: { id: runId, status: { in: [...MARKET_RADAR_ANALYSIS_STARTABLE_STATUSES] } },
@@ -417,7 +417,7 @@ export class MarketRadarService {
           data: {
             status: hasFailures ? "partial" : "ready",
             progress: 1,
-            lastError: error instanceof Error ? `AI分析失败：${error.message}` : "AI分析失败，请重试。",
+            lastError: error instanceof Error ? `El análisis de IA falló:${error.message}` : "El análisis de IA falló. Inténtelo de nuevo.",
             finishedAt: new Date(),
           },
         });
@@ -478,16 +478,16 @@ export class MarketRadarService {
 
   async createBrief(input: CreateMarketCreativeBriefRequest): Promise<MarketCreativeBrief> {
     const report = await this.getReport(input.reportId);
-    if (!report) throw new Error("市场分析报告不存在。");
+    if (!report) throw new Error("No existen informes de análisis de mercado.");
     const uniqueIds = [...new Set(input.signalIds)];
-    if (uniqueIds.length < 1 || uniqueIds.length > 5) throw new Error("请选择1至5项市场信号。");
+    if (uniqueIds.length < 1 || uniqueIds.length > 5) throw new Error("Seleccione de 1 a 5 señales de mercado.");
     const selectedSignals = uniqueIds.map((id) => report.signals.find((signal) => signal.id === id)).filter(Boolean) as MarketTrendReport["signals"];
-    if (selectedSignals.length !== uniqueIds.length) throw new Error("选择中包含不属于当前报告的市场信号。");
+    if (selectedSignals.length !== uniqueIds.length) throw new Error("La selección contiene señales de mercado que no forman parte del informe actual.");
     const result = await runStructuredPrompt({
       asset: marketCreativeBriefPrompt,
       promptInput: {
         influenceMode: input.influenceMode,
-        selectedSignalsText: selectedSignals.map((signal) => `${signal.kind}｜${signal.label}｜${signal.summary}`).join("\n"),
+        selectedSignalsText: selectedSignals.map((signal) => `${signal.kind}|${signal.label}|${signal.summary}`).join("\n"),
       },
       options: { temperature: 0.25, maxTokens: 2_800, stage: "market_radar", itemKey: "creative_brief", entrypoint: "market_radar" },
     });
@@ -535,15 +535,15 @@ export class MarketRadarService {
 
   async listSavedTopics() {
     const rows = await prisma.marketSavedTopic.findMany({ orderBy: { createdAt: "desc" } });
-    return rows.map((row) => ({ id: row.id, reportId: row.reportId, signalId: row.signalId, kind: row.kind as MarketTrendReport["signals"][number]["kind"], label: row.label || row.name || "未命名题材", summary: row.summary || row.reason || "", direction: row.direction as MarketTrendReport["signals"][number]["direction"], heat: row.heat, crowding: row.crowding, createdAt: row.createdAt.toISOString() }));
+    return rows.map((row) => ({ id: row.id, reportId: row.reportId, signalId: row.signalId, kind: row.kind as MarketTrendReport["signals"][number]["kind"], label: row.label || row.name || "Tema sin nombre", summary: row.summary || row.reason || "", direction: row.direction as MarketTrendReport["signals"][number]["direction"], heat: row.heat, crowding: row.crowding, createdAt: row.createdAt.toISOString() }));
   }
 
   async saveTopic(input: { reportId: string; signalId: string }) {
     const report = await prisma.marketTrendReport.findUnique({ where: { id: input.reportId } });
-    if (!report) throw new Error("市场分析报告不存在。");
+    if (!report) throw new Error("No existen informes de análisis de mercado.");
     const stored = parseJson<StoredMarketReportData>(report.structuredDataJson, { signals: [] });
     const signal = stored.signals.find((item) => item.id === input.signalId);
-    if (!signal) throw new Error("这条市场信号不属于当前报告。");
+    if (!signal) throw new Error("Esta señal del mercado no forma parte del informe actual.");
     const row = await prisma.marketSavedTopic.upsert({
       where: { reportId_signalId: { reportId: report.id, signalId: signal.id } },
       create: { reportId: report.id, signalId: signal.id, kind: signal.kind, label: signal.label, summary: signal.summary, direction: signal.direction, heat: signal.heat, crowding: signal.crowding },
@@ -588,7 +588,7 @@ export class MarketRadarService {
           data: {
             runId, platform: source.platform, listKey: source.listKey, listLabel: source.listLabel,
             channel: source.channel, sourceUrl: source.sourceUrl, status: "failed",
-            error: error instanceof Error ? error.message : "榜单采集失败",
+            error: error instanceof Error ? error.message : "Error al recopilar la lista",
           },
         });
       } finally {
@@ -599,7 +599,7 @@ export class MarketRadarService {
     const snapshots = await prisma.marketRankingSnapshot.findMany({ where: { runId }, include: { items: true } });
     const successful = snapshots.filter((snapshot) => snapshot.status === "succeeded" && snapshot.items.length > 0);
     if (successful.length === 0) {
-      await prisma.marketScanRun.update({ where: { id: runId }, data: { status: "failed", progress: 1, finishedAt: new Date(), lastError: "三个平台均未获取到可分析的公开榜单元数据。" } });
+      await prisma.marketScanRun.update({ where: { id: runId }, data: { status: "failed", progress: 1, finishedAt: new Date(), lastError: "Ninguna de las tres plataformas obtuvo metadatos de listas públicas analizables." } });
       return;
     }
 
@@ -696,7 +696,7 @@ export class MarketRadarService {
         const oldRank = previousRanks.get(`${item.title}::${item.author ?? ""}`);
         return oldRank ? [`${item.title}: ${oldRank}→${item.rank}`] : [];
       }).slice(0, 20);
-      lines.push(`${current.platform}/${current.listKey}: ${changes.join("，") || "没有重复上榜作品"}`);
+      lines.push(`${current.platform}/${current.listKey}: ${changes.join(",") || "No hay obras duplicadas en la lista."}`);
     }
     return { text: lines.join("\n"), hasComparableHistory: lines.length > 0 };
   }

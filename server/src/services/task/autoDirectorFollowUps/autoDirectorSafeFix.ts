@@ -61,10 +61,10 @@ export async function applyAutoDirectorSafeFix(input: {
 }> {
   const plan = buildAutoDirectorSafeFixPlan(input.validationResult);
   if (plan.safeActions.length === 0) {
-    throw new Error("当前没有可安全修复项，请先重新校验或人工处理。");
+    throw new Error("Actualmente no existe una solución segura; vuelva a verificarla o manéjela manualmente primero.");
   }
   if (plan.blockedActions.length > 0) {
-    throw new Error("当前校验项包含高风险动作，不能安全修复，请人工处理。");
+    throw new Error("El elemento de verificación actual contiene acciones de alto riesgo y no se puede reparar de forma segura. Manéjelo manualmente.");
   }
 
   let seedPayload: Record<string, unknown> = {};

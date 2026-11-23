@@ -22,14 +22,14 @@ export function mergeSavedRouteRows(current: VolumePlanDocument, rows: VolumePla
 
 /** A route window can fill gaps, never replace saved chapters, move their orders or rewrite a beat. */
 export function appendMissingRoutePlans(current: VolumePlanDocument, generated: VolumePlanDocument): VolumePlanDocument {
-  if (current.novelId !== generated.novelId) throw new Error("章节路线不属于当前小说。");
+  if (current.novelId !== generated.novelId) throw new Error("Las rutas de los capítulos no forman parte de la novela actual.");
   const orders = new Set(current.volumes.flatMap(volume => volume.chapters.map(chapter => chapter.chapterOrder)));
   const ids = new Set(current.volumes.flatMap(volume => volume.chapters.map(chapter => chapter.id)));
   const volumes = current.volumes.map(volume => ({...volume, chapters: [...volume.chapters]}));
   for (const proposed of generated.volumes) {
     let volume = volumes.find(row => row.id === proposed.id);
     if (!volume) {
-      if (volumes.some(row => row.sortOrder === proposed.sortOrder)) throw new Error("补齐路线遇到卷序号冲突，请核对已有分卷。");
+      if (volumes.some(row => row.sortOrder === proposed.sortOrder)) throw new Error("Si encuentra un conflicto con el número de serie del volumen al completar la ruta, verifique los volúmenes existentes.");
       volume = {...proposed, chapters: []};volumes.push(volume);
     }
     for (const chapter of proposed.chapters) {

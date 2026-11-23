@@ -88,9 +88,9 @@ export class ComicExportService {
         project: { select: { id: true } },
       },
     });
-    if (!episode) throw new AppError(`未找到漫画话数：${episodeId}`, 404);
+    if (!episode) throw new AppError(`Número de capítulo del cómic no encontrado:${episodeId}`, 404);
     if (episode.panels.length === 0) {
-      throw new AppError("该话尚无格子，请先生成分格脚本和图像。", 400);
+      throw new AppError("Aún no existe una cuadrícula para esta oración. Proporcione secuencias de comandos e imágenes de cuadrícula.", 400);
     }
 
     // 创建导出任务记录
@@ -119,7 +119,7 @@ export class ComicExportService {
         if (buf) panelBuffers.push(buf);
       }
       if (panelBuffers.length === 0) {
-        throw new AppError("没有可用的格子图（请先生成图像）。", 400);
+        throw new AppError("No hay ningún mapa enrejado disponible (primero genere la imagen).", 400);
       }
 
       // 统一宽度 + 垂直拼接

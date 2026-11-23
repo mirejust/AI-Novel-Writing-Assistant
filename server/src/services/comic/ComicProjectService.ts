@@ -32,7 +32,7 @@ interface ComicVisualAnchorData {
 
 function compactVisualAnchor(text: string, maxChars = 40): string {
   return text
-    .replace(/[，。；、,\.;\s]+/g, "，")
+    .replace(/[，。；、,\.;\s]+/g, ",")
     .replace(/^，+|，+$/g, "")
     .slice(0, maxChars);
 }
@@ -121,7 +121,7 @@ export class ComicProjectService {
     patch: { appearance?: string; faceShapeOverride?: string },
   ) {
     const character = await prisma.comicCharacter.findUnique({ where: { id: charId } });
-    if (!character) throw new Error(`角色不存在：${charId}`);
+    if (!character) throw new Error(`El rol no existe:${charId}`);
 
     let existing: Record<string, unknown> = {};
     if (character.visualAnchor) {
@@ -162,7 +162,7 @@ export class ComicProjectService {
    */
   async updateCharacterGender(charId: string, gender: "male" | "female" | "other" | "unknown") {
     const character = await prisma.comicCharacter.findUnique({ where: { id: charId } });
-    if (!character) throw new Error(`角色不存在：${charId}`);
+    if (!character) throw new Error(`El rol no existe:${charId}`);
     return prisma.comicCharacter.update({
       where: { id: charId },
       data: { gender },
@@ -179,7 +179,7 @@ export class ComicProjectService {
     input: { userInstruction?: string; provider?: LLMProvider },
   ): Promise<ComicVisualAnchorRewriteOutput> {
     const character = await prisma.comicCharacter.findUnique({ where: { id: charId } });
-    if (!character) throw new Error(`角色不存在：${charId}`);
+    if (!character) throw new Error(`El rol no existe:${charId}`);
 
     let currentAppearance = "";
     let currentFaceShapeOverride: string | undefined;
@@ -221,7 +221,7 @@ export class ComicProjectService {
     patch: { format?: string; style?: string; promptKeywords?: string; imageSize?: string },
   ) {
     const project = await prisma.comicProject.findUnique({ where: { id: projectId }, select: { stylePreset: true } });
-    if (!project) throw new Error(`漫画项目不存在：${projectId}`);
+    if (!project) throw new Error(`El proyecto de cómic no existe:${projectId}`);
     let current: Record<string, unknown> = {};
     try { if (project.stylePreset) current = JSON.parse(project.stylePreset); } catch { /* ignore */ }
     const merged = { ...current, ...Object.fromEntries(Object.entries(patch).filter(([, v]) => v !== undefined)) };
@@ -245,7 +245,7 @@ export class ComicProjectService {
    */
   async importSourceBundle(projectId: string) {
     const project = await prisma.comicProject.findUnique({ where: { id: projectId } });
-    if (!project) throw new Error(`未找到漫画项目：${projectId}`);
+    if (!project) throw new Error(`Elemento cómico no encontrado:${projectId}`);
 
     const sourceRef: SourceRef = {
       type: project.sourceType as AdaptationSourceType,

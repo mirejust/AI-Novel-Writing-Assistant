@@ -12,7 +12,7 @@ import { AgentConversationStore, agentReplyLive, recentAgentDiscussion } from ".
 import { readCandidate, saveCandidate, scopeOf, versionConflict, type CandidateAddress } from "./candidateResource";
 
 const selectionSchema = z.array(z.enum(candidateStoryFields)).min(1)
-  .refine(fields => new Set(fields).size === fields.length, "请选择不同的修改项。");
+  .refine(fields => new Set(fields).size === fields.length, "Seleccione una edición diferente.");
 export const candidateApplyBody = z.object({ fields: selectionSchema }).strict();
 type Input = AgentTurnInput & { revision: number };
 
@@ -53,11 +53,11 @@ export class CandidateConversation {
     const prior = input.parentResultId ? await this.db.openingCandidateProposal.findFirst({
       where: { id: input.parentResultId, turn: { scopeKey } }, include: { turn: { select: { contextVersion: true } } },
     }) : null;
-    if (input.parentResultId && !prior) throw new AppError("请从这套方向的讨论中选择要追问的建议。", 409);
+    if (input.parentResultId && !prior) throw new AppError("Seleccione una sugerencia a seguir de este conjunto de discusiones direccionales.", 409);
     const contextVersion = String(input.revision);
     const previous = prior ? project(prior, prior.turn.contextVersion !== contextVersion) : null;
     return this.store.startReply({ ...input, scopeKey, contextVersion }, () => this.answer(address, resource, input, previous),
-      error => error instanceof AppError ? error.message : "本轮未取得有效建议，可以重新发送这条要求。");
+      error => error instanceof AppError ? error.message : "Si no se obtuvieron sugerencias válidas en esta ronda, puede reenviar esta solicitud.");
   }
 
   private async answer(address: CandidateAddress, source: Awaited<ReturnType<typeof readCandidate>>,
@@ -65,7 +65,7 @@ export class CandidateConversation {
     const scopeKey = scopeOf(address);
     const history = recentAgentDiscussion(await this.store.history(scopeKey));
     const { candidate, state } = source;
-    const reply = await agentReplyLive.during(input.requestId, "正在阅读这套方向和你的要求…", true, itemKey =>
+    const reply = await agentReplyLive.during(input.requestId, "Leyendo este conjunto de instrucciones y sus requisitos...", true, itemKey =>
       this.invoke({ candidate, idea: source.batch.idea, requestText: input.requestText, history, priorProposal }, {
         provider: state.launch.provider ?? undefined, model: state.launch.model ?? undefined,
         temperature: state.launch.temperature ?? undefined, ...state.run.llmOverride, taskId: address.taskId, itemKey,
@@ -96,7 +96,7 @@ export class CandidateConversation {
       const source = await readCandidate(tx, address);
       const row = await tx.openingCandidateProposal.findFirst({ where: { id, turn: { scopeKey: scopeOf(address) } },
         include: { turn: { select: { contextVersion: true } } } });
-      if (!row) throw new AppError("找不到这套方向的建议。", 404);
+      if (!row) throw new AppError("No puedo encontrar ninguna sugerencia para esta dirección.", 404);
       const proposal = project(row, String(source.revision) !== row.turn.contextVersion);
       if (proposal.status === "applied" && JSON.stringify(fields) === row.appliedFieldsJson) return source.candidate;
       if (proposal.status !== "pending") throw versionConflict();
@@ -115,13 +115,13 @@ export class CandidateConversation {
   }
 
   async interrupt(address: CandidateAddress, turnId: string) {
-    await this.store.stop(scopeOf(address), turnId, "interrupted", "本轮讨论已结束。");
+    await this.store.stop(scopeOf(address), turnId, "interrupted", "Esta ronda de discusión ha terminado.");
     agentReplyLive.end(turnId);
   }
 
   async streamStatus(address: CandidateAddress, id: string) {
     const turn = await this.db.agentConversationTurn.findFirst({ where: { scopeKey: scopeOf(address), id }, select: { status: true } });
-    if (!turn) throw new AppError("找不到这套方向的讨论。", 404);
+    if (!turn) throw new AppError("No puedo encontrar ninguna discusión en esta dirección.", 404);
     return turn.status;
   }
 }

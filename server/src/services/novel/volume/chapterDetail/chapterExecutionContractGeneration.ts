@@ -106,12 +106,12 @@ export async function generateChapterTaskSheetDetail(params: {
     return {
       purpose: existingChapter.purpose?.trim() || existingChapter.summary.trim(),
       exclusiveEvent: existingChapter.exclusiveEvent?.trim() || existingChapter.summary.trim(),
-      endingState: existingChapter.endingState?.trim() || "本章完成当前章节任务，并为下一章留下明确入口。",
-      nextChapterEntryState: existingChapter.nextChapterEntryState?.trim() || existingChapter.endingState?.trim() || "下一章承接本章结果继续推进。",
+      endingState: existingChapter.endingState?.trim() || "Este capítulo completa las tareas del capítulo actual y deja una entrada clara para el siguiente capítulo.",
+      nextChapterEntryState: existingChapter.nextChapterEntryState?.trim() || existingChapter.endingState?.trim() || "El próximo capítulo continúa los resultados de este capítulo.",
       conflictLevel: existingChapter.conflictLevel ?? 3,
       revealLevel: existingChapter.revealLevel ?? 2,
       targetWordCount: existingChapter.targetWordCount ?? 2200,
-      mustAvoid: existingChapter.mustAvoid?.trim() || "避免偏离本章任务单和卷节奏。",
+      mustAvoid: existingChapter.mustAvoid?.trim() || "Evite desviarse de las hojas de tareas del capítulo y del ritmo de volumen.",
       payoffRefs: existingChapter.payoffRefs,
       taskSheet: existingChapter.taskSheet?.trim() ?? "",
       sceneCards: serializeChapterScenePlan(scenePlan),
@@ -135,7 +135,7 @@ export async function generateChapterTaskSheetDetail(params: {
           ...params.promptInput,
           guidance: [
             params.promptInput.guidance?.trim(),
-            `上一版章节执行合同未通过质量门禁：${qualityFeedback}`,
+            `La versión anterior del contrato de ejecución del capítulo no pasó el control de calidad:${qualityFeedback}`,
           ].filter(Boolean).join("\n"),
         }
         : params.promptInput;
@@ -210,7 +210,7 @@ export async function generateChapterTaskSheetDetail(params: {
         mustAvoid: generated.output.mustAvoid.trim(),
         payoffRefs,
         taskSheet: [generated.output.taskSheet.trim(), ...(guidance.length ? [
-          "本章规划核对指导（写作、审校与修文共同遵守；优先保持前文事实，不得为修复而提前越章）：",
+          "Guía de planificación y verificación para este capítulo (se respetan la redacción, corrección y revisión; se da prioridad a mantener los datos anteriores y no se cruzan capítulos por adelantado para su reparación):",
           ...[...new Set(guidance)].map(item => `- ${item}`),
         ] : [])].join("\n"),
         sceneCards: serializeChapterScenePlan(scenePlan),
@@ -225,7 +225,7 @@ export async function generateChapterTaskSheetDetail(params: {
       }
       return publish(usable);
     } catch (error) {
-      lastError = error instanceof Error ? error : new Error("章节执行合同生成失败。");
+      lastError = error instanceof Error ? error : new Error("Error en la generación del contrato de ejecución del capítulo.");
       if (attempt > 0 && usable && !params.options.signal?.aborted && (
         shouldRetryChapterExecutionContract(error, 0)
         || (error instanceof StructuredOutputError && error.category !== "transport_error")
@@ -237,5 +237,5 @@ export async function generateChapterTaskSheetDetail(params: {
     }
   }
 
-  throw lastError ?? new Error("章节执行合同生成失败。");
+  throw lastError ?? new Error("Error en la generación del contrato de ejecución del capítulo.");
 }

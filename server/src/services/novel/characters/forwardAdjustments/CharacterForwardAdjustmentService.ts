@@ -14,9 +14,9 @@ import { readChapterCharacterAdjustments } from "./chapterFields";
 import type { ForwardFieldPatch } from "./fieldPolicy";
 import { previewForwardPlans, readForwardChapterBoundary } from "./plans";
 
-const conflict = "创作进度或角色资料有变化，请重新预览后保存。";
-const busy = "请在当前创作步骤保存并暂停后再调整角色。";
-const recovery = "请先处理当前正文批次，再调整角色。";
+const conflict = "Hay cambios en el progreso de la creación o en la información del personaje, obtenga una vista previa nuevamente y guarde.";
+const busy = "Guarda y pausa el paso de creación actual antes de ajustar el personaje.";
+const recovery = "Primero procese el lote de texto actual y luego ajuste la función.";
 const activeStatuses = ["queued", "running", "waiting_gate", "paused"];
 
 async function readRunBoundary(db: Prisma.TransactionClient, novelId: string, lock: boolean) {
@@ -60,7 +60,7 @@ async function readInputs(db: Prisma.TransactionClient, novelId: string, charact
   if (lock) {
     // Director opening, retry and recovery acquire the same novel row.
     const acquired = await db.novel.updateMany({ where: { id: novelId }, data: { directorEpoch: { increment: 0 } } });
-    if (acquired.count !== 1) throw new AppError("找不到这本小说。", 404);
+    if (acquired.count !== 1) throw new AppError("No se puede encontrar la novela.", 404);
   }
   const identity = await assertNovelDirectorVersion(novelId, "v2", undefined, db);
   const [runBoundary, boundary, book, character, last] = await Promise.all([
@@ -75,7 +75,7 @@ async function readInputs(db: Prisma.TransactionClient, novelId: string, charact
       where: { novelId, characterId }, orderBy: { revision: "desc" }, select: { revision: true },
     }),
   ]);
-  if (!character) throw new AppError("本书没有这个角色。", 404);
+  if (!character) throw new AppError("No existe tal personaje en este libro.", 404);
 
   const { next } = boundary;
   const [adjustments, snapshot, affectedPlans] = await Promise.all([
@@ -99,9 +99,9 @@ async function readInputs(db: Prisma.TransactionClient, novelId: string, charact
     last?.revision, fields, affectedPlans,
   ])).digest("hex");
   const blockedReason = runBoundary.reason ?? (
-    [...boundary.completed].some(order => order > next) ? "请先补齐前面未完成的章节，再调整后续角色。"
+    [...boundary.completed].some(order => order > next) ? "Primero complete los capítulos anteriores sin terminar y luego ajuste los roles posteriores."
       : book.estimatedChapterCount && next > book.estimatedChapterCount && !boundary.chapters.some(chapter => chapter.order === next)
-        && !affectedPlans.length ? "本书的目标章节均已完成，没有可调整的后续章节。" : null
+        && !affectedPlans.length ? "Los capítulos objetivo de este libro se han completado y no hay capítulos posteriores que puedan ajustarse." : null
   );
   const preview: CharacterForwardPreview = { effectiveFromChapterOrder: next, fields, fingerprint, blockedReason, affectedPlans };
   return { character, preview, revision: (last?.revision ?? 0) + 1, runId: run?.runId };
@@ -121,7 +121,7 @@ export async function applyCharacterForwardAdjustment(novelId: string, character
     const changed = characterForwardFieldNames.filter(field => (
       input.fields[field] !== undefined && input.fields[field] !== (preview.fields[field]?.trim() || null)
     ));
-    if (!changed.length) throw new AppError("请至少修改一项角色资料。", 400);
+    if (!changed.length) throw new AppError("Modifica al menos un perfil de personaje.", 400);
     const before = Object.fromEntries(changed.map(field => [field, character[field]]));
     const after = Object.fromEntries(changed.map(field => [field, input.fields[field]]));
     const createdAt = new Date();
@@ -136,7 +136,7 @@ export async function applyCharacterForwardAdjustment(novelId: string, character
     } });
     await tx.characterTimeline.create({ data: {
       novelId, characterId, chapterOrder: preview.effectiveFromChapterOrder,
-      title: "作者调整", content: `调整了${changed.map(field => characterForwardFieldLabels[field]).join("、")}。`, source: "author_adjust",
+      title: "Ajuste de autor", content: `equilibrado${changed.map(field => characterForwardFieldLabels[field]).join(",")}.`, source: "author_adjust",
     } });
     return { effectiveFromChapterOrder: preview.effectiveFromChapterOrder };
   }), { label: "director.character_forward_adjustment" });

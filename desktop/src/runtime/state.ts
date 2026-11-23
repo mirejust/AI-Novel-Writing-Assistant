@@ -110,8 +110,8 @@ export const desktopBootstrapStore = new SnapshotStore<DesktopBootstrapSnapshot>
   createBootstrapSnapshot({
     state: "launching",
     stage: "launching",
-    title: "正在启动桌面工作区",
-    detail: "正在准备桌面运行时和本地工作区。",
+    title: "Iniciar el espacio de trabajo del escritorio",
+    detail: "Preparando el tiempo de ejecución del escritorio y el espacio de trabajo local.",
     canRetry: false,
   }),
 );
@@ -119,7 +119,7 @@ export const desktopBootstrapStore = new SnapshotStore<DesktopBootstrapSnapshot>
 export const desktopUpdaterStore = new SnapshotStore<DesktopUpdaterSnapshot>(
   createUpdaterSnapshot({
     status: "disabled",
-    message: "桌面版启动完成后即可检查更新。",
+    message: "Puede buscar actualizaciones después de que se inicie la versión de escritorio.",
     currentVersion: "0.0.0",
     availableVersion: null,
     progressPercent: null,

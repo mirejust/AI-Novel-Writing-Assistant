@@ -102,7 +102,7 @@ export function resolveCustomVolumeCountInput(
   if (!Number.isFinite(parsed)) {
     return {
       value: null,
-      message: "请先输入有效的固定卷数。",
+      message: "Primero ingrese un número de volumen fijo válido.",
     };
   }
   if (
@@ -111,7 +111,7 @@ export function resolveCustomVolumeCountInput(
   ) {
     return {
       value: null,
-      message: `固定卷数必须落在 ${volumeCountGuidance.allowedVolumeCountRange.min}-${volumeCountGuidance.allowedVolumeCountRange.max} 卷之间。`,
+      message: `El número fijo de rollos debe estar dentro de ${volumeCountGuidance.allowedVolumeCountRange.min}-${volumeCountGuidance.allowedVolumeCountRange.max} entre volúmenes.`,
     };
   }
   return {
@@ -122,6 +122,6 @@ export function resolveCustomVolumeCountInput(
 
 export function buildGenerationNotice(strategyPlan: VolumeStrategyPlan | null): string {
   return strategyPlan
-    ? "当前工作区已进入二期链路：先审卷战略，再确认卷骨架，之后按卷生成节奏板和章节列表。"
-    : "先生成卷战略建议，让系统帮你决定卷数和硬/软规划，再进入卷骨架。";
+    ? "El espacio de trabajo actual ha entrado en la segunda fase del enlace: primero revise la estrategia de volumen, luego confirme el esqueleto del volumen y luego genere un tablero de ritmo y una lista de capítulos por volumen."
+    : "Primero, cree sugerencias de estrategias de volumen, deje que el sistema lo ayude a decidir la cantidad de volúmenes y la planificación estricta/blanda, y luego ingrese el esqueleto de volumen.";
 }

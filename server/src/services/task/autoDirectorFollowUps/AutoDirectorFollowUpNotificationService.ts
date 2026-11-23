@@ -63,13 +63,13 @@ function buildAutoApprovalNotificationCopy(checkpointType: NovelWorkflowCheckpoi
 } {
   if (checkpointType === "replan_required") {
     return {
-      cardTitle: "AI 已记录重规划提醒并继续推进",
-      reasonLabel: "重规划提醒已记录",
+      cardTitle: "AI ha registrado el recordatorio de replanificación y continúa avanzando",
+      reasonLabel: "Se ha registrado el recordatorio de replanificación",
     };
   }
   return {
-    cardTitle: "AI 已自动通过并继续推进",
-    reasonLabel: "最近自动通过",
+    cardTitle: "La IA ha pasado y avanzado automáticamente",
+    reasonLabel: "Aprobado recientemente automáticamente",
   };
 }
 
@@ -346,7 +346,7 @@ export class AutoDirectorFollowUpNotificationService {
     const payload: AutoDirectorChannelNotificationPayload = {
       channelType: "feishu", event: input.event,
       task: {taskId: input.after.id, novelId: input.after.novelId, novelTitle: input.after.novel?.title || input.after.id, detailUrl: "", followUpCenterUrl: ""},
-      card: {title: input.cardTitle || "自动导演跟进提醒", summary: input.event.summary,
+      card: {title: input.cardTitle || "Recordatorio automático de seguimiento del director", summary: input.event.summary,
         reasonLabel: input.reasonLabel ?? reason?.reasonLabel ?? null, stage: input.after.currentStage,
         checkpointSummary: input.after.checkpointSummary ?? null,
         actions: (input.availableActions ?? this.resolveAvailableActions(input.after))
@@ -362,7 +362,7 @@ export class AutoDirectorFollowUpNotificationService {
       responseBody = delivery.body;
       if (delivery.status === 200) {status = "delivered"; deliveredAt = new Date();}
     } catch {
-      responseBody = "飞书通知发送失败，请检查应用权限和接收目标。";
+      responseBody = "No se pudo enviar la notificación de Feishu, verifique los permisos de la aplicación y el objetivo de recepción.";
     }
     await this.recordNotificationLog({eventId: input.event.eventId, eventType: input.event.eventType,
       taskId: input.after.id, channelType: "feishu", target: config.receiveId, payload,

@@ -92,7 +92,7 @@ export interface ManuscriptApiError {
 export interface ManuscriptChapterRevisionContext {
  source:{sourceHash:string;unitId:string;ranges:Array<{start:number;end:number}>;originalText:string;excerpted:boolean};
  previousWorkingChapters:Array<{unitId:string;chapterId:string;contentHash:string;content:string;omittedPrefixCharCount:number}>;
- wholeBookPlanningConstraints:{label:"全书约束，不代表本章已经发生";baselineRevisionId:string;workingRevisionId:string;endingDirection:string;immutableFacts:Array<{title:string;content:string}>;currentChapterPlan:unknown};
+ wholeBookPlanningConstraints:{label:"Está obligado por todo el libro, lo que no significa que este capítulo haya sucedido.";baselineRevisionId:string;workingRevisionId:string;endingDirection:string;immutableFacts:Array<{title:string;content:string}>;currentChapterPlan:unknown};
  preserve:{coreFacts:true;identity:true;causality:true;pov:true;ending:true};
 }
 

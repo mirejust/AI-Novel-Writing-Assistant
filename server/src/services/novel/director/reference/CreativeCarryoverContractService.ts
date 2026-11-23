@@ -93,8 +93,8 @@ function formatSectionForPrompt(section: SectionRow): string {
   const prose = manualContent ?? section.aiContent?.trim() ?? "";
   const parts = [
     `## ${section.title} (${section.sectionKey})`,
-    structuredBlock ? `结构化结论：\n${structuredBlock}` : "",
-    prose ? `正文摘录：\n${clipText(prose, MAX_SECTION_CHARS)}` : "",
+    structuredBlock ? `Conclusión estructurada: \\n${structuredBlock}` : "",
+    prose ? `Extracto del texto: \\n${clipText(prose, MAX_SECTION_CHARS)}` : "",
   ].filter(Boolean);
   return parts.join("\n");
 }
@@ -158,10 +158,10 @@ export class CreativeCarryoverContractService {
     });
 
     if (!analysis) {
-      throw new AppError("未找到对应的拆书结果。", 404);
+      throw new AppError("No se encontraron resultados de apertura de libros correspondientes.", 404);
     }
     if (analysis.status !== "succeeded") {
-      throw new AppError("请先完成拆书后再生成创作承接方案。", 400);
+      throw new AppError("Primero termine de desempaquetar el libro antes de generar un plan de empresa creativo.", 400);
     }
 
     const sectionByKey = new Map(analysis.sections.map((section) => [section.sectionKey, section]));
@@ -171,7 +171,7 @@ export class CreativeCarryoverContractService {
 
     const sourceVersionReadable = Boolean(analysis.documentVersion?.content?.trim());
     if (!sourceVersionReadable) {
-      missingSectionTitles.push("原文版本");
+      missingSectionTitles.push("Versión original");
     }
 
     return {

@@ -248,7 +248,7 @@ export function createTasksRouter(options: {
     try {
       const { kind, id } = req.params as z.infer<typeof taskParamsSchema>;
       await taskCenterService.deleteRecord(kind, id);
-      res.status(200).json({ success: true, data: null, message: "记录已删除，已保存的创作成果会保留。" } satisfies ApiResponse<null>);
+      res.status(200).json({ success: true, data: null, message: "El registro ha sido eliminado, pero las creaciones guardadas permanecerán." } satisfies ApiResponse<null>);
     } catch (error) {
       next(error);
     }

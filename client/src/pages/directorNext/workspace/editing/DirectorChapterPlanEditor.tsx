@@ -27,7 +27,7 @@ interface Props {
   approvalFingerprint?: string;
   onClose: () => void;
 }
-const chapterTitle = (plan: VolumeChapterPlan) => `第 ${plan.chapterOrder} 章 · ${plan.title}`;
+const chapterTitle = (plan: VolumeChapterPlan) => `Cap. ${plan.chapterOrder} Capítulo · ${plan.title}`;
 
 export function DirectorChapterPlanEditor({
   novelId,
@@ -73,12 +73,12 @@ export function DirectorChapterPlanEditor({
         if (!parsed.success) {
           setSelectedId(plan.id);
           throw new Error(
-            `第 ${plan.chapterOrder} 章：${parsed.error.issues[0]?.message ?? "请检查任务、场景与字数。"}`,
+            `Cap. ${plan.chapterOrder} capítulo:${parsed.error.issues[0]?.message ?? "Verifique las tareas, escenas y recuento de palabras."}`,
           );
         }
         chapters.push({ chapterId: plan.id, edit: parsed.data });
       }
-      if (chapters.length && !planVersionId) throw new Error("请重新打开本章的卷规划后再保存修改。");
+      if (chapters.length && !planVersionId) throw new Error("Vuelva a abrir la planificación de volumen en este capítulo antes de guardar los cambios.");
       const chapterPlanEdit =
         planVersionId && (chapters.length || approveForProse)
           ? { planVersionId, chapters, approveForProse }
@@ -152,34 +152,34 @@ export function DirectorChapterPlanEditor({
       }}
     >
       <AppDialogContent
-        title="讨论与编辑章节任务和场景"
-        description="选一章讨论或手改。确认前可以切换章节，最后一起保存。"
+        title="Discutir y editar tareas y escenarios del capítulo."
+        description="Elija un capítulo para discutir o revisar a mano. Puede cambiar de capítulo antes de confirmar y guardarlos juntos al final."
         className="lg:h-[min(48rem,90dvh)] lg:max-w-6xl"
         bodyClassName="grid gap-5 lg:grid-cols-[minmax(0,.9fr)_minmax(0,1.1fr)] lg:overflow-hidden"
         footer={
           discarding ? (
             <>
-              <p className="mr-auto text-sm">关闭会放弃未保存的修改。</p>
+              <p className="mr-auto text-sm">Al cerrar se descartan los cambios no guardados.</p>
               <Button variant="ghost" onClick={() => setDiscarding(false)}>
-                继续编辑
+                Continuar editando
               </Button>
               <Button variant="outline" onClick={onClose}>
-                放弃修改并关闭
+                Descartar cambios y cerrar
               </Button>
             </>
           ) : (
             <>
               <Button variant="ghost" disabled={mutation.isPending} onClick={close}>
-                取消
+                Cancelar
               </Button>
               <Button disabled={disabled} onClick={() => mutation.mutate()}>
                 {mutation.isPending
-                  ? "正在确认…"
+                  ? "Confirmando…"
                   : approveForProse
-                    ? "确认本批章节并继续写正文"
+                    ? "Confirma este lote de capítulos y continúa escribiendo el texto."
                     : changed.length
-                      ? "保存修改并继续"
-                      : "确认本批章节并继续"}
+                      ? "Guardar cambios y continuar"
+                      : "Confirma este lote de capítulos y continúa."}
               </Button>
             </>
           )
@@ -188,7 +188,7 @@ export function DirectorChapterPlanEditor({
         <div className="min-w-0 space-y-4 lg:overflow-y-auto lg:pr-2">
           {opened.length > 1 ? (
             <label className="grid gap-1 text-sm">
-              选择章节
+              Seleccionar capítulo
               <select
                 className="rounded-md border border-input bg-background px-3 py-2"
                 value={selectedId}
@@ -198,7 +198,7 @@ export function DirectorChapterPlanEditor({
                 {opened.map(({ plan }) => (
                   <option key={plan.id} value={plan.id}>
                     {chapterTitle(plan)}
-                    {changed.some((row) => row.plan.id === plan.id) ? " · 待保存" : ""}
+                    {changed.some((row) => row.plan.id === plan.id) ? " · Para ser salvo" : ""}
                   </option>
                 ))}
               </select>
@@ -206,26 +206,26 @@ export function DirectorChapterPlanEditor({
           ) : (
             <h3 className="font-medium">{chapterTitle(plan)}</h3>
           )}
-          {field("taskSheet", "章节任务", { rows: 5 })}
+          {field("taskSheet", "Tareas del capítulo", { rows: 5 })}
           <div className="grid gap-3 sm:grid-cols-[7rem_1fr]">
-            {field("targetWordCount", "目标字数", { words: true })}
-            {field("mustAvoid", "需要避免", { max: 4000 })}
+            {field("targetWordCount", "Palabras objetivo", { words: true })}
+            {field("mustAvoid", "Necesidad de evitar", { max: 4000 })}
           </div>
           {sceneTotal !== null && sceneTotal !== Number(draft.targetWordCount) && (
             <div className="flex flex-wrap items-center gap-2 text-sm" role="status">
-              场景合计 {sceneTotal} 字，需与章节目标一致。
+              escenas totales {sceneTotal} Las palabras deben ser coherentes con los objetivos del capítulo.
               <Button
                 size="sm"
                 variant="outline"
                 disabled={disabled || sceneTotal < 200 || sceneTotal > 20000}
                 onClick={() => change("targetWordCount", String(sceneTotal))}
               >
-                使用场景合计
+                Escenarios de uso totales
               </Button>
             </div>
           )}
           {sceneTotal === null && draft.targetWordCount !== form.fields.targetWordCount && (
-            <p className="text-sm text-muted-foreground">保存时会按各场景原有比例分配章节目标字数。</p>
+            <p className="text-sm text-muted-foreground">Al guardar, el número objetivo de palabras en cada capítulo se asignará de acuerdo con la proporción original de cada escena.</p>
           )}
           {form.scenePlan?.scenes.map((scene, index) => (
             <details
@@ -234,7 +234,7 @@ export function DirectorChapterPlanEditor({
               className="border-t border-border/40 pt-3"
             >
               <summary className="cursor-pointer font-medium">
-                场景 {index + 1} · {draft[sceneFieldKey(scene.key, "title")]}
+                escena {index + 1} · {draft[sceneFieldKey(scene.key, "title")]}
               </summary>
               <div className="mt-3 grid gap-3 sm:grid-cols-2">
                 {sceneFields.map((name) =>
@@ -244,12 +244,12 @@ export function DirectorChapterPlanEditor({
             </details>
           )) ?? (
             <p role="alert" className="text-sm text-destructive">
-              场景内容不完整，可返回导演台重新生成本阶段。
+              Si el contenido de la escena está incompleto, puedes regresar a la estación del director para regenerar este escenario.
             </p>
           )}
           {stale && (
             <p role="alert" className="text-sm text-destructive">
-              卷规划版本有变化，请关闭后重新打开。
+              La versión de planificación de volumen ha cambiado; ciérrela y vuelva a abrirla.
             </p>
           )}
           {mutation.isError && (

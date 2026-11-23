@@ -141,8 +141,8 @@ router.post(
         success: true,
         data,
         message: experience === "simple"
-          ? "简易创作已启动，AI 将继续完成整本书。"
-          : "已进入专业创作工作台。",
+          ? "Ha comenzado la creación sencilla y la IA continuará completando todo el libro."
+          : "Haber entrado en el banco de trabajo de la creación profesional.",
       } satisfies ApiResponse<typeof data>);
     } catch (error) {
       next(error);

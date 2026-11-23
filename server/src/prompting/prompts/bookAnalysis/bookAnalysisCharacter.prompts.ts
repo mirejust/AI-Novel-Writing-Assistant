@@ -103,7 +103,7 @@ export const bookAnalysisCharacterIdentifyPrompt: PromptAsset<
   outputSchema: bookAnalysisCharacterIdentifyOutputSchema,
   render: (input) => [
     new SystemMessage([
-      "你是中文网文拆书角色识别助手。",
+      "你是西班牙语网文拆书角色识别助手。",
       "你的任务是用低成本方式识别值得做深度档案的角色候选，不要生成完整人物档案。",
       "只输出 JSON 对象，不要输出 Markdown 或解释。",
       "结构固定为：",
@@ -147,7 +147,7 @@ export const bookAnalysisCharacterProfilePrompt: PromptAsset<
   outputSchema: bookAnalysisCharacterProfileOutputSchema,
   render: (input) => [
     new SystemMessage([
-      "你是中文网文拆书角色档案分析师。",
+      "你是西班牙语网文拆书角色档案分析师。",
       "你的任务是基于拆书 notes、人物系统小节和指定角色候选，生成一个可供新手学习角色塑造的深度角色档案。",
       "只输出 JSON 对象，不要输出 Markdown 或解释。",
       "结构固定为：",
@@ -202,7 +202,7 @@ export const bookAnalysisCharacterGeneratePrompt: PromptAsset<
   outputSchema: bookAnalysisCharacterGenerateOutputSchema,
   render: (input) => [
     new SystemMessage([
-      "你是中文网文拆书角色档案分析师。",
+      "你是西班牙语网文拆书角色档案分析师。",
       "你的任务是基于拆书 notes 和人物系统小节，生成可供新手学习角色塑造的深度角色档案。",
       "只输出 JSON 对象，不要输出 Markdown 或解释。",
       "结构固定为：",
@@ -247,7 +247,7 @@ export const bookAnalysisCharacterAppearanceSnapshotPrompt: PromptAsset<
   outputSchema: bookAnalysisCharacterAppearanceSnapshotOutputSchema,
   render: (input) => [
     new SystemMessage([
-      "你是中文网文角色形象解析助手。",
+      "你是西班牙语网文角色形象解析助手。",
       "你的任务是从单章正文中抽取指定角色在本章的可视化形象状态，供后续形象演变和生图提示使用。",
       "只输出 JSON 对象，不要输出 Markdown 或解释。",
       "结构固定为：",
@@ -297,7 +297,7 @@ export const bookAnalysisCharacterAppearanceMergePrompt: PromptAsset<
   outputSchema: bookAnalysisCharacterAppearanceMergeOutputSchema,
   render: (input) => [
     new SystemMessage([
-      "你是中文网文角色外貌融合助手。",
+      "你是西班牙语网文角色外貌融合助手。",
       "你的任务是把用户选中的外貌词条融合进角色档案外貌，同时给出稳定特征补丁。",
       "只输出 JSON 对象，不要输出 Markdown 或解释。",
       "结构固定为：",
@@ -344,7 +344,7 @@ export const bookAnalysisCharacterAppearanceConsolidatePrompt: PromptAsset<
   outputSchema: bookAnalysisCharacterAppearanceConsolidateOutputSchema,
   render: (input) => [
     new SystemMessage([
-      "你是中文网文角色形象归纳助手。",
+      "你是西班牙语网文角色形象归纳助手。",
       "你的任务是把多个章节形象快照合并为稳定特征与章节差异策略。",
       "只输出 JSON 对象，不要输出 Markdown 或解释。",
       "结构固定为：",

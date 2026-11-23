@@ -6,13 +6,13 @@ export interface PipelineStageItem {
 }
 
 export const PIPELINE_STAGE_ITEMS: PipelineStageItem[] = [
-  { key: "assemble_context", label: "装配上下文" },
-  { key: "generate_task_sheet", label: "生成任务单" },
-  { key: "generate_scene_cards", label: "生成场景拍点" },
-  { key: "generate_content", label: "生成正文" },
-  { key: "quality_check", label: "质量检测" },
-  { key: "auto_repair", label: "自动修复" },
-  { key: "update_memory", label: "更新剧情记忆" },
+  { key: "assemble_context", label: "Contexto de ensamblaje" },
+  { key: "generate_task_sheet", label: "Generar orden de tarea" },
+  { key: "generate_scene_cards", label: "Generar puntos de toma de escena." },
+  { key: "generate_content", label: "Generar texto" },
+  { key: "quality_check", label: "Inspección de calidad" },
+  { key: "auto_repair", label: "Reparación automática" },
+  { key: "update_memory", label: "Actualizar memoria de trama" },
 ];
 
 function mapCurrentStage(currentStage: string | null | undefined): string | null {

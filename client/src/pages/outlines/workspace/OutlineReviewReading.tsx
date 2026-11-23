@@ -17,7 +17,7 @@ interface Props {
   onApplied: (version: number, nodeId?: string) => void;
   onRequest: (text: string, priorId: string, target?: LocalTarget) => void;
 }
-const statuses: Record<string,string> = { applied: "已采纳", partially_applied: "部分采纳", superseded: "已有后续建议", rejected: "已放弃", stale: "大纲有新版本" };
+const statuses: Record<string,string> = { applied: "Adoptado", partially_applied: "Parcialmente adoptado", superseded: "Hay sugerencias de seguimiento.", rejected: "Abandonado", stale: "Hay una nueva versión del esquema." };
 
 export function OutlineReviewReading({ projectId, proposalId, version, document, locked, busy, onReturn, onSelect, onApplied, onRequest }: Props) {
   const cache = useQueryClient();
@@ -62,45 +62,45 @@ export function OutlineReviewReading({ projectId, proposalId, version, document,
     onSuccess: () => { onReturn(ownerId); void cache.invalidateQueries({queryKey:["outline-pending",projectId]}); void cache.invalidateQueries({queryKey:["outline-review",projectId]});
       void cache.invalidateQueries({queryKey:localHistoryKey}); },
   });
-  const back = <button type="button" className="outline-reading-link" onClick={() => onReturn(ownerId)}><ArrowLeft size={14} />回到当前稿</button>;
-  if (review.isLoading) return <p role="status" className="outline-reading">正在读取建议…</p>;
-  if (!proposal || proposal.projectId !== projectId || !["initial_generation","character_impact","chapter_edit","volume_edit","volume_beats","edit"].includes(proposal.kind)) return <div className="outline-reading">{back}<p role="alert">无法打开这份大纲建议。</p><Button onClick={() => void review.refetch()}>重新读取</Button></div>;
+  const back = <button type="button" className="outline-reading-link" onClick={() => onReturn(ownerId)}><ArrowLeft size={14} />Volver al borrador actual</button>;
+  if (review.isLoading) return <p role="status" className="outline-reading">Sugerencias de lectura…</p>;
+  if (!proposal || proposal.projectId !== projectId || !["initial_generation","character_impact","chapter_edit","volume_edit","volume_beats","edit"].includes(proposal.kind)) return <div className="outline-reading">{back}<p role="alert">Esta sugerencia de esquema no se puede abrir.</p><Button onClick={() => void review.refetch()}>Releer</Button></div>;
   const pending = proposal.status === "pending", stale = pending && proposal.baseVersion !== version;
   const initial = proposal.kind === "initial_generation";
   const canRequest = proposal.kind !== "volume_beats" && pending && (!target || !!owner);
   const submitting = locked || decision.isPending || reject.isPending || busy;
-  const topic = owner ? getOutlineNodeTitle(owner) : (initial ? "初稿" : "大纲");
+  const topic = owner ? getOutlineNodeTitle(owner) : (initial ? "Primer borrador" : "Esquema");
   return <article className="outline-reading outline-review-reading">
-    <header className="outline-reading-meta">{back}<span>{pending ? stale ? "旧建议" : "待采纳" : statuses[proposal.status] ?? "已结束"}{adopted && `为 v${adopted}`}</span></header>
-    {(!initial || stale) && <h2>{stale ? "重看" + topic + "的旧建议" : topic + "的修改建议"}</h2>}
-    {stale && <p className="outline-version-note">这份建议写于 v{proposal.baseVersion}。当前大纲是 v{version}，{proposal.kind === "volume_beats" ? "可回到本卷重新规划节奏。" : "可选出想保留的方向，让 AI 根据当前稿重新拟一份。"}</p>}
-    {stale && initial && <details className="outline-volume"><summary>查看当前稿 v{version}《{document.story.title}》</summary>
-      <p>{document.story.premise}</p><p>{document.story.synopsis}</p><p>{document.volumes.map(vol => vol.title).join("、")}</p><p>{document.characters.map(p => p.name).join("、")}</p>
+    <header className="outline-reading-meta">{back}<span>{pending ? stale ? "Viejo consejo" : "Para ser adoptado" : statuses[proposal.status] ?? "Terminó"}{adopted && `por v${adopted}`}</span></header>
+    {(!initial || stale) && <h2>{stale ? "Volver a mirar" + topic + "Viejo consejo" : topic + "Sugerencias de modificación"}</h2>}
+    {stale && <p className="outline-version-note">Esta propuesta fue escrita en v{proposal.baseVersion}. El esquema actual es v{version},{proposal.kind === "volume_beats" ? "Puede volver a este volumen para volver a planificar el ritmo." : "Puede seleccionar la dirección que desea mantener y dejar que AI redacte una nueva basada en el borrador actual."}</p>}
+    {stale && initial && <details className="outline-volume"><summary>Ver borrador actual v{version}«{document.story.title}»</summary>
+      <p>{document.story.premise}</p><p>{document.story.synopsis}</p><p>{document.volumes.map(vol => vol.title).join(",")}</p><p>{document.characters.map(p => p.name).join(",")}</p>
     </details>}
     {proposal.requestText && !initial && <p className="outline-request-quote">{proposal.requestText}</p>}
     <OutlineProposalPanel proposal={proposal} document={document} currentVersion={version} round={roundIndex >= 0 ? roundIndex + 1 : undefined} personName={person?.name} readOnly={!pending || stale}
       appliedIds={impact?.appliedOperationIds ?? payload?.appliedOperationIds} isApplying={decision.isPending} applyDisabled={submitting}
       onApply={ids => { if (!submitting && pending && !stale) decision.mutate(ids); }} onLater={() => onReturn(ownerId)}
       renderContext={base => impact && <div className="outline-impact-context">
-        {person && !!person.appearanceNodeIds.length && <section><h3>当前稿的出场卷章</h3>{person.appearanceNodeIds.map(ref =>
+        {person && !!person.appearanceNodeIds.length && <section><h3>El capítulo de apariencia del borrador actual.</h3>{person.appearanceNodeIds.map(ref =>
           <button type="button" className="outline-reading-link" key={ref} onClick={() => onSelect(ref)}>{findOutlineNodeTitle(document, ref)} ↗</button>)}</section>}
-        {!!impact.retained.length && <details><summary>建议保留的情节与设定 · {impact.retained.length}</summary><ul>{impact.retained.map((item,i) =>
+        {!!impact.retained.length && <details><summary>Parcelas y entornos que se recomienda conservar · {impact.retained.length}</summary><ul>{impact.retained.map((item,i) =>
           <li key={i}><b>{findOutlineNodeTitle(base,item.nodeId)}</b>　{item.reason}</li>)}</ul></details>}
-        {!!impact.writtenChapterIds.length && <details><summary>已有正文的章节</summary><p>{impact.writtenChapterIds.map(id => findOutlineNodeTitle(base,id)).join("、")}</p></details>}
+        {!!impact.writtenChapterIds.length && <details><summary>Capítulos que ya tienen texto.</summary><p>{impact.writtenChapterIds.map(id => findOutlineNodeTitle(base,id)).join(",")}</p></details>}
       </div>} />
-    {pending && target && !owner && <p role="status">当前稿中找不到这条内容。可从目录选择要修改的分卷、人物或章节。</p>}
+    {pending && target && !owner && <p role="status">Este contenido no se puede encontrar en el manuscrito actual. Puedes seleccionar el volumen, personaje o capítulo a modificar desde la tabla de contenidos.</p>}
     {canRequest && (stale || followUp ? <form className="outline-review-followup" onSubmit={e => {
-      e.preventDefault(); if (!submitting && (stale || guidance.trim())) onRequest(guidance.trim() || "请对照这份旧建议与当前大纲，重新给出适合当前稿的修改建议。", proposalId, target);
+      e.preventDefault(); if (!submitting && (stale || guidance.trim())) onRequest(guidance.trim() || "Compare esta antigua sugerencia con el esquema actual y proporcione nuevas sugerencias de modificación que sean adecuadas para el borrador actual.", proposalId, target);
     }}>
-      <label> {stale ? "旧建议里，你想保留什么？" : "你还想调整什么？"}
+      <label> {stale ? "¿Qué quieres conservar de las viejas sugerencias?" : "¿Qué más te gustaría ajustar?"}
         <textarea value={guidance} onChange={e => setGuidance(e.target.value)} maxLength={6000} rows={2}
-          placeholder={stale ? "可选，写下想保留的动机、情节或一句话…" : "写下希望调整的方向…"} /></label>
-      <div className="outline-reading-actions"><Button disabled={submitting || (!stale && !guidance.trim())}>{stale ? "按当前大纲重新给建议" : "生成调整后的建议"}</Button>
-        {stale && <Button type="button" variant="ghost" onClick={() => onReturn(ownerId)}>保留当前稿</Button>}</div>
-    </form> : <button type="button" className="outline-reading-link" onClick={() => setFollowUp(true)}><Feather size={14} />{initial ? "我想换个方向" : "再提个要求"}</button>)}
-    {pending && !stale && <details className="outline-review-options"><summary>其他操作</summary><button disabled={submitting} onClick={() => {
-      if (window.confirm("放弃这份建议？仍可在讨论记录里查看。")) reject.mutate();
-    }}>放弃这份建议</button></details>}
+          placeholder={stale ? "Opcional, escribe un motivo, trama o cita que quieras conservar..." : "Escriba la dirección que desea ajustar..."} /></label>
+      <div className="outline-reading-actions"><Button disabled={submitting || (!stale && !guidance.trim())}>{stale ? "Volver a dar sugerencias según el esquema actual." : "Generar recomendaciones ajustadas"}</Button>
+        {stale && <Button type="button" variant="ghost" onClick={() => onReturn(ownerId)}>Mantener el borrador actual</Button>}</div>
+    </form> : <button type="button" className="outline-reading-link" onClick={() => setFollowUp(true)}><Feather size={14} />{initial ? "Quiero cambiar de direccion" : "Hacer otra solicitud"}</button>)}
+    {pending && !stale && <details className="outline-review-options"><summary>Otras operaciones</summary><button disabled={submitting} onClick={() => {
+      if (window.confirm("¿Renunciar a esta sugerencia? Todavía se puede ver en la transcripción del debate.")) reject.mutate();
+    }}>Descartar esta sugerencia</button></details>}
     {(decision.error || reject.error) && <p role="alert">{(decision.error || reject.error)?.message}</p>}
   </article>;
 }

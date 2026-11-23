@@ -27,7 +27,7 @@ export async function reviewChapterExecutionContinuity(
         await options.onEvaluated?.(event);
       },
     });
-    if (!assessment) throw new Error("本章规划未完成与前文的核对，请保留规划后重试。");
+    if (!assessment) throw new Error("El plan de este capítulo no ha sido verificado con el artículo anterior. Conserve el plan e inténtelo de nuevo.");
     options.signal?.throwIfAborted();
     return { assessment, result };
   }
@@ -57,7 +57,7 @@ export async function reviewChapterExecutionContinuity(
   if (!assessment) {
     await new ChapterTaskSheetQualityGateService().evaluate(candidate, { ...options, mode,
       onEvaluated: event => { assessment = event.assessment; } });
-    if (!assessment) throw new Error("本章规划未完成与前文的核对，请保留规划后重试。");
+    if (!assessment) throw new Error("El plan de este capítulo no ha sido verificado con el artículo anterior. Conserve el plan e inténtelo de nuevo.");
     options.signal?.throwIfAborted();
     if (canCache) await prisma.chapterArtifactSyncCheckpoint.upsert({ where, create: { ...key, status: "succeeded", metadataJson: JSON.stringify(assessment) },
       update: { status: "succeeded", metadataJson: JSON.stringify(assessment) } });

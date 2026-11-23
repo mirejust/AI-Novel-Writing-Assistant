@@ -75,7 +75,7 @@ export async function loadGenerationContext(params: {
   ]);
 
   if (!rawNovel) {
-    throw new Error("小说不存在。");
+    throw new Error("La novela no existe.");
   }
 
   const novel: VolumeGenerationNovel = {

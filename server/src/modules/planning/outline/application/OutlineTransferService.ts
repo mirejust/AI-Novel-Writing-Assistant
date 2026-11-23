@@ -5,17 +5,17 @@ export function exportOutlineJson(title: string, version: number, document: Outl
 }
 export function importOutlineJson(input: string): { title: string; document: OutlineDocument } {
   const data = JSON.parse(input) as { format?: string; schemaVersion?: number; project?: { title?: string }; document?: unknown };
-  if (data.format !== "anw-outline") throw new Error("文件格式不是 anw-outline JSON");
-  if (data.schemaVersion !== 1) throw new Error("不支持此大纲 JSON 版本");
-  if (!data.project?.title || !data.document) throw new Error("大纲 JSON 缺少项目标题或文档内容");
+  if (data.format !== "anw-outline") throw new Error("El formato de archivo no es JSON de esquema anw");
+  if (data.schemaVersion !== 1) throw new Error("Esta versión JSON de esquema no es compatible");
+  if (!data.project?.title || !data.document) throw new Error("Al esquema JSON le falta el título del proyecto o el contenido del documento");
   return { title: data.project.title, document: validateOutlineDocument(data.document) };
 }
 export function exportOutlineMarkdown(document: OutlineDocument): string {
-  const lines = [`# ${document.story.title}`, "", "## 故事总纲", document.story.synopsis || document.story.premise, "", `主题：${document.story.theme}`, `基调：${document.story.tone}`, `结局方向：${document.story.endingDirection}`, ""];
+  const lines = [`# ${document.story.title}`, "", "## Resumen de la historia", document.story.synopsis || document.story.premise, "", `tema:${document.story.theme}`, `fundamental:${document.story.tone}`, `Dirección final:${document.story.endingDirection}`, ""];
   for (const volume of [...document.volumes].sort((a,b)=>a.order-b.order)) {
     lines.push(`## ${volume.title} <!-- ${volume.nodeId} -->`, "", volume.summary, "");
     for (const chapter of document.chapters.filter(x=>x.volumeNodeId===volume.nodeId).sort((a,b)=>a.order-b.order)) lines.push(`### ${chapter.title} <!-- ${chapter.nodeId} -->`, "", chapter.summary, "");
   }
-  for (const [heading, items] of [["人物草案", document.characters.map(x=>`- ${x.name} <!-- ${x.nodeId} -->${x.role ? `：${x.role}` : ""}`)], ["伏笔与钩子", document.payoffs.map(x=>`- ${x.title} <!-- ${x.nodeId} -->：${x.setupDescription} → ${x.payoffDescription}`)], ["固定设定", document.facts.map(x=>`- ${x.title} <!-- ${x.nodeId} -->：${x.content}`)]] as const) lines.push(`## ${heading}`, "", ...items, "");
+  for (const [heading, items] of [["borrador de personaje", document.characters.map(x=>`- ${x.name} <!-- ${x.nodeId} -->${x.role ? `:${x.role}` : ""}`)], ["Presagio y gancho", document.payoffs.map(x=>`- ${x.title} <!-- ${x.nodeId} -->:${x.setupDescription} → ${x.payoffDescription}`)], ["Ajustes fijos", document.facts.map(x=>`- ${x.title} <!-- ${x.nodeId} -->:${x.content}`)]] as const) lines.push(`## ${heading}`, "", ...items, "");
   return lines.join("\n");
 }

@@ -7,7 +7,7 @@
  * without a DOM.
  */
 
-const SENTENCE_ENDINGS = ["。", "！", "？", "…", "；"];
+const SENTENCE_ENDINGS = [".", "!", "?", "…", ";"];
 
 /**
  * True when the caret sits at the end of a non-empty paragraph: the offset

@@ -105,7 +105,7 @@ function createCandidateExecutableModule(
           status: completed ? "completed" : summary.candidate.batchCount > 0 ? "partially_done" : "not_started",
           ratio: completed ? 1 : summary.candidate.batchCount > 0 ? 0.5 : 0,
           label: completed && summary.hasNovelProject && stage !== "candidate_generation"
-            ? "小说已建立，候选方向修订阶段已封存"
+            ? "Se ha creado la novela y se ha archivado la etapa de revisión de dirección candidata."
             : descriptor.label,
           evidence: {
             batchCount: summary.candidate.batchCount,

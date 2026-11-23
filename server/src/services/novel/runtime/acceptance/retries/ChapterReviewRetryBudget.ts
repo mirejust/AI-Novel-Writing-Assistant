@@ -9,7 +9,7 @@ export const chapterReviewRetryStateSchema = z.object({
   used: z.number().int().nonnegative(),
   startedChecks: z.array(z.enum(["initial", "candidate"])).max(2),
   failedChecks: z.array(z.enum(["initial", "candidate"])).max(2),
-}).refine(state => state.used <= state.policy.maxRetries, "检查重试记录超过保存的次数上限。");
+}).refine(state => state.used <= state.policy.maxRetries, "El registro de reintento de verificación excede el límite superior de tiempos guardados.");
 export type ChapterReviewRetryState = z.infer<typeof chapterReviewRetryStateSchema>;
 export type ReviewCheckScope = "initial" | "candidate";
 export interface ChapterReviewRetrySummary extends ChapterReviewRetryPolicy {
@@ -22,7 +22,7 @@ export class ReviewRetryPersistenceError extends Error {
 }
 
 export class ReviewRetryExhaustedError extends Error {
-  constructor(readonly state: ChapterReviewRetryState) { super("章节检查已达到设定的最大重试次数。"); }
+  constructor(readonly state: ChapterReviewRetryState) { super("La verificación del capítulo ha alcanzado el número máximo de reintentos establecido."); }
 }
 
 export interface ReviewRetryStore {

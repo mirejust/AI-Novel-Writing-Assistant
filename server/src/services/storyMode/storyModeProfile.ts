@@ -18,17 +18,17 @@ export const storyModeProfileSchema = z.object({
 }).strict();
 
 const DEFAULT_STORY_MODE_PROFILE: StoryModeProfile = {
-  coreDrive: "通过稳定兑现核心阅读期待来推动连载体验。",
-  readerReward: "每隔数章都获得清晰、可感知的满足感。",
-  progressionUnits: ["关键关系推进", "阶段性目标兑现"],
-  allowedConflictForms: ["与主驱动一致的中低烈度冲突"],
-  forbiddenConflictForms: ["无关的高压狗血冲突"],
+  coreDrive: "Promueva la experiencia de serialización cumpliendo de manera estable las expectativas de lectura básicas.",
+  readerReward: "Hay una sensación clara y palpable de satisfacción cada pocos capítulos.",
+  progressionUnits: ["Avance clave en las relaciones", "Cumplir objetivos escalonados"],
+  allowedConflictForms: ["Conflicto de intensidad baja a media consistente con el impulso primario"],
+  forbiddenConflictForms: ["Conflicto sangriento de alta presión no relacionado"],
   conflictCeiling: "medium",
-  resolutionStyle: "优先使用符合该模式的方式化解问题，而不是强行升级。",
-  chapterUnit: "每章围绕一个清晰的推进单位展开。",
-  volumeReward: "卷末给出与模式一致的阶段性兑现。",
-  mandatorySignals: ["主驱动持续出现", "读者期待被重复确认"],
-  antiSignals: ["长期偏离主驱动", "冲突烈度失控"],
+  resolutionStyle: "Priorice el uso de métodos consistentes con este patrón para resolver problemas en lugar de forzar actualizaciones.",
+  chapterUnit: "Cada capítulo está organizado en torno a una unidad clara de avance.",
+  volumeReward: "Al final del volumen, se proporcionan reembolsos escalonados de acuerdo con el patrón.",
+  mandatorySignals: ["La unidad principal sigue apareciendo", "Los lectores esperan una confirmación repetida"],
+  antiSignals: ["Desviación a largo plazo del accionamiento principal", "La intensidad del conflicto está fuera de control"],
 };
 
 function normalizeText(value: unknown, fallback: string): string {
@@ -117,16 +117,16 @@ export function buildStoryModePromptBlock(input: {
 }): string {
   const sections: string[] = [];
   if (input.primary) {
-    sections.push(formatSingleStoryModeBlock("主流派模式", input.primary, true));
+    sections.push(formatSingleStoryModeBlock("modelo convencional", input.primary, true));
   }
   if (input.secondary) {
-    sections.push(formatSingleStoryModeBlock("副流派模式", input.secondary, false));
+    sections.push(formatSingleStoryModeBlock("modo subgénero", input.secondary, false));
   }
   if (sections.length === 0) {
     return "";
   }
   return [
-    "流派模式约束：主流派模式是硬约束，副流派模式只能补充风味，不能覆盖主模式的冲突上限和禁止信号。",
+    "Restricciones del modo de género: el modo de género principal es una restricción estricta. El modo de subgénero solo puede complementar el sabor y no puede cubrir el límite superior del conflicto y la señal de prohibición del modo principal.",
     ...sections,
   ].join("\n\n");
 }
@@ -138,22 +138,22 @@ function formatSingleStoryModeBlock(
 ): string {
   const profile = storyMode.profile;
   return [
-    `${label}：${storyMode.name}`,
-    storyMode.description ? `说明：${storyMode.description}` : "",
-    storyMode.template ? `补充模板：${storyMode.template}` : "",
-    `核心驱动：${profile.coreDrive}`,
-    `读者奖励：${profile.readerReward}`,
-    `章节推进单位：${profile.chapterUnit}`,
-    `卷末兑现：${profile.volumeReward}`,
-    `允许的冲突形式：${profile.allowedConflictForms.join("、")}`,
-    `禁止的冲突形式：${profile.forbiddenConflictForms.join("、")}`,
-    `冲突上限：${profile.conflictCeiling}`,
-    `化解方式：${profile.resolutionStyle}`,
-    `必须反复出现的信号：${profile.mandatorySignals.join("、")}`,
-    `必须避免的跑偏信号：${profile.antiSignals.join("、")}`,
-    `剧情主要推进单位：${profile.progressionUnits.join("、")}`,
+    `${label}:${storyMode.name}`,
+    storyMode.description ? `ilustrar:${storyMode.description}` : "",
+    storyMode.template ? `Plantilla complementaria:${storyMode.template}` : "",
+    `Controlador principal:${profile.coreDrive}`,
+    `Recompensas del lector:${profile.readerReward}`,
+    `Unidad de promoción del capítulo:${profile.chapterUnit}`,
+    `Retiro al final del volumen:${profile.volumeReward}`,
+    `Formas de conflicto permitidas:${profile.allowedConflictForms.join(",")}`,
+    `Formas prohibidas de conflicto:${profile.forbiddenConflictForms.join(",")}`,
+    `Límite de conflicto:${profile.conflictCeiling}`,
+    `Solución:${profile.resolutionStyle}`,
+    `Señales que deben aparecer repetidamente:${profile.mandatorySignals.join(",")}`,
+    `Señales de desviación que deben evitarse:${profile.antiSignals.join(",")}`,
+    `Las principales unidades impulsoras de la trama:${profile.progressionUnits.join(",")}`,
     isPrimary
-      ? "使用要求：后续规划与生成必须优先服从这一模式。"
-      : "使用要求：只能作为补充风味，不得破坏主模式的边界。",
+      ? "Requisitos de uso: La planificación y generación posterior debe dar prioridad a este modo."
+      : "Requisitos de uso: solo se puede utilizar como versión complementaria y no debe destruir los límites del modo principal.",
   ].filter(Boolean).join("\n");
 }

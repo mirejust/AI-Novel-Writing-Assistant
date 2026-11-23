@@ -200,7 +200,7 @@ export function useNovelVolumePlanning({
     if (hasCharacters) {
       return true;
     }
-    return window.confirm("当前小说还没有角色。继续生成会降低后续一致性，是否继续？");
+    return window.confirm("Actualmente no hay personajes en la novela. Continuar generando reducirá la coherencia posterior. ¿Quieres continuar?");
   };
 
   const startStrategyGeneration = () => {
@@ -216,7 +216,7 @@ export function useNovelVolumePlanning({
 
   const startStrategyCritique = () => {
     if (!strategyPlan) {
-      setVolumeGenerationMessage("请先生成卷战略建议。");
+      setVolumeGenerationMessage("Por favor dame algún consejo estratégico sobre cómo hacer un volumen.");
       return;
     }
     startStrategyCritiqueAction({
@@ -265,22 +265,22 @@ export function useNovelVolumePlanning({
     const targetVolume = normalizedVolumeDraft.find((volume) => volume.id === volumeId);
     const targetChapter = targetVolume?.chapters.find((chapter) => chapter.id === chapterId);
     if (!targetVolume || !targetChapter) {
-      setStructuredMessage("当前章节不存在，无法生成细化信息。");
+      setStructuredMessage("El capítulo actual no existe y no se puede generar información detallada.");
       return;
     }
     if (!findBeatSheet(beatSheets, volumeId)) {
-      setStructuredMessage("请先生成当前卷节奏板，再细化章节。");
+      setStructuredMessage("Primero genere el tablero de ritmo para el volumen actual y luego refine los capítulos.");
       return;
     }
     if (!ensureCharacterGuard()) {
       return;
     }
     const confirmed = window.confirm([
-      `将基于当前内容为第${targetChapter.chapterOrder}章《${targetChapter.title}》AI 修正${detailModeLabel(detailMode)}。`,
+      `Se basará en el contenido actual de la${targetChapter.chapterOrder}Capítulo"${targetChapter.title}»Corrección de IA${detailModeLabel(detailMode)}.`,
       hasChapterDetailDraft(targetChapter, detailMode)
-        ? "会优先沿用当前已填写结果，只修正空缺、模糊和不够可执行的部分。"
-        : "当前这块还是空白，AI 会先补出首版，再按现有标题和摘要收束。",
-      "不会改动本章标题和摘要，也不会影响其他章节。",
+        ? "Se dará prioridad a los resultados actualmente completados y solo se corregirán las partes en blanco, vagas e insuficientemente ejecutables."
+        : "Actualmente, esta sección todavía está en blanco, AI primero creará la primera edición y luego la completará con el título y el resumen existentes.",
+      "El título y el resumen de este capítulo no se modificarán, ni se verán afectados otros capítulos.",
     ].join("\n\n"));
     if (!confirmed) {
       return;
@@ -326,15 +326,15 @@ export function useNovelVolumePlanning({
     const targetVolume = normalizedVolumeDraft.find((volume) => volume.id === volumeId);
     const batch = resolveChapterDetailBatch(targetVolume, request);
     if (!targetVolume) {
-      setStructuredMessage("当前卷不存在，无法生成章节细化。");
+      setStructuredMessage("El volumen actual no existe y no se puede generar el refinamiento del capítulo.");
       return;
     }
     if (batch.targets.length === 0) {
-      setStructuredMessage(typeof request === "string" ? "当前章节不存在，无法整套生成章节细化。" : "当前范围内没有可细化章节。");
+      setStructuredMessage(typeof request === "string" ? "El capítulo actual no existe y no se puede generar el conjunto completo de mejoras del capítulo." : "No hay capítulos en el alcance actual que puedan perfeccionarse.");
       return;
     }
     if (!findBeatSheet(beatSheets, volumeId)) {
-      setStructuredMessage(batch.targets.length > 1 ? "请先生成当前卷节奏板，再做批量章节细化。" : "请先生成当前卷节奏板，再做单章整套细化。");
+      setStructuredMessage(batch.targets.length > 1 ? "Primero genere el tablero de ritmo para el volumen actual y luego refine los capítulos en lotes." : "Primero genere el tablero de ritmo para el volumen actual y luego refine todo el conjunto de capítulos individuales.");
       return;
     }
     if (!ensureCharacterGuard()) {
@@ -354,7 +354,7 @@ export function useNovelVolumePlanning({
     }
     runChapterDetailBundleGeneration(
       chapterDetailFailure.targetVolumeId,
-      `从第${chapterDetailFailure.chapterOrder}章继续`,
+      `Desde el primero${chapterDetailFailure.chapterOrder}El capítulo continúa`,
       chapterDetailFailure.targets,
     );
   };
@@ -448,12 +448,12 @@ export function useNovelVolumePlanning({
   const applyCustomVolumeCount = () => {
     const resolved = resolveCustomVolumeCountInput(customVolumeCountInput, volumeCountGuidance);
     if (!resolved.value) {
-      setVolumeGenerationMessage(resolved.message ?? "请先输入有效的固定卷数。");
+      setVolumeGenerationMessage(resolved.message ?? "Primero ingrese un número de volumen fijo válido.");
       return;
     }
     setUserPreferredVolumeCount(resolved.value);
     setForceSystemRecommendedVolumeCount(false);
-    setVolumeGenerationMessage(`当前已固定为 ${resolved.value} 卷。下次生成卷战略时会严格采用这个卷数。`);
+    setVolumeGenerationMessage(`Actualmente fijado en ${resolved.value} rollo. Este número de volumen se utilizará estrictamente la próxima vez que se genere la estrategia de volumen.`);
   };
 
   const restoreSystemRecommendedVolumeCount = () => {
@@ -461,7 +461,7 @@ export function useNovelVolumePlanning({
     setCustomVolumeCountEnabled(false);
     setCustomVolumeCountInput(String(volumeCountGuidance.systemRecommendedVolumeCount));
     setForceSystemRecommendedVolumeCount(true);
-    setVolumeGenerationMessage(`已恢复系统建议卷数。下次生成卷战略时会优先采用系统建议 ${volumeCountGuidance.systemRecommendedVolumeCount} 卷。`);
+    setVolumeGenerationMessage(`Número recomendado de volúmenes para el sistema recuperado. Las recomendaciones del sistema se utilizarán primero la próxima vez que se genere la estrategia de volumen. ${volumeCountGuidance.systemRecommendedVolumeCount} rollo.`);
   };
 
   const generationNotice = buildGenerationNotice(strategyPlan);

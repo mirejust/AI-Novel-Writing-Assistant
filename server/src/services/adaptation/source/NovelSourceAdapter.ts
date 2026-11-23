@@ -33,7 +33,7 @@ export class NovelSourceAdapter implements SourceContentPort {
   async loadBundle(ref: SourceRef): Promise<SourceBundle> {
     const novelId = ref.ref?.trim();
     if (!novelId) {
-      throw new Error("novel_import 内容源缺少 novelId（ref.ref）。");
+      throw new Error("A la fuente de contenido novel_import le falta el novelId (ref.ref).");
     }
 
     const novel = await prisma.novel.findUnique({
@@ -41,7 +41,7 @@ export class NovelSourceAdapter implements SourceContentPort {
       select: { id: true, title: true, description: true },
     });
     if (!novel) {
-      throw new Error(`未找到源小说：${novelId}`);
+      throw new Error(`Novela fuente no encontrada:${novelId}`);
     }
 
     const [chapters, characters, factRows] = await Promise.all([
@@ -77,7 +77,7 @@ export class NovelSourceAdapter implements SourceContentPort {
         (chapter.expectation ?? "").trim() || truncate(chapter.content ?? "") || chapter.title;
       return {
         order: chapter.order,
-        summary: `${chapter.title}：${summary}`,
+        summary: `${chapter.title}:${summary}`,
         sourceChapterStart: chapter.order,
         sourceChapterEnd: chapter.order,
       };
@@ -86,14 +86,14 @@ export class NovelSourceAdapter implements SourceContentPort {
     const bundleCharacters: SourceCharacter[] = characters.map((character) => ({
       name: character.name,
       gender: character.gender as "male" | "female" | "other" | "unknown" | undefined,
-      persona: [character.role, character.personality].filter(Boolean).join("｜") || undefined,
+      persona: [character.role, character.personality].filter(Boolean).join("|") || undefined,
       relations: character.background ?? undefined,
       visualHint: [
         character.appearance,
         character.physique,
         character.attireStyle,
         character.signatureDetail,
-      ].filter(Boolean).join("，") || undefined,
+      ].filter(Boolean).join(",") || undefined,
       sourceCharacterRef: character.id,
     }));
 
@@ -121,7 +121,7 @@ export class NovelSourceAdapter implements SourceContentPort {
     });
 
     return chapters
-      .map((ch) => `【第${ch.order}章 ${ch.title}】\n${ch.content ?? ""}`)
+      .map((ch) => `[No.${ch.order}capítulo ${ch.title}]\\n${ch.content ?? ""}`)
       .join("\n\n");
   }
 }

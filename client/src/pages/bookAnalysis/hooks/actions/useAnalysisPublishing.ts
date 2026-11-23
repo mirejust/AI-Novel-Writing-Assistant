@@ -42,14 +42,14 @@ export function useAnalysisPublishing(input: {
       }
       setLastPublishResult(published);
       setPublishFeedback(
-        `发布完成：文档 ${published.knowledgeDocumentId}，版本 v${published.knowledgeDocumentVersionNumber}，绑定 ${published.bindingCount} 项`,
+        `Lanzamiento completo: documentación ${published.knowledgeDocumentId}, versión v${published.knowledgeDocumentVersionNumber}, vinculante ${published.bindingCount} artículo`,
       );
       await queryClient.invalidateQueries({ queryKey: queryKeys.knowledge.documents("book-analysis-source") });
       await queryClient.invalidateQueries({ queryKey: queryKeys.novelsKnowledge.bindings(payload.novelId) });
       await refreshAnalysisData(payload.id);
     },
     onError: (error) => {
-      const message = error instanceof Error ? error.message : "发布失败。";
+      const message = error instanceof Error ? error.message : "La publicación falló.";
       setLastPublishResult(null);
       setPublishFeedback(message);
     },
@@ -63,7 +63,7 @@ export function useAnalysisPublishing(input: {
       temperature: llmConfig.temperature,
     }),
     onMutate: () => {
-      setStyleProfileFeedback("正在根据拆书里的“文风与技法”生成写法资产，完成后会自动跳转到写法引擎。");
+      setStyleProfileFeedback("Los recursos de escritura se generan en función del \"estilo y técnicas de escritura\" del libro abierto. Cuando esté completo, saltará automáticamente al motor de escritura.");
     },
     onSuccess: async (response) => {
       const createdProfile = response.data;
@@ -71,12 +71,12 @@ export function useAnalysisPublishing(input: {
         return;
       }
       setStyleProfileFeedback("");
-      toast.success("已从拆书生成写法，正在打开写法引擎。");
+      toast.success("El método de escritura se generó a partir del libro dividido y se está abriendo el motor del método de escritura.");
       await queryClient.invalidateQueries({ queryKey: queryKeys.styleEngine.profiles });
       navigate(`/style-engine?profileId=${createdProfile.id}&source=book-analysis`);
     },
     onError: (error) => {
-      const message = error instanceof Error ? error.message : "从拆书生成写法失败。";
+      const message = error instanceof Error ? error.message : "No se pudo generar el método de escritura a partir del libro dividido.";
       setStyleProfileFeedback(message);
     },
   });
@@ -103,7 +103,7 @@ export function useAnalysisPublishing(input: {
     }
     await createStyleProfileMutation.mutateAsync({
       bookAnalysisId: selectedAnalysis.id,
-      name: `${selectedAnalysis.title}-写法资产`,
+      name: `${selectedAnalysis.title}-Escritura de activos`,
     });
   };
 

@@ -15,34 +15,34 @@ export default function CharacterMindSceneAnalysis(props: CharacterMindSceneAnal
   const [isExpanded, setIsExpanded] = useState(false);
   return (
     <aside className={cn("min-w-0 rounded-3xl border border-border/70 bg-background p-5 shadow-sm xl:sticky xl:top-0", props.className)}>
-      <div className="flex items-center gap-2 text-sm font-semibold"><Brain className="h-4 w-4 text-primary" />角色场景分析</div>
-      <p className="mt-1 text-xs leading-5 text-muted-foreground">以下内容帮助理解 {props.characterName} 的回应逻辑，是 AI 推断，不会改写小说正史。</p>
+      <div className="flex items-center gap-2 text-sm font-semibold"><Brain className="h-4 w-4 text-primary" />Análisis de la escena del personaje.</div>
+      <p className="mt-1 text-xs leading-5 text-muted-foreground">El siguiente contenido ayuda a comprender {props.characterName} La lógica de respuesta es una inferencia de IA y no reescribirá la historia oficial de la novela.</p>
 
       <section className="mt-5 rounded-2xl border border-primary/15 bg-primary/[0.045] p-4">
-        <div className="text-xs font-medium text-primary">他如何看待眼前局面</div>
+        <div className="text-xs font-medium text-primary">¿Cómo ve la situación actual?</div>
         <p className="mt-2 text-sm leading-7 text-foreground">{props.mind.currentInterpretation}</p>
       </section>
 
       <div className="mt-4 space-y-3">
-        <AnalysisItem icon={Lightbulb} title="谈话中的关注点" value={props.mind.activePlan || props.mind.privateIntent || "AI 尚未判断出稳定关注点。"} />
-        <AnalysisItem icon={CircleAlert} title="可能的误读" value={props.mind.misbeliefs[0] || "暂无明确误读。"} tone="warning" />
-        <AnalysisItem icon={ShieldCheck} title="受压时的反应" value={props.mind.actionTendency || "AI 尚未判断出稳定反应。"} />
+        <AnalysisItem icon={Lightbulb} title="Preocupaciones en la conversación" value={props.mind.activePlan || props.mind.privateIntent || "La IA aún no ha determinado un foco estable."} />
+        <AnalysisItem icon={CircleAlert} title="Posible mala lectura" value={props.mind.misbeliefs[0] || "Aún no hay ningún malentendido claro."} tone="warning" />
+        <AnalysisItem icon={ShieldCheck} title="Reacción al estrés" value={props.mind.actionTendency || "La IA aún no ha determinado una respuesta estable."} />
       </div>
 
       <Button className="mt-4 w-full justify-between" size="sm" variant="ghost" onClick={() => setIsExpanded((current) => !current)}>
-        {isExpanded ? "收起完整分析" : "查看完整分析"}
+        {isExpanded ? "Contraer análisis completo" : "Ver análisis completo"}
         {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
       </Button>
       {isExpanded ? <div className="mt-3 space-y-3 border-t border-border/60 pt-4">
-        <AnalysisItem title="当前情绪与立场" value={props.mind.emotionalStance || "未形成稳定判断。"} />
-        <AnalysisItem title="什么会改变决定" value={props.mind.decisionTrigger || "未形成稳定判断。"} />
-        <AnalysisItem title="当前相信" value={props.mind.beliefs.join("；") || "暂无需要特别追踪的判断。"} />
-        <AnalysisItem title="推断依据" value={props.mind.evidence.join("；") || "暂无可展示依据。"} />
+        <AnalysisItem title="Estado de ánimo y postura actual" value={props.mind.emotionalStance || "No se ha formado ningún juicio estable."} />
+        <AnalysisItem title="¿Qué cambiaría la decisión?" value={props.mind.decisionTrigger || "No se ha formado ningún juicio estable."} />
+        <AnalysisItem title="Actualmente creo" value={props.mind.beliefs.join(";") || "Actualmente no se considera necesario un seguimiento especial."} />
+        <AnalysisItem title="Base de inferencia" value={props.mind.evidence.join(";") || "Actualmente no existe ninguna base para la visualización."} />
       </div> : null}
 
       <div className="mt-5 flex flex-wrap gap-2 border-t border-border/60 pt-4 text-xs text-muted-foreground">
-        <Badge variant="outline">来源：{props.mind.sourceType === "artifact_delta" ? "章节定稿后的变化" : props.mind.sourceType === "bootstrap" ? "角色准备" : "手动整理"}</Badge>
-        {typeof props.mind.confidence === "number" ? <Badge variant="outline">置信度 {Math.round(props.mind.confidence * 100)}%</Badge> : null}
+        <Badge variant="outline">Fuente:{props.mind.sourceType === "artifact_delta" ? "Cambios después de la finalización del capítulo" : props.mind.sourceType === "bootstrap" ? "Preparación de personajes" : "Clasificación manual"}</Badge>
+        {typeof props.mind.confidence === "number" ? <Badge variant="outline">Confianza {Math.round(props.mind.confidence * 100)}%</Badge> : null}
       </div>
     </aside>
   );

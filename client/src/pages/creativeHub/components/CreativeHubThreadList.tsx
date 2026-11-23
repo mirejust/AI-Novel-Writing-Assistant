@@ -23,10 +23,10 @@ interface CreativeHubThreadListProps {
 }
 
 function toStatusLabel(status: CreativeHubThread["status"]): string {
-  if (status === "busy") return "执行中";
-  if (status === "interrupted") return "待确认";
-  if (status === "error") return "异常";
-  return "空闲";
+  if (status === "busy") return "Ejecutando";
+  if (status === "interrupted") return "Pendiente de confirmación";
+  if (status === "error") return "Incidencia";
+  return "Gratis";
 }
 
 function toStatusVariant(
@@ -60,26 +60,26 @@ export default function CreativeHubThreadList({
     >
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between gap-2">
-          <CardTitle className="text-base">创作线程</CardTitle>
+          <CardTitle className="text-base">Hilo de creación</CardTitle>
           <Badge variant="outline">{threads.length}</Badge>
         </div>
       </CardHeader>
       <CardContent className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden">
         <Button className="h-9 w-full" onClick={onCreate} disabled={actionPending || actionDisabled}>
-          {actionPending ? "正在创建..." : "新建线程"}
+          {actionPending ? "Creando..." : "Crear un nuevo hilo"}
         </Button>
         {loading ? (
-          <WorkspaceStateNotice compact loading tone="info" title="正在加载线程" description="请稍候。" />
+          <WorkspaceStateNotice compact loading tone="info" title="Cargando hilo" description="Por favor espera." />
         ) : errorMessage ? (
           <WorkspaceStateNotice
             compact
             tone="danger"
-            title="线程列表加载失败"
+            title="Error al cargar la lista de temas"
             description={errorMessage}
             action={onRetry ? (
               <Button type="button" size="sm" variant="outline" disabled={retryPending} onClick={onRetry}>
                 <RefreshCw className="mr-1.5 h-3.5 w-3.5" aria-hidden="true" />
-                {retryPending ? "正在重试..." : "重试"}
+                {retryPending ? "Intentando de nuevo..." : "Reintentar"}
               </Button>
             ) : null}
           />
@@ -105,12 +105,12 @@ export default function CreativeHubThreadList({
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0 truncate text-sm font-medium text-foreground">
-                        {thread.title}{current ? " · 当前" : ""}
+                        {thread.title}{current ? " · Actual" : ""}
                       </div>
                       <Badge variant={toStatusVariant(thread.status)}>{toStatusLabel(thread.status)}</Badge>
                     </div>
                     <div className="mt-1 text-xs leading-4 text-muted-foreground">
-                      {thread.resourceBindings.novelId ? "已绑定小说" : "未绑定小说"}
+                      {thread.resourceBindings.novelId ? "Novela encuadernada" : "Novela sin encuadernar"}
                     </div>
                   </button>
                   <div className="mt-2 flex gap-2">
@@ -122,7 +122,7 @@ export default function CreativeHubThreadList({
                       onClick={() => onArchive(thread.id, !thread.archived)}
                       disabled={pending || actionDisabled}
                     >
-                      {pending ? "处理中..." : thread.archived ? "取消归档" : "归档"}
+                      {pending ? "Procesando..." : thread.archived ? "Desarchivar" : "Archivo"}
                     </Button>
                     <Button
                       type="button"
@@ -132,7 +132,7 @@ export default function CreativeHubThreadList({
                       onClick={() => onDelete(thread.id)}
                       disabled={pending || actionDisabled}
                     >
-                      删除
+                      borrar
                     </Button>
                   </div>
                 </div>
@@ -140,7 +140,7 @@ export default function CreativeHubThreadList({
             })}
             {threads.length === 0 ? (
               <div className="rounded-md border border-dashed border-border p-4 text-sm text-muted-foreground">
-                创建线程后，可以围绕同一小说持续保留创作目标和执行记录。
+                Una vez que crea un hilo, puede mantener un registro de sus objetivos creativos y su ejecución en torno a la misma novela.
               </div>
             ) : null}
           </div>

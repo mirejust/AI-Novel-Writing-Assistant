@@ -40,15 +40,15 @@ export default function WorldHandbookLocationSection(props: {
     <section className="rounded-md border p-4">
       <SectionHeader
         icon={MapPinned}
-        title="故事舞台"
-        description="把世界转换成可落地的地点：开局在哪里、哪里适合升级、哪里适合冲突爆发。"
+        title="Escenario de la historia"
+        description="Convierte el mundo en un lugar donde puedas aterrizar: dónde empezar, dónde mejorar y dónde entrar en conflicto."
         count={draftStructure.locations.length}
       />
       <div className="mt-4 grid gap-3 lg:grid-cols-2">
         {draftStructure.locations.map((location: WorldLocation, index) => (
           <div key={location.id || index} className="rounded-md border bg-muted/20 p-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <div className="text-sm font-medium">地点 {index + 1}</div>
+              <div className="text-sm font-medium">ubicación {index + 1}</div>
               <Button
                 type="button"
                 size="sm"
@@ -59,11 +59,11 @@ export default function WorldHandbookLocationSection(props: {
                   )
                 }
               >
-                移除
+                Eliminar
               </Button>
             </div>
             <div className="mt-3 grid gap-3">
-              <HandbookField title="地点名称" hint="后续地图、势力控制区和章节发生地会围绕这些地点展开。">
+              <HandbookField title="Topónimo" hint="Los mapas posteriores, las áreas controladas por la fuerza y ​​las ubicaciones de los capítulos girarán en torno a estas ubicaciones.">
                 <Input
                   value={location.name}
                   onChange={(event) =>
@@ -71,10 +71,10 @@ export default function WorldHandbookLocationSection(props: {
                       prev ? { ...prev, locations: updateItem(prev.locations, index, { name: event.target.value }) } : prev,
                     )
                   }
-                  placeholder="北境冰原、星墟城、黑潮港"
+                  placeholder="Campo de hielo norte, Star Market City, puerto de Kuroshio"
                 />
               </HandbookField>
-              <HandbookField title="环境特征" hint="让地点有可被读者记住的空间感，而不是只作为名称出现。">
+              <HandbookField title="Características ambientales" hint="Dale al lugar una sensación de espacio que los lectores recordarán, en lugar de aparecer simplemente como un nombre.">
                 <Input
                   value={location.terrain}
                   onChange={(event) =>
@@ -87,7 +87,7 @@ export default function WorldHandbookLocationSection(props: {
                   placeholder="雪原边境、浮空都市、地下矿脉、海上要塞"
                 />
               </HandbookField>
-              <HandbookField title="读者第一印象" hint="写清这个地点的画面、秩序、危险或奇观。">
+              <HandbookField title="Primera impresión del lector" hint="Describe la imagen, orden, peligro o maravilla del lugar.">
                 <HandbookTextarea
                   value={location.summary}
                   onChange={(value) =>
@@ -95,11 +95,11 @@ export default function WorldHandbookLocationSection(props: {
                       prev ? { ...prev, locations: updateItem(prev.locations, index, { summary: value }) } : prev,
                     )
                   }
-                  placeholder="这个地点给读者的第一印象是什么？"
+                  placeholder="¿Cuál es la primera impresión que produce este lugar en el lector?"
                   minRows={3}
                 />
               </HandbookField>
-              <HandbookField title="适合承担的剧情功能" hint="帮助章节规划判断这里适合开局、试炼、转折还是决战。">
+              <HandbookField title="Adecuado para funciones de trama" hint="Ayuda a planificar el capítulo para determinar si es adecuado para el comienzo, la prueba, el punto de inflexión o la batalla decisiva.">
                 <Input
                   value={location.narrativeFunction}
                   onChange={(event) =>
@@ -112,10 +112,10 @@ export default function WorldHandbookLocationSection(props: {
                         : prev,
                     )
                   }
-                  placeholder="开局、试炼、转折、决战、揭露真相"
+                  placeholder="Comienzo, prueba, punto de inflexión, batalla decisiva, revelación de la verdad."
                 />
               </HandbookField>
-              <HandbookField title="进入这里的风险" hint="风险会变成角色行动的阻力和章节冲突。">
+              <HandbookField title="Riesgos de entrar aquí" hint="El riesgo se convierte en resistencia a las acciones de los personajes y al conflicto del capítulo.">
                 <Input
                   value={location.risk}
                   onChange={(event) =>
@@ -123,7 +123,7 @@ export default function WorldHandbookLocationSection(props: {
                       prev ? { ...prev, locations: updateItem(prev.locations, index, { risk: event.target.value }) } : prev,
                     )
                   }
-                  placeholder="被追捕、资源耗尽、身份暴露、规则失效"
+                  placeholder="Ser perseguido, recursos agotados, identidad expuesta, reglas invalidadas"
                 />
               </HandbookField>
             </div>
@@ -132,7 +132,7 @@ export default function WorldHandbookLocationSection(props: {
       </div>
       <Button type="button" className="mt-3" variant="outline" onClick={addLocation}>
         <Plus className="mr-2 h-4 w-4" aria-hidden="true" />
-        增加故事地点
+        Agregar ubicación de la historia
       </Button>
     </section>
   );

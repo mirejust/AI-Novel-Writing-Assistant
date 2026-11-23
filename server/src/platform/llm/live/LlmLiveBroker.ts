@@ -40,7 +40,7 @@ export class LlmLiveBroker {
       context,
       seq: this.nextSequence(),
       phase: "requesting",
-      phaseMessage: "正在连接模型",
+      phaseMessage: "Modelo de conexión",
       preview: "",
       totalChars: 0,
       reasoning: "",
@@ -129,7 +129,7 @@ export class LlmLiveBroker {
       ...record.snapshot,
       seq,
       phase: record.snapshot.phase === "requesting" ? "streaming" : record.snapshot.phase,
-      phaseMessage: record.snapshot.phase === "requesting" ? "模型正在返回内容" : record.snapshot.phaseMessage,
+      phaseMessage: record.snapshot.phase === "requesting" ? "El modelo está devolviendo contenido." : record.snapshot.phaseMessage,
       preview: preview.length > MAX_PREVIEW_CHARS ? preview.slice(-MAX_PREVIEW_CHARS) : preview,
       totalChars: record.snapshot.totalChars + content.length,
       firstResponseAt: record.snapshot.firstResponseAt ?? now,
@@ -159,7 +159,7 @@ export class LlmLiveBroker {
       ...record.snapshot,
       seq,
       phase: record.snapshot.phase === "requesting" ? "streaming" : record.snapshot.phase,
-      phaseMessage: record.snapshot.phase === "requesting" ? "模型正在思考" : record.snapshot.phaseMessage,
+      phaseMessage: record.snapshot.phase === "requesting" ? "El modelo esta pensando." : record.snapshot.phaseMessage,
       reasoning: record.snapshot.reasoning + content,
       totalReasoningChars: record.snapshot.totalReasoningChars + content.length,
       firstResponseAt: record.snapshot.firstResponseAt ?? now,
@@ -212,7 +212,7 @@ export class LlmLiveBroker {
     if (!record) {
       return;
     }
-    this.updatePhase(interactionId, "completed", "模型结果已准备完成");
+    this.updatePhase(interactionId, "completed", "Los resultados del modelo están listos");
     const snapshot = this.sessions.get(interactionId)?.snapshot;
     if (!snapshot) {
       return;
@@ -338,7 +338,7 @@ export class LlmLiveSession {
   }
 
   fail(error: unknown): void {
-    const message = error instanceof Error ? error.message : "模型调用失败";
+    const message = error instanceof Error ? error.message : "La llamada al modelo falló";
     this.broker.fail(this.interactionId, message);
   }
 }

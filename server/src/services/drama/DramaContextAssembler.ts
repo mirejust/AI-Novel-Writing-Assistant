@@ -18,13 +18,13 @@ export class DramaContextAssembler {
       },
     });
     if (!project) {
-      throw new Error(`未找到短剧项目：${projectId}`);
+      throw new Error(`Elementos dramáticos cortos no encontrados:${projectId}`);
     }
     // 防御：即使调用方传入字符串型 order 也能正确匹配
     const targetOrder = Number(episodeOrder);
     const episode = project.episodes.find((item) => item.order === targetOrder);
     if (!episode) {
-      throw new Error(`未找到短剧第 ${episodeOrder} 集大纲。`);
+      throw new Error(`Número de drama corto no encontrado ${episodeOrder} Establecer contorno.`);
     }
     const beats = safeJsonParse<BeatLite[]>(project.sourceBundle?.beats, []);
     const sourceMap = safeJsonParse<{ beatRefs?: number[] }>(episode.sourceMap, {});
@@ -52,35 +52,35 @@ export class DramaContextAssembler {
         if (character.portraitData) {
           try {
             const pd = JSON.parse(character.portraitData) as { status?: string; url?: string };
-            if (pd.status === "done" && pd.url) refImageUrls.push(`形象图:${pd.url}`);
+            if (pd.status === "done" && pd.url) refImageUrls.push(`Diagrama de imagen:${pd.url}`);
           } catch { /* skip */ }
         }
         if (character.threeViewData) {
           try {
             const tvd = JSON.parse(character.threeViewData) as Array<{ view?: string; status?: string; url?: string }>;
             for (const item of tvd) {
-              if (item.status === "done" && item.url) refImageUrls.push(`${item.view}视:${item.url}`);
+              if (item.status === "done" && item.url) refImageUrls.push(`${item.view}Ver:${item.url}`);
             }
           } catch { /* skip */ }
         }
 
         return [
           character.name,
-          character.archetype ? `原型：${character.archetype}` : "",
-          character.persona ? `人设：${character.persona}` : "",
-          character.speechStyle ? `口吻：${character.speechStyle}` : "",
-          character.visualAnchor ? `视觉：${compactText(character.visualAnchor, 160)}` : "",
-          refImageUrls.length > 0 ? `参考图：[${refImageUrls.join("，")}]（请保持人物视觉一致性）` : "",
-          character.relations ? `关系：${compactText(character.relations, 160)}` : "",
-        ].filter(Boolean).join("；");
-      }).join("\n") || "暂无角色资源",
-      factsDigest: project.facts.map((fact) => `E${fact.episodeOrder} ${fact.category}：${fact.text}`).join("\n") || "暂无事实",
+          character.archetype ? `prototipo:${character.archetype}` : "",
+          character.persona ? `Personaje:${character.persona}` : "",
+          character.speechStyle ? `Tono:${character.speechStyle}` : "",
+          character.visualAnchor ? `Visión:${compactText(character.visualAnchor, 160)}` : "",
+          refImageUrls.length > 0 ? `Imagen de referencia: [${refImageUrls.join(",")}] (Por favor mantenga la coherencia visual del personaje)` : "",
+          character.relations ? `relación:${compactText(character.relations, 160)}` : "",
+        ].filter(Boolean).join(";");
+      }).join("\n") || "Aún no hay recursos de personajes",
+      factsDigest: project.facts.map((fact) => `E${fact.episodeOrder} ${fact.category}:${fact.text}`).join("\n") || "Aún no hay hechos",
       previousDigest: project.episodes
         .filter((item) => item.order < episodeOrder && item.content)
         .slice(-3)
-        .map((item) => `第${item.order}集《${item.title}》：${compactText(item.content, 260)}`)
-        .join("\n") || "暂无前序台本",
-      sourceDigest: relatedBeats.map((beat) => `${beat.order}：${beat.summary}`).join("\n") || compactText(project.sourceBundle?.synopsis, 1000),
+        .map((item) => `Cap.${item.order}colocar"${item.title}»:${compactText(item.content, 260)}`)
+        .join("\n") || "Aún no hay guión de reserva",
+      sourceDigest: relatedBeats.map((beat) => `${beat.order}:${beat.summary}`).join("\n") || compactText(project.sourceBundle?.synopsis, 1000),
     };
   }
 }

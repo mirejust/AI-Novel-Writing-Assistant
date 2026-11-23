@@ -18,7 +18,7 @@ type Input = AgentTurnInput & { baseVersion: number; target?: ReviewTarget; acti
 export const outlineConversationScope = (id: string) => JSON.stringify(["outline-workbench", id]);
 const scopeFor = (projectId: string, target?: ReviewTarget) => target ? localReviewScope(projectId, target) : outlineConversationScope(projectId);
 const kinds = ["initial_generation", "edit"];
-const conflict = () => new AppError("大纲或提案已有更新，请根据最新版本继续讨论。", 409);
+const conflict = () => new AppError("El esquema o propuesta se ha actualizado; continúe la discusión según la última versión.", 409);
 
 function summarizeDraft(json: string): OutlineConversationResult["draftSummary"] {
   try {
@@ -37,7 +37,7 @@ export class OutlineWorkbenchConversation {
 
   async read(projectId: string): Promise<OutlineConversationTurn[]> {
     const project = await this.db.outlineProject.findFirst({ where: { id: projectId, status: "active" }, select: { id: true } });
-    if (!project) throw new AppError("找不到可编辑的大纲。", 404);
+    if (!project) throw new AppError("No se encontró ningún esquema editable.", 404);
     const metadata = { id: true, kind: true, status: true, baseVersion: true, createdAt: true, requestText: true } as const;
     const [rows, edits, drafts, revisions] = await this.db.$transaction([
       this.store.history(outlineConversationScope(projectId)),
@@ -67,12 +67,12 @@ export class OutlineWorkbenchConversation {
 
   async send(projectId: string, input: Input) {
     const project = await this.db.outlineProject.findFirst({ where: { id: projectId, status: "active" }, select: { id: true } });
-    if (!project) throw new AppError("找不到可编辑的大纲。", 404);
+    if (!project) throw new AppError("No se encontró ningún esquema editable.", 404);
     const scopeKey = scopeFor(projectId, input.target);
     return this.store.startReply({ ...input, scopeKey, contextVersion: String(input.baseVersion) },
       () => this.generate(projectId, input), error => {
       const mapped = mapOutlineGenerateFailure(error, "edit");
-      return mapped instanceof AppError ? mapped.message : "本轮未能生成回复，可以重新发送这条要求。";
+      return mapped instanceof AppError ? mapped.message : "Si no se puede generar una respuesta en esta ronda, puede reenviar esta solicitud.";
     });
   }
 
@@ -115,14 +115,14 @@ export class OutlineWorkbenchConversation {
 
   private async generateWhole(input: Input, document: OutlineDocument, history: {author: string; assistant: string | null}[],
     priorProposal: { kind: string; status: string; payload: unknown } | null) {
-    const dialogue = input.action === "generate_initial" ? null : await agentReplyLive.during(input.requestId, "大纲助手正在回复…", true, itemKey =>
+    const dialogue = input.action === "generate_initial" ? null : await agentReplyLive.during(input.requestId, "El Asistente de esquema está respondiendo...", true, itemKey =>
       runOutlineProposalStructuredCall({ asset: outlineWorkbenchDialogue, options: {itemKey},
         promptInput: { requestText: input.requestText, baseVersion: input.baseVersion, document, history, priorProposal } }));
     let answer: NonNullable<typeof dialogue>["output"]["answer"] = dialogue?.output.answer ?? { kind: "initial_generation", payload: null };
     let replyText = dialogue?.output.replyText ?? "";
     let invocation = dialogue?.meta.invocation;
     if (answer.kind === "initial_generation" && !answer.payload) {
-      const draft = await agentReplyLive.during(input.requestId, "正在根据讨论生成完整初稿…", false, itemKey =>
+      const draft = await agentReplyLive.during(input.requestId, "Generando un primer borrador completo basado en la discusión...", false, itemKey =>
         runOutlineProposalStructuredCall({
           // This is already the contextual regeneration. A context-free repair cannot supply a missing story.
           asset: { ...outlineInitialGeneratePrompt, repairPolicy: { maxAttempts: 0 } }, options: { itemKey },
@@ -133,13 +133,13 @@ export class OutlineWorkbenchConversation {
       replyText = "";
     }
     if (!replyText && answer.kind === "initial_generation" && answer.payload) {
-      replyText = `《${answer.payload.storyFields.title}》的初稿已整理好，你可以查看卷章、人物和伏笔，再决定是否采纳。`;
+      replyText = `«${answer.payload.storyFields.title}Se ha compilado el primer borrador de "". Puedes consultar los capítulos, personajes y presagios antes de decidir si adoptarlo.`;
     }
     return { answer, invocation, replyText };
   }
 
   async interrupt(projectId: string, turnId: string, target?: ReviewTarget) {
-    await this.store.stop(scopeFor(projectId, target), turnId, "interrupted", "本轮讨论已结束。");
+    await this.store.stop(scopeFor(projectId, target), turnId, "interrupted", "Esta ronda de discusión ha terminado.");
     agentReplyLive.end(turnId);
   }
 }

@@ -453,7 +453,7 @@ export function extractJSONObject(source: string): string {
   const first = text.indexOf("{");
   const last = text.lastIndexOf("}");
   if (first < 0 || last < 0 || first >= last) {
-    throw new Error("未检测到有效 JSON 对象");
+    throw new Error("No se detectó ningún objeto JSON válido");
   }
   return text.slice(first, last + 1);
 }
@@ -463,7 +463,7 @@ export function extractJSONArray(source: string): string {
   const first = text.indexOf("[");
   const last = text.lastIndexOf("]");
   if (first < 0 || last < 0 || first >= last) {
-    throw new Error("未检测到有效 JSON 数组");
+    throw new Error("No se detectó ninguna matriz JSON válida");
   }
   return text.slice(first, last + 1);
 }
@@ -590,10 +590,10 @@ export function extractCharacterEventLines(content: string, characterName: strin
 }
 
 export function normalizeBeatStatus(value: unknown): BeatStatus {
-  if (value === "completed" || value === "已完" || value === "finish" || value === "done") {
+  if (value === "completed" || value === "Finalizado" || value === "finish" || value === "done") {
     return "completed";
   }
-  if (value === "skipped" || value === "跳过") {
+  if (value === "skipped" || value === "salte por encima") {
     return "skipped";
   }
   return "planned";

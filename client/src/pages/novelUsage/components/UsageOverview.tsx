@@ -3,26 +3,26 @@ import { formatUsageTokens, usageCoverageNotes, usageTime } from "../presentatio
 
 export function UsageOverview({ data }: { data: NovelUsagePage }) {
   const summary = data.summary;
-  return <section aria-label="全书已记录用量" className="space-y-5 border-b border-border/60 pb-6">
-    <h2 className="text-sm font-semibold">全书已记录用量</h2>
+  return <section aria-label="El uso se ha registrado a lo largo del libro." className="space-y-5 border-b border-border/60 pb-6">
+    <h2 className="text-sm font-semibold">El uso se ha registrado a lo largo del libro.</h2>
     <dl className="grid grid-cols-2 gap-x-8 gap-y-5 lg:grid-cols-4">
-      <Metric label="累计 Tokens" value={summary.totalTokens} />
-      <div><Metric label="输入 Tokens" value={summary.promptTokens} /><div className="mt-2 space-y-1 text-xs text-muted-foreground tabular-nums">
-        <p>缓存命中 {formatUsageTokens(summary.cacheHitTokens)}</p>
-        <p>缓存未命中 {formatUsageTokens(summary.cacheMissTokens)}</p>
+      <Metric label="Fichas acumuladas" value={summary.totalTokens} />
+      <div><Metric label="Introducir fichas" value={summary.promptTokens} /><div className="mt-2 space-y-1 text-xs text-muted-foreground tabular-nums">
+        <p>golpe de caché {formatUsageTokens(summary.cacheHitTokens)}</p>
+        <p>pérdida de caché {formatUsageTokens(summary.cacheMissTokens)}</p>
       </div></div>
-      <Metric label="输出 Tokens" value={summary.completionTokens} />
-      <div><dt className="text-xs text-muted-foreground">已记录调用</dt><dd className="mt-2 text-2xl font-semibold tabular-nums">{summary.recordedCallCount.toLocaleString()} 次</dd><p className="mt-2 text-xs text-muted-foreground">调用失败 {summary.failedCallCount} 次 · 部分返回 {summary.partialCallCount} 次</p></div>
+      <Metric label="Fichas de salida" value={summary.completionTokens} />
+      <div><dt className="text-xs text-muted-foreground">Llamada registrada</dt><dd className="mt-2 text-2xl font-semibold tabular-nums">{summary.recordedCallCount.toLocaleString()} De segunda categoría</dd><p className="mt-2 text-xs text-muted-foreground">llamada fallida {summary.failedCallCount} tiempos · devolución parcial {summary.partialCallCount} De segunda categoría</p></div>
     </dl>
     <div className="space-y-1 text-xs leading-relaxed text-muted-foreground">
-      <p>累计 Tokens 包含输入和输出；缓存命中与未命中属于输入，不另加到累计用量。</p>
-      <p>日志记录已结束的调用；生成中的消耗在本次调用结束后更新。</p>
-      <p>{data.firstRecordedAt ? `最早调用记录：${usageTime(data.firstRecordedAt)}。` : "本书没有逐次调用记录。"}未记录的历史调用无法补算；厂商未返回的用量显示“未提供”。</p>
+      <p>Los tokens acumulativos incluyen entrada y salida; Los aciertos y errores de caché son entradas y no se agregan al uso acumulativo.</p>
+      <p>El registro registra la llamada completada; el consumo en la generación se actualiza una vez finalizada esta convocatoria.</p>
+      <p>{data.firstRecordedAt ? `Registro de llamada más antigua:${usageTime(data.firstRecordedAt)}.` : "No hay ningún registro de llamada por llamada en este libro."}Las llamadas históricas no registradas no se pueden compensar; el uso no devuelto por el fabricante se muestra como "no proporcionado".</p>
       {usageCoverageNotes(summary).map(note => <p key={note}>{note}</p>)}
     </div>
     {data.chapterBreakdown.length ? <details className="pt-2">
-      <summary className="cursor-pointer text-sm font-medium">按章节查看用量</summary>
-      <div className="mt-3 overflow-x-auto"><table className="w-full text-left text-xs tabular-nums"><thead className="text-muted-foreground"><tr><th className="py-2 font-normal">章节 / 范围</th><th className="px-3 font-normal">调用</th><th className="px-3 font-normal">输入</th><th className="px-3 font-normal">输出</th><th className="px-3 font-normal">累计 Tokens</th></tr></thead><tbody className="divide-y divide-border/50">{data.chapterBreakdown.map(row => <tr key={row.chapterId ?? "book"}><td className="py-3">{row.label}{row.unknownUsageCallCount || row.partialCallCount ? <span className="ml-2 text-muted-foreground">统计不完整</span> : null}</td><td className="px-3">{row.recordedCallCount}</td><td className="px-3">{formatUsageTokens(row.promptTokens)}</td><td className="px-3">{formatUsageTokens(row.completionTokens)}</td><td className="px-3">{formatUsageTokens(row.totalTokens)}</td></tr>)}</tbody></table></div>
+      <summary className="cursor-pointer text-sm font-medium">Ver uso por capítulo</summary>
+      <div className="mt-3 overflow-x-auto"><table className="w-full text-left text-xs tabular-nums"><thead className="text-muted-foreground"><tr><th className="py-2 font-normal">Capítulo/Alcance</th><th className="px-3 font-normal">Llamar</th><th className="px-3 font-normal">Ingresar</th><th className="px-3 font-normal">Producción</th><th className="px-3 font-normal">Fichas acumuladas</th></tr></thead><tbody className="divide-y divide-border/50">{data.chapterBreakdown.map(row => <tr key={row.chapterId ?? "book"}><td className="py-3">{row.label}{row.unknownUsageCallCount || row.partialCallCount ? <span className="ml-2 text-muted-foreground">Las estadísticas están incompletas</span> : null}</td><td className="px-3">{row.recordedCallCount}</td><td className="px-3">{formatUsageTokens(row.promptTokens)}</td><td className="px-3">{formatUsageTokens(row.completionTokens)}</td><td className="px-3">{formatUsageTokens(row.totalTokens)}</td></tr>)}</tbody></table></div>
     </details> : null}
   </section>;
 }

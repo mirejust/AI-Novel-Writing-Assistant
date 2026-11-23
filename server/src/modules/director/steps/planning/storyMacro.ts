@@ -20,7 +20,7 @@ export function createStoryMacroStepHandler<Provider extends string>(dependencie
     const input = await dependencies.inputProvider(context);
     const storyInput = input.storyInput.trim();
     if (!storyInput) {
-      throw new Error("故事想法不能为空。");
+      throw new Error("Las ideas de historias no pueden estar vacías.");
     }
 
     const plan = await dependencies.storyMacroService.decompose(context.contract.novelId, storyInput, {

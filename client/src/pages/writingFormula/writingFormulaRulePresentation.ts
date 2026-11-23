@@ -52,109 +52,109 @@ const FIELD_ORDER: Record<RuleSection, string[]> = {
 
 const FIELD_LABELS: Record<RuleSection, Record<string, string>> = {
   narrativeRules: {
-    summary: "整体推进感",
-    progressionMode: "推进方式",
-    sceneUnitPattern: "场景单位",
-    multiPov: "多视角",
-    looping: "循环回钩",
-    endingStyle: "收尾方式",
-    povSwitchStyle: "视角切换",
+    summary: "Sensación general de avance",
+    progressionMode: "Método de propulsión",
+    sceneUnitPattern: "Unidad de escena",
+    multiPov: "Múltiples perspectivas",
+    looping: "Gancho de bucle invertido",
+    endingStyle: "Método de acabado",
+    povSwitchStyle: "Interruptor de perspectiva",
   },
   characterRules: {
-    summary: "人物表达总述",
-    dialogueStyle: "对白风格",
-    emotionExpression: "情绪外显",
-    defenseMechanisms: "防御机制",
-    allowSelfReflection: "自省表达",
-    facePriority: "体面优先",
+    summary: "Resumen de expresiones de caracteres.",
+    dialogueStyle: "Estilo de diálogo",
+    emotionExpression: "Exhibición emocional",
+    defenseMechanisms: "Mecanismo de defensa",
+    allowSelfReflection: "Expresión introspectiva",
+    facePriority: "La dignidad primero",
   },
   languageRules: {
-    summary: "语言质感总述",
-    register: "语言基调",
-    roughness: "粗粝度",
-    sentenceVariation: "句式变化",
-    allowIncompleteSentences: "不完整句",
-    allowSwearing: "粗口口语",
-    allowUselessDetails: "生活杂音",
+    summary: "Descripción general de la calidad del lenguaje",
+    register: "Tono del lenguaje",
+    roughness: "Rugosidad",
+    sentenceVariation: "Cambios de oración",
+    allowIncompleteSentences: "Oración incompleta",
+    allowSwearing: "Lenguaje soez",
+    allowUselessDetails: "Ruido de la vida",
   },
   rhythmRules: {
-    summary: "节奏控制总述",
-    pace: "推进速度",
-    paragraphDensity: "段落密度",
-    allowFragmentedFlow: "碎片化推进",
-    actionOverExplanation: "动作优先",
+    summary: "Descripción general del control del ritmo",
+    pace: "Velocidad de propulsión",
+    paragraphDensity: "Densidad de párrafos",
+    allowFragmentedFlow: "Avance fragmentado",
+    actionOverExplanation: "Prioridad de acción",
   },
 };
 
 const FIELD_VALUE_MAPS: Record<string, Record<string, string>> = {
   progressionMode: {
-    time_sequence: "按时间顺推",
-    goal_driven: "目标驱动推进",
-    mystery_escalation: "悬疑逐层加压",
-    relationship_push_pull: "关系拉扯推进",
-    multi_thread: "多线交织推进",
-    scene_immersion: "场景沉浸推进",
-    fact_driven: "事实驱动推进",
-    contrast_driven: "反差驱动推进",
+    time_sequence: "Avanzar por el tiempo",
+    goal_driven: "Avance impulsado por objetivos",
+    mystery_escalation: "El suspenso aumenta capa a capa",
+    relationship_push_pull: "Relación de tirar y empujar",
+    multi_thread: "Promoción de entrelazado multilínea.",
+    scene_immersion: "Promoción de inmersión en escena.",
+    fact_driven: "Avance basado en hechos",
+    contrast_driven: "Avance impulsado por el contraste",
   },
   endingStyle: {
-    unresolved: "不收束核心困境",
-    hook: "结尾抛钩子",
-    suspense: "悬念式收尾",
-    emotional_hook: "情绪钩子收尾",
-    cross_hook: "交叉线钩子收尾",
-    soft_open: "柔开放收尾",
-    pressure_continue: "压力延续式收尾",
-    bitter_aftertaste: "苦涩余味收尾",
+    unresolved: "Dilema central no resuelto",
+    hook: "Lanzamiento de gancho al final",
+    suspense: "Final de suspenso",
+    emotional_hook: "Final de gancho emocional",
+    cross_hook: "Acabado de gancho rayado",
+    soft_open: "Acabado abierto suave",
+    pressure_continue: "Fin de la continuación de la presión.",
+    bitter_aftertaste: "Terminando con un regusto amargo",
   },
   povSwitchStyle: {
-    controlled: "受控切换",
+    controlled: "Conmutación controlada",
   },
   emotionExpression: {
-    behavior_only: "只通过动作外露",
-    dialogue_and_action: "对白和动作共同外露",
-    reaction_only: "主要通过反应外露",
-    subtext: "通过言外之意外露",
-    mixed: "对白、动作和反应混合外露",
-    light_behavior: "以轻动作轻反应外露",
-    suppressed: "压住不直说",
-    deadpan: "冷反应式外露",
+    behavior_only: "Expuesto sólo a través del movimiento.",
+    dialogue_and_action: "El diálogo y la acción se exponen juntos",
+    reaction_only: "Principalmente expuesto a través de reacciones.",
+    subtext: "Revelado a través del subtexto",
+    mixed: "Diálogo, acción y reacciones se mezclan y exponen",
+    light_behavior: "Utilice acciones y reacciones de luz para exponerse.",
+    suppressed: "No lo digas directamente",
+    deadpan: "Reacción fría expuesta",
   },
   dialogueStyle: {
-    short_colloquial: "短句口语式",
-    direct: "直接硬朗",
-    restrained: "克制收着说",
-    subtext_heavy: "言外之意重",
-    distinct_by_role: "按角色明显拉开口吻差异",
-    daily_natural: "日常自然口吻",
-    informational: "信息型克制对白",
-    deadpan_colloquial: "冷面口语式",
+    short_colloquial: "Estilo hablado de oración corta",
+    direct: "Directo y duro",
+    restrained: "Conténlo y dilo.",
+    subtext_heavy: "La implicación es pesada.",
+    distinct_by_role: "Ampliar significativamente las diferencias en bocas por rol",
+    daily_natural: "Tono natural cotidiano",
+    informational: "Diálogo informativo de moderación.",
+    deadpan_colloquial: "Estilo hablado frio",
   },
   register: {
-    colloquial: "口语化",
-    direct: "直接明快",
-    restrained: "克制收束",
-    natural: "自然日常",
-    flexible: "随角色灵活变化",
-    professional: "专业克制",
+    colloquial: "Coloquial",
+    direct: "Directo y nítido",
+    restrained: "Moderación",
+    natural: "Natural todos los días",
+    flexible: "Flexible para adaptarse al rol",
+    professional: "Moderación profesional",
   },
   sentenceVariation: {
-    high: "变化大",
-    medium: "变化适中",
-    medium_high: "变化偏大",
+    high: "Grandes cambios",
+    medium: "Cambio moderado",
+    medium_high: "El cambio es relativamente grande.",
   },
   pace: {
-    medium_fast: "中快",
-    fast: "快",
-    medium: "中速",
-    medium_slow: "中慢",
-    balanced: "均衡",
-    slow: "慢",
+    medium_fast: "Medio rápido",
+    fast: "Rápido",
+    medium: "Velocidad media",
+    medium_slow: "Medio lento",
+    balanced: "Equilibrado",
+    slow: "Lento",
   },
   paragraphDensity: {
-    high: "高密度",
-    medium: "中密度",
-    medium_high: "中高密度",
+    high: "Densidad alta",
+    medium: "Densidad media",
+    medium_high: "Densidad media a alta",
   },
 };
 
@@ -172,33 +172,33 @@ function humanizeUnknownToken(value: string): string {
 
 function formatBooleanValue(key: string, value: boolean): string {
   if (key === "multiPov") {
-    return value ? "允许多视角切换" : "尽量保持单视角";
+    return value ? "Permite el cambio de múltiples vistas" : "Intenta mantener una perspectiva única.";
   }
   if (key === "looping") {
-    return value ? "允许循环回钩" : "尽量直线推进";
+    return value ? "Permitir ganchos loopback" : "Empuje en línea recta tanto como sea posible.";
   }
   if (key === "allowSelfReflection") {
-    return value ? "允许明确自省" : "尽量少做直白自省";
+    return value ? "permitir una introspección explícita" : "Intenta hacer la menor introspección directa posible.";
   }
   if (key === "facePriority") {
-    return value ? "优先保住体面" : "不强求体面";
+    return value ? "Prioriza mantener tu dignidad" : "No insistas en la respetabilidad";
   }
   if (key === "allowIncompleteSentences") {
-    return value ? "允许不完整句" : "句子尽量完整";
+    return value ? "Permitir oraciones incompletas" : "Las oraciones deben ser lo más completas posible.";
   }
   if (key === "allowSwearing") {
-    return value ? "允许带一点粗口或脏字" : "尽量避免粗口";
+    return value ? "Se permiten malas palabras o malas palabras." : "Intenta evitar el lenguaje soez";
   }
   if (key === "allowUselessDetails") {
-    return value ? "允许保留生活杂音" : "尽量减少无关杂音";
+    return value ? "Deja que el ruido de la vida permanezca" : "Minimizar el ruido irrelevante";
   }
   if (key === "allowFragmentedFlow") {
-    return value ? "允许碎片化推进" : "尽量保持完整推进";
+    return value ? "Permitir un avance fragmentado" : "Intenta mantener el progreso intacto.";
   }
   if (key === "actionOverExplanation") {
-    return value ? "动作先于解释" : "解释比动作更重要";
+    return value ? "La acción precede a la explicación." : "La explicación es más importante que la acción.";
   }
-  return value ? "是" : "否";
+  return value ? "Sí" : "No";
 }
 
 function formatArrayValue(value: unknown[]): string {
@@ -283,6 +283,6 @@ export function buildReadableRuleSummary(
 
   return entries
     .slice(0, 3)
-    .map((entry) => (entry.key === "summary" ? entry.value : `${entry.label}：${entry.value}`))
-    .join("；");
+    .map((entry) => (entry.key === "summary" ? entry.value : `${entry.label}:${entry.value}`))
+    .join(";");
 }

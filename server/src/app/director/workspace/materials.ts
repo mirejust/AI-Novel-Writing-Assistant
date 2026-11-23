@@ -15,7 +15,7 @@ export function projectWorldMaterials(novelId: string, local: NovelWorld | null,
       if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) throw new Error("invalid saved structure");
       structure = normalizeWorldStructuredData(parsed);
     } catch {
-      warnings.push("世界详细设定读取失败，请核对本书保存的世界资料。");
+      warnings.push("No se pudo leer la configuración detallada del mundo. Verifique los datos del mundo guardados en este libro.");
     }
   }
   let storySlice: DirectorWorldMaterials["storySlice"] = null;
@@ -27,12 +27,12 @@ export function projectWorldMaterials(novelId: string, local: NovelWorld | null,
       if (parsed.storyId !== novelId || !worldIds.includes(parsed.worldId)) throw new Error("invalid saved slice ownership");
       storySlice = parsed;
     } catch {
-      warnings.push("本书写作范围读取失败或归属不符，请核对保存的世界使用范围。");
+      warnings.push("No se pudo leer el alcance de la escritura de este libro o la atribución no coincide. Verifique el alcance de uso del mundo guardado.");
     }
   }
   return {
     id: local?.id ?? library!.id,
-    name: local ? local.title?.trim() || "本书世界" : library!.name,
+    name: local ? local.title?.trim() || "mundo del libro" : library!.name,
     summary: structure?.profile.summary || (local ? local.coverSummary : library?.overviewSummary || library?.description) || null,
     source: local ? "novel" : "library", structure, storySlice, warnings,
     // External sample fields cannot override or fill gaps in an existing book copy.

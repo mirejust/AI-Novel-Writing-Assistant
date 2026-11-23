@@ -14,22 +14,22 @@ export async function previewShortStoryRevision(
   novelId: string, instruction: string, mode: "revision" | "replan" = "revision",
 ): Promise<ShortStoryRevisionImpact> {
   const context = await loadRevisionContext(novelId);
-  if(context.imported)throw new AppError("导入短篇请在原稿修订工作区逐节生成候选并明确采纳；全篇重规划尚未开放。",409);
-  if (!await canRetryStructuredTask(context.task.id)) throw new AppError("模型服务要求稍后再试，请等待后继续。", 429);
+  if(context.imported)throw new AppError("Para importar cuentos, genere candidatos sección por sección en el espacio de trabajo de revisión del manuscrito y acéptelos claramente; La replanificación de todo el artículo aún no está abierta.",409);
+  if (!await canRetryStructuredTask(context.task.id)) throw new AppError("El servicio modelo requiere que vuelvas a intentarlo más tarde; espera antes de continuar.", 429);
   if (context.task.status === "queued" || context.task.status === "running") {
-    throw new AppError("请等待当前生成结束后再预览修改。", 409);
+    throw new AppError("Espere hasta que se complete la generación actual antes de obtener una vista previa de los cambios.", 409);
   }
   if (mode === "replan" && context.task.checkpointType !== "replan_required") {
-    throw new AppError("这篇作品没有等待确认的调整方案。", 409);
+    throw new AppError("No hay ajustes pendientes para este trabajo.", 409);
   }
   if (mode !== "replan" && context.task.checkpointType === "replan_required") {
-    throw new AppError("请先查看故事调整方案。", 409);
+    throw new AppError("Primero revise el plan de ajuste de la historia.", 409);
   }
   const originalScope = parseJson<{ originalIdea?: string }>(context.activeIntent.impactScopeJson, {});
   const originalIdea = originalScope.originalIdea ?? context.activeIntent.originalExpression;
   const goal = mode === "replan"
-    ? "根据全篇审校指出的结构问题提出完整调整方案。保留原始创作意图及已确认的固定事实，明确需要改变的内容。审校原因："
-      + (context.task.checkpointSummary ?? "核心结构需要重新规划")
+    ? "Proponer un plan de ajuste completo basado en los problemas estructurales señalados por la revisión completa. Conserve la intención creativa original y los hechos fijos confirmados, y aclare lo que debe cambiarse. Motivo de la revisión:"
+      + (context.task.checkpointSummary ?? "Es necesario replanificar la estructura central")
     : instruction.trim();
   const generated = await runStructuredPrompt({
     asset: shortStoryRevisionImpactPrompt,

@@ -66,7 +66,7 @@ export function buildChapterTitleDiversityTaskNotice(input: {
     summary: input.issue.trim(),
     action: {
       type: "open_structured_outline" as const,
-      label: "快速修复章节标题",
+      label: "Arreglar rápidamente los títulos de los capítulos",
       volumeId: input.volumeId?.trim() || null,
     },
   };
@@ -245,7 +245,7 @@ export function isHistoricalAutoDirectorRecoveryNotNeededFailure(input: {
     return false;
   }
   const message = input.lastError?.trim() ?? "";
-  return message.includes("当前导演产物已经完整") && message.includes("无需继续自动导演");
+  return message.includes("El producto del actual director está completo.") && message.includes("No es necesario continuar con la dirección automática");
 }
 
 export function isHistoricalAutoDirectorFront10RecoveryUnsupportedFailure(input: {
@@ -257,6 +257,6 @@ export function isHistoricalAutoDirectorFront10RecoveryUnsupportedFailure(input:
     return false;
   }
   const message = input.lastError?.trim() ?? "";
-  return message.includes("服务重启后恢复失败")
-    && message.includes("当前检查点不支持继续自动导演");
+  return message.includes("La recuperación falla después del reinicio del servicio")
+    && message.includes("El punto de control actual no admite la dirección automática continua");
 }

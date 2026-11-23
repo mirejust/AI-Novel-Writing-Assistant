@@ -22,12 +22,12 @@ export async function projectDirectorRecoveryCandidates(
         sourceRoute: task.novelId
           ? await source(task.novelId)
           : '/novels/auto-director?taskId=' + encodeURIComponent(item.id),
-        resumeAction: task.novelId ? "打开小说导演台" : "打开开书页面",
+        resumeAction: task.novelId ? "Abre el escritorio del director de novelas." : "abrir la página del libro",
       };
     }
     if (item.kind === "novel_pipeline") {
       const novelId = await ports.findPipelineOwner(item.id);
-      if (novelId) return { ...item, sourceRoute: await source(novelId), resumeAction: "打开小说导演台" };
+      if (novelId) return { ...item, sourceRoute: await source(novelId), resumeAction: "Abre el escritorio del director de novelas." };
     }
     return item;
   }));

@@ -456,7 +456,7 @@ export function classifyStructuredOutputFailure(input: {
     return "transport_error";
   }
   if (
-    haystack.includes("未检测到完整 json 值")
+    haystack.includes("Valor json completo no detectado")
     || haystack.includes("unexpected end of json input")
     || haystack.includes("unterminated")
     || haystack.includes("end of json")
@@ -466,12 +466,12 @@ export function classifyStructuredOutputFailure(input: {
   if (
     haystack.includes("expected ',' or '}'")
     || haystack.includes("unexpected token")
-    || haystack.includes("json 解析失败")
+    || haystack.includes("error en el análisis de json")
     || haystack.includes("malformed")
   ) {
     return "malformed_json";
   }
-  if (haystack.includes("zod") || haystack.includes("schema") || haystack.includes("校验错误")) {
+  if (haystack.includes("zod") || haystack.includes("schema") || haystack.includes("error de verificación")) {
     return "schema_mismatch";
   }
   return "transport_error";
@@ -527,29 +527,29 @@ export function describeStructuredResponseFailure(reason: StructuredFailureReaso
     case "empty_response":
       return {
         category: "empty_response",
-        message: "模型返回了空内容，没有收到可用正文。请重试；若持续出现，请检查渠道兼容性、思考设置或更换模型。",
+        message: "El modelo devolvió contenido vacío y no se recibió ningún cuerpo utilizable. Inténtelo de nuevo; Si continúa apareciendo, verifique la compatibilidad del canal, considere la configuración o cambie los modelos.",
       };
     case "reasoning_budget_exhausted":
       return {
         category: "reasoning_budget_exhausted",
-        message: "模型只返回了思考内容，输出 Token 已在生成正文前耗尽。请关闭深度思考或提高输出 Token 上限后重试。",
+        message: "El modelo solo devolvió el contenido del pensamiento y el token de salida se agotó antes de generar el texto. Desactive Deep Thinking o aumente el límite de token de salida e inténtelo de nuevo.",
       };
     case "output_budget_exhausted":
       return {
         category: "output_budget_exhausted",
-        message: "模型输出达到 Token 上限后被截断（finish_reason=length/max_tokens），结果不完整。请提高输出 Token 上限后重试。",
+        message: "La salida del modelo se trunca después de alcanzar el límite superior de tokens (finish_reason=length/max_tokens) y los resultados están incompletos. Aumente el límite del token de salida e inténtelo de nuevo.",
       };
     case "model_unavailable":
       return {
         category: "model_unavailable",
-        message: "模型余额或可用额度不足。请检查账户额度，或更换可用的模型渠道后重试。",
+        message: "Saldo de modelo insuficiente o crédito disponible. Verifique el límite de su cuenta o cambie los canales de modelo disponibles e inténtelo nuevamente.",
       };
     case "blocked":
-      return { category: "transport_error", message: "模型拒绝或过滤了本次请求，请调整创作要求或核对模型服务提示。" };
+      return { category: "transport_error", message: "La modelo rechazó o filtró esta solicitud. Ajuste los requisitos de creación o consulte las indicaciones del servicio modelo." };
     case "cancelled":
-      return { category: "transport_error", message: "本次模型请求已取消。" };
+      return { category: "transport_error", message: "Esta solicitud de modelo ha sido cancelada." };
     default:
-      return { category: "transport_error", message: "模型未返回完整可用的结构化结果。" };
+      return { category: "transport_error", message: "El modelo no arrojó resultados estructurados totalmente utilizables." };
   }
 }
 

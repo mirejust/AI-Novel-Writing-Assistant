@@ -4,7 +4,7 @@ const activeThreadIds = new Set<string>();
 
 export function acquireCreativeHubThread(threadId: string): () => void {
   if (activeThreadIds.has(threadId)) {
-    throw new Error("当前已有运行仍在执行中。");
+    throw new Error("Actualmente hay ejecuciones que aún se están ejecutando.");
   }
   activeThreadIds.add(threadId);
   return () => activeThreadIds.delete(threadId);
@@ -15,7 +15,7 @@ export function latestHumanGoal(messages: CreativeHubMessage[]): string {
   if (typeof latestHuman?.content === "string" && latestHuman.content.trim()) {
     return latestHuman.content.trim();
   }
-  return "继续当前创作中枢任务。";
+  return "Continúe con la tarea actual del centro creativo.";
 }
 
 export function toRunStatusContext(status: CreativeHubThread["status"], latestError: string | null) {

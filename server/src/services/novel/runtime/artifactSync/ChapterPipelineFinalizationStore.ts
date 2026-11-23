@@ -14,7 +14,7 @@ const resultSchema = z.object({
   runtimePackage: z.custom<ChapterRuntimePackage>(value => !!value && typeof value === "object" && "audit" in value && "context" in value).nullable(),
   retryCountUsed: z.number().int().nonnegative(),
   reviewRetries: chapterReviewRetryPolicySchema.extend({used: z.number().int().nonnegative(), exhausted: z.boolean()})
-    .refine(state => state.used <= state.maxRetries, "检查重试记录超过保存的次数上限。").optional(),
+    .refine(state => state.used <= state.maxRetries, "El registro de reintento de verificación excede el límite superior de tiempos guardados.").optional(),
 }).passthrough();
 const receiptSchema = z.object({schemaVersion: z.literal(1), result: resultSchema});
 
@@ -33,7 +33,7 @@ export class ChapterPipelineFinalizationStore {
       const parsed = receiptSchema.parse(JSON.parse(row.metadataJson ?? "null"));
       return {content: chapter.content, result: parsed.result as PipelineRuntimeResult};
     } catch {
-      throw this.failure(contentHash, "本章定稿恢复记录无法核验，请保留正文并检查运行记录。");
+      throw this.failure(contentHash, "El registro de recuperación finalizado de este capítulo no se puede verificar; conserve el texto y verifique el registro actual.");
     }
   }
 
@@ -44,7 +44,7 @@ export class ChapterPipelineFinalizationStore {
       await prisma.$transaction(async tx => {
         const chapter = await tx.chapter.findFirst({where: {id: chapterId, novelId}, select: {content: true}});
         if (!chapter?.content?.trim() || buildChapterArtifactContentHash(chapter.content) !== contentHash) {
-          throw this.failure(contentHash, "正文版本已变化，无法保存过期的定稿恢复记录。");
+          throw this.failure(contentHash, "La versión del texto ha cambiado y el registro de recuperación finalizado caducado no se puede guardar.");
         }
         const identity = this.where(novelId, chapterId, contentHash, scope);
         await tx.chapterArtifactSyncCheckpoint.upsert({
@@ -56,7 +56,7 @@ export class ChapterPipelineFinalizationStore {
       });
     } catch (error) {
       if (error instanceof ChapterArtifactSyncBoundaryError) throw error;
-      throw this.failure(contentHash, "无法保存本章定稿恢复记录，请从保存位置继续处理。");
+      throw this.failure(contentHash, "No se puede guardar el registro de recuperación finalizado para este capítulo. Continúe el procesamiento desde la ubicación para guardar.");
     }
   }
 

@@ -44,21 +44,21 @@ export default function TaskCenterListPanel({
 }: TaskCenterListPanelProps) {
   return (
     <TaskQueueSection
-      title="任务记录"
-      description={`已显示 ${tasks.length} 条记录${hasMore ? "，可在列表底部加载更多。" : "。"}`}
+      title="Registro de tareas"
+      description={`Mostrado ${tasks.length} archivos${hasMore ? ", para cargar más al final de la lista." : "."}`}
       className="overflow-hidden rounded-2xl border-transparent bg-card/60 shadow-none"
     >
       <div className="space-y-3">
         {loading ? (
-          <WorkspaceStateNotice compact loading title="正在读取任务" description="正在汇总任务状态和最近进度。" />
+          <WorkspaceStateNotice compact loading title="Tarea de lectura" description="Resumir el estado de la tarea y el progreso reciente." />
         ) : null}
         {errorMessage ? (
           <WorkspaceStateNotice
             compact
             tone="danger"
-            title="任务列表读取失败"
+            title="Error al leer la lista de tareas"
             description={errorMessage}
-            action={<Button size="sm" variant="outline" onClick={onRetry}>重新读取</Button>}
+            action={<Button size="sm" variant="outline" onClick={onRetry}>Releer</Button>}
           />
         ) : null}
         {tasks.map((task) => {
@@ -95,7 +95,7 @@ export default function TaskCenterListPanel({
                 <span className="shrink-0 text-xs tabular-nums text-muted-foreground">{progressPercent}%</span>
               </div>
               <div className="mt-3 text-sm leading-5 text-foreground/85">
-                {task.currentItemLabel ?? task.displayStatus ?? task.currentStage ?? "等待任务更新"}
+                {task.currentItemLabel ?? task.displayStatus ?? task.currentStage ?? "Esperar a que se actualice la tarea"}
               </div>
               {task.blockingReason ? (
                 <div className="mt-2 line-clamp-2 rounded-lg bg-destructive/[0.055] px-3 py-2 text-xs leading-5 text-destructive">
@@ -103,21 +103,21 @@ export default function TaskCenterListPanel({
                 </div>
               ) : null}
               <div className="mt-3 text-[11px] text-muted-foreground">
-                更新于 {formatDate(task.updatedAt)}
+                actualizado el {formatDate(task.updatedAt)}
               </div>
             </TaskQueueItem>
           );
         })}
         {!loading && !errorMessage && tasks.length === 0 ? (
           <TaskQueueEmptyState
-            title="没有符合条件的任务"
-            description="可以清除筛选条件，或回到来源页面发起新的创作与资料处理任务。"
+            title="No hay tareas coincidentes"
+            description="Puede borrar las condiciones del filtro o regresar a la página de origen para iniciar nuevas tareas de creación y procesamiento de datos."
           />
         ) : null}
       </div>
       {hasMore ? (
         <Button type="button" variant="outline" size="sm" disabled={loadingMore} onClick={onLoadMore}>
-          {loadingMore ? "正在读取更多记录…" : "加载更多记录"}
+          {loadingMore ? "Leyendo más registros…" : "Cargar más registros"}
         </Button>
       ) : null}
     </TaskQueueSection>

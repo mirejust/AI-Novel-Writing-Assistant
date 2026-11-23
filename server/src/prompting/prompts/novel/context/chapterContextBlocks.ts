@@ -272,7 +272,7 @@ export function buildChapterWriterContextBlocks(
         `状态驱动的下一步动作：${writeContext.nextAction}`,
         writeContext.chapterMission.planRole ? `计划角色：${writeContext.chapterMission.planRole}` : "",
         wordRange.targetWordCount != null
-          ? `目标篇幅：约 ${wordRange.targetWordCount} 个中文字符（可接受范围 ${wordRange.minWordCount}-${wordRange.maxWordCount}；不要明显低于最低值）。`
+          ? `目标篇幅：约 ${wordRange.targetWordCount} 个西班牙语字符（可接受范围 ${wordRange.minWordCount}-${wordRange.maxWordCount}；不要明显低于最低值）。`
           : "",
         toListBlock("必须推进", writeContext.chapterMission.mustAdvance, "无"),
         toListBlock("必须保留", writeContext.chapterMission.mustPreserve, "无"),

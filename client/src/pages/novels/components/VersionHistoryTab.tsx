@@ -10,15 +10,15 @@ interface VersionHistoryTabProps {
 
 function formatSnapshotTrigger(triggerType: string): string {
   if (triggerType === "manual") {
-    return "手动保存";
+    return "Guardar manualmente";
   }
   if (triggerType === "auto_milestone") {
-    return "自动里程碑";
+    return "Hitos automáticos";
   }
   if (triggerType === "before_pipeline") {
-    return "批量处理前";
+    return "Antes del procesamiento por lotes";
   }
-  return "版本快照";
+  return "Instantánea de la versión";
 }
 
 export default function VersionHistoryTab({ novelId }: VersionHistoryTabProps) {
@@ -53,13 +53,13 @@ export default function VersionHistoryTab({ novelId }: VersionHistoryTabProps) {
     <div className="space-y-4">
       <div className="flex flex-col gap-3 rounded-2xl border border-border/70 bg-muted/15 p-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <div className="font-medium">版本历史</div>
+          <div className="font-medium">Historial de versiones</div>
           <div className="text-sm text-muted-foreground">
-            这里优先帮你找回最近的稳定版本。恢复前系统会自动再备份一次当前状态。
+            Aquí damos prioridad a ayudarle a encontrar la última versión estable. El sistema realizará automáticamente una copia de seguridad del estado actual antes de la restauración.
           </div>
         </div>
         <Button onClick={() => createMutation.mutate()} disabled={createMutation.isPending}>
-          {createMutation.isPending ? "保存中..." : "保存当前版本"}
+          {createMutation.isPending ? "Guardando..." : "Guardar versión actual"}
         </Button>
       </div>
 
@@ -72,7 +72,7 @@ export default function VersionHistoryTab({ novelId }: VersionHistoryTabProps) {
               <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                 <div className="space-y-3">
                   <div className="space-y-1">
-                    <div className="font-medium">{snapshot.label || "未命名版本"}</div>
+                    <div className="font-medium">{snapshot.label || "Versión sin nombre"}</div>
                     <div className="text-xs text-muted-foreground">
                       {formatSnapshotTrigger(snapshot.triggerType)} · {new Date(snapshot.createdAt).toLocaleString()}
                     </div>
@@ -86,7 +86,7 @@ export default function VersionHistoryTab({ novelId }: VersionHistoryTabProps) {
                   </div>
 
                   <div className="text-sm leading-6 text-muted-foreground">
-                    这个版本适合在你想退回到更稳定的章节推进状态时使用。
+                    Esta versión es adecuada cuando desea volver a un estado más estable de avance de capítulos.
                   </div>
                 </div>
 
@@ -94,14 +94,14 @@ export default function VersionHistoryTab({ novelId }: VersionHistoryTabProps) {
                   variant="secondary"
                   size="sm"
                   onClick={() => {
-                    const confirmed = window.confirm("恢复前会自动备份当前状态。确认恢复这个版本吗？");
+                    const confirmed = window.confirm("Se realizará una copia de seguridad automática del estado actual antes de la restauración. ¿Está seguro de que desea restaurar esta versión?");
                     if (confirmed) {
                       restoreMutation.mutate(snapshot.id);
                     }
                   }}
                   disabled={restoreMutation.isPending}
                 >
-                  {isRestoringCurrent ? "恢复中..." : "恢复到这个版本"}
+                  {isRestoringCurrent ? "Recuperante..." : "Volver a esta versión"}
                 </Button>
               </div>
             </div>
@@ -109,7 +109,7 @@ export default function VersionHistoryTab({ novelId }: VersionHistoryTabProps) {
         })}
         {snapshots.length === 0 ? (
           <div className="rounded-2xl border border-dashed p-6 text-sm text-muted-foreground">
-            当前还没有版本记录。建议在大改方向、批量生成或大段重写前，先手动保存一个版本。
+            Actualmente no existe ningún registro de versión. Se recomienda guardar manualmente una versión antes de realizar cambios importantes en la dirección, generación de lotes o reescritura de secciones grandes.
           </div>
         ) : null}
       </div>

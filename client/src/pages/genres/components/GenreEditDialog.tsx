@@ -48,7 +48,7 @@ export default function GenreEditDialog({
   const updateMutation = useMutation({
     mutationFn: () => {
       if (!genre) {
-        throw new Error("题材基底不存在。");
+        throw new Error("La base temática no existe.");
       }
       return updateGenre(genre.id, {
         name: name.trim(),
@@ -58,7 +58,7 @@ export default function GenreEditDialog({
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: queryKeys.genres.all });
-      toast.success("题材基底已更新。");
+      toast.success("La base del tema ha sido actualizada.");
       onOpenChange(false);
     },
   });
@@ -67,15 +67,15 @@ export default function GenreEditDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <AppDialogContent
         className="max-w-2xl"
-        title="编辑题材基底"
-        description="可以修改名称、说明和挂载位置。子节点与已绑定小说会继续保留。"
+        title="Editar base de tema"
+        description="El nombre, la descripción y la ubicación de montaje se pueden modificar. Se seguirán conservando los nodos secundarios y las novelas encuadernadas."
         footer={(
           <>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              取消
+              Cancelar
             </Button>
             <Button type="button" onClick={() => updateMutation.mutate()} disabled={updateMutation.isPending || !name.trim()}>
-              {updateMutation.isPending ? "保存中..." : "保存修改"}
+              {updateMutation.isPending ? "Guardando..." : "Guardar cambios"}
             </Button>
           </>
         )}
@@ -83,12 +83,12 @@ export default function GenreEditDialog({
       >
         <div className="space-y-4">
           <label className="space-y-2 text-sm">
-            <span className="font-medium text-foreground">名称</span>
+            <span className="font-medium text-foreground">Nombre</span>
             <Input value={name} onChange={(event) => setName(event.target.value)} />
           </label>
 
           <label className="space-y-2 text-sm">
-            <span className="font-medium text-foreground">描述</span>
+            <span className="font-medium text-foreground">Describir</span>
             <textarea
               rows={4}
               className="min-h-[120px] w-full rounded-md border bg-background px-3 py-2 text-sm outline-none transition focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
@@ -98,13 +98,13 @@ export default function GenreEditDialog({
           </label>
 
           <label className="space-y-2 text-sm">
-            <span className="font-medium text-foreground">父级题材基底</span>
+            <span className="font-medium text-foreground">Base del tema principal</span>
             <SelectControl
               className="w-full rounded-md border bg-background p-2 text-sm"
               value={parentId}
               onChange={(event) => setParentId(event.target.value)}
             >
-              <option value="">无父级，作为根题材基底</option>
+              <option value="">Sin padre, como base del tema raíz</option>
               {filteredParentOptions.map((option) => (
                 <option key={option.id} value={option.id}>
                   {option.path}

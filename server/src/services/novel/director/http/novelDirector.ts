@@ -184,7 +184,7 @@ const ideaConstellationComposeSchema = ideaContextRequestSchema.extend({
     context.addIssue({
       code: "custom",
       path: ["selectedOptions"],
-      message: "每种故事星图维度最多选择一项。",
+      message: "Puede seleccionar como máximo una de cada dimensión del gráfico estelar de la historia.",
     });
   }
 });

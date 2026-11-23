@@ -186,7 +186,7 @@ function renderCandidateCards(input: DirectorCandidatePromptInput, context: Prom
       "【字段要求】",
       "每个候选必须完整包含：workingTitle、logline、positioning、sellingPoint、coreConflict、protagonistPath、endingDirection、hookStrategy、progressionLoop、whyItFits、recommendedWritingPlatform、writingPlatformReason、toneKeywords、targetChapterCount。",
       "可选字段 titleOptions（最多 4 条）：为封面与点击向的书名备选。每条必须含 title、clickRate（35-99 的整数）、style。",
-      "style 只能是以下四个英文小写值之一：literary、conflict、suspense、high_concept（与标题工坊一致），不得使用中文标签、同义词或其它拼写。",
+      "style 只能是以下四个英文小写值之一：literary、conflict、suspense、high_concept（与标题工坊一致），不得使用西班牙语标签、同义词或其它拼写。",
       "angle、reason 可选；不要输出 titleOptions 以外的额外字段。",
       "若不需要书名备选，可省略 titleOptions 或置为空数组。",
       "不得缺漏字段，不得改名，不得新增 schema 之外字段。",
@@ -281,7 +281,7 @@ export const directorCandidatePatchPrompt: PromptAsset<
       "【质量要求】",
       "1. 修正后要比原方案更贴近用户口味，而不是更抽象。",
       "2. 如果用户要求都市感、现实感、钩子更强、冲突更猛等，要落实到卖点、冲突和推进循环，而不只是改几个词。",
-      "3. workingTitle 仍然必须适合中文网文封面展示，不要回退成概念短语或土味套壳名。",
+      "3. workingTitle 仍然必须适合西班牙语网文封面展示，不要回退成概念短语或土味套壳名。",
       "4. whyItFits 必须说明这次修正为什么更贴近用户反馈。",
     ].join("\n")),
     new HumanMessage([

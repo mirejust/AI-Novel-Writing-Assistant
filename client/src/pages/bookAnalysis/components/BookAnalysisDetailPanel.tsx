@@ -258,15 +258,15 @@ export default function BookAnalysisDetailPanel(props: BookAnalysisDetailPanelPr
       {selectedAnalysis.lastError ? (
         <div className="rounded-md border border-destructive/40 bg-destructive/5 p-3 text-sm text-destructive">
           {budgetExceeded
-            ? `预算用尽，任务已停止。累计用量 ${formatTokenCount(usedTokens)} / ${formatTokenCount(budgetTokens)} tokens。建议先扩容预算后续跑。`
-            : `最近错误：${selectedAnalysis.lastError}`}
+            ? `El presupuesto se ha agotado y la misión se ha detenido. Uso acumulativo ${formatTokenCount(usedTokens)} / ${formatTokenCount(budgetTokens)} fichas. Se recomienda ampliar el presupuesto primero y luego ejecutarlo.`
+            : `Errores recientes:${selectedAnalysis.lastError}`}
         </div>
       ) : null}
 
       {sourceLoading || chaptersLoading ? (
         <div className="flex items-center gap-2 rounded-md border border-info/25 bg-info/5 p-3 text-sm text-muted-foreground" aria-live="polite">
           <Loader2 className="h-4 w-4 animate-spin text-info" aria-hidden="true" />
-          正在加载原文阅读位置，拆书结果仍可继续查看。
+          Se está cargando la posición de lectura del texto original. Los resultados de desempaquetar el libro aún se pueden ver.
         </div>
       ) : null}
 
@@ -275,9 +275,9 @@ export default function BookAnalysisDetailPanel(props: BookAnalysisDetailPanelPr
           <div className="flex min-w-0 items-start gap-2">
             <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-warning" aria-hidden="true" />
             <div>
-              <div className="font-medium text-foreground">原文对照暂时不可用</div>
+              <div className="font-medium text-foreground">La comparación de texto original no está disponible temporalmente</div>
               <div className="mt-1 text-muted-foreground">
-                {chaptersError || sourceError} 已生成的拆书结果不会被隐藏或删除。
+                {chaptersError || sourceError} Los resultados de apertura de libros generados no se ocultarán ni eliminarán.
               </div>
             </div>
           </div>
@@ -288,17 +288,16 @@ export default function BookAnalysisDetailPanel(props: BookAnalysisDetailPanelPr
             onClick={chaptersError ? onRetryChapters : onRetrySource}
           >
             <RefreshCw className="mr-1.5 h-3.5 w-3.5" aria-hidden="true" />
-            重试原文加载
+            Reintentar cargar el texto original
           </Button>
         </div>
       ) : null}
 
       {invalidSucceededSections.length > 0 ? (
         <div className="rounded-md border border-warning/30 bg-warning/5 p-3 text-sm text-warning" role="alert">
-          <div className="font-medium">结果生成异常</div>
+          <div className="font-medium">El resultado es una excepción.</div>
           <div className="mt-1">
-            {invalidSucceededSections.map((section) => section.title).join("、")}：没有生成可阅读的正文或结构化内容。
-            请在模型路由确认任务记录的模型可用后点击“重新生成”；如需更换模型，请新建拆书。
+            {invalidSucceededSections.map((section) => section.title).join(",")}: No se genera texto legible ni contenido estructurado. Haga clic en "Regenerar" después de que la ruta del modelo confirme que el modelo registrado en la tarea está disponible; Si necesita cambiar el modelo, cree un nuevo libro de demolición.
           </div>
         </div>
       ) : null}
@@ -318,20 +317,20 @@ export default function BookAnalysisDetailPanel(props: BookAnalysisDetailPanelPr
             <summary className="cursor-pointer list-none">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
-                  <div className="text-sm font-medium">分析信息与发布</div>
+                  <div className="text-sm font-medium">Analizar información y publicar</div>
                   <div className="mt-1 text-xs text-muted-foreground">
-                    计划小节 {sectionStats.readableExpected}/{sectionStats.expected} 可阅读
-                    {sectionStats.unselected > 0 ? `，本次未选择 ${sectionStats.unselected} 节` : ""}
-                    {sectionStats.frozenReadable > 0 ? `，已冻结结果 ${sectionStats.frozenReadable} 节` : ""}
+                    sección de planificación {sectionStats.readableExpected}/{sectionStats.expected} Legible
+                    {sectionStats.unselected > 0 ? `, no seleccionado esta vez ${sectionStats.unselected} Festival` : ""}
+                    {sectionStats.frozenReadable > 0 ? `, resultados congelados ${sectionStats.frozenReadable} Festival` : ""}
                   </div>
                 </div>
-                <Badge variant="secondary" className="border-0 bg-muted/60 font-normal">展开</Badge>
+                <Badge variant="secondary" className="border-0 bg-muted/60 font-normal">Expandir</Badge>
               </div>
             </summary>
             <div className="mt-3 space-y-3">
               {!selectedAnalysis.isCurrentVersion ? (
                 <div className="rounded-md border border-warning/30 bg-warning/5 p-3 text-sm text-foreground">
-                  该分析基于旧版源文档，当前激活文档版本为 v{selectedAnalysis.currentDocumentVersionNumber}。
+                  Este análisis se basa en una versión anterior del documento fuente, actualmente la versión del documento activo es v{selectedAnalysis.currentDocumentVersionNumber}.
                 </div>
               ) : null}
               {styleProfileFeedback ? (
@@ -340,14 +339,14 @@ export default function BookAnalysisDetailPanel(props: BookAnalysisDetailPanelPr
                 </div>
               ) : null}
               <div className="rounded-xl bg-muted/25 p-4 text-sm">
-                <div className="mb-2 font-medium">发布到小说知识库</div>
+                <div className="mb-2 font-medium">Publicar en una nueva base de conocimientos</div>
                 <div className="flex flex-wrap items-center gap-2">
                   <SelectControl
                     className="h-9 min-w-[220px] rounded-md border bg-background px-2 text-sm"
                     value={selectedNovelId}
                     onChange={(event) => onSelectedNovelChange(event.target.value)}
                   >
-                    <option value="">选择目标小说</option>
+                    <option value="">Seleccionar novela de destino</option>
                     {novelOptions.map((novel) => (
                       <option key={novel.id} value={novel.id}>
                         {novel.title}
@@ -359,38 +358,38 @@ export default function BookAnalysisDetailPanel(props: BookAnalysisDetailPanelPr
                     onClick={onPublish}
                     disabled={!selectedNovelId || pending.publish || selectedAnalysis.status === "archived"}
                   >
-                    发布并绑定
+                    publicar y vincular
                   </Button>
                 </div>
                 {publishFeedback ? <div className="mt-2 text-xs text-muted-foreground">{publishFeedback}</div> : null}
                 {lastPublishResult ? (
-                  <div className="mt-1 text-xs text-muted-foreground">发布时间：{formatDate(lastPublishResult.publishedAt)}</div>
+                  <div className="mt-1 text-xs text-muted-foreground">Hora de liberación:{formatDate(lastPublishResult.publishedAt)}</div>
                 ) : null}
               </div>
               <div className="grid gap-3 md:grid-cols-2">
                 <div className="rounded-xl bg-muted/20 p-4 text-sm">
-                  <div className="font-medium">概要</div>
+                  <div className="font-medium">Resumen</div>
                   <div className="mt-2 whitespace-pre-wrap text-muted-foreground">
-                    {selectedAnalysis.summary?.trim() || "生成总览后会在此显示概要内容。"}
+                    {selectedAnalysis.summary?.trim() || "Una vez generada la descripción general, el contenido del resumen se muestra aquí."}
                   </div>
                 </div>
                 <div className="rounded-xl bg-muted/20 p-4 text-sm">
-                  <div className="font-medium">运行元信息</div>
+                  <div className="font-medium">Ejecutar metainformación</div>
                   <div className="mt-2 space-y-1 text-muted-foreground">
-                    <div>提供商：{selectedAnalysis.provider ?? "deepseek"}</div>
-                    <div>模型：{selectedAnalysis.model || "默认"}</div>
-                    <div>温度：{selectedAnalysis.temperature ?? "默认"}</div>
-                    <div>最大 Tokens：{selectedAnalysis.maxTokens ?? "默认"}</div>
+                    <div>Proveedor:{selectedAnalysis.provider ?? "deepseek"}</div>
+                    <div>Modelo:{selectedAnalysis.model || "Predeterminado"}</div>
+                    <div>Temperatura:{selectedAnalysis.temperature ?? "Predeterminado"}</div>
+                    <div>Fichas máximas:{selectedAnalysis.maxTokens ?? "Predeterminado"}</div>
                     <div>
-                      预算用量：{budgetTokens
+                      Uso del presupuesto:{budgetTokens
                         ? `${formatTokenCount(usedTokens)} / ${formatTokenCount(budgetTokens)} tokens`
-                        : "不限"}
+                        : "Sin límite"}
                     </div>
                     {budgetTokens ? (
                       <div
                         className="h-1.5 overflow-hidden rounded-full bg-muted"
                         role="progressbar"
-                        aria-label="拆书预算使用进度"
+                        aria-label="Progreso del uso del presupuesto dividido en libros"
                         aria-valuemin={0}
                         aria-valuemax={100}
                         aria-valuenow={Math.round(budgetUsageRatio * 100)}
@@ -401,12 +400,12 @@ export default function BookAnalysisDetailPanel(props: BookAnalysisDetailPanelPr
                         />
                       </div>
                     ) : null}
-                    <div>原文范围：{selectedAnalysis.sourceRange?.label ?? "全文"}</div>
-                    <div>当前阶段：{formatStage(selectedAnalysis.currentStage)}</div>
-                    <div>当前 section：{selectedAnalysis.currentItemLabel ?? "暂无"}</div>
-                    <div>最近心跳：{formatDate(selectedAnalysis.heartbeatAt)}</div>
-                    <div>最近运行：{formatDate(selectedAnalysis.lastRunAt)}</div>
-                    <div>创建时间：{formatDate(selectedAnalysis.createdAt)}</div>
+                    <div>Alcance original:{selectedAnalysis.sourceRange?.label ?? "Texto completo"}</div>
+                    <div>Etapa actual:{formatStage(selectedAnalysis.currentStage)}</div>
+                    <div>Sección actual:{selectedAnalysis.currentItemLabel ?? "Sin datos"}</div>
+                    <div>Latido reciente:{formatDate(selectedAnalysis.heartbeatAt)}</div>
+                    <div>Ejecutado recientemente:{formatDate(selectedAnalysis.lastRunAt)}</div>
+                    <div>Hora de creación:{formatDate(selectedAnalysis.createdAt)}</div>
                   </div>
                 </div>
               </div>
@@ -416,10 +415,10 @@ export default function BookAnalysisDetailPanel(props: BookAnalysisDetailPanelPr
           <section className="overflow-hidden rounded-2xl border border-border/45 bg-card shadow-[0_16px_46px_rgba(15,23,42,0.045)]">
             <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border/35 px-5 py-4">
               <div className="flex flex-wrap items-center gap-2">
-                <div className="text-lg font-semibold tracking-tight">拆书内容</div>
-                <Badge variant="secondary" className="border-0 bg-muted/70 font-normal">可读 {sectionStats.readableExpected}/{sectionStats.expected}</Badge>
-                {sectionStats.unselected > 0 ? <Badge variant="secondary" className="border-0 font-normal">本次未选择 {sectionStats.unselected}</Badge> : null}
-                {sectionStats.frozenReadable > 0 ? <Badge variant="secondary" className="border-0 font-normal">已冻结结果 {sectionStats.frozenReadable}</Badge> : null}
+                <div className="text-lg font-semibold tracking-tight">Contenido del libro abierto</div>
+                <Badge variant="secondary" className="border-0 bg-muted/70 font-normal">legible {sectionStats.readableExpected}/{sectionStats.expected}</Badge>
+                {sectionStats.unselected > 0 ? <Badge variant="secondary" className="border-0 font-normal">No seleccionado esta vez {sectionStats.unselected}</Badge> : null}
+                {sectionStats.frozenReadable > 0 ? <Badge variant="secondary" className="border-0 font-normal">Resultados congelados {sectionStats.frozenReadable}</Badge> : null}
               </div>
               <div className="flex rounded-xl bg-muted/55 p-1">
                 <Button
@@ -427,14 +426,14 @@ export default function BookAnalysisDetailPanel(props: BookAnalysisDetailPanelPr
                   variant={readingMode === "summary" ? "default" : "ghost"}
                   onClick={() => setReadingMode("summary")}
                 >
-                  重点速览
+                  Reflejos
                 </Button>
                 <Button
                   size="sm"
                   variant={readingMode === "full" ? "default" : "ghost"}
                   onClick={() => setReadingMode("full")}
                 >
-                  完整阅读
+                  Leer completo
                 </Button>
               </div>
             </div>
@@ -442,9 +441,9 @@ export default function BookAnalysisDetailPanel(props: BookAnalysisDetailPanelPr
               {selectedAnalysis.sections.length === 0 ? (
                 <div className="rounded-md border border-dashed border-warning/40 bg-warning/5 px-5 py-8 text-center">
                   <AlertTriangle className="mx-auto h-5 w-5 text-warning" aria-hidden="true" />
-                  <div className="mt-3 text-sm font-medium text-foreground">没有可展示的拆书小节</div>
+                  <div className="mt-3 text-sm font-medium text-foreground">No hay ninguna sección de apertura de libros para mostrar.</div>
                   <p className="mx-auto mt-1 max-w-xl text-sm leading-6 text-muted-foreground">
-                    这份任务没有返回可阅读内容。源文档仍然安全，可以从上方重新生成或打开任务中心查看详情。
+                    Esta tarea no arrojó contenido legible. El documento fuente aún está seguro y se puede regenerar desde arriba o abrir el Centro de tareas para ver los detalles.
                   </p>
                 </div>
               ) : (
@@ -459,8 +458,8 @@ export default function BookAnalysisDetailPanel(props: BookAnalysisDetailPanelPr
                       <span>{section.title}</span>
                       <span className="text-xs text-muted-foreground">
                         {section.frozen
-                          ? isUnselectedBookAnalysisSection(section) ? "本次未选择" : "已冻结"
-                          : invalidSucceededSectionIds.has(section.id) ? "结果异常" : formatStatus(section.status)}
+                          ? isUnselectedBookAnalysisSection(section) ? "No seleccionado esta vez" : "Congelado"
+                          : invalidSucceededSectionIds.has(section.id) ? "Resultados anormales" : formatStatus(section.status)}
                       </span>
                     </TabsTrigger>
                   ))}

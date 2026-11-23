@@ -40,27 +40,27 @@ export function TourDesk({ tour, read }: { tour: Tour; read: (id: string) => voi
   if (!tour.current || tour.index === null) return null;
   const { stage, step } = tour.current;
   const index = tour.index;
-  const playLabel = tour.playing ? "暂停导览" : index === lastStop ? "重新播放主线" : "继续导览";
-  return <section className="book-tour-desk" data-stage={stage.id} aria-label="主线导览">
+  const playLabel = tour.playing ? "Pausa recorrido" : index === lastStop ? "Reproducir línea principal" : "Continuar recorrido";
+  return <section className="book-tour-desk" data-stage={stage.id} aria-label="Recorrido por la línea principal">
     <div className="tour-figure"><ManuscriptFigure id={step.id} /></div>
     <div className="tour-copy" aria-live={tour.playing ? "off" : "polite"}>
       <div className="tour-location">{stage.title}<span>{index + 1} / {tourStops.length}</span></div>
       <strong>{step.title}</strong><p>{step.output}</p>
     </div>
     <div className="tour-controls">
-      <button type="button" onClick={() => tour.seek(index - 1)} disabled={index === 0} aria-label="上一步" title="上一步"><ChevronLeft /></button>
+      <button type="button" onClick={() => tour.seek(index - 1)} disabled={index === 0} aria-label="Anterior" title="Anterior"><ChevronLeft /></button>
       <button type="button" ref={playButton} className="tour-play" onClick={tour.toggle} aria-label={playLabel} title={playLabel}>
         {tour.playing ? <Pause /> : index === lastStop ? <RotateCcw /> : <Play />}</button>
-      <button type="button" onClick={() => tour.seek(index + 1)} disabled={index === lastStop} aria-label="下一步" title="下一步"><ChevronRight /></button>
-      <button type="button" className="tour-read" onClick={() => read(step.id)}>{step.kind === "ai" ? "读提示词" : "看步骤"}<ArrowUpRight /></button>
+      <button type="button" onClick={() => tour.seek(index + 1)} disabled={index === lastStop} aria-label="Siguiente" title="Siguiente"><ChevronRight /></button>
+      <button type="button" className="tour-read" onClick={() => read(step.id)}>{step.kind === "ai" ? "Leer palabras clave" : "Mira los pasos"}<ArrowUpRight /></button>
     </div>
     <div className="tour-timeline">
-      <nav className="tour-stage-index" aria-label="导览阶段">
+      <nav className="tour-stage-index" aria-label="Etapa de navegación">
         {chapters.map(({ stage: chapter, first }, i) => <button key={chapter.id} data-stage={chapter.id}
           type="button" aria-current={chapter === stage ? "step" : undefined} onClick={() => tour.seek(first)}
           style={{ flexGrow: chapter.main.length - (i === chapters.length - 1 ? 1 : 0) }}>{chapter.title}</button>)}
       </nav>
-      <input className="tour-seek" aria-label="定位主线步骤" aria-valuetext={`第 ${index + 1} 步，${stage.title}，${step.title}`}
+      <input className="tour-seek" aria-label="Colocación de los escalones de la línea principal." aria-valuetext={`Cap. ${index + 1} paso,${stage.title},${step.title}`}
         type="range" min={0} max={lastStop} value={index} onChange={event => tour.seek(Number(event.target.value))} />
     </div>
   </section>;

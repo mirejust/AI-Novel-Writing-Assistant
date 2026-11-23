@@ -12,7 +12,7 @@ export interface PreparationTimelineSource {
 export class PreparationSourceRequiredError extends Error {
   readonly code = "PRODUCTION_PREPARATION_SOURCE_REQUIRED";
   constructor(readonly sourceRoute: string, readonly chapterId: string) {
-    super("前文章节需要完成时间线整理，请返回来源页处理后继续写作。");
+    super("El capítulo anterior debe ordenarse en la línea de tiempo. Regrese a la página de origen para procesar y continuar escribiendo.");
     this.name = "PreparationSourceRequiredError";
   }
 }

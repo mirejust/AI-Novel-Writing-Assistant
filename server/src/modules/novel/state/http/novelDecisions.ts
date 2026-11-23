@@ -41,7 +41,7 @@ router.get("/:id/creative-decisions", validate({ params: novelParamsSchema }), a
     res.status(200).json({
       success: true,
       data,
-      message: "创作决策已加载。",
+      message: "Decisiones creativas cargadas.",
     } satisfies ApiResponse<typeof data>);
   } catch (error) {
     next(error);
@@ -58,7 +58,7 @@ router.post(
       res.status(201).json({
         success: true,
         data,
-        message: "创作决策已创建。",
+        message: "Se crea la decisión de creación.",
       } satisfies ApiResponse<typeof data>);
     } catch (error) {
       next(error);
@@ -76,7 +76,7 @@ router.put(
       res.status(200).json({
         success: true,
         data,
-        message: "创作决策已更新。",
+        message: "Se han actualizado las decisiones creativas.",
       } satisfies ApiResponse<typeof data>);
     } catch (error) {
       next(error);
@@ -93,7 +93,7 @@ router.delete(
       await novelDecisionService.remove(id, decisionId);
       res.status(200).json({
         success: true,
-        message: "创作决策已删除。",
+        message: "Se han eliminado las decisiones creativas.",
       } satisfies ApiResponse<null>);
     } catch (error) {
       next(error);
@@ -112,7 +112,7 @@ router.post(
       res.status(200).json({
         success: true,
         data,
-        message: "创作决策已批量失效。",
+        message: "Las decisiones de creación han sido invalidadas por lotes.",
       } satisfies ApiResponse<typeof data>);
     } catch (error) {
       next(error);

@@ -29,75 +29,75 @@ export type NovelOutlineGraphOutput = Pick<
 async function analyzeTheme(state: NovelOutlineGraphState, llm: BaseChatModel) {
   try {
     const result = await llm.invoke([
-      new SystemMessage("你是一位小说主题分析专家，请提炼主题和立意。"),
+      new SystemMessage("Eres un experto en analizar la temática de las novelas. Por favor refine el tema y la idea."),
       new HumanMessage(
-        `标题：${state.novelTitle}
-简介：${state.novelDescription}
-类型：${state.genre}
-角色：${state.characters.join("、") || "暂无"}
-请输出主题分析。`,
+        `título:${state.novelTitle}
+Introducción:${state.novelDescription}
+tipo:${state.genre}
+Role:${state.characters.join(",") || "Sin datos"}
+Por favor envíe el análisis del tema.`,
       ),
     ]);
     const text = typeof result.content === "string" ? result.content : JSON.stringify(result.content);
     return { themeAnalysis: text };
   } catch (error) {
-    return { error: error instanceof Error ? error.message : "主题分析失败。" };
+    return { error: error instanceof Error ? error.message : "El análisis del tema falló." };
   }
 }
 
 async function designConflicts(state: NovelOutlineGraphState, llm: BaseChatModel) {
   try {
     const result = await llm.invoke([
-      new SystemMessage("你是一位冲突设计专家，请输出 3-5 个核心冲突。"),
+      new SystemMessage("Usted es un experto en diseño de conflictos, genere entre 3 y 5 conflictos centrales."),
       new HumanMessage(
-        `主题分析：
+        `Análisis temático:
 ${state.themeAnalysis}
-请设计冲突节点与转折点。`,
+Diseñe nodos de conflicto y puntos de inflexión.`,
       ),
     ]);
     const text = typeof result.content === "string" ? result.content : JSON.stringify(result.content);
     return { conflictDesign: text };
   } catch (error) {
-    return { error: error instanceof Error ? error.message : "冲突设计失败。" };
+    return { error: error instanceof Error ? error.message : "El diseño del conflicto falla." };
   }
 }
 
 async function generateOutline(state: NovelOutlineGraphState, llm: BaseChatModel) {
   try {
     const result = await llm.invoke([
-      new SystemMessage("你是一位小说策划师，请生成完整发展走向。"),
+      new SystemMessage("Eres un planificador novedoso, genera una dirección de desarrollo completa."),
       new HumanMessage(
-        `主题分析：
+        `Análisis temático:
 ${state.themeAnalysis}
 
-冲突设计：
+Diseño de conflictos:
 ${state.conflictDesign}
 
-请输出完整发展走向。`,
+Por favor envíe la dirección de desarrollo completa.`,
       ),
     ]);
     const text = typeof result.content === "string" ? result.content : JSON.stringify(result.content);
     return { outline: text };
   } catch (error) {
-    return { error: error instanceof Error ? error.message : "发展走向生成失败。" };
+    return { error: error instanceof Error ? error.message : "El desarrollo avanza hacia el fracaso generativo." };
   }
 }
 
 async function structureOutline(state: NovelOutlineGraphState, llm: BaseChatModel) {
   try {
     const result = await llm.invoke([
-      new SystemMessage("请将小说大纲转换为 JSON 章节规划。"),
+      new SystemMessage("Convierta el esquema de su novela en un plan de capítulo JSON."),
       new HumanMessage(
-        `小说大纲：
+        `Sinopsis de la novela:
 ${state.outline}
-仅输出 JSON 数组。`,
+Solo genera una matriz JSON.`,
       ),
     ]);
     const text = typeof result.content === "string" ? result.content : JSON.stringify(result.content);
     const normalized = text.replace(/```json|```/g, "").trim();
     return { structuredOutline: JSON.parse(normalized) };
   } catch (error) {
-    return { error: error instanceof Error ? error.message : "结构化大纲生成失败。" };
+    return { error: error instanceof Error ? error.message : "Falló la generación del esquema estructurado." };
   }
 }
 

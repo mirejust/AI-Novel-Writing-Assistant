@@ -82,26 +82,26 @@ function ReferenceNotice(props: { title: string; description: string }) {
 }
 
 const QUALITY_DEBT_SOURCE_LABELS: Record<ChapterQualityDebtSource, string> = {
-  manual_review: "手动审校",
-  pipeline_review: "AI 正文审校",
-  repair_recheck: "AI 修复后复查",
+  manual_review: "Revisión manual",
+  pipeline_review: "Revisión de texto de IA",
+  repair_recheck: "Revisión después de la corrección de IA",
 };
 
 function formatQualityDebtAttempts(details: ChapterQualityDebtDetails): string {
   if (details.repairAttemptsUsed === null) {
-    return `次数未记录 · 当前最多 ${details.repairAttemptsAllowed} 次`;
+    return `No se ha registrado el número de veces · Actualmente el más ${details.repairAttemptsAllowed} veces`;
   }
   if (details.repairAttemptsAllowed === 0) {
-    return `${details.repairAttemptsUsed} 次 · 本次未启用自动修复`;
+    return `${details.repairAttemptsUsed} veces · La reparación automática no está habilitada esta vez`;
   }
-  return `${details.repairAttemptsUsed}/${details.repairAttemptsAllowed} 次`;
+  return `${details.repairAttemptsUsed}/${details.repairAttemptsAllowed} veces`;
 }
 
 function formatQualityDebtTime(value: string | null): string {
-  if (!value) return "时间未记录";
+  if (!value) return "Tiempo no registrado";
   const date = new Date(value);
   return Number.isNaN(date.getTime())
-    ? "时间未记录"
+    ? "Tiempo no registrado"
     : date.toLocaleString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
 }
 
@@ -132,13 +132,13 @@ export default function ChapterExecutionReferencePanel(props: ChapterExecutionRe
   if (!selectedChapter) {
     return (
       <div className="rounded-2xl border border-dashed border-border/70 bg-background p-4 text-sm leading-6 text-muted-foreground">
-        选中章节后，这里会显示任务单、场景拆解、质量反馈、修复记录和诊断信息。
+        Después de seleccionar un capítulo, aquí se mostrarán órdenes de tareas, desmontajes de escenas, comentarios de calidad, registros de reparación e información de diagnóstico.
       </div>
     );
   }
 
   const runtimePackage = chapterRuntimePackage?.chapterId === selectedChapter.id ? chapterRuntimePackage : null;
-  const chapterObjective = chapterPlan?.objective ?? selectedChapter.expectation ?? "这一章还没有明确目标，建议先补章节计划。";
+  const chapterObjective = chapterPlan?.objective ?? selectedChapter.expectation ?? "Aún no hay un objetivo claro para este capítulo, por lo que se recomienda elaborar primero el plan del capítulo.";
   const scenePlan = parseChapterScenePlanForDisplay(selectedChapter);
   const isSelectedChapterRepairStreaming = isRepairStreaming && repairStreamingChapterId === selectedChapter.id;
   const isSelectedChapterRepairFinalizing = isSelectedChapterRepairStreaming && repairRunStatus?.phase === "finalizing";
@@ -153,33 +153,33 @@ export default function ChapterExecutionReferencePanel(props: ChapterExecutionRe
       <div className="rounded-2xl border border-border/70 bg-background p-4">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <div className="text-base font-semibold text-foreground">资料诊断</div>
+            <div className="text-base font-semibold text-foreground">Diagnóstico de datos</div>
             <div className="mt-1 text-sm leading-6 text-muted-foreground">
-              查看本章任务、质量和修复依据，不占用正文阅读区。
+              Vea las tareas, la calidad y la base de reparación de este capítulo, que no ocupa el área principal de lectura del texto.
             </div>
           </div>
-          <Badge variant="outline" className="shrink-0">第{selectedChapter.order}章</Badge>
+          <Badge variant="outline" className="shrink-0">Cap.{selectedChapter.order}Cap.</Badge>
         </div>
       </div>
 
       {qualityDebt ? (
         <div className="rounded-2xl bg-amber-50/80 p-4 text-sm text-amber-950">
-          <div className="font-semibold">本章有待回收的质量项</div>
+          <div className="font-semibold">Artículos de calidad que se reciclarán en este capítulo.</div>
           <div className="mt-2 leading-6 text-amber-900/85">{qualityDebt.reason}</div>
           <div className="mt-3 grid gap-2 text-xs text-amber-900/75 sm:grid-cols-2">
-            <span>来源：{qualityDebt.source ? QUALITY_DEBT_SOURCE_LABELS[qualityDebt.source] : "历史质量记录"}</span>
-            <span>自动修复：{formatQualityDebtAttempts(qualityDebt)}</span>
-            <span>记录时间：{formatQualityDebtTime(qualityDebt.evaluatedAt)}</span>
+            <span>Fuente:{qualityDebt.source ? QUALITY_DEBT_SOURCE_LABELS[qualityDebt.source] : "Registros históricos de calidad"}</span>
+            <span>Reparación automática:{formatQualityDebtAttempts(qualityDebt)}</span>
+            <span>Tiempo de grabación:{formatQualityDebtTime(qualityDebt.evaluatedAt)}</span>
           </div>
           {qualityDebt.issueCodes.length > 0 ? (
             <div className="mt-3 flex flex-wrap items-center gap-1.5">
-              <span className="mr-1 text-xs text-amber-900/70">问题标记</span>
+              <span className="mr-1 text-xs text-amber-900/70">Signo de interrogación</span>
               {qualityDebt.issueCodes.map((code) => <Badge key={code} variant="secondary">{code}</Badge>)}
             </div>
           ) : null}
           <Button asChild size="sm" variant="outline" className="mt-3 bg-background text-foreground">
             <Link to={`/novels/${selectedChapter.novelId}/edit?stage=pipeline&chapterId=${encodeURIComponent(selectedChapter.id)}`}>
-              进入质量修复
+              Ingrese a la reparación de calidad
             </Link>
           </Button>
         </div>
@@ -187,22 +187,22 @@ export default function ChapterExecutionReferencePanel(props: ChapterExecutionRe
 
       <Tabs value={detailTab} onValueChange={(value) => onAssetTabChange(value as AssetTabKey)}>
         <TabsList className="grid h-auto w-full grid-cols-2 gap-1 rounded-2xl bg-muted/50 p-1.5">
-          <TabsTrigger value="taskSheet" className="rounded-xl text-xs">任务单</TabsTrigger>
-          <TabsTrigger value="sceneCards" className="rounded-xl text-xs">场景</TabsTrigger>
-          <TabsTrigger value="quality" className="rounded-xl text-xs">质量</TabsTrigger>
-          <TabsTrigger value="repair" className="rounded-xl text-xs">修复</TabsTrigger>
-          <TabsTrigger value="content" className="col-span-2 rounded-xl text-xs">上下文诊断</TabsTrigger>
+          <TabsTrigger value="taskSheet" className="rounded-xl text-xs">Hoja de tareas</TabsTrigger>
+          <TabsTrigger value="sceneCards" className="rounded-xl text-xs">Escena</TabsTrigger>
+          <TabsTrigger value="quality" className="rounded-xl text-xs">Calidad</TabsTrigger>
+          <TabsTrigger value="repair" className="rounded-xl text-xs">Reparación</TabsTrigger>
+          <TabsTrigger value="content" className="col-span-2 rounded-xl text-xs">Diagnóstico contextual</TabsTrigger>
         </TabsList>
 
         <TabsContent value="taskSheet" className="space-y-3">
           <div className="rounded-2xl border bg-muted/20 p-4">
-            <div className="text-xs text-muted-foreground">本章任务单</div>
+            <div className="text-xs text-muted-foreground">Hoja de tareas para este capítulo.</div>
             <div className="mt-3 whitespace-pre-wrap text-sm leading-7">
-              {selectedChapter.taskSheet?.trim() || "暂无任务单。你可以先让 AI 生成任务单，再回来继续写这章。"}
+              {selectedChapter.taskSheet?.trim() || "Aún no hay órdenes de tareas. Puede dejar que la IA genere la lista de tareas primero y luego regresar y continuar escribiendo el capítulo."}
             </div>
           </div>
-          <PanelHintCard title="章节目标" content={chapterObjective} />
-          <PanelHintCard title="最新状态" content={latestStateSnapshot?.summary || "暂无状态摘要。"} />
+          <PanelHintCard title="Objetivo del capítulo" content={chapterObjective} />
+          <PanelHintCard title="Último estado" content={latestStateSnapshot?.summary || "Aún no hay ningún resumen de estado disponible."} />
           <ChapterRuntimeContextCard
             runtimePackage={runtimePackage}
             chapterPlan={chapterPlan}
@@ -215,29 +215,29 @@ export default function ChapterExecutionReferencePanel(props: ChapterExecutionRe
           {scenePlan ? (
             <div className="space-y-3">
               <div className="rounded-2xl border bg-muted/20 p-4">
-                <div className="text-xs text-muted-foreground">场景预算合同</div>
+                <div className="text-xs text-muted-foreground">contrato de presupuesto de escena</div>
                 <div className="mt-3 grid grid-cols-2 gap-3">
-                  <MetricBadge label="章节目标" value={`${scenePlan.targetWordCount} 字`} />
-                  <MetricBadge label="场景数" value={String(scenePlan.scenes.length)} />
+                  <MetricBadge label="Objetivo del capítulo" value={`${scenePlan.targetWordCount} palabras`} />
+                  <MetricBadge label="Número de escenas" value={String(scenePlan.scenes.length)} />
                 </div>
               </div>
               {scenePlan.scenes.map((scene, index) => (
                 <div key={scene.key} className="rounded-2xl border bg-background p-4">
                   <div className="flex flex-wrap items-center gap-2">
-                    <Badge variant="outline">场景 {index + 1}</Badge>
-                    <Badge variant="secondary">{scene.targetWordCount} 字</Badge>
+                    <Badge variant="outline">escena {index + 1}</Badge>
+                    <Badge variant="secondary">{scene.targetWordCount} Palabras</Badge>
                   </div>
                   <div className="mt-3 text-sm font-semibold text-foreground">{scene.title}</div>
                   <div className="mt-2 text-sm leading-6 text-muted-foreground">{scene.purpose}</div>
                   <div className="mt-3 space-y-2">
-                    <PanelHintCard title="必须推进" content={scene.mustAdvance.join("；") || "无"} />
-                    <PanelHintCard title="必须保留" content={scene.mustPreserve.join("；") || "无"} />
-                    <PanelHintCard title="起始状态" content={scene.entryState} />
-                    <PanelHintCard title="结束状态" content={scene.exitState} />
+                    <PanelHintCard title="Debe avanzar" content={scene.mustAdvance.join(";") || "Ninguno"} />
+                    <PanelHintCard title="Debe ser retenido" content={scene.mustPreserve.join(";") || "Ninguno"} />
+                    <PanelHintCard title="Estado inicial" content={scene.entryState} />
+                    <PanelHintCard title="Estado final" content={scene.exitState} />
                   </div>
                   {scene.forbiddenExpansion.length > 0 ? (
                     <div className="mt-3 rounded-xl border border-amber-200 bg-amber-50/70 p-3 text-sm leading-6 text-amber-900">
-                      禁止展开：{scene.forbiddenExpansion.join("；")}
+                      Prohibida la ampliación:{scene.forbiddenExpansion.join(";")}
                     </div>
                   ) : null}
                 </div>
@@ -245,11 +245,11 @@ export default function ChapterExecutionReferencePanel(props: ChapterExecutionRe
             </div>
           ) : (
             <div className="rounded-2xl border bg-muted/20 p-4">
-              <div className="text-xs text-muted-foreground">场景拆解</div>
+              <div className="text-xs text-muted-foreground">Desmontaje de escena</div>
               <div className="mt-3 whitespace-pre-wrap text-sm leading-7">
                 {selectedChapter.sceneCards?.trim()
-                  ? "当前是旧版场景拆解文本，建议重新生成章节执行合同。"
-                  : "暂无场景拆解。"}
+                  ? "La versión actual es una versión antigua del texto de desmontaje de la escena. Se recomienda regenerar el contrato de ejecución del capítulo."
+                  : "Aún no hay un desglose de la escena."}
               </div>
             </div>
           )}
@@ -257,16 +257,16 @@ export default function ChapterExecutionReferencePanel(props: ChapterExecutionRe
 
         <TabsContent value="quality" className="space-y-3">
           <div className="grid grid-cols-2 gap-3">
-            <MetricBadge label="总体" value={String(chapterQualityReport?.overall ?? selectedChapter.qualityScore ?? "-")} />
-            <MetricBadge label="连贯性" value={String(chapterQualityReport?.coherence ?? "-")} />
-            <MetricBadge label="重复度" value={String(chapterQualityReport?.repetition ?? "-")} />
-            <MetricBadge label="节奏" value={String(chapterQualityReport?.pacing ?? selectedChapter.pacingScore ?? "-")} />
-            <MetricBadge label="文风" value={String(chapterQualityReport?.voice ?? "-")} />
-            <MetricBadge label="吸引力" value={String(chapterQualityReport?.engagement ?? "-")} />
+            <MetricBadge label="En general" value={String(chapterQualityReport?.overall ?? selectedChapter.qualityScore ?? "-")} />
+            <MetricBadge label="Coherencia" value={String(chapterQualityReport?.coherence ?? "-")} />
+            <MetricBadge label="Repetibilidad" value={String(chapterQualityReport?.repetition ?? "-")} />
+            <MetricBadge label="Ritmo" value={String(chapterQualityReport?.pacing ?? selectedChapter.pacingScore ?? "-")} />
+            <MetricBadge label="Estilo de escritura" value={String(chapterQualityReport?.voice ?? "-")} />
+            <MetricBadge label="Atracción" value={String(chapterQualityReport?.engagement ?? "-")} />
           </div>
 
           <div className="rounded-2xl border p-4 text-sm">
-            <div className="font-semibold text-foreground">最近审校问题</div>
+            <div className="font-semibold text-foreground">Problemas de revisión recientes</div>
             {reviewResult?.issues?.length ? (
               <div className="mt-3 space-y-2 text-xs text-muted-foreground">
                 {reviewResult.issues.slice(0, 5).map((item, index) => (
@@ -277,12 +277,12 @@ export default function ChapterExecutionReferencePanel(props: ChapterExecutionRe
                 ))}
               </div>
             ) : (
-              <div className="mt-3 text-xs leading-6 text-muted-foreground">当前没有最近审校问题。</div>
+              <div className="mt-3 text-xs leading-6 text-muted-foreground">Actualmente no hay problemas de revisión recientes.</div>
             )}
           </div>
 
           <div className="rounded-2xl border p-4 text-sm">
-            <div className="font-semibold text-foreground">结构化审计问题</div>
+            <div className="font-semibold text-foreground">Preguntas de auditoría estructuradas</div>
             {openAuditIssues.length > 0 ? (
               <div className="mt-3 space-y-2 text-xs text-muted-foreground">
                 {openAuditIssues.slice(0, 6).map((item) => (
@@ -293,7 +293,7 @@ export default function ChapterExecutionReferencePanel(props: ChapterExecutionRe
                 ))}
               </div>
             ) : (
-              <div className="mt-3 text-xs leading-6 text-muted-foreground">当前没有结构化审计问题。</div>
+              <div className="mt-3 text-xs leading-6 text-muted-foreground">Actualmente no hay preguntas de auditoría estructuradas.</div>
             )}
           </div>
 
@@ -310,17 +310,17 @@ export default function ChapterExecutionReferencePanel(props: ChapterExecutionRe
         <TabsContent value="repair" className="space-y-3">
           {repairingOtherChapter ? (
             <ReferenceNotice
-              title="还有其他章节正在后台修复"
-              description={`${repairStreamingChapterLabel ?? "另一章"} 仍在修复中。当前章节不会显示那一章的修复流，返回对应章节即可继续查看。`}
+              title="Hay otros capítulos en reparación en segundo plano."
+              description={`${repairStreamingChapterLabel ?? "Otro capitulo"} Aún en reparación. El capítulo actual no mostrará el flujo de reparación de ese capítulo. Puedes seguir viéndolo volviendo al capítulo correspondiente.`}
             />
           ) : null}
 
           {(isSelectedChapterRepairStreaming || hasVisibleRepairOutput) ? (
             <StreamOutput
-              title="问题修复输出"
+              title="Salida de solución de problemas"
               emptyText={isSelectedChapterRepairFinalizing
-                ? (repairRunStatus?.message ?? "修复文本已经输出完成，系统正在保存并复审。")
-                : "等待修复输出..."}
+                ? (repairRunStatus?.message ?? "El texto de reparación se ha generado y el sistema lo está guardando y revisando.")
+                : "Esperando resultado de corrección..."}
               content={visibleRepairStreamContent}
               isStreaming={isSelectedChapterRepairStreaming}
               onAbort={isSelectedChapterRepairFinalizing ? undefined : onAbortRepair}
@@ -328,9 +328,9 @@ export default function ChapterExecutionReferencePanel(props: ChapterExecutionRe
           ) : null}
 
           <div className="rounded-2xl border bg-muted/20 p-4">
-            <div className="text-xs text-muted-foreground">修复记录</div>
+            <div className="text-xs text-muted-foreground">Registro de reparación</div>
             <div className="mt-3 max-h-[420px] overflow-y-auto whitespace-pre-wrap text-sm leading-7">
-              {selectedChapter.repairHistory?.trim() || "暂无修复记录。"}
+              {selectedChapter.repairHistory?.trim() || "Aún no hay registro de reparación."}
             </div>
           </div>
         </TabsContent>

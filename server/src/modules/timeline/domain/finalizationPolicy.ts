@@ -16,7 +16,7 @@ export function chapterGoalFromContext(contextPackage: GenerationContextPackage 
     contextPackage?.chapterMission?.objective,
     contextPackage?.chapter.expectation,
     contextPackage?.plan?.objective,
-  ]).join("\n") || "推进当前章节任务";
+  ]).join("\n") || "Avanzar en las tareas del capítulo actual";
 }
 
 export function fallbackTimeLabel(input: {
@@ -26,7 +26,7 @@ export function fallbackTimeLabel(input: {
 }): string {
   return input.timelineContext?.currentTime?.label?.trim()
     || input.contextPackage?.timelineContext?.currentTime?.label?.trim()
-    || `第 ${input.chapterIndex} 章`;
+    || `Cap. ${input.chapterIndex}`;
 }
 
 export function openHookIds(context: TimelineContextForChapter | null | undefined): string[] {

@@ -32,7 +32,7 @@ export function CharacterDrawer({ book, character, readingOrder, preview, onClos
   const history = visibleCharacterHistory(preview ? previewCharacterHistory[character.id] ?? [] : historyQuery.data?.data ?? [], latest ? "latest" : readingOrder);
   const latestCharacter = latestQuery.data?.data?.characters.find(row => row.characterId === character.id);
   const currentGoal = preview ? character.currentGoal : latestCharacter?.currentGoal;
-  const currentState = preview ? (character.id === "lin" ? "接纳沈知入城，开始调查旧城印记。" : null) : latestCharacter?.currentState;
+  const currentState = preview ? (character.id === "lin" ? "Acepta a Shen Zhi en la ciudad y comienza a investigar las marcas de la ciudad vieja." : null) : latestCharacter?.currentState;
   const adjustmentQuery = useQuery({
     queryKey: characterForwardPreviewKey(book.novel.id, character.id),
     queryFn: () => getCharacterForwardPreview(book.novel.id, character.id),
@@ -40,41 +40,41 @@ export function CharacterDrawer({ book, character, readingOrder, preview, onClos
   });
   const adjustment = adjustmentQuery.data;
   return <Dialog open onOpenChange={open => { if (!open) onClose(); }}>
-    <AppDialogContent title={character.name} description="查看角色变化及其章节来源" className="left-auto right-0 top-0 h-dvh max-h-dvh w-full max-w-md translate-x-0 translate-y-0 rounded-none sm:w-[420px]">
-      <div className="flex gap-2" role="group" aria-label="角色记录范围">
-        <Button size="sm" variant={!latest ? "default" : "ghost"} onClick={() => setLatest(false)}>读到本章</Button>
-        <Button size="sm" variant={latest ? "default" : "ghost"} onClick={() => setLatest(true)}>最新状态</Button>
+    <AppDialogContent title={character.name} description="Ver los cambios de personajes y sus orígenes de capítulos." className="left-auto right-0 top-0 h-dvh max-h-dvh w-full max-w-md translate-x-0 translate-y-0 rounded-none sm:w-[420px]">
+      <div className="flex gap-2" role="group" aria-label="Rango de registro de roles">
+        <Button size="sm" variant={!latest ? "default" : "ghost"} onClick={() => setLatest(false)}>Lee este capitulo</Button>
+        <Button size="sm" variant={latest ? "default" : "ghost"} onClick={() => setLatest(true)}>Último estado</Button>
       </div>
-      <p className="mt-3 text-xs leading-6 text-muted-foreground">{latest ? "包含全书已保存的记录，可能透露后续剧情。" : readingOrder === null ? "先选择一个阅读章节，再查看对应范围的变化记录。" : `仅展示第 ${readingOrder} 章及以前的变化记录。`}</p>
-      {onResources ? <Button size="sm" variant="ghost" className="mt-3" onClick={()=>onResources(character.id)}>查看背包与资源</Button> : null}
+      <p className="mt-3 text-xs leading-6 text-muted-foreground">{latest ? "Contiene los registros guardados de todo el libro, que pueden revelar tramas posteriores." : readingOrder === null ? "Primero seleccione un capítulo para leer y luego vea los registros de cambios en el rango correspondiente." : `Mostrar solo el ${readingOrder} Registros de cambios de capítulo y anteriores.`}</p>
+      {onResources ? <Button size="sm" variant="ghost" className="mt-3" onClick={()=>onResources(character.id)}>Ver mochilas y recursos</Button> : null}
       {!preview && onAdjust ? <div className="mt-3 space-y-2">
         <Button size="sm" variant="outline" disabled={!adjustment || !!adjustment.blockedReason || adjustmentQuery.isError}
-          onClick={() => { if (adjustment) onAdjust(adjustment); }}>从后续章节起调整</Button>
+          onClick={() => { if (adjustment) onAdjust(adjustment); }}>Ajustes de capítulos posteriores</Button>
         {adjustmentQuery.isError ? <p role="alert" className="text-xs text-destructive">
-          {adjustmentQuery.error.message}<Button size="sm" variant="ghost" onClick={() => void adjustmentQuery.refetch()}>重试</Button>
+          {adjustmentQuery.error.message}<Button size="sm" variant="ghost" onClick={() => void adjustmentQuery.refetch()}>Reintentar</Button>
         </p> : adjustment?.blockedReason ? <p className="text-xs text-muted-foreground">{adjustment.blockedReason}</p> : null}
       </div> : null}
       {latest ? <section className="mt-6 space-y-3 rounded-md bg-muted/40 p-4">
-        <h3 className="text-sm font-medium">最新保存状态</h3>
-        {!preview && latestQuery.isError ? <p role="alert" className="text-sm text-destructive">最新状态读取失败。<Button size="sm" variant="ghost" onClick={() => void latestQuery.refetch()}>重新读取</Button></p>
-          : latestQuery.isLoading && !preview ? <p className="text-sm text-muted-foreground">正在读取最新状态…</p>
-            : <><p className="whitespace-pre-wrap text-sm leading-7">{currentState || "暂无状态描述"}</p><p className="whitespace-pre-wrap text-sm leading-7"><span className="text-muted-foreground">行动目标：</span>{currentGoal || "暂无行动目标"}</p><p className="text-xs text-muted-foreground">此状态未提供逐章历史快照。</p></>}
+        <h3 className="text-sm font-medium">Último estado guardado</h3>
+        {!preview && latestQuery.isError ? <p role="alert" className="text-sm text-destructive">No se pudo leer el estado más reciente.<Button size="sm" variant="ghost" onClick={() => void latestQuery.refetch()}>Releer</Button></p>
+          : latestQuery.isLoading && !preview ? <p className="text-sm text-muted-foreground">Leyendo el último estado...</p>
+            : <><p className="whitespace-pre-wrap text-sm leading-7">{currentState || "Aún no hay descripción de estado"}</p><p className="whitespace-pre-wrap text-sm leading-7"><span className="text-muted-foreground">Objetivos de acción:</span>{currentGoal || "Aún no hay objetivo de acción"}</p><p className="text-xs text-muted-foreground">Este estado no proporciona una instantánea histórica capítulo por capítulo.</p></>}
       </section> : null}
       <CharacterAppearances novelId={book.novel.id} characterId={character.id} preview={preview} boundary={latest ? "latest" : readingOrder} planning={book.planning} notices={book.characterForwardPlanNotices} onSelect={target=>{if(target.kind==="chapter") onChapter(target.id);else onPlan(target.id);onClose();}}/>
-      <section className="mt-7"><h3 className="text-sm font-semibold">其他变化记录</h3>
-        {!preview && historyQuery.isError ? <p role="alert" className="mt-4 text-sm text-destructive">变化记录读取失败。<Button size="sm" variant="ghost" onClick={() => void historyQuery.refetch()}>重新读取</Button></p>
-          : !preview && historyQuery.isLoading ? <p className="mt-4 text-sm text-muted-foreground">正在读取变化记录…</p>
-            : history.length === 0 ? <p className="mt-4 text-sm leading-7 text-muted-foreground">{readingOrder === null && !latest ? "尚未选择阅读章节。" : "这个范围暂无有来源的变化记录。角色资料可在下方查看。"}</p>
+      <section className="mt-7"><h3 className="text-sm font-semibold">Otros registros de cambios</h3>
+        {!preview && historyQuery.isError ? <p role="alert" className="mt-4 text-sm text-destructive">Error en la lectura del registro de cambio.<Button size="sm" variant="ghost" onClick={() => void historyQuery.refetch()}>Releer</Button></p>
+          : !preview && historyQuery.isLoading ? <p className="mt-4 text-sm text-muted-foreground">Leyendo registros de cambios...</p>
+            : history.length === 0 ? <p className="mt-4 text-sm leading-7 text-muted-foreground">{readingOrder === null && !latest ? "No se han seleccionado capítulos para leer." : "Actualmente no hay cambios documentados en este rango. Los perfiles de personajes se pueden encontrar a continuación."}</p>
               : <ol className="mt-3 divide-y divide-border/50">{history.map(event => {
                 const source = book.chapters.find(chapter => event.chapterId ? chapter.id === event.chapterId : chapter.order === event.chapterOrder);
                 return <li key={event.id} className="space-y-2 py-4"><h4 className="text-sm font-medium">{event.title}</h4><p className="whitespace-pre-wrap text-sm leading-7 text-foreground/80">{event.content}</p>
-                  {source ? <Button size="sm" variant="ghost" className="-ml-3 text-xs text-primary" onClick={() => { onChapter(source.id); onClose(); }}>来源：第 {source.order} 章 · {source.title}</Button>
-                    : <p className="text-xs text-muted-foreground">{typeof event.chapterOrder === "number" ? `来源：第 ${event.chapterOrder} 章（正文未在目录中）` : "章节来源未标注"}</p>}
+                  {source ? <Button size="sm" variant="ghost" className="-ml-3 text-xs text-primary" onClick={() => { onChapter(source.id); onClose(); }}>Fuente: No. {source.order} capítulo · {source.title}</Button>
+                    : <p className="text-xs text-muted-foreground">{typeof event.chapterOrder === "number" ? `Fuente: No. ${event.chapterOrder} Capítulo (el texto no está en el índice)` : "Fuente del capítulo no anotada"}</p>}
                 </li>;
               })}</ol>}
       </section>
-      <details className="mt-6 border-t border-border/50 pt-5"><summary className="cursor-pointer text-sm font-medium">角色设定 · 全书资料</summary><dl className="mt-4 space-y-4 text-sm leading-7">
-        <div><dt className="text-muted-foreground">身份</dt><dd>{character.role}</dd></div><div><dt className="text-muted-foreground">性格</dt><dd>{character.personality || "尚未填写"}</dd></div><div><dt className="text-muted-foreground">故事作用</dt><dd>{character.storyFunction || "尚未填写"}</dd></div>
+      <details className="mt-6 border-t border-border/50 pt-5"><summary className="cursor-pointer text-sm font-medium">Configuración de personajes·Información completa del libro</summary><dl className="mt-4 space-y-4 text-sm leading-7">
+        <div><dt className="text-muted-foreground">Identidad</dt><dd>{character.role}</dd></div><div><dt className="text-muted-foreground">Personaje</dt><dd>{character.personality || "Aún no completado"}</dd></div><div><dt className="text-muted-foreground">Función en la historia</dt><dd>{character.storyFunction || "Aún no completado"}</dd></div>
       </dl></details>
     </AppDialogContent>
   </Dialog>;

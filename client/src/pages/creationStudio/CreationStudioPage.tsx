@@ -36,7 +36,7 @@ export default function CreationStudioPage() {
   const taskId = searchParams.get("taskId")?.trim() ?? "";
   const shortStoryEntry = searchParams.get("form") === "short_story";
   const longNovelEntry = searchParams.get("form") === "long_novel";
-  const [referenceGoal, setReferenceGoal] = useState("借鉴结构、节奏与写法，创作新的完整短篇");
+  const [referenceGoal, setReferenceGoal] = useState("Aprovecha la estructura, el ritmo y la escritura para crear una historia corta nueva y completa.");
   const [referenceSections, setReferenceSections] = useState<BookAnalysisSectionKey[]>([]);
   const [idea, setIdea] = useState("");
   const [selectedDirectionId, setSelectedDirectionId] = useState("");
@@ -123,12 +123,12 @@ export default function CreationStudioPage() {
       if (!created) return;
       queryClient.setQueryData(["creation-studio", created.taskId], response);
       setSearchParams({ taskId: created.taskId, ...(referenceRequested ? {form:"short_story"} : {}) }, { replace: true });
-      if (created.status === "failed") { toast.error(created.diagnostic?.message ?? created.error ?? "创作方向未完成，请查看失败信息后继续。"); return; }
-      toast.success("AI 已整理好两个可选方向。");
+      if (created.status === "failed") { toast.error(created.diagnostic?.message ?? created.error ?? "La dirección creativa no está completa, verifique el mensaje de error antes de continuar."); return; }
+      toast.success("La IA ha seleccionado dos direcciones alternativas.");
     },
     onError: async (error) => {
       if (taskId) await queryClient.invalidateQueries({ queryKey: ["creation-studio", taskId] });
-      toast.error(error instanceof Error ? error.message : "暂时无法理解这个想法，请重试。");
+      toast.error(error instanceof Error ? error.message : "No puedo entender esta idea en este momento, inténtalo de nuevo.");
     },
   });
 
@@ -137,20 +137,20 @@ export default function CreationStudioPage() {
       narrativeForm,
       targetWordCount: normalizeTarget(narrativeForm, targetWordCount),
       writingPlatformPreference: writingPlatform,
-      feedback: "请按我调整后的作品规模与目标平台重新适配两个方向。",
+      feedback: "Reajuste las dos direcciones de acuerdo con mi escala de trabajo ajustada y mi plataforma de destino.",
     }),
     onSuccess: async (response) => {
       setConfirmedBaseline(`${narrativeForm}:${normalizeTarget(narrativeForm, targetWordCount)}:${writingPlatform}`);
       setSelectedDirectionId(response.data?.interpretation?.directions[0].id ?? "");
       await queryClient.invalidateQueries({ queryKey: ["creation-studio", taskId] });
-      toast.success("方向已按新的作品规模更新。");
+      toast.success("Se han actualizado las instrucciones para la nueva escala del trabajo.");
     },
-    onError: async (error) => { await queryClient.invalidateQueries({queryKey:["creation-studio",taskId]}); toast.error(error instanceof Error ? error.message : "更新方向失败。"); },
+    onError: async (error) => { await queryClient.invalidateQueries({queryKey:["creation-studio",taskId]}); toast.error(error instanceof Error ? error.message : "Error en la dirección de actualización."); },
   });
 
   const confirmMutation = useMutation({
     mutationFn: () => {
-      if (!selectedDirection) throw new Error("请先选择一个方向。");
+      if (!selectedDirection) throw new Error("Primero elija una dirección.");
       return confirmCreationDirection(taskId, {
         directionId: selectedDirection.id,
         narrativeForm,
@@ -162,22 +162,22 @@ export default function CreationStudioPage() {
     onSuccess: (response) => {
       if (response.data?.resumeRoute) navigate(response.data.resumeRoute);
     },
-    onError: (error) => toast.error(error instanceof Error ? error.message : "开始创作失败。"),
+    onError: (error) => toast.error(error instanceof Error ? error.message : "No se pudo iniciar la creación."),
   });
 
   if (taskId && taskQuery.isLoading) {
-    return <CenteredStatus label="正在恢复你的创作想法…" />;
+    return <CenteredStatus label="Reviviendo tus ideas creativas..." />;
   }
 
   return (
     <div className="w-full space-y-10 px-4 py-5 sm:px-6 sm:py-7 lg:px-8">
       <div className="flex w-full flex-wrap items-center justify-between gap-3">
         <Button asChild variant="ghost" size="sm" className="-ml-3 text-muted-foreground hover:text-foreground">
-          <Link to="/novels"><ArrowLeft className="mr-2 h-4 w-4" />返回作品列表</Link>
+          <Link to="/novels"><ArrowLeft className="mr-2 h-4 w-4" />Volver a la lista de trabajo</Link>
         </Button>
         <Button asChild variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
           <Link to="/novels/create">
-            完整设置
+            Configuración completa
             <ArrowUpRight className="ml-1.5 h-3.5 w-3.5" aria-hidden="true" />
           </Link>
         </Button>
@@ -185,31 +185,31 @@ export default function CreationStudioPage() {
 
       <section className="w-full pt-3 sm:pt-8">
         <div className="text-[11px] font-medium uppercase tracking-[0.24em] text-muted-foreground">
-          {shortStoryEntry ? "短篇创作 · 3,000—30,000 字" : "AI 创作工作室"}
+          {shortStoryEntry ? "Escritura de cuentos · 3000—30 000 palabras" : "Estudio de creación de IA"}
         </div>
         <h1 className="mt-4 max-w-3xl text-4xl font-semibold leading-[1.08] tracking-[-0.045em] text-foreground sm:text-5xl lg:text-[3.5rem]">
-          {shortStoryEntry ? "从一个念头，抵达完整短篇" : "从一个念头，抵达完整作品"}
+          {shortStoryEntry ? "De una idea a un cuento completo" : "De una idea a una obra completa"}
         </h1>
         <p className="mt-5 max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base">
           {shortStoryEntry
-            ? "写下一段画面、一个人物，或者某种很想表达的情绪。AI 会把它整理成两个清晰方向，确认后直接写成完整作品。"
-            : "不必先理解结构和规划。写下最想表达的部分，AI 会整理作品规模和两个清晰方向。"}
+            ? "Escribe una imagen, un personaje o alguna emoción que quieras expresar. AI lo organizará en dos direcciones claras y lo escribirá directamente en un trabajo completo después de la confirmación."
+            : "No es necesario entender primero la estructura y la planificación. Escriba la parte que más desee expresar y la IA clasificará la escala del trabajo y dos direcciones claras."}
         </p>
       </section>
 
       {task?.status === "failed" ? <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-4 text-sm" role="status">
-        <p>{task.diagnostic?.message ?? task.error ?? "方向生成未完成，可以从本页继续。"}</p>
-        {task.diagnostic ? <p className="mt-2 text-xs text-muted-foreground">诊断标识：{task.diagnostic.id} · 本次尝试 {task.diagnostic.attempts} 次 · {task.diagnostic.model ?? "模型未知"}</p> : null}
-        {retryWaiting && retryAt ? <p className="mt-2 text-xs text-muted-foreground">可在 {new Date(retryAt).toLocaleTimeString()} 后继续。</p> : null}
-        {interpretation ? <Button className="mt-3" variant="outline" onClick={() => regenerateMutation.mutate()} disabled={regenerateMutation.isPending || retryWaiting}>重新整理方向</Button> : null}
+        <p>{task.diagnostic?.message ?? task.error ?? "La generación de dirección no está completa, puede continuar desde esta página."}</p>
+        {task.diagnostic ? <p className="mt-2 text-xs text-muted-foreground">Identificación de diagnóstico:{task.diagnostic.id} · Este intento {task.diagnostic.attempts} Segunda categoría · {task.diagnostic.model ?? "Modelo desconocido"}</p> : null}
+        {retryWaiting && retryAt ? <p className="mt-2 text-xs text-muted-foreground">Disponible en {new Date(retryAt).toLocaleTimeString()} Continuar más tarde.</p> : null}
+        {interpretation ? <Button className="mt-3" variant="outline" onClick={() => regenerateMutation.mutate()} disabled={regenerateMutation.isPending || retryWaiting}>Reorientar</Button> : null}
       </div> : null}
       {task?.reference ? <div className="space-y-3"><ShortStoryReferenceSummary reference={task.reference} confirmed={Boolean(task.novelId)} />
-        {task.reference.sourceState !== "available" && !task.novelId ? <Button variant="outline" onClick={() => regenerateMutation.mutate()} disabled={regenerateMutation.isPending || retryWaiting}>重新读取参考并生成方向</Button> : null}
-      </div> : referenceRequested ? <section className="space-y-3 rounded-xl bg-muted/30 p-4" aria-label="参考创作设置">
-        <p className="text-sm font-medium">参考小说：{sourceAnalysis?.documentTitle ?? "正在读取参考来源…"}</p>
-        {referenceUnavailable && !referenceQuery.isLoading ? <p className="text-sm text-destructive">参考来源不可用或尚未完成分析，请返回参考小说入口重新选择。</p> : null}
-        <label className="block text-sm">希望借鉴什么<Input className="mt-2" value={referenceGoal} maxLength={4000} onChange={(event) => setReferenceGoal(event.target.value)} /></label>
-        <div className="flex flex-wrap gap-4 text-sm" aria-label="选择拆书结论">{availableReferenceSections.map((section) => <label className="flex items-center gap-2" key={section.sectionKey}>
+        {task.reference.sourceState !== "available" && !task.novelId ? <Button variant="outline" onClick={() => regenerateMutation.mutate()} disabled={regenerateMutation.isPending || retryWaiting}>Vuelva a leer la referencia y genere instrucciones.</Button> : null}
+      </div> : referenceRequested ? <section className="space-y-3 rounded-xl bg-muted/30 p-4" aria-label="Configuración de creación de referencias">
+        <p className="text-sm font-medium">Novela de referencia:{sourceAnalysis?.documentTitle ?? "Cargando fuentes de referencia…"}</p>
+        {referenceUnavailable && !referenceQuery.isLoading ? <p className="text-sm text-destructive">La fuente de referencia no está disponible o el análisis no se ha completado. Regrese a la entrada de la novela de referencia y seleccione nuevamente.</p> : null}
+        <label className="block text-sm">¿De qué esperas aprender?<Input className="mt-2" value={referenceGoal} maxLength={4000} onChange={(event) => setReferenceGoal(event.target.value)} /></label>
+        <div className="flex flex-wrap gap-4 text-sm" aria-label="Elige abrir la conclusión del libro.">{availableReferenceSections.map((section) => <label className="flex items-center gap-2" key={section.sectionKey}>
           <input type="checkbox" checked={referenceSections.includes(section.sectionKey)} onChange={(event) => setReferenceSections((keys) => event.target.checked ? [...keys,section.sectionKey] : keys.filter((key) => key !== section.sectionKey))} />
           {BOOK_ANALYSIS_SECTIONS.find((item) => item.key === section.sectionKey)?.title ?? section.title}
         </label>)}</div>
@@ -221,9 +221,9 @@ export default function CreationStudioPage() {
         >
           <div className="flex items-start justify-between gap-4 px-1 pt-1">
             <div>
-              <div className="text-xs font-medium text-muted-foreground">01 · 起点</div>
+              <div className="text-xs font-medium text-muted-foreground">01 · Punto de partida</div>
               <h2 id="creation-idea-heading" className="mt-2 text-xl font-semibold tracking-[-0.02em]">
-                故事从哪里开始？
+                ¿Dónde comienza la historia?
               </h2>
             </div>
             {idea ? (
@@ -237,34 +237,34 @@ export default function CreationStudioPage() {
             readOnly={Boolean(taskId)}
             onChange={(event) => setIdea(event.target.value)}
             placeholder={referenceRequested
-              ? "可留空，AI 会按参考目标创作原创短篇；也可补充新人物或冲突……"
-              : "例如：一个总能听见谎言的女孩，遇见了唯一无法判断真假的人……"}
-            aria-label={shortStoryEntry ? "写下短篇故事想法" : "写下故事想法"}
+              ? "Puede dejarlo en blanco y la IA creará una historia corta original basada en el objetivo de referencia; también puedes agregar nuevos personajes o conflictos..."
+              : "Por ejemplo: una chica que siempre puede oír mentiras se encuentra con la única persona que no puede distinguir la verdad de las mentiras..."}
+            aria-label={shortStoryEntry ? "Escribe ideas para cuentos cortos." : "Escribir ideas para historias"}
             className="mt-5 min-h-[180px] w-full resize-none bg-transparent px-1 py-1 text-base leading-7 text-foreground outline-none placeholder:text-muted-foreground/60 sm:text-lg sm:leading-8"
             maxLength={12000}
             autoFocus
           />
           <div className="flex flex-col gap-3 border-t border-border/60 pt-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex min-w-0 items-center gap-2 text-sm text-muted-foreground">
-              <span className="shrink-0">目标平台</span>
+              <span className="shrink-0">Plataforma de destino</span>
               <Select
                 value={initialPlatformPreference}
                 onValueChange={(value) => setInitialPlatformPreference(value as WritingPlatformPreference)}
               >
-                <SelectTrigger aria-label="选择目标平台" className="h-9 min-w-[11rem] rounded-md px-2.5 text-sm">
+                <SelectTrigger aria-label="Seleccionar plataforma de destino" className="h-9 min-w-[11rem] rounded-md px-2.5 text-sm">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="ai_recommend">让 AI 推荐</SelectItem>
-                  <SelectItem value="fanqie_free">番茄免费网文</SelectItem>
-                  {!shortStoryEntry ? <SelectItem value="qidian_male">起点男频</SelectItem> : null}
-                  {!shortStoryEntry ? <SelectItem value="jinjiang_female">晋江女频</SelectItem> : null}
-                  <SelectItem value="zhihu_story">知乎短故事</SelectItem>
+                  <SelectItem value="ai_recommend">Deja que AI te recomiende</SelectItem>
+                  <SelectItem value="fanqie_free">Artículos web sin tomate</SelectItem>
+                  {!shortStoryEntry ? <SelectItem value="qidian_male">Canal masculino qidian</SelectItem> : null}
+                  {!shortStoryEntry ? <SelectItem value="jinjiang_female">Canal femenino de jinjiang</SelectItem> : null}
+                  <SelectItem value="zhihu_story">Cuentos cortos de Zhihu.</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-              <span className="text-xs leading-5 text-muted-foreground">{referenceRequested ? "可不填脑洞，AI 会按参考目标生成原创短篇方向。" : "人物、画面、冲突，写下任何一个就够了。"}</span>
+              <span className="text-xs leading-5 text-muted-foreground">{referenceRequested ? "No es necesario que llenes tu imaginación, la IA generará instrucciones originales para historias cortas basadas en objetivos de referencia." : "Personajes, escenas, conflictos, simplemente escribe cualquiera de ellos."}</span>
               <Button
                 size="lg"
                 className="h-11 rounded-full px-6 shadow-none"
@@ -272,7 +272,7 @@ export default function CreationStudioPage() {
                 disabled={(!idea.trim() && !canGenerateWithoutIdea) || interpretMutation.isPending || retryWaiting || !referenceSelectionReady}
               >
                 {interpretMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-                生成创作方向
+                Generar dirección creativa
               </Button>
             </div>
           </div>
@@ -282,13 +282,13 @@ export default function CreationStudioPage() {
           <Card className="border-border/70 bg-muted/20">
             <CardContent className="grid gap-5 p-5 md:grid-cols-[minmax(0,1fr)_18rem]">
               <div>
-                <div className="text-xs font-medium uppercase tracking-wider text-primary">AI 对作品的理解</div>
+                <div className="text-xs font-medium uppercase tracking-wider text-primary">La comprensión de las obras por parte de la IA</div>
                 <p className="mt-2 text-sm leading-7 text-foreground">{interpretation.understanding}</p>
                 <p className="mt-2 text-sm leading-6 text-muted-foreground">{interpretation.recommendationReason}</p>
-                <p className="mt-2 text-sm leading-6 text-muted-foreground">平台建议：{interpretation.writingPlatformReason}</p>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">Recomendaciones de plataforma:{interpretation.writingPlatformReason}</p>
                 {interpretation.productionFoundation ? (
                   <div className="mt-4 border-t border-border/60 pt-3">
-                    <div className="text-xs text-muted-foreground">AI 建议的创作底座</div>
+                    <div className="text-xs text-muted-foreground">Base creativa sugerida por IA</div>
                     <div className="mt-1 text-sm font-medium text-foreground">
                       {interpretation.productionFoundation.genre.path}
                       <span className="mx-2 text-muted-foreground">×</span>
@@ -321,14 +321,14 @@ export default function CreationStudioPage() {
 
           {scaleNeedsRefresh ? (
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-300/60 bg-amber-50/50 px-4 py-3 dark:bg-amber-950/10">
-              <p className="text-sm text-muted-foreground">作品规模或目标平台变了，先让 AI 重新适配方向。</p>
+              <p className="text-sm text-muted-foreground">Si cambia la escala del trabajo o la plataforma de destino, deje que la IA vuelva a adaptar la dirección primero.</p>
               <Button
                 variant="outline"
                 onClick={() => regenerateMutation.mutate()}
                 disabled={regenerateMutation.isPending}
               >
                 <RefreshCw className={cn("mr-2 h-4 w-4", regenerateMutation.isPending && "animate-spin")} />
-                按新规模更新方向
+                Actualizar direcciones a una nueva escala
               </Button>
             </div>
           ) : null}
@@ -346,9 +346,9 @@ export default function CreationStudioPage() {
 
           <div className="sticky bottom-3 z-10 flex flex-col gap-3 rounded-2xl border bg-background/95 p-4 shadow-lg backdrop-blur sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <div className="text-sm font-medium">{selectedDirection ? `将以《${selectedDirection.title}》开始` : "请选择一个方向"}</div>
+              <div className="text-sm font-medium">{selectedDirection ? `se basará en "${selectedDirection.title}"comenzar` : "Por favor elige una dirección"}</div>
               <div className="mt-1 text-xs text-muted-foreground">
-                {narrativeForm === "short_story" ? "会直接生成一篇连续完整的短篇作品。" : "会交给长篇自动导演继续完成整书准备。"}
+                {narrativeForm === "short_story" ? "Se generará directamente un trabajo breve continuo y completo." : "Se entregará al director automático del largometraje para que continúe con la preparación de todo el libro."}
               </div>
             </div>
             <Button
@@ -357,7 +357,7 @@ export default function CreationStudioPage() {
               disabled={!selectedDirection || scaleNeedsRefresh || confirmMutation.isPending || task?.status === "failed" || Boolean(task?.reference && task.reference.sourceState !== "available")}
             >
               {confirmMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Check className="mr-2 h-4 w-4" />}
-              确认这个方向并开始
+              Confirma esta dirección y comienza.
             </Button>
           </div>
         </div>
@@ -390,10 +390,10 @@ function DirectionCard(props: {
           </div>
           <p className="text-sm leading-7 text-foreground">{direction.premise}</p>
           <div className="grid gap-3 text-sm sm:grid-cols-2">
-            <DirectionFact label="核心体验" value={direction.coreExperience} />
-            <DirectionFact label="主角" value={direction.protagonist} />
-            <DirectionFact label="主要冲突" value={direction.centralConflict} />
-            <DirectionFact label="结尾回报" value={direction.endingPromise} />
+            <DirectionFact label="Experiencia central" value={direction.coreExperience} />
+            <DirectionFact label="Protagonista" value={direction.protagonist} />
+            <DirectionFact label="Conflicto principal" value={direction.centralConflict} />
+            <DirectionFact label="Finalizar el pago" value={direction.endingPromise} />
           </div>
           <div className="flex flex-wrap gap-2">
             {direction.styleKeywords.map((keyword) => (
@@ -426,7 +426,7 @@ function ScaleControls(props: {
 }) {
   return (
     <div className="space-y-3 rounded-xl border bg-background p-4">
-      <div className="text-xs font-medium text-muted-foreground">作品规模</div>
+      <div className="text-xs font-medium text-muted-foreground">Escala de trabajo</div>
       <div className="grid grid-cols-2 gap-2">
         <Button
           type="button"
@@ -434,7 +434,7 @@ function ScaleControls(props: {
           variant={props.narrativeForm === "short_story" ? "default" : "outline"}
           onClick={() => props.onFormChange("short_story")}
         >
-          短篇
+          cuento corto
         </Button>
         <Button
           type="button"
@@ -443,11 +443,11 @@ function ScaleControls(props: {
           disabled={props.shortOnly}
           onClick={() => props.onFormChange("long_novel")}
         >
-          长篇
+          larga historia
         </Button>
       </div>
       <label className="block">
-        <span className="text-xs text-muted-foreground">目标字数</span>
+        <span className="text-xs text-muted-foreground">Palabras objetivo</span>
         <Input
           className="mt-1"
           type="number"
@@ -459,7 +459,7 @@ function ScaleControls(props: {
         />
       </label>
       <div className="block">
-        <span className="text-xs text-muted-foreground">目标平台</span>
+        <span className="text-xs text-muted-foreground">Plataforma de destino</span>
         <Select
           value={props.writingPlatform}
           onValueChange={(value) => props.onPlatformChange(value as WritingPlatform)}
@@ -468,13 +468,13 @@ function ScaleControls(props: {
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="fanqie_free">番茄免费网文</SelectItem>
-            {props.narrativeForm === "long_novel" ? <SelectItem value="qidian_male">起点男频</SelectItem> : null}
-            {props.narrativeForm === "long_novel" ? <SelectItem value="jinjiang_female">晋江女频</SelectItem> : null}
-            {props.narrativeForm === "short_story" ? <SelectItem value="zhihu_story">知乎短故事</SelectItem> : null}
+            <SelectItem value="fanqie_free">Artículos web sin tomate</SelectItem>
+            {props.narrativeForm === "long_novel" ? <SelectItem value="qidian_male">Canal masculino qidian</SelectItem> : null}
+            {props.narrativeForm === "long_novel" ? <SelectItem value="jinjiang_female">Canal femenino de jinjiang</SelectItem> : null}
+            {props.narrativeForm === "short_story" ? <SelectItem value="zhihu_story">Cuentos cortos de Zhihu.</SelectItem> : null}
           </SelectContent>
         </Select>
-        <p className="mt-2 text-[11px] leading-5 text-muted-foreground">AI 会按平台调整开篇、推进、回报和语言读感。</p>
+        <p className="mt-2 text-[11px] leading-5 text-muted-foreground">La IA ajustará la apertura, la progresión, la recompensa y la lectura del idioma según la plataforma.</p>
       </div>
     </div>
   );

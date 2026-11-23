@@ -117,10 +117,10 @@ function updateBootstrapProgress(): void {
     setBootstrapSnapshot(createBootstrapSnapshot({
       state: "starting-server",
       stage: "server-starting",
-      title: "正在启动本地写作引擎",
+      title: "Iniciando el motor local de escritura",
       detail: rendererReady
-        ? "桌面启动壳已经显示，正在等待打包后的本地服务进入可用状态。"
-        : "正在拉起桌面本地服务，并准备用户数据目录。",
+        ? "La pantalla de arranque ya está visible; esperando a que el servicio local empaquetado esté disponible."
+        : "Arrancando el servicio local de escritorio y preparando el directorio de datos del usuario.",
     }));
     return;
   }
@@ -129,8 +129,8 @@ function updateBootstrapProgress(): void {
     setBootstrapSnapshot(createBootstrapSnapshot({
       state: "loading-ui",
       stage: "server-healthy",
-      title: "正在加载桌面工作区",
-      detail: "本地服务已经可用，正在渲染桌面端首屏工作区。",
+      title: "Cargando el espacio de trabajo",
+      detail: "El servicio local ya está disponible; preparando la pantalla inicial del escritorio.",
     }));
     return;
   }
@@ -138,8 +138,8 @@ function updateBootstrapProgress(): void {
   setBootstrapSnapshot(createBootstrapSnapshot({
     state: "ready",
     stage: "main-window-shown",
-    title: "桌面工作区已就绪",
-    detail: "启动壳、本地服务和工作区界面都已准备完成。",
+    title: "Espacio de trabajo listo",
+    detail: "La pantalla de arranque, el servicio local y la interfaz del espacio de trabajo están listos.",
     canRetry: false,
   }));
   maybeScheduleUpdateCheck();
@@ -156,8 +156,8 @@ function showMainWindowIfReady(): void {
   appendBootstrapStage(
     "main-window-shown",
     serverHealthy
-      ? "主窗口已经显示。"
-      : "主窗口已经显示，本地服务仍在继续启动中。",
+      ? "La ventana principal ya está visible."
+      : "La ventana principal ya está visible; el servicio local sigue arrancando.",
   );
   closeSplashWindow();
   updateBootstrapProgress();
@@ -233,14 +233,14 @@ function createSplashHtml(): string {
   `;
 
   return `<!DOCTYPE html>
-  <html lang="zh-CN">
+  <html lang="es">
     <head>
       <meta charset="UTF-8" />
       <meta
         http-equiv="Content-Security-Policy"
         content="default-src 'none'; style-src 'unsafe-inline'; img-src data:"
       />
-      <title>AI 小说创作工作台</title>
+      <title>Estudio de Novelas IA</title>
       <style>
         :root {
           color-scheme: dark;
@@ -313,8 +313,8 @@ function createSplashHtml(): string {
     <body>
       <main class="panel">
         ${brandMark}
-        <div class="title">AI 小说创作工作台</div>
-        <p class="subtitle">Biz Novel Studio 正在准备本地写作引擎。</p>
+        <div class="title">Estudio de Novelas IA</div>
+        <p class="subtitle">Biz Novel Studio está preparando el motor local de escritura.</p>
         <div class="meter"><span></span></div>
       </main>
     </body>
@@ -349,8 +349,8 @@ async function bootstrapDesktopApp(): Promise<void> {
   setBootstrapSnapshot(createBootstrapSnapshot({
     state: "launching",
     stage: "app-ready",
-    title: "正在启动桌面工作区",
-    detail: "Electron 已就绪，正在打开桌面启动壳。",
+    title: "Iniciando el espacio de trabajo",
+    detail: "Electron está listo; abriendo la pantalla de arranque.",
     canRetry: false,
   }));
 
@@ -359,8 +359,8 @@ async function bootstrapDesktopApp(): Promise<void> {
   setBootstrapSnapshot(createBootstrapSnapshot({
     state: "launching",
     stage: "splash-shown",
-    title: "桌面启动壳已显示",
-    detail: "正在准备桌面运行时环境和随包资源。",
+    title: "Pantalla de arranque visible",
+    detail: "Preparando el entorno de ejecución y los recursos empaquetados.",
     canRetry: false,
   }));
   initializeDesktopUpdaterController();
@@ -372,8 +372,8 @@ async function bootstrapDesktopApp(): Promise<void> {
     setBootstrapSnapshot(createBootstrapSnapshot({
       state: "launching",
       stage: "splash-shown",
-      title: "正在导入旧版本地数据",
-      detail: "正在把你选择的旧 web 本地数据库接管到桌面版数据目录。",
+      title: "Importando datos locales de una versión anterior",
+      detail: "Adoptando la base de datos local de la versión web anterior que elegiste en el directorio de datos del escritorio.",
       canRetry: false,
     }));
     importLegacyDatabaseFromPath(pendingImportPath);
@@ -415,10 +415,10 @@ async function showBootstrapFailureDialog(error: unknown): Promise<void> {
   const errorMessage = error instanceof Error ? error.message : String(error);
   const result = await dialog.showMessageBox({
     type: "error",
-    title: "AI 小说创作工作台启动失败",
-    message: "桌面应用未能完成初始化。",
-    detail: `${errorMessage}\n\n日志目录:\n${logDir}\n\n日志文件:\n${logFilePath}`,
-    buttons: ["打开日志目录", "复制日志路径", "退出"],
+    title: "No se pudo iniciar el estudio de novelas",
+    message: "La aplicación de escritorio no pudo completar la inicialización.",
+    detail: `${errorMessage}\n\nCarpeta de registros:\n${logDir}\n\nArchivo de registros:\n${logFilePath}`,
+    buttons: ["Abrir carpeta de registros", "Copiar ruta de registros", "Salir"],
     defaultId: 0,
     cancelId: 2,
     noLink: true,
@@ -460,24 +460,24 @@ function registerDesktopIpcHandlers(): void {
   ipcMain.handle("desktop:bundle-logs", async () => {
     const suggestedName = `Biz-Novel-Studio-logs-${new Date().toISOString().replace(/[:.]/g, "-")}.zip`;
     const result = await dialog.showSaveDialog({
-      title: "保存桌面日志包",
+      title: "Guardar paquete de registros",
       defaultPath: path.join(app.getPath("downloads"), suggestedName),
-      filters: [{ name: "日志压缩包", extensions: ["zip"] }],
+      filters: [{ name: "Archivo ZIP de registros", extensions: ["zip"] }],
     });
     if (result.canceled || !result.filePath) return null;
     const bootstrap = desktopBootstrapStore.getSnapshot();
     const updater = desktopUpdaterStore.getSnapshot();
     const summary = [
-      "AI 小说创作工作台近期日志包摘要",
-      `生成时间: ${new Date().toISOString()}`,
-      `应用版本: ${app.getVersion()}`,
-      `平台: ${process.platform} ${process.arch}`,
-      `系统: ${os.release()}`,
-      `更新通道: ${updater.channel}`,
-      `更新状态: ${updater.status}`,
-      `启动状态: ${bootstrap.state}`,
-      `启动阶段: ${bootstrap.stage}`,
-      `启动说明: ${bootstrap.detail}`,
+      "Resumen del paquete de registros recientes",
+      `Generado: ${new Date().toISOString()}`,
+      `Versión de la app: ${app.getVersion()}`,
+      `Plataforma: ${process.platform} ${process.arch}`,
+      `Sistema: ${os.release()}`,
+      `Canal de actualización: ${updater.channel}`,
+      `Estado de actualización: ${updater.status}`,
+      `Estado de arranque: ${bootstrap.state}`,
+      `Fase de arranque: ${bootstrap.stage}`,
+      `Detalle de arranque: ${bootstrap.detail}`,
     ].join("\n");
     const tempPath = createDesktopLogBundle(summary);
     try {
@@ -596,7 +596,7 @@ async function handleBootstrapFailure(error: unknown): Promise<void> {
   setBootstrapSnapshot(createBootstrapSnapshot({
     state: "error",
     stage: "error",
-    title: "桌面启动失败",
+    title: "Fallo al iniciar el escritorio",
     detail: errorMessage,
   }));
 

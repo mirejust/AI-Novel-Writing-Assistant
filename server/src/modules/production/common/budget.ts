@@ -2,7 +2,7 @@ export class InvalidProductionBudgetError extends Error {
   constructor(message: string) { super(message); this.name = "InvalidProductionBudgetError"; }
 }
 export class ProductionBudgetExceededError extends Error {
-  constructor() { super("本次调用预算不足，需从作品页确认后继续。"); this.name = "ProductionBudgetExceededError"; }
+  constructor() { super("El presupuesto para esta convocatoria es insuficiente y es necesario confirmarlo desde la página de trabajo antes de continuar."); this.name = "ProductionBudgetExceededError"; }
 }
 /** Only the physical request adapter may supply this proof; ordinary budget errors do not prove no dispatch. */
 export class ProductionBudgetNotDispatchedError extends ProductionBudgetExceededError {

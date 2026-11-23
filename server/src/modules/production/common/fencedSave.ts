@@ -1,9 +1,9 @@
 export interface ContentVersionFence { version: string | number; userEditedAt: string | null }
 export class ProtectedProductionContentError extends Error {
-  constructor() { super("人工编辑的正文需要明确发起修订，不能被自动生产覆盖。"); this.name = "ProtectedProductionContentError"; }
+  constructor() { super("El texto editado manualmente debe revisarse explícitamente y no puede sobrescribirse mediante producción automática."); this.name = "ProtectedProductionContentError"; }
 }
 export class ProductionVersionConflictError extends Error {
-  constructor() { super("正文版本已变化，请从作品页重新确认。"); this.name = "ProductionVersionConflictError"; }
+  constructor() { super("La versión del texto ha cambiado, reconfírmela desde la página de trabajo."); this.name = "ProductionVersionConflictError"; }
 }
 
 export async function saveWithFence<T, R>(input: {

@@ -16,7 +16,7 @@ export async function revalidateSavedPlanning(contract:RunContract, tx:Prisma.Tr
   for (const artifact of artifacts) {
     if (seen.has(artifact.type)) continue;
     seen.add(artifact.type);
-    if (artifact.protectedUserContent && artifact.status !== "stale") throw new AppError("缺失的章节计划包含需要保留的修改，请先核对保存结果，不能自动覆盖。",400);
+    if (artifact.protectedUserContent && artifact.status !== "stale") throw new AppError("El plan del capítulo que falta contiene modificaciones que deben conservarse. Primero verifique los resultados de guardado, ya que no se pueden sobrescribir automáticamente.",400);
   }
   await tx.directorNextArtifact.updateMany({where:{novelId:contract.novelId,scope:contract.scope,type:{in:types},protectedUserContent:false,status:{not:"stale"}},data:{status:"stale"}});
 }

@@ -18,9 +18,9 @@ function TimelineEventCard({ item, index }: { item: TimelineItem; index: number 
       <div className="flex items-center justify-between gap-3">
         <div className="inline-flex min-w-0 items-center gap-1.5 rounded-full bg-primary/8 px-2.5 py-1 text-xs font-semibold text-primary">
           <Clock3 className="h-3.5 w-3.5 shrink-0" />
-          <span className="truncate">{item.year || `阶段 ${index + 1}`}</span>
+          <span className="truncate">{item.year || `escenario ${index + 1}`}</span>
         </div>
-        <span className="shrink-0 text-[10px] tabular-nums text-muted-foreground">事件 {index + 1}</span>
+        <span className="shrink-0 text-[10px] tabular-nums text-muted-foreground">evento {index + 1}</span>
       </div>
       <p className="mt-3 break-words text-sm leading-6 text-foreground/90">{item.event}</p>
     </article>
@@ -33,12 +33,12 @@ export default function WorldTimelinePanel({ items }: WorldTimelinePanelProps) {
 
   return (
     <FullscreenView
-      title={`世界时间线 · ${items.length} 个关键阶段`}
-      description="沿时间顺序阅读关键事件，观察世界局势、势力目标与冲突如何向前推进。"
+      title={`Cronología mundial · ${items.length} una etapa crítica`}
+      description="Lea los eventos clave en orden cronológico y observe cómo avanzan la situación mundial, los objetivos de poder y los conflictos."
       fullscreen={isFullscreen}
       onFullscreenChange={setIsFullscreen}
-      toggleLabel="全屏查看时间线"
-      exitLabel="退出时间线全屏"
+      toggleLabel="Ver línea de tiempo en pantalla completa"
+      exitLabel="Salir de la línea de tiempo en pantalla completa"
       className="rounded-3xl border-border/35 shadow-none"
       headerClassName="bg-none px-5 py-4"
       bodyClassName="min-h-0"
@@ -46,7 +46,7 @@ export default function WorldTimelinePanel({ items }: WorldTimelinePanelProps) {
     >
       {items.length === 0 ? (
         <div className="grid min-h-64 place-items-center px-6 text-center text-sm text-muted-foreground">
-          暂无匹配的世界事件
+          Aún no hay eventos mundiales coincidentes
         </div>
       ) : (
         <>
@@ -56,7 +56,7 @@ export default function WorldTimelinePanel({ items }: WorldTimelinePanelProps) {
               isFullscreen && "h-full min-h-[520px]",
             )}
             tabIndex={0}
-            aria-label="横向世界时间线，可左右滚动"
+            aria-label="Línea de tiempo mundial horizontal, desplazable hacia la izquierda y hacia la derecha"
           >
             <div className="relative" style={{ minWidth: `${trackWidth}px` }}>
               <div className="pointer-events-none absolute inset-x-8 top-1/2 h-px -translate-y-1/2 bg-border" aria-hidden="true">
@@ -87,7 +87,7 @@ export default function WorldTimelinePanel({ items }: WorldTimelinePanelProps) {
                       </div>
                       <div
                         className="absolute left-1/2 top-1/2 z-10 flex h-9 w-9 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-4 border-background bg-primary text-xs font-semibold text-primary-foreground shadow-sm"
-                        aria-label={`第 ${index + 1} 个事件`}
+                        aria-label={`Cap. ${index + 1} eventos`}
                       >
                         {index + 1}
                       </div>
@@ -99,7 +99,7 @@ export default function WorldTimelinePanel({ items }: WorldTimelinePanelProps) {
           </div>
 
           <div className="px-5 py-5 md:hidden">
-            <ol className="relative ml-4 border-l border-border pl-7" aria-label="世界时间线">
+            <ol className="relative ml-4 border-l border-border pl-7" aria-label="Línea de tiempo mundial">
               {items.map((item, index) => (
                 <li key={`${item.year}-${item.event}-${index}`} className="relative pb-5 last:pb-0">
                   <div className="absolute -left-[43px] top-4 flex h-8 w-8 items-center justify-center rounded-full border-4 border-background bg-primary text-[11px] font-semibold text-primary-foreground">
@@ -113,7 +113,7 @@ export default function WorldTimelinePanel({ items }: WorldTimelinePanelProps) {
 
           <div className="flex items-center gap-2 border-t border-border/25 px-5 py-3 text-xs text-muted-foreground">
             <Milestone className="h-3.5 w-3.5" />
-            <span>事件按世界设定中的时间顺序排列{items.length > 4 ? "，可左右滚动查看全部阶段" : ""}。</span>
+            <span>Los eventos están organizados en orden cronológico en el entorno mundial.{items.length > 4 ? ", puede desplazarse hacia la izquierda y hacia la derecha para ver todas las etapas" : ""}.</span>
           </div>
         </>
       )}

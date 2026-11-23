@@ -85,7 +85,7 @@ export function BookFramingQuickFillButton(props: BookFramingQuickFillButtonProp
     onSuccess: (response) => {
       const suggestion = response.data;
       if (!suggestion) {
-        toast.error("AI 没有返回可用的读者与卖点建议。");
+        toast.error("La IA no devolvió sugerencias de lectura ni de venta utilizables.");
         return;
       }
       onApplySuggestion({
@@ -97,22 +97,22 @@ export function BookFramingQuickFillButton(props: BookFramingQuickFillButtonProp
       });
       toast.success(
         referenceBinding.bookAnalysisId
-          ? "已根据拆书结论填入读者与卖点建议。"
-          : "已根据当前书名和概述填入读者与卖点建议。",
+          ? "Se han completado sugerencias para lectores y puntos de venta en función de la conclusión del libro."
+          : "Las sugerencias de lectores y puntos de venta se han completado según el título y el resumen actuales.",
       );
     },
     onError: (error) => {
-      toast.error(error instanceof Error ? error.message : "读者与卖点自动填写失败，请稍后再试。");
+      toast.error(error instanceof Error ? error.message : "Falló el llenado automático de lectores y puntos de venta, inténtelo nuevamente más tarde.");
     },
   });
 
   const handleGenerate = () => {
     if (!basicForm.title.trim() && !effectiveDescription && !referenceBinding.bookAnalysisId) {
-      toast.error("请先填写书名或一句话概述，再让 AI 帮你填写。");
+      toast.error("Primero complete el título del libro o el resumen de una oración y luego deje que AI lo complete por usted.");
       return;
     }
     if (hasExistingFramingContent(basicForm)) {
-      const confirmed = window.confirm("将用 AI 建议覆盖当前读者与卖点填写，是否继续？");
+      const confirmed = window.confirm("Se utilizarán sugerencias de IA para cubrir a los lectores actuales y completar los puntos de venta. ¿Quieres continuar?");
       if (!confirmed) {
         return;
       }
@@ -128,7 +128,7 @@ export function BookFramingQuickFillButton(props: BookFramingQuickFillButtonProp
       onClick={handleGenerate}
       disabled={suggestionMutation.isPending}
     >
-      {suggestionMutation.isPending ? "填写中..." : "帮我填写"}
+      {suggestionMutation.isPending ? "Rellenando..." : "Ayúdame a llenarlo"}
     </AiButton>
   );
 }

@@ -320,7 +320,7 @@ export const generateNovelCharactersInput = z.object({
   genre: z.string().trim().optional(),
   styleTone: z.string().trim().optional(),
   narrativePov: narrativePovSchema.optional(),
-  count: z.number().int().positive().optional().describe("作者明确指定的核心角色人数；未指定时省略，由 AI 根据故事决定。"),
+  count: z.number().int().positive().optional().describe("Número de personajes principales especificados explícitamente por el autor; se omite si no se especifica y se deja a la IA para que decida en función de la historia."),
 });
 
 export const generateNovelCharactersOutput = z.object({

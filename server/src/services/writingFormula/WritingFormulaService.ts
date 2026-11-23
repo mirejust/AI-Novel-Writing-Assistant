@@ -79,10 +79,10 @@ export class WritingFormulaService {
             name: input.name,
             sourceText: input.sourceText,
             content: fullContent,
-            style: pickSection(fullContent, "整体风格定位"),
-            formulaDescription: pickSection(fullContent, "核心写作技巧（含原文例句）"),
-            formulaSteps: pickSection(fullContent, "可复现的写作公式"),
-            applicationTips: pickSection(fullContent, "应用指南（如何用这个公式写新文本）"),
+            style: pickSection(fullContent, "posicionamiento general del estilo"),
+            formulaDescription: pickSection(fullContent, "Habilidades básicas de escritura (incluidos ejemplos de textos originales)"),
+            formulaSteps: pickSection(fullContent, "Fórmulas de escritura reproducibles"),
+            applicationTips: pickSection(fullContent, "Guía de aplicación (cómo escribir texto nuevo usando esta fórmula)"),
           },
         });
       },
@@ -97,7 +97,7 @@ export class WritingFormulaService {
         : undefined);
 
     if (!formulaContent) {
-      throw new Error("未找到可用写作公式内容。");
+      throw new Error("No se encontró contenido de fórmula de escritura disponible.");
     }
 
     const baseOptions = {
@@ -108,7 +108,7 @@ export class WritingFormulaService {
 
     if (input.mode === "rewrite") {
       if (!input.sourceText) {
-        throw new Error("rewrite 模式需要 sourceText。");
+        throw new Error("el modo de reescritura requiere sourceText.");
       }
       const streamed = await streamTextPrompt({
         asset: writingFormulaApplyRewriteStreamPrompt,
@@ -124,7 +124,7 @@ export class WritingFormulaService {
     }
 
     if (!input.topic) {
-      throw new Error("generate 模式需要 topic。");
+      throw new Error("El modo generar requiere tema.");
     }
     const targetLength = input.targetLength ?? 1200;
     const streamed = await streamTextPrompt({

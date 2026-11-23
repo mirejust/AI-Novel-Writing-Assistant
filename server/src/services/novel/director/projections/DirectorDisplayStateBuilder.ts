@@ -118,34 +118,34 @@ function buildMode(input: {
 function buildDescription(mode: DirectorDisplayMode): string {
   switch (mode) {
     case "needs_recovery":
-      return "后台执行器连接中断后正在恢复，系统会优先从最近进度继续。";
+      return "La conexión del ejecutor en segundo plano se está restaurando después de haber sido interrumpida y el sistema dará prioridad a continuar desde el último progreso.";
     case "waiting":
-      return "当前导演流程停在需要确认的位置。你可以先查看结果，再决定是否继续。";
+      return "El proceso actual del director está estancado en un punto en el que se requiere confirmación. Puede revisar los resultados antes de decidir si desea continuar.";
     case "failed":
-      return "当前导演流程停在最近一步。可以先查看执行详情，再决定是否重试或继续。";
+      return "El proceso director actual está estancado en el último paso. Puede verificar los detalles de la ejecución antes de decidir si volver a intentarlo o continuar.";
     case "completed":
-      return "本轮导演流程已收尾，你可以继续推进章节、查看结果，或发起下一轮自动导演。";
+      return "Esta ronda del proceso de dirección ha terminado. Puede continuar avanzando capítulos, comprobar los resultados o iniciar la siguiente ronda de dirección automática.";
     case "running":
-      return "AI 正在后台接管这本书的开书流程。你可以继续手动操作当前项目；如果与自动导演同时改同一块内容，以最新写入结果为准。";
+      return "La IA se hace cargo del proceso de apertura del libro en segundo plano. Puede continuar operando manualmente el proyecto actual; si el mismo contenido se modifica al mismo tiempo que el director automático, prevalecerá el último resultado escrito.";
     default:
-      return "当前没有正在推进的导演任务。";
+      return "Actualmente no hay asignaciones de dirección en curso.";
   }
 }
 
 function buildHeadline(mode: DirectorDisplayMode): string {
   switch (mode) {
     case "needs_recovery":
-      return "等待恢复";
+      return "Esperando la recuperación";
     case "waiting":
-      return "等待确认";
+      return "Esperando confirmación";
     case "failed":
-      return "执行受阻";
+      return "Ejecución bloqueada";
     case "completed":
-      return "导演已完成";
+      return "El director ha completado";
     case "running":
-      return "正在自动导演";
+      return "Dirigiendo automáticamente";
     default:
-      return "暂未启动";
+      return "Aún no iniciado";
   }
 }
 
@@ -161,7 +161,7 @@ function buildCurrentAction(input: {
       input.task.currentItemLabel?.trim()
       || input.task.checkpointSummary?.trim()
       || input.factStep?.progress.label?.trim()
-      || "本轮自动导演已完成"
+      || "Esta ronda de director automático se ha completado."
     );
   }
   if (input.mode === "needs_recovery") {
@@ -169,7 +169,7 @@ function buildCurrentAction(input: {
       input.task.lastError?.trim()
       || input.projection?.blockingReason?.trim()
       || input.projection?.lastEventSummary?.trim()
-      || "系统会从最近进度继续恢复。"
+      || "El sistema reanudará la recuperación desde el progreso más reciente."
     );
   }
   if (
@@ -187,7 +187,7 @@ function buildCurrentAction(input: {
       || input.projection?.currentAction?.trim()
       || input.projection?.currentLabel?.trim()
       || input.projection?.lastEventSummary?.trim()
-      || "等待同步当前推进状态"
+      || "Esperando sincronización del estado de avance actual"
     );
   }
   return (
@@ -196,7 +196,7 @@ function buildCurrentAction(input: {
     || input.factStep?.progress.label?.trim()
     || input.task.currentItemLabel?.trim()
     || input.projection?.lastEventSummary?.trim()
-    || "等待同步当前推进状态"
+    || "Esperando sincronización del estado de avance actual"
   );
 }
 
@@ -213,21 +213,21 @@ function buildNextActionLabel(input: {
   }
   switch (raw) {
     case "continue":
-      return "继续自动导演";
+      return "Continuar dirigiendo automáticamente";
     case "continue_chapter_execution":
-      return "继续章节执行";
+      return "Continuar la ejecución del capítulo";
     case "resume_from_checkpoint":
-      return "从最近进度恢复";
+      return "Reanudar desde el progreso reciente";
     case "approve_gate":
-      return "确认并继续";
+      return "Confirmar y continuar";
     case "repair_chapter":
-      return "修复当前章节";
+      return "Reparar el capítulo actual";
     case "run_quality_review":
-      return "进入质量检查";
+      return "Ir a control de calidad";
     case "run_chapter_execution":
-      return "开始章节执行";
+      return "Iniciar ejecución del capítulo";
     case "sync_execution_contracts":
-      return "同步正式章节执行上下文";
+      return "Sincronizar el contexto de ejecución del capítulo formal";
     default:
       return raw;
   }

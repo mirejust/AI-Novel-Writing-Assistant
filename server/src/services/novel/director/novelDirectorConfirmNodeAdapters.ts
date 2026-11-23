@@ -19,7 +19,7 @@ export interface DirectorConfirmNodeAdapter {
 
 export const DIRECTOR_CONFIRM_NOVEL_CREATE_NODE_ADAPTER: DirectorConfirmNodeAdapter = {
   nodeKey: "novel_create",
-  label: "创建小说项目",
+  label: "Crear un proyecto novedoso",
   targetType: "global",
   reads: ["candidate_batch", "book_seed"],
   writes: ["novel_project", "director_runtime"],
@@ -29,7 +29,7 @@ export const DIRECTOR_CONFIRM_NOVEL_CREATE_NODE_ADAPTER: DirectorConfirmNodeAdap
   waitingState: {
     stage: "auto_director",
     itemKey: "novel_create",
-    itemLabel: "等待创建小说项目",
+    itemLabel: "Esperando crear un proyecto novedoso.",
   },
 };
 

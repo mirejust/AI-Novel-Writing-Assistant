@@ -52,7 +52,7 @@ function ExportPanel({ projectId, episodes }: { projectId: string; episodes: Com
       if (artifact?.url) {
         window.open(artifact.url, "_blank");
       }
-      toast.success("导出完成");
+      toast.success("Exportación completada");
     },
     onError: (e) => toast.error(String(e)),
   });
@@ -61,7 +61,7 @@ function ExportPanel({ projectId, episodes }: { projectId: string; episodes: Com
     <div className="space-y-4">
       <div className="flex flex-wrap gap-2 items-end">
         <div className="space-y-1">
-          <label className="text-sm font-medium">选择话数</label>
+          <label className="text-sm font-medium">Seleccione el número de palabras</label>
           <SelectControl
             className="rounded-md border bg-background px-3 py-2 text-sm"
             value={selectedEpId}
@@ -69,7 +69,7 @@ function ExportPanel({ projectId, episodes }: { projectId: string; episodes: Com
           >
             {episodes.map((ep) => (
               <option key={ep.id} value={ep.id}>
-                第 {ep.order} 话 {ep.title ? `《${ep.title}》` : ""}（{ep._count?.panels ?? 0} 格）
+                Cap. {ep.order} hablar {ep.title ? `«${ep.title}»` : ""}({ep._count?.panels ?? 0} red)
               </option>
             ))}
           </SelectControl>
@@ -80,11 +80,11 @@ function ExportPanel({ projectId, episodes }: { projectId: string; episodes: Com
           onClick={() => exportMut.mutate(selectedEpId)}
         >
           <Download className="h-4 w-4" />
-          {exportMut.isPending ? "导出中…" : "导出长图"}
+          {exportMut.isPending ? "Exportador…" : "Exportar imagen larga"}
         </Button>
       </div>
       <p className="text-xs text-muted-foreground">
-        导出前请确保所有格子已生成图像。图像内文字由模型直接渲染。
+        Asegúrese de que todas las cuadrículas hayan generado imágenes antes de exportar. El modelo representa directamente el texto dentro de la imagen.
       </p>
     </div>
   );
@@ -93,12 +93,12 @@ function ExportPanel({ projectId, episodes }: { projectId: string; episodes: Com
 // ─── Style options ─────────────────────────────────────────────────────────────
 
 const STYLE_OPTIONS = [
-  { value: "webtoon_color", label: "彩色韩漫", desc: "鲜艳配色，干净线条" },
-  { value: "bl_manga", label: "彩色少女漫", desc: "柔和色调，精致五官" },
-  { value: "shounen_bw", label: "黑白少年漫", desc: "粗犷线条，动感构图" },
-  { value: "ink_traditional", label: "水墨国风", desc: "毛笔笔触，淡彩晕染" },
-  { value: "chibi", label: "Q版萌漫", desc: "圆润可爱，夸张表情" },
-  { value: "realistic", label: "写实风格", desc: "细腻光影，真实感" },
+  { value: "webtoon_color", label: "Cómics coreanos coloridos", desc: "Colores brillantes, líneas limpias." },
+  { value: "bl_manga", label: "Cómics coloridos de chicas", desc: "Colores suaves, rasgos faciales refinados." },
+  { value: "shounen_bw", label: "cómics shounen en blanco y negro", desc: "Líneas rugosas, composición dinámica." },
+  { value: "ink_traditional", label: "Estilo chino de pintura con tinta.", desc: "Trazos de pincel, manchas de color claro" },
+  { value: "chibi", label: "Cómics lindos versión Q", desc: "Suave y lindo, con expresiones exageradas." },
+  { value: "realistic", label: "Estilo realista", desc: "Luces y sombras delicadas, realismo." },
 ];
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
@@ -149,7 +149,7 @@ export default function ComicProjectPage() {
       queryClient.invalidateQueries({ queryKey: ["comic", "project", id] });
       setShowFormatPicker(false);
       setShowStylePicker(false);
-      toast.success("设置已更新，新图片将使用新设置生成");
+      toast.success("La configuración se ha actualizado y se generarán nuevas imágenes utilizando la nueva configuración.");
     },
     onError: (e) => toast.error(String(e)),
   });
@@ -162,17 +162,17 @@ export default function ComicProjectPage() {
     );
   }
   if (!project) {
-    return <div className="p-8 text-center text-muted-foreground">漫画项目不存在。</div>;
+    return <div className="p-8 text-center text-muted-foreground">El proyecto de cómic no existe.</div>;
   }
 
   const preset = safeJsonParseProject(project.stylePreset);
   const formatDef = COMIC_FORMATS.find((f) => f.value === preset.format) ?? COMIC_FORMATS[0];
   const styleDef = STYLE_OPTIONS.find((s) => s.value === preset.style);
   const statusLabel: Record<string, string> = {
-    draft: "草稿", outlined: "大纲已生成", scripted: "脚本已生成", completed: "已完成",
+    draft: "Borrador", outlined: "Se ha generado el esquema", scripted: "Se ha generado el script", completed: "Completado",
   };
   const sourceLabel: Record<string, string> = {
-    novel_import: "小说改编", original: "原创", text_import: "文本导入", comic_import: "漫画改编",
+    novel_import: "Adaptación novedosa", original: "Original", text_import: "Importación de texto", comic_import: "Adaptación cómica",
   };
 
   return (
@@ -182,7 +182,7 @@ export default function ComicProjectPage() {
         <Button asChild type="button" variant="ghost" size="sm" className="-ml-2">
           <a href="/comic">
             <ChevronLeft className="h-4 w-4" />
-            工作台
+            banco de trabajo
           </a>
         </Button>
       </div>
@@ -214,7 +214,7 @@ export default function ComicProjectPage() {
                 {formatDef.layoutSvg}
               </div>
               <div className="text-left">
-                <p className="text-xs text-muted-foreground">漫画形态</p>
+                <p className="text-xs text-muted-foreground">Forma cómica</p>
                 <p className="text-sm font-semibold">{formatDef.label}</p>
                 <p className="text-[10px] text-muted-foreground leading-tight max-w-[100px]">{formatDef.desc}</p>
               </div>
@@ -223,7 +223,7 @@ export default function ComicProjectPage() {
 
             {showFormatPicker && (
               <div className="absolute right-0 top-full mt-2 z-50 w-[480px] rounded-xl border bg-popover shadow-xl p-4">
-                <p className="text-xs font-medium text-muted-foreground mb-3">选择漫画形态（影响图片比例与风格关键词）</p>
+                <p className="text-xs font-medium text-muted-foreground mb-3">Seleccionar forma de cómic (afecta las proporciones de la imagen y las palabras clave de estilo)</p>
                 <div className="grid grid-cols-4 gap-2">
                   {COMIC_FORMATS.map((fmt) => (
                     <button
@@ -249,7 +249,7 @@ export default function ComicProjectPage() {
                   onClick={() => setShowFormatPicker(false)}
                   className="mt-3 w-full rounded-md py-1.5 text-xs text-muted-foreground hover:bg-muted transition-colors"
                 >
-                  取消
+                  Cancelar
                 </button>
               </div>
             )}
@@ -261,14 +261,14 @@ export default function ComicProjectPage() {
           <div className="flex items-center gap-2.5 rounded-lg border bg-background px-3 py-2.5">
             <Hash className="h-4 w-4 text-muted-foreground flex-shrink-0" />
             <div>
-              <p className="text-[11px] text-muted-foreground">话数</p>
+              <p className="text-[11px] text-muted-foreground">Número de palabras</p>
               <p className="text-lg font-bold leading-tight">{episodes.length}</p>
             </div>
           </div>
           <div className="flex items-center gap-2.5 rounded-lg border bg-background px-3 py-2.5">
             <Film className="h-4 w-4 text-muted-foreground flex-shrink-0" />
             <div>
-              <p className="text-[11px] text-muted-foreground">总格数</p>
+              <p className="text-[11px] text-muted-foreground">Número total de células</p>
               <p className="text-lg font-bold leading-tight">
                 {episodes.reduce((s, e) => s + (e._count?.panels ?? 0), 0)}
               </p>
@@ -277,7 +277,7 @@ export default function ComicProjectPage() {
           <div className="flex items-center gap-2.5 rounded-lg border bg-background px-3 py-2.5">
             <Users className="h-4 w-4 text-muted-foreground flex-shrink-0" />
             <div>
-              <p className="text-[11px] text-muted-foreground">角色</p>
+              <p className="text-[11px] text-muted-foreground">Personaje</p>
               <p className="text-lg font-bold leading-tight">{project._count?.characters ?? project.characters.length}</p>
             </div>
           </div>
@@ -291,9 +291,9 @@ export default function ComicProjectPage() {
             >
               <Palette className="h-4 w-4 text-muted-foreground flex-shrink-0" />
               <div className="flex-1 text-left min-w-0">
-                <p className="text-[11px] text-muted-foreground">画风</p>
+                <p className="text-[11px] text-muted-foreground">Estilo de pintura</p>
                 <p className="text-sm font-semibold leading-tight truncate">
-                  {styleDef?.label ?? preset.style ?? "默认"}
+                  {styleDef?.label ?? preset.style ?? "Predeterminado"}
                 </p>
               </div>
               <ChevronDown className="h-3.5 w-3.5 text-muted-foreground/60 flex-shrink-0" />
@@ -301,7 +301,7 @@ export default function ComicProjectPage() {
 
             {showStylePicker && (
               <div className="absolute right-0 top-full mt-2 z-50 w-64 rounded-xl border bg-popover shadow-xl p-3">
-                <p className="text-xs font-medium text-muted-foreground mb-2">选择画风</p>
+                <p className="text-xs font-medium text-muted-foreground mb-2">Elige estilo</p>
                 <div className="space-y-1">
                   {STYLE_OPTIONS.map((opt) => (
                     <button
@@ -324,7 +324,7 @@ export default function ComicProjectPage() {
                   onClick={() => setShowStylePicker(false)}
                   className="mt-2 w-full rounded-md py-1.5 text-xs text-muted-foreground hover:bg-muted transition-colors"
                 >
-                  取消
+                  Cancelar
                 </button>
               </div>
             )}
@@ -340,7 +340,7 @@ export default function ComicProjectPage() {
           {project.sourceBundle && (
             <span className="inline-flex items-center gap-1 rounded-full border bg-green-500/10 px-2.5 py-0.5 text-xs text-green-600 dark:text-green-400">
               <BookText className="h-3 w-3" />
-              内容源已导入
+              La fuente del contenido ha sido importada.
             </span>
           )}
           {preset.format && (
@@ -350,9 +350,9 @@ export default function ComicProjectPage() {
           )}
           {/* 图片模型全局选择器 */}
           <div className="ml-auto flex items-center gap-2">
-            <span className="text-xs text-muted-foreground whitespace-nowrap">图片模型</span>
+            <span className="text-xs text-muted-foreground whitespace-nowrap">Modelo de imagen</span>
             {providerOptions.length === 0 ? (
-              <span className="text-xs text-destructive">暂无可用图片服务</span>
+              <span className="text-xs text-destructive">Aún no hay servicio de imágenes disponible</span>
             ) : (
               <SelectControl
                 className="rounded-md border bg-background px-2.5 py-1 text-xs"
@@ -370,18 +370,18 @@ export default function ComicProjectPage() {
 
       <Tabs defaultValue="outline">
         <TabsList className="w-full justify-start gap-1">
-          <TabsTrigger value="outline">分话大纲</TabsTrigger>
+          <TabsTrigger value="outline">Esquema del episodio</TabsTrigger>
           <TabsTrigger value="characters">
-            角色
+            Role
             {project.characters.length > 0 && (
               <span className="ml-1.5 rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-medium">
                 {project.characters.length}
               </span>
             )}
           </TabsTrigger>
-          <TabsTrigger value="scenes">场景</TabsTrigger>
-          <TabsTrigger value="panels">格子图</TabsTrigger>
-          <TabsTrigger value="export">导出</TabsTrigger>
+          <TabsTrigger value="scenes">Escena</TabsTrigger>
+          <TabsTrigger value="panels">Gráfico de cuadrícula</TabsTrigger>
+          <TabsTrigger value="export">Exportar</TabsTrigger>
         </TabsList>
 
         <TabsContent value="outline" className="mt-4">
@@ -405,7 +405,7 @@ export default function ComicProjectPage() {
             <ExportPanel projectId={id!} episodes={episodes} />
           ) : (
             <div className="py-12 text-center text-sm text-muted-foreground">
-              请先生成分话大纲。
+              Por favor señor, dé un resumen de la conversación.
             </div>
           )}
         </TabsContent>

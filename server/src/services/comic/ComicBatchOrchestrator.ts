@@ -51,9 +51,9 @@ export class ComicBatchOrchestrator {
         project: true,
       },
     });
-    if (!episode) throw new AppError(`未找到话数：${episodeId}`, 404);
+    if (!episode) throw new AppError(`Número de palabras no encontradas:${episodeId}`, 404);
     if (episode.panels.length === 0) {
-      throw new AppError("该话尚无分格脚本，请先生成脚本再批量生图。", 400);
+      throw new AppError("Aún no existe un script de cuadrícula para este artículo. Primero genere el script y luego genere las imágenes por lotes.", 400);
     }
 
     // 筛选待生成格子
@@ -70,7 +70,7 @@ export class ComicBatchOrchestrator {
       : episode.panels;
 
     if (targetPanels.length === 0) {
-      throw new AppError("所有格子已有图片，无需重新生成。若要重新生成请使用 skipDone=false。", 400);
+      throw new AppError("Todas las cuadrículas ya tienen imágenes, por lo que no es necesario regenerarlas. Para regenerar use skipDone=false.", 400);
     }
 
     // 创建 BatchJob 记录
@@ -158,12 +158,12 @@ export class ComicBatchOrchestrator {
    */
   async retryFailed(jobId: string, opts: { provider?: LLMProvider } = {}): Promise<{ jobId: string }> {
     const job = await prisma.comicBatchJob.findUnique({ where: { id: jobId } });
-    if (!job) throw new AppError(`批量任务不存在：${jobId}`, 404);
-    if (job.status === "running") throw new AppError("任务仍在运行中，请等待完成后重试。", 409);
+    if (!job) throw new AppError(`La tarea por lotes no existe:${jobId}`, 404);
+    if (job.status === "running") throw new AppError("La tarea aún se está ejecutando. Espere a que finalice e inténtelo de nuevo.", 409);
 
     const prev = JSON.parse(job.progress) as BatchProgress;
     if (prev.failedPanelIds.length === 0) {
-      throw new AppError("没有失败的格子需要重试。", 400);
+      throw new AppError("No hay celdas fallidas que deban volver a intentarse.", 400);
     }
 
     const provider = opts.provider ?? "openai";
@@ -210,7 +210,7 @@ export class ComicBatchOrchestrator {
       totalPanels: panels.length,
       pendingPanels: pending.length,
       estimatedCentsCost: pending.length * centsPerImage,
-      providerNote: `基于 ${provider} 约 ${centsPerImage} 美分/张估算，实际费用以平台账单为准`,
+      providerNote: `Residencia en ${provider} acerca de ${centsPerImage} Céntimos estimados/pieza, el costo real está sujeto a la factura de la plataforma.`,
     };
   }
 

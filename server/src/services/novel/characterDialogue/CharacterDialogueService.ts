@@ -170,7 +170,7 @@ export class CharacterDialogueService {
   ): Promise<CharacterDialogueTurnResult> {
     const authorMessage = compact(message);
     if (!authorMessage || authorMessage.length > 800) {
-      throw new Error("每次想对角色说的话请控制在 800 字以内。");
+      throw new Error("Limita lo que quieras decirle al personaje a 800 palabras cada vez.");
     }
     await this.expireEndedInfluences(novelId, characterId);
     const session = await prisma.characterDialogueSession.findFirst({
@@ -178,7 +178,7 @@ export class CharacterDialogueService {
       include: { turns: { orderBy: { createdAt: "asc" }, take: 14 } },
     });
     if (!session) {
-      throw new Error("没有找到可继续的角色对话，请重新开始一段谈话。");
+      throw new Error("No se encontró ningún diálogo de personajes para continuar. Por favor inicie una nueva conversación.");
     }
     const context = await this.loadPromptContext(novelId, characterId, session.turns);
     const result = await runStructuredPrompt({
@@ -235,7 +235,7 @@ export class CharacterDialogueService {
     const serialized = serializeSession(persisted as DialogueSessionRow);
     const characterTurn = serialized.turns.at(-1);
     if (!characterTurn || characterTurn.role !== "character") {
-      throw new Error("角色回应没有成功保存，请稍后重试。");
+      throw new Error("La respuesta del personaje no se guardó correctamente. Vuelve a intentarlo más tarde.");
     }
     return { session: serialized, characterTurn, influence: serialized.latestInfluence };
   }
@@ -251,7 +251,7 @@ export class CharacterDialogueService {
       orderBy: { createdAt: "desc" },
     });
     if (!draft) {
-      throw new Error("这段谈话没有等待确认的角色行动倾向。");
+      throw new Error("No hay ninguna tendencia de acción del personaje esperando confirmación en esta conversación.");
     }
     const row = await prisma.$transaction(async (tx) => {
       await tx.characterDialogueInfluence.updateMany({
@@ -283,7 +283,7 @@ export class CharacterDialogueService {
       orderBy: { createdAt: "desc" },
     });
     if (!draft) {
-      throw new Error("这段谈话没有可放弃的待确认倾向。");
+      throw new Error("Esta conversación no tiene tendencias no confirmadas a abandonar.");
     }
     const row = await prisma.characterDialogueInfluence.update({
       where: { id: draft.id },
@@ -305,7 +305,7 @@ export class CharacterDialogueService {
       orderBy: { updatedAt: "desc" },
     });
     if (!mind) {
-      throw new Error("请先让 AI 整理这个角色的当前想法，再开始对话。");
+      throw new Error("Deje que la IA resuelva los pensamientos actuales del personaje antes de comenzar la conversación.");
     }
     return mind;
   }
@@ -407,45 +407,45 @@ export class CharacterDialogueService {
       }),
     ]);
     if (!character || !novel) {
-      throw new Error("当前小说中没有找到这个角色。");
+      throw new Error("Este personaje no se encuentra en la novela actual.");
     }
     const state = latestState?.characterStates[0];
     const mind = [
-      `他当前如何理解局面：${mindSnapshot.currentInterpretation}`,
-      `私下意图：${compact(mindSnapshot.privateIntent, "未明确")}`,
-      `行动计划：${compact(mindSnapshot.activePlan, "未明确")}`,
-      `情绪与行动倾向：${compact(mindSnapshot.emotionalStance, "未明确")}｜${compact(mindSnapshot.actionTendency, "未明确")}`,
-      `可能误判：${parseStringArray(mindSnapshot.misbeliefsJson).join("；") || "未明确"}`,
-      `推断依据：${parseStringArray(mindSnapshot.evidenceJson).join("；") || "未提供"}`,
+      `Cómo entiende actualmente la situación:${mindSnapshot.currentInterpretation}`,
+      `Intención privada:${compact(mindSnapshot.privateIntent, "No claro")}`,
+      `Plan de acción:${compact(mindSnapshot.activePlan, "No claro")}`,
+      `Emociones y tendencias de acción:${compact(mindSnapshot.emotionalStance, "No claro")}|${compact(mindSnapshot.actionTendency, "No claro")}`,
+      `Posible error de juicio:${parseStringArray(mindSnapshot.misbeliefsJson).join(";") || "No claro"}`,
+      `Base de inferencia:${parseStringArray(mindSnapshot.evidenceJson).join(";") || "No disponible"}`,
     ].join("\n");
     const facts = [
-      `小说：${novel.title}`,
-      `角色：${character.name}（${character.role}）`,
-      `身份/阵营/立场：${compact(character.identityLabel, "未指定")}｜${compact(character.factionLabel, "未指定")}｜${compact(character.stanceLabel, "未指定")}`,
-      `性格与经历：${compact(character.personality, "待补全")}｜${compact(character.background, "待补全")}｜${compact(character.development, "待补全")}`,
-      `目标与处境：${compact(character.currentGoal, "待明确")}｜${compact(character.currentState, "待明确")}`,
-      `内在约束：${compact(character.outerGoal, "未明确")}｜${compact(character.innerNeed, "未明确")}｜恐惧/伤口=${compact(character.fear || character.wound, "未明确")}｜底线=${compact(character.moralLine, "未明确")}`,
-      `既有秘密与误判：${compact(character.secret, "未明确")}｜${compact(character.misbelief, "未明确")}`,
-      `书级约束：${compact(novel.bookContract?.coreSellingPoint || novel.bible?.mainPromise, "待补全")}｜${compact(novel.storyMacroPlan?.decompositionJson || novel.storyMacroPlan?.constraintEngineJson, "待补全")}`,
-      `世界规则：${compact(novel.bible?.coreSetting, "待补全")}`,
-      latestState?.summary ? `最新正史状态：${compact(latestState.summary)}` : "",
-      state ? `角色正史状态：目标=${compact(state.currentGoal, "未更新")}｜情绪=${compact(state.emotion, "未更新")}｜摘要=${compact(state.summary, "未更新")}` : "",
-      ...parseStringArray(state?.knownFactsJson).map((fact) => `角色已知：${fact}`),
-      ...parseStringArray(state?.misbeliefsJson).map((fact) => `角色既有误判：${fact}`),
-      ...(latestState?.informationStates.map((item) => `${item.holderType}信息边界：${item.status}｜${item.fact}${item.summary ? `（${item.summary}）` : ""}`) ?? []),
-      ...resources.map((item) => `${item.holderCharacterName || item.ownerName || character.name}关联${item.name}（${item.status}）：${compact(item.summary)}；约束=${compact(item.constraintsJson, "无")}`),
+      `novedoso:${novel.title}`,
+      `Role:${character.name}(${character.role})`,
+      `Identidad/campamento/posición:${compact(character.identityLabel, "No especificado")}|${compact(character.factionLabel, "No especificado")}|${compact(character.stanceLabel, "No especificado")}`,
+      `Personalidad y experiencia:${compact(character.personality, "Pendiente")}|${compact(character.background, "Pendiente")}|${compact(character.development, "Pendiente")}`,
+      `Metas y situación:${compact(character.currentGoal, "Por aclarar")}|${compact(character.currentState, "Por aclarar")}`,
+      `Restricciones intrínsecas:${compact(character.outerGoal, "No claro")}|${compact(character.innerNeed, "No claro")}|Miedo/herida=${compact(character.fear || character.wound, "No claro")}|Conclusión=${compact(character.moralLine, "No claro")}`,
+      `Secretos y errores de juicio existentes:${compact(character.secret, "No claro")}|${compact(character.misbelief, "No claro")}`,
+      `Restricciones a nivel de libro:${compact(novel.bookContract?.coreSellingPoint || novel.bible?.mainPromise, "Pendiente")}|${compact(novel.storyMacroPlan?.decompositionJson || novel.storyMacroPlan?.constraintEngineJson, "Pendiente")}`,
+      `Reglas mundiales:${compact(novel.bible?.coreSetting, "Pendiente")}`,
+      latestState?.summary ? `Último estado de la historia oficial:${compact(latestState.summary)}` : "",
+      state ? `Estado del canon del personaje: Objetivo =${compact(state.currentGoal, "No actualizado")}|Emoción=${compact(state.emotion, "No actualizado")}|Resumen=${compact(state.summary, "No actualizado")}` : "",
+      ...parseStringArray(state?.knownFactsJson).map((fact) => `Personajes conocidos:${fact}`),
+      ...parseStringArray(state?.misbeliefsJson).map((fact) => `El papel ha sido mal juzgado:${fact}`),
+      ...(latestState?.informationStates.map((item) => `${item.holderType}Límites de información:${item.status}|${item.fact}${item.summary ? `(${item.summary})` : ""}`) ?? []),
+      ...resources.map((item) => `${item.holderCharacterName || item.ownerName || character.name}asociación${item.name}(${item.status}):${compact(item.summary)};Restricción=${compact(item.constraintsJson, "Ninguno")}`),
     ].filter(Boolean).join("\n");
     return {
       mindSnapshot,
-      target: `目标角色：${character.name}（${character.role}）\n请始终以这个角色的认知和立场回应作者。`,
+      target: `Rol objetivo:${character.name}(${character.role})\\nPor favor, responda siempre al autor con la percepción y postura de este personaje.`,
       mind,
       facts,
       relations: [
-        ...relations.map((relation) => `${relation.sourceCharacter.name} -> ${relation.targetCharacter.name}：${relation.stageLabel}；${relation.stageSummary}${relation.nextTurnPoint ? `；下一转折=${relation.nextTurnPoint}` : ""}`),
-        novel.bookContract?.relationshipMainline ? `书级关系主线：${novel.bookContract.relationshipMainline}` : "",
+        ...relations.map((relation) => `${relation.sourceCharacter.name} -> ${relation.targetCharacter.name}:${relation.stageLabel};${relation.stageSummary}${relation.nextTurnPoint ? `;Próximo giro=${relation.nextTurnPoint}` : ""}`),
+        novel.bookContract?.relationshipMainline ? `Hilo de relación a nivel de libro:${novel.bookContract.relationshipMainline}` : "",
       ].filter(Boolean).join("\n"),
-      recentEvents: recentChapters.map((chapter) => `第${chapter.order}章《${chapter.title}》：${compact(chapter.content).slice(0, 900)}`).join("\n\n"),
-      history: turns.slice(-12).map((turn) => `${turn.role === "author" ? "作者" : character.name}：${compact(turn.content)}`).join("\n"),
+      recentEvents: recentChapters.map((chapter) => `Cap.${chapter.order}capítulo"${chapter.title}»:${compact(chapter.content).slice(0, 900)}`).join("\n\n"),
+      history: turns.slice(-12).map((turn) => `${turn.role === "author" ? "autor" : character.name}:${compact(turn.content)}`).join("\n"),
     };
   }
 }

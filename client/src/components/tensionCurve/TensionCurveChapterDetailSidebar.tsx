@@ -25,7 +25,7 @@ function FieldBlock({ label, value }: { label: string; value?: string | null }) 
   return (
     <div className="rounded-lg border border-border/70 bg-background p-3">
       <div className="text-xs text-muted-foreground">{label}</div>
-      <div className="mt-1 text-sm leading-6 text-foreground">{value?.trim() || "这一项还没有填写。"}</div>
+      <div className="mt-1 text-sm leading-6 text-foreground">{value?.trim() || "Este elemento aún no se ha completado."}</div>
     </div>
   );
 }
@@ -36,7 +36,7 @@ export function TensionCurveChapterDetailSidebar(props: TensionCurveChapterDetai
   if (!chapter) {
     return (
       <aside className="rounded-xl border border-dashed p-4 text-sm text-muted-foreground">
-        点选曲线上的章节节点后，这里会显示该章标题、摘要、目的和独占事件，方便对照叙事意图再调整强度。
+        Después de hacer clic en el nodo de un capítulo en la curva, el título del capítulo, el resumen, el propósito y los eventos exclusivos se mostrarán aquí, lo que facilitará el ajuste de la intensidad según la intención narrativa.
       </aside>
     );
   }
@@ -45,24 +45,24 @@ export function TensionCurveChapterDetailSidebar(props: TensionCurveChapterDetai
     <aside className="space-y-3 rounded-xl border border-border/70 bg-muted/10 p-3">
       <div className="space-y-2">
         <div className="flex flex-wrap items-center gap-2">
-          <Badge>第{chapter.chapterOrder}章</Badge>
+          <Badge>Cap.{chapter.chapterOrder}Cap.</Badge>
           {beatLabel ? <Badge variant="outline">{beatLabel}</Badge> : null}
-          {chapter.conflictLevelSource === "user" ? <Badge variant="secondary">手动固定</Badge> : <Badge variant="outline">AI 托管</Badge>}
+          {chapter.conflictLevelSource === "user" ? <Badge variant="secondary">Fijación manual</Badge> : <Badge variant="outline">Alojamiento de IA</Badge>}
         </div>
-        <div className="text-base font-semibold leading-6 text-foreground">{chapter.title || `第${chapter.chapterOrder}章`}</div>
+        <div className="text-base font-semibold leading-6 text-foreground">{chapter.title || `Cap.${chapter.chapterOrder}Cap.`}</div>
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <BookOpenText className="h-3.5 w-3.5" aria-hidden="true" />
-          冲突强度 {typeof chapter.conflictLevel === "number" ? chapter.conflictLevel : "待定"}
+          intensidad del conflicto {typeof chapter.conflictLevel === "number" ? chapter.conflictLevel : "Por determinar"}
         </div>
       </div>
 
-      <FieldBlock label="本章摘要" value={chapter.summary} />
-      <FieldBlock label="本章目的" value={chapter.purpose} />
-      <FieldBlock label="独占事件" value={chapter.exclusiveEvent} />
+      <FieldBlock label="Resumen del capítulo" value={chapter.summary} />
+      <FieldBlock label="Propósito de este capítulo" value={chapter.purpose} />
+      <FieldBlock label="Evento exclusivo" value={chapter.exclusiveEvent} />
 
       {onOpenChapterDetail ? (
         <Button type="button" className="w-full justify-between" variant="outline" onClick={onOpenChapterDetail}>
-          打开完整章节细节卡片
+          Abrir tarjeta de detalles del capítulo completo
           <ArrowRight className="h-4 w-4" aria-hidden="true" />
         </Button>
       ) : null}

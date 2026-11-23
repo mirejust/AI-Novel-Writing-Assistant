@@ -15,12 +15,12 @@ export function NovelListEmptyState(props: {
   return (
     <section className="py-12 text-center">
       <h2 className="text-xl font-semibold tracking-normal">
-        {props.hasAnyNovel ? "没有符合筛选条件的小说" : "还没有小说项目"}
+        {props.hasAnyNovel ? "No hay novelas que coincidan con los criterios de filtro." : "Aún no hay proyectos novedosos"}
       </h2>
       <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-muted-foreground">
         {props.hasAnyNovel
-          ? "可以切换上方筛选条件，或者创建一个新的小说项目。"
-          : "第一次使用时，推荐让 AI 自动导演先整理方向、角色、世界观和章节准备。"}
+          ? "Puede alternar los filtros anteriores o crear un nuevo proyecto novedoso."
+          : "Al usarlo por primera vez, se recomienda dejar que el director automático de IA organice primero la dirección, los personajes, la visión del mundo y la preparación del capítulo."}
       </p>
       <div className="mt-5 flex flex-wrap justify-center gap-2">
         <Button asChild>
@@ -31,11 +31,11 @@ export function NovelListEmptyState(props: {
         </Button>
         {SHORT_STORY_CREATE_LINK ? (
           <Button asChild variant="outline">
-            <Link to={SHORT_STORY_CREATE_LINK}>创作短篇</Link>
+            <Link to={SHORT_STORY_CREATE_LINK}>Crear historias cortas</Link>
           </Button>
         ) : null}
         <Button asChild variant="outline">
-          <Link to={MANUAL_CREATE_LINK}>手动创建小说</Link>
+          <Link to={MANUAL_CREATE_LINK}>Crear una novela manualmente</Link>
         </Button>
       </div>
     </section>

@@ -14,7 +14,7 @@ export default function WorldHandbookForceSection(props: {
   const { draftStructure, setDraftStructure } = props;
   const forceSummary = useMemo(() => {
     const forceNames = draftStructure.forces.map((force) => force.name).filter(Boolean).slice(0, 4);
-    return forceNames.length > 0 ? forceNames.join(" / ") : "补充主要势力后，角色身份、阵营冲突和章节压力会更稳定。";
+    return forceNames.length > 0 ? forceNames.join(" / ") : "Después de reponer las fuerzas principales, las identidades de los personajes, los conflictos de campamento y la presión del capítulo serán más estables.";
   }, [draftStructure.forces]);
 
   const addForce = () => {
@@ -46,15 +46,15 @@ export default function WorldHandbookForceSection(props: {
     <section className="rounded-md border p-4">
       <SectionHeader
         icon={Castle}
-        title="主要势力"
-        description={`让作者先看懂谁在争夺资源、谁会制造阻力、角色可能从哪里来。${forceSummary}`}
+        title="Facciones principales"
+        description={`Primero, deje que el autor comprenda quién compite por los recursos, quién creará resistencia y de dónde pueden venir los personajes.${forceSummary}`}
         count={draftStructure.forces.length}
       />
       <div className="mt-4 grid gap-3 lg:grid-cols-2">
         {draftStructure.forces.map((force: WorldForce, index) => (
           <div key={force.id || index} className="rounded-md border bg-muted/20 p-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <div className="text-sm font-medium">势力 {index + 1}</div>
+              <div className="text-sm font-medium">poder {index + 1}</div>
               <Button
                 type="button"
                 size="sm"
@@ -63,11 +63,11 @@ export default function WorldHandbookForceSection(props: {
                   setDraftStructure((prev) => (prev ? { ...prev, forces: removeItem(prev.forces, index) } : prev))
                 }
               >
-                移除
+                Eliminar
               </Button>
             </div>
             <div className="mt-3 grid gap-3">
-              <HandbookField title="势力名称" hint="角色可能出身、投靠、背叛或对抗的组织。">
+              <HandbookField title="Nombre de la fuerza" hint="Una organización de la que un personaje puede originarse, unirse, traicionar o luchar contra ella.">
                 <Input
                   value={force.name}
                   onChange={(event) =>
@@ -75,10 +75,10 @@ export default function WorldHandbookForceSection(props: {
                       prev ? { ...prev, forces: updateItem(prev.forces, index, { name: event.target.value }) } : prev,
                     )
                   }
-                  placeholder="星皇朝廷、天机阁、异魔联盟"
+                  placeholder="Corte del Emperador Estelar, Pabellón Tianji, Alianza Demonio Alienígena"
                 />
               </HandbookField>
-              <HandbookField title="势力类型" hint="帮助 AI 判断它的行动方式和组织质感。">
+              <HandbookField title="Tipo de fuerza" hint="Ayuda a la IA a determinar su comportamiento y textura.">
                 <Input
                   value={force.type}
                   onChange={(event) =>
@@ -86,10 +86,10 @@ export default function WorldHandbookForceSection(props: {
                       prev ? { ...prev, forces: updateItem(prev.forces, index, { type: event.target.value }) } : prev,
                     )
                   }
-                  placeholder="王朝、宗门、公司、地下组织..."
+                  placeholder="Dinastías, sectas, empresas, organizaciones clandestinas..."
                 />
               </HandbookField>
-              <HandbookField title="它在世界里代表什么" hint="写清它的立场、资源和读者应当记住的特征。">
+              <HandbookField title="¿Qué significa en el mundo?" hint="Escriba su posición, recursos y características que los lectores deben recordar.">
                 <HandbookTextarea
                   value={force.summary}
                   onChange={(value) =>
@@ -97,11 +97,11 @@ export default function WorldHandbookForceSection(props: {
                       prev ? { ...prev, forces: updateItem(prev.forces, index, { summary: value }) } : prev,
                     )
                   }
-                  placeholder="这个势力在世界中代表什么？"
+                  placeholder="¿Qué representa esta fuerza en el mundo?"
                   minRows={3}
                 />
               </HandbookField>
-              <HandbookField title="当前目标" hint="目标会转化为章节事件和角色冲突。">
+              <HandbookField title="Objetivo actual" hint="Los objetivos se traducen en eventos del capítulo y conflictos de personajes.">
                 <Input
                   value={force.currentObjective}
                   onChange={(event) =>
@@ -111,10 +111,10 @@ export default function WorldHandbookForceSection(props: {
                         : prev,
                     )
                   }
-                  placeholder="争夺矿脉、封锁真相、寻找失落继承人"
+                  placeholder="Lucha por las vetas minerales, sella la verdad y encuentra al heredero perdido."
                 />
               </HandbookField>
-              <HandbookField title="给故事带来的压力" hint="主角或其他势力会因此被迫选择、逃亡、交易或开战。">
+              <HandbookField title="Presión sobre la historia" hint="El protagonista u otras fuerzas se verán obligados a elegir, escapar, comerciar o ir a la guerra.">
                 <Input
                   value={force.pressure}
                   onChange={(event) =>
@@ -122,7 +122,7 @@ export default function WorldHandbookForceSection(props: {
                       prev ? { ...prev, forces: updateItem(prev.forces, index, { pressure: event.target.value }) } : prev,
                     )
                   }
-                  placeholder="追捕主角、控制资源、制造战争、引发信任危机"
+                  placeholder="Caza al protagonista, controla los recursos, crea la guerra y desencadena una crisis de confianza."
                 />
               </HandbookField>
             </div>
@@ -131,7 +131,7 @@ export default function WorldHandbookForceSection(props: {
       </div>
       <Button type="button" className="mt-3" variant="outline" onClick={addForce}>
         <Plus className="mr-2 h-4 w-4" aria-hidden="true" />
-        增加主要势力
+        Aumentar las fuerzas principales
       </Button>
     </section>
   );

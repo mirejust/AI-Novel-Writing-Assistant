@@ -1,6 +1,6 @@
 import type { BookAnalysisStatus } from "@ai-novel/shared/types/bookAnalysis";
 
-export const EMPTY_BOOK_ANALYSIS_RESULT_ERROR = "拆书没有生成可展示的结果，请确认所选模型可用后重新生成。";
+export const EMPTY_BOOK_ANALYSIS_RESULT_ERROR = "Al abrir el libro no se generaron resultados visibles. Confirme que el modelo seleccionado esté disponible y luego generelo nuevamente.";
 
 interface BookAnalysisSectionResultState {
   status: string;

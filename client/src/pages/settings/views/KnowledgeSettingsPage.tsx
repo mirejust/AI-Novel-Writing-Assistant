@@ -12,17 +12,17 @@ export default function KnowledgeSettingsPage() {
   const ragQuery = useQuery({ queryKey: queryKeys.settings.rag, queryFn: getRagSettings });
   const rag = ragQuery.data?.data;
   return (
-    <SettingsShell title="知识库与写法" description="这些增强项会帮助 AI 理解你的资料和写法，不影响你先开始创作。">
+    <SettingsShell title="Base de conocimiento y estilo" description="Estas mejoras ayudarán a la IA a comprender su información y su estilo de escritura, sin afectar su capacidad para comenzar a crear en primer lugar.">
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2"><Database className="h-4 w-4" />知识库检索</CardTitle>
+          <CardTitle className="flex items-center gap-2"><Database className="h-4 w-4" />Búsqueda de base de conocimientos</CardTitle>
           <CardDescription>
-            {ragQuery.isLoading ? "正在读取检索状态..." : rag?.enabled ? `资料检索已开启，当前使用 ${rag.embeddingModel || "默认向量模型"}。` : "资料检索未开启，开书和章节生产仍可正常进行。"}
+            {ragQuery.isLoading ? "Leyendo el estado de recuperación..." : rag?.enabled ? `La recuperación de datos está habilitada y actualmente en uso. ${rag.embeddingModel || "Modelo vectorial predeterminado"}.` : "La recuperación de datos no está habilitada, pero la apertura de libros y la producción de capítulos aún pueden realizarse con normalidad."}
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap items-center justify-between gap-3">
-          <p className="text-sm text-muted-foreground">向量模型、资料库地址、索引和召回参数都在同一个检索配置页维护。</p>
-          <Button asChild variant="outline"><Link to="/knowledge?tab=settings">配置检索<ExternalLink className="h-4 w-4" /></Link></Button>
+          <p className="text-sm text-muted-foreground">Los modelos vectoriales, direcciones de bases de datos, parámetros de indexación y recuperación se mantienen en la misma página de configuración de búsqueda.</p>
+          <Button asChild variant="outline"><Link to="/knowledge?tab=settings">Recuperación de configuración<ExternalLink className="h-4 w-4" /></Link></Button>
         </CardContent>
       </Card>
       <StyleEngineRuntimeSettingsCard />

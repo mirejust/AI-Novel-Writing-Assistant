@@ -106,7 +106,7 @@ router.post("/style-extractions/from-text", validate({ body: fromTextSchema }), 
     res.status(200).json({
       success: true,
       data,
-      message: "文本写法特征提取完成。",
+      message: "Se completa la extracción de la función de escritura de texto.",
     } satisfies ApiResponse<typeof data>);
   } catch (error) {
     next(error);
@@ -138,19 +138,19 @@ router.post(
       const body = req.body as z.infer<typeof fromKnowledgeDocumentTaskSchema>;
       const document = await knowledgeService.getDocumentById(body.documentId);
       if (!document) {
-        throw new AppError("知识库文档不存在。", 404);
+        throw new AppError("El documento de la base de conocimientos no existe.", 404);
       }
       if (document.status === "archived") {
-        throw new AppError("归档知识库文档不能用于创建写法。", 400);
+        throw new AppError("Los documentos archivados de la base de conocimientos no se pueden utilizar para crear scripts.", 400);
       }
 
       const activeVersion = document.versions.find((version) => version.isActive);
       if (!activeVersion) {
-        throw new AppError("知识库文档没有可用的活动版本。", 400);
+        throw new AppError("No hay ninguna versión activa disponible para el documento de la base de conocimientos.", 400);
       }
       const sourceText = activeVersion.content;
       if (!sourceText.trim()) {
-        throw new AppError("知识库文档活动版本内容为空，不能用于创建写法。", 400);
+        throw new AppError("El contenido de la versión activa del documento de la base de conocimientos está vacío y no se puede utilizar para crear métodos de escritura.", 400);
       }
 
       const task = await styleExtractionTaskService.createTask({
@@ -172,7 +172,7 @@ router.post(
       res.status(202).json({
         success: true,
         data,
-        message: "知识库原文写法提取任务已提交。",
+        message: "Se ha presentado la tarea de extraer el escrito original de la base de conocimientos.",
       } satisfies ApiResponse<typeof data>);
     } catch (error) {
       next(error);
@@ -186,7 +186,7 @@ router.post("/style-profiles/from-text", validate({ body: fromTextSchema }), asy
     res.status(201).json({
       success: true,
       data,
-      message: "从文本提取写法成功。",
+      message: "La extracción de escritura del texto fue exitosa.",
     } satisfies ApiResponse<typeof data>);
   } catch (error) {
     next(error);
@@ -199,7 +199,7 @@ router.post("/style-profiles/from-extraction", validate({ body: fromExtractionSc
     res.status(201).json({
       success: true,
       data,
-      message: "已按特征选择生成写法资产。",
+      message: "Los recursos de escritura se han generado en función de la selección de funciones.",
     } satisfies ApiResponse<typeof data>);
   } catch (error) {
     next(error);

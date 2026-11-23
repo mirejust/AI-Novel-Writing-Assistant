@@ -60,13 +60,13 @@ export class ChapterPatchRepairFailedError extends Error {
 export class ChapterPatchRepairService {
   async repair(input: ChapterPatchRepairInput): Promise<ChapterPatchRepairResult> {
     if (!input.content.trim()) {
-      throw new ChapterPatchRepairFailedError("章节正文为空，不能执行局部补丁修复。");
+      throw new ChapterPatchRepairFailedError("El texto del capítulo está vacío y no se puede realizar la reparación parcial del parche.");
     }
     if (input.repairMode === "detect_only") {
-      throw new ChapterPatchRepairFailedError("当前为只检测模式，未执行章节修复。");
+      throw new ChapterPatchRepairFailedError("Actualmente en modo de solo detección, no se realiza la reparación del capítulo.");
     }
     if (input.repairMode === "heavy_repair") {
-      throw new ChapterPatchRepairFailedError("当前修复模式允许整章重写，跳过局部补丁。");
+      throw new ChapterPatchRepairFailedError("El modo de reparación actual permite reescribir capítulos enteros, omitiendo parches locales.");
     }
 
     const repairContext = input.repairContext ?? input.runtimePackage?.context.chapterRepairContext;
@@ -115,7 +115,7 @@ export class ChapterPatchRepairService {
       const message = error instanceof Error && error.message.trim()
         ? error.message.trim()
         : String(error);
-      throw new ChapterPatchRepairFailedError(`局部补丁计划未通过结构校验：${message}`);
+      throw new ChapterPatchRepairFailedError(`El plan de parche local no pasó la verificación de estructura:${message}`);
     }
 
     let applied: ChapterPatchApplyResult;
@@ -124,14 +124,14 @@ export class ChapterPatchRepairService {
     } catch (error) {
       const message = formatPatchRepairApplyError(error);
       throw new ChapterPatchRepairFailedError(
-        `局部补丁计划不可安全应用：${message}`,
+        `No es seguro aplicar planes de parches parciales:${message}`,
         generated.output,
       );
     }
     if (!applied.success) {
-      const reason = applied.failures.map((failure) => `${failure.patchId}: ${failure.reason}`).join("；")
+      const reason = applied.failures.map((failure) => `${failure.patchId}: ${failure.reason}`).join(";")
         || generated.output.escalationReason
-        || "局部补丁没有产生有效正文变化。";
+        || "El parche parcial no produjo cambios de texto válidos.";
       throw new ChapterPatchRepairFailedError(reason, generated.output, applied);
     }
 
@@ -140,7 +140,7 @@ export class ChapterPatchRepairService {
     const protection = styleIssues.length ? guardStylePatches({ original: input.content,
       plan: generated.output, allowedIssueIds, styleIssueIds: allowedStyleIds, protectedTerms }) : undefined;
     if (protection && isStyleRewriteBlocked(protection.guard)) {
-      throw new ChapterPatchRepairFailedError("表达修文超出许可或保护范围，保留原稿。",
+      throw new ChapterPatchRepairFailedError("Si la revisión excede el alcance del permiso o protección, se conservará el manuscrito original.",
         generated.output, applied, protection.guard);
     }
 

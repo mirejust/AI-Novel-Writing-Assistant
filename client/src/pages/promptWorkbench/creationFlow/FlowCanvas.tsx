@@ -8,7 +8,7 @@ import "@xyflow/react/dist/style.css";
 import { ManuscriptFigure } from "./ManuscriptFigure";
 import { stages, type Branch, type FlowStage, type Step } from "./flowDefinition";
 
-export const kindLabels = { author: "作者操作", ai: "AI 提示词", system: "系统步骤", destination: "继续创作" };
+export const kindLabels = { author: "Operación de autor", ai: "Palabras solicitadas por IA", system: "Pasos del sistema", destination: "Seguir creando" };
 type StationNode = Node<{
   step: Step; order: number; active: boolean; across: boolean; read: (step: Step) => void;
 }, "station">;
@@ -49,7 +49,7 @@ function BranchNotes({ data }: NodeProps<NotesNode>) {
           {i > 0 && <CornerDownRight size={13} />}<strong>{step.title}</strong><ArrowRight size={12} />
         </button>)}
         {target && <button className="map-return nodrag nopan" type="button" onClick={() => jump(target)}>
-          <CornerDownRight size={12} />{branch.join ? "接回" : "前往"} · {targetTitle}
+          <CornerDownRight size={12} />{branch.join ? "Recuperar" : "Ir a"} · {targetTitle}
         </button>}
       </section>;
     })}
@@ -123,12 +123,12 @@ export function FlowCanvas({ stage, current, select, jump }: {
     });
     return { nodes, edges };
   }, [stage, current, select, jump, across]);
-  return <div className="flow-canvas" ref={container} role="region" aria-label={stage.title + "步骤图"}>
+  return <div className="flow-canvas" ref={container} role="region" aria-label={stage.title + "Tabla de pasos"}>
     <ReactFlow<AtlasNode> key={`${stage.id}-${across}`} nodes={nodes} edges={edges} nodeTypes={nodeTypes}
       fitView fitViewOptions={fitOptions} minZoom={0.35} maxZoom={2} nodesDraggable={false} nodesConnectable={false}
       elementsSelectable={false} edgesFocusable={false} zoomOnDoubleClick={false} zoomOnScroll={false}
       panOnScroll preventScrolling proOptions={{ hideAttribution: true }}
-      ariaLabelConfig={{ "controls.zoomIn.ariaLabel": "放大流程图", "controls.zoomOut.ariaLabel": "缩小流程图", "controls.fitView.ariaLabel": "显示全部步骤" }}>
+      ariaLabelConfig={{ "controls.zoomIn.ariaLabel": "Ampliar diagrama de flujo", "controls.zoomOut.ariaLabel": "Reducir el diagrama de flujo", "controls.fitView.ariaLabel": "Mostrar todos los pasos" }}>
       <PlaceDiagram across={across} />
       <Controls showInteractive={false} position="bottom-right" fitViewOptions={fitOptions} />
     </ReactFlow>

@@ -30,7 +30,7 @@ export interface DirectorStageNodeAdapter {
 export const DIRECTOR_STAGE_NODE_ADAPTERS: Record<DirectorPlanningStage, DirectorStageNodeAdapter> = {
   story_macro: {
     nodeKey: "story_macro_phase",
-    label: "生成故事宏观规划",
+    label: "Generar macroplanificación de historias",
     targetType: "novel",
     reads: ["book_seed", "candidate_batch"],
     writes: ["story_macro"],
@@ -40,13 +40,13 @@ export const DIRECTOR_STAGE_NODE_ADAPTERS: Record<DirectorPlanningStage, Directo
     waitingState: {
       stage: "story_macro",
       itemKey: "story_macro",
-      itemLabel: "等待确认故事宏观规划",
+      itemLabel: "A la espera de la confirmación del plan macro de la historia.",
       progress: DIRECTOR_PROGRESS.storyMacro,
     },
   },
   book_contract: {
     nodeKey: "book_contract_phase",
-    label: "生成书级创作约定",
+    label: "Generar convenciones de creación a nivel de libro.",
     targetType: "novel",
     reads: ["story_macro", "book_seed", "candidate_batch"],
     writes: ["book_contract"],
@@ -56,13 +56,13 @@ export const DIRECTOR_STAGE_NODE_ADAPTERS: Record<DirectorPlanningStage, Directo
     waitingState: {
       stage: "story_macro",
       itemKey: "book_contract",
-      itemLabel: "等待确认书级创作约定",
+      itemLabel: "Esperando confirmación del acuerdo de redacción a nivel de libro",
       progress: DIRECTOR_PROGRESS.bookContract,
     },
   },
   world_setup: {
     nodeKey: "world_setup_phase",
-    label: "准备本书世界",
+    label: "preparar el mundo del libro",
     targetType: "novel",
     reads: ["story_macro", "book_contract", "book_seed"],
     writes: ["world_skeleton"],
@@ -72,13 +72,13 @@ export const DIRECTOR_STAGE_NODE_ADAPTERS: Record<DirectorPlanningStage, Directo
     waitingState: {
       stage: "world_setup",
       itemKey: "world_setup",
-      itemLabel: "正在准备本书世界观",
+      itemLabel: "Preparando la cosmovisión de este libro",
       progress: DIRECTOR_PROGRESS.worldSetup,
     },
   },
   character_setup: {
     nodeKey: "character_setup_phase",
-    label: "准备角色阵容与角色资产",
+    label: "Preparar la alineación de personajes y los activos de los personajes.",
     targetType: "novel",
     reads: ["book_contract", "story_macro"],
     writes: ["character_cast"],
@@ -88,13 +88,13 @@ export const DIRECTOR_STAGE_NODE_ADAPTERS: Record<DirectorPlanningStage, Directo
     waitingState: {
       stage: "character_setup",
       itemKey: "character_setup",
-      itemLabel: "等待确认角色阵容",
+      itemLabel: "Esperando confirmar el elenco de personajes.",
       progress: DIRECTOR_PROGRESS.characterSetup,
     },
   },
   volume_strategy: {
     nodeKey: "volume_strategy_phase",
-    label: "生成分卷策略与推进路线",
+    label: "Generar estrategias de implementación y rutas de avance.",
     targetType: "novel",
     reads: ["book_contract", "story_macro", "character_cast"],
     writes: ["volume_strategy"],
@@ -104,13 +104,13 @@ export const DIRECTOR_STAGE_NODE_ADAPTERS: Record<DirectorPlanningStage, Directo
     waitingState: {
       stage: "volume_strategy",
       itemKey: "volume_strategy",
-      itemLabel: "等待确认分卷策略",
+      itemLabel: "Esperando confirmación de la estrategia de asignación de volumen",
       progress: DIRECTOR_PROGRESS.volumeStrategy,
     },
   },
   structured_outline: {
     nodeKey: "structured_outline_phase",
-    label: "生成章节任务单",
+    label: "Generar lista de tareas del capítulo",
     targetType: "novel",
     reads: ["volume_strategy", "character_cast"],
     writes: ["chapter_task_sheet"],
@@ -120,7 +120,7 @@ export const DIRECTOR_STAGE_NODE_ADAPTERS: Record<DirectorPlanningStage, Directo
     waitingState: {
       stage: "structured_outline",
       itemKey: "chapter_detail_bundle",
-      itemLabel: "等待确认章节任务单",
+      itemLabel: "Esperando confirmación del orden de las tareas del capítulo",
       progress: DIRECTOR_PROGRESS.chapterDetailStart,
     },
   },

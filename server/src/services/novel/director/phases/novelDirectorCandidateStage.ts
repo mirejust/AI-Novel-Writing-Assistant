@@ -48,7 +48,7 @@ function clampTemperature(value: number | undefined, ceiling: number): number {
 function findTargetBatch(previousBatches: DirectorCandidateBatch[], batchId: string): DirectorCandidateBatch {
   const batch = previousBatches.find((item) => item.id === batchId);
   if (!batch) {
-    throw new Error("目标方案轮次不存在。");
+    throw new Error("La ronda del escenario objetivo no existe.");
   }
   return batch;
 }
@@ -56,7 +56,7 @@ function findTargetBatch(previousBatches: DirectorCandidateBatch[], batchId: str
 function findTargetCandidate(batch: DirectorCandidateBatch, candidateId: string): DirectorCandidate {
   const candidate = batch.candidates.find((item) => item.id === candidateId);
   if (!candidate) {
-    throw new Error("目标方案不存在。");
+    throw new Error("La solución objetivo no existe.");
   }
   return candidate;
 }
@@ -109,7 +109,7 @@ export class NovelDirectorCandidateStageService {
     await this.markCandidateProgress(
       context.workflowTaskId,
       "candidate_direction_batch",
-      "正在为你的想法寻找两条不同的故事方向",
+      "Buscando dos direcciones de historia diferentes para tu idea",
       DIRECTOR_PROGRESS.candidateDirectionBatch,
     );
 
@@ -135,7 +135,7 @@ export class NovelDirectorCandidateStageService {
       options: { ...options, reasoningEnabled: false, automaticMaxTokens: 1500 },
     });
     await this.markCandidateProgress(context.workflowTaskId, "candidate_direction_batch",
-      "正在分别展开两条方向的冲突、人物和故事走向", DIRECTOR_PROGRESS.candidateDirectionBatch);
+      "Los conflictos, los personajes y las direcciones de la historia se desarrollan en dos direcciones.", DIRECTOR_PROGRESS.candidateDirectionBatch);
     const { output: cards } = await runCandidateStructuredCall({
       asset: directorCandidatePrompt, promptInput: { ...promptInput, directions }, contextBlocks, options, candidateCount: context.count,
     });
@@ -148,7 +148,7 @@ export class NovelDirectorCandidateStageService {
     await this.markCandidateProgress(
       context.workflowTaskId,
       "candidate_title_pack",
-      "正在为每套方案补强书名组",
+      "El grupo de títulos de libros se está fortaleciendo para cada conjunto de planes.",
       DIRECTOR_PROGRESS.candidateTitlePack,
     );
     const independentlyEnrichedCandidates = await Promise.all(
@@ -167,7 +167,7 @@ export class NovelDirectorCandidateStageService {
         distinctCandidate = selectDistinctCandidateTitle(regeneratedCandidate, selectedTitles);
       }
       if (!distinctCandidate) {
-        throw new Error(`第 ${index + 1} 套方案未能生成与其他方案区分开的书名，请重试。`);
+        throw new Error(`Cap. ${index + 1} El conjunto de planes no logró generar un título distinto de otros planes. Por favor inténtalo de nuevo.`);
       }
       enrichedCandidates.push(distinctCandidate);
       selectedTitles.push(distinctCandidate.workingTitle);
@@ -178,7 +178,7 @@ export class NovelDirectorCandidateStageService {
       batch: {
         id: randomUUID(),
         round,
-        roundLabel: `第 ${round} 轮`,
+        roundLabel: `Cap. ${round} rueda`,
         idea: context.idea.trim(),
         refinementSummary: buildRefinementSummary(context.presets, context.feedback, round),
         presets: context.presets,
@@ -232,8 +232,8 @@ export class NovelDirectorCandidateStageService {
         foundation.promptBlock,
         referenceAnalysisPrompt
           ? input.writingMode === "continuation"
-            ? `续写来源约束：保留原作既有事实、角色关系、世界规则和未完线索。\n${referenceAnalysisPrompt}`
-            : `结构参考：只借鉴结构机制、节奏和写法，禁止沿用原作专名、角色、世界事实和具体剧情。\n${referenceAnalysisPrompt}`
+            ? `Limitaciones de la fuente para la continuación: conservar los hechos existentes, las relaciones de los personajes, las reglas del mundo y las pistas inacabadas del trabajo original. zx0zx${referenceAnalysisPrompt}`
+            : `Referencia estructural: Solo se pueden utilizar como referencia el mecanismo estructural, el ritmo y el método de escritura. Está prohibido utilizar nombres, personajes, hechos mundiales y tramas específicas originales. zx0zx${referenceAnalysisPrompt}`
           : "",
       ].filter(Boolean).join("\n\n"),
     };
@@ -254,13 +254,13 @@ export class NovelDirectorCandidateStageService {
     await this.markCandidateProgress(
       input.workflowTaskId,
       "candidate_seed_alignment",
-      "正在整理你的项目设定与起始灵感",
+      "Organizar la configuración de su proyecto y comenzar a inspirarse",
       DIRECTOR_PROGRESS.candidateSeedAlignment,
     );
     await this.markCandidateProgress(
       input.workflowTaskId,
       "candidate_project_framing",
-      "正在对齐书级 framing 与前期承诺",
+      "Alinear el marco a nivel de libro con compromisos iniciales",
       DIRECTOR_PROGRESS.candidateProjectFraming,
     );
 
@@ -291,7 +291,7 @@ export class NovelDirectorCandidateStageService {
       }),
     });
     await new DirectorTaskStateWriter(this.workflowService).markCandidateSelectionRequired(workflowTask.id, {
-      summary: `${result.batch.roundLabel} 已生成 ${result.batch.candidates.length} 套书级方向，并完成每套书名组。`,
+      summary: `${result.batch.roundLabel} Generado ${result.batch.candidates.length} Establezca instrucciones a nivel de libro y complete cada grupo de títulos.`,
     });
     return {
       ...result,
@@ -319,13 +319,13 @@ export class NovelDirectorCandidateStageService {
     await this.markCandidateProgress(
       input.workflowTaskId,
       "candidate_seed_alignment",
-      "正在读取上一轮方案与你的修正意见",
+      "Leyendo la ronda anterior de planos y sus comentarios de revisión.",
       DIRECTOR_PROGRESS.candidateSeedAlignment,
     );
     await this.markCandidateProgress(
       input.workflowTaskId,
       "candidate_project_framing",
-      "正在对齐新的口味偏好与书级 framing",
+      "Alinear nuevas preferencias de sabor con un marco a nivel de libro",
       DIRECTOR_PROGRESS.candidateProjectFraming,
     );
 
@@ -358,7 +358,7 @@ export class NovelDirectorCandidateStageService {
       }),
     });
     await new DirectorTaskStateWriter(this.workflowService).markCandidateSelectionRequired(workflowTask.id, {
-      summary: `${result.batch.roundLabel} 已根据修正意见生成 ${result.batch.candidates.length} 套新方向，并完成标题组增强。`,
+      summary: `${result.batch.roundLabel} Generado en base a comentarios revisados. ${result.batch.candidates.length} Establece una nueva dirección y completa mejoras en el conjunto de títulos.`,
     });
     return {
       ...result,
@@ -391,13 +391,13 @@ export class NovelDirectorCandidateStageService {
     await this.markCandidateProgress(
       input.workflowTaskId,
       "candidate_seed_alignment",
-      `正在读取《${targetCandidate.workingTitle}》的当前方案`,
+      `Lectura "${targetCandidate.workingTitle}»Plan actual`,
       DIRECTOR_PROGRESS.candidateSeedAlignment,
     );
     await this.markCandidateProgress(
       input.workflowTaskId,
       "candidate_direction_batch",
-      `正在按你的意见定向修正《${targetCandidate.workingTitle}》`,
+      `Lo estamos revisando según vuestras opiniones.${targetCandidate.workingTitle}»`,
       DIRECTOR_PROGRESS.candidateDirectionBatch,
     );
 
@@ -433,7 +433,7 @@ export class NovelDirectorCandidateStageService {
     await this.markCandidateProgress(
       input.workflowTaskId,
       "candidate_title_pack",
-      `正在为《${targetCandidate.workingTitle}》重配书名组`,
+      `Actualmente trabajando en "${targetCandidate.workingTitle}»Reorganizar el grupo de títulos de libros`,
       DIRECTOR_PROGRESS.candidateTitlePack,
     );
     const enrichedCandidate = await enhanceCandidateTitles({
@@ -455,7 +455,7 @@ export class NovelDirectorCandidateStageService {
     const nextBatch = replaceCandidateInBatch(
       targetBatch,
       enrichedCandidate,
-      `定向修正：${input.feedback.trim()}`,
+      `Corrección de orientación:${input.feedback.trim()}`,
     );
     const nextBatches = replaceBatchInList(input.previousBatches, nextBatch);
 
@@ -482,7 +482,7 @@ export class NovelDirectorCandidateStageService {
       }),
     });
     await new DirectorTaskStateWriter(this.workflowService).markCandidateSelectionRequired(workflowTask.id, {
-      summary: `已按你的意见定向修正《${targetCandidate.workingTitle}》。`,
+      summary: `Ha sido revisado según vuestras opiniones.${targetCandidate.workingTitle}».`,
     });
     return {
       batch: nextBatch,
@@ -515,7 +515,7 @@ export class NovelDirectorCandidateStageService {
     await this.markCandidateProgress(
       input.workflowTaskId,
       "candidate_title_pack",
-      `正在重做《${targetCandidate.workingTitle}》的标题组`,
+      `siendo rehecho${targetCandidate.workingTitle}»grupo de título`,
       DIRECTOR_PROGRESS.candidateTitlePack,
     );
 
@@ -528,8 +528,8 @@ export class NovelDirectorCandidateStageService {
         buildCandidateTitleBrief(targetCandidate, { idea: input.idea, request: input }, {
           roundCandidates: targetBatch.candidates, excludedTitles: otherTitles,
         }),
-        `当前标题组：${[...currentTitles].join("、")}`,
-        `标题修正意见：${input.feedback.trim()}`,
+        `Grupo de título actual:${[...currentTitles].join(",")}`,
+        `Comentarios de corrección de título:${input.feedback.trim()}`,
       ].join("\n"),
       genreId: input.genreId ?? null,
       count: 4,
@@ -540,7 +540,7 @@ export class NovelDirectorCandidateStageService {
 
     const titleOptions = mergeTitleOptions(response.titles, targetCandidate, otherTitles);
     if (!titleOptions.length) {
-      throw new Error("生成的书名与同轮其他方案重复，请再试一次。");
+      throw new Error("El título del libro generado es el mismo que el de otras soluciones de la misma ronda. Por favor inténtalo de nuevo.");
     }
     const nextCandidate: DirectorCandidate = {
       ...targetCandidate,
@@ -551,7 +551,7 @@ export class NovelDirectorCandidateStageService {
     const nextBatch = replaceCandidateInBatch(
       targetBatch,
       nextCandidate,
-      `标题组修正：${input.feedback.trim()}`,
+      `Correcciones en el grupo de títulos:${input.feedback.trim()}`,
     );
     const nextBatches = replaceBatchInList(input.previousBatches, nextBatch);
 
@@ -577,7 +577,7 @@ export class NovelDirectorCandidateStageService {
       }),
     });
     await new DirectorTaskStateWriter(this.workflowService).markCandidateSelectionRequired(workflowTask.id, {
-      summary: `已按你的意见重做《${targetCandidate.workingTitle}》的标题组。`,
+      summary: `Ha sido rehecho según vuestras opiniones.${targetCandidate.workingTitle}»grupo de título.`,
     });
     return {
       batch: nextBatch,

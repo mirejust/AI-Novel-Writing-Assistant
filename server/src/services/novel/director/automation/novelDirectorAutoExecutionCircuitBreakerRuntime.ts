@@ -66,7 +66,7 @@ async function applyCircuitBreakerDecision(
   if (action === "pause_for_manual") {
     await new DirectorTaskStateWriter(deps.workflowService).markPendingManualRecovery(
       input.taskId,
-      input.circuitBreaker.message ?? "自动导演已在安全节点暂停，处理后可继续。",
+      input.circuitBreaker.message ?? "El director automático se ha pausado en el nodo seguro y puede continuar después del procesamiento.",
     );
     await syncAutoExecutionTaskState(deps, {
       ...input,
@@ -95,7 +95,7 @@ async function applyCircuitBreakerStop(
   const autoExecution = withCircuitBreakerState(input.autoExecution, input.circuitBreaker);
   const scopeLabel = buildDirectorAutoExecutionScopeLabelFromState(autoExecution, input.range.totalChapterCount);
   const message = input.circuitBreaker.message?.trim()
-    || `${scopeLabel}已暂停，等待处理后再继续。`;
+    || `${scopeLabel}En pausa, esperando procesamiento antes de continuar.`;
   await ledgerEventService.recordCircuitBreakerOpened({
     taskId: input.taskId,
     novelId: input.novelId,
@@ -174,7 +174,7 @@ export async function stopAutoExecutionForCircuitBreaker(
     novelId: input.novelId,
     issueCode,
     stage: input.circuitBreaker.nodeKey ?? "chapter_execution",
-    summary: input.circuitBreaker.message ?? "自动导演安全熔断已触发。",
+    summary: input.circuitBreaker.message ?? "Se ha disparado el disyuntor automático de seguridad del director.",
     evidence: input.circuitBreaker.reason ?? undefined,
     affectedScope: input.circuitBreaker.chapterId
       ? `chapter:${input.circuitBreaker.chapterId}`

@@ -61,23 +61,23 @@ function getSuccessfulOutput(results: ToolExecutionResult[], tool: ToolCall["too
 
 function buildIntentFacts(structuredIntent?: StructuredIntent): string {
   if (!structuredIntent) {
-    return "当前没有额外的结构化创作线索。";
+    return "Actualmente no hay señales de creación estructuradas adicionales.";
   }
   const lines = [
-    structuredIntent.novelTitle ? `用户已提到标题：${truncateFact(structuredIntent.novelTitle)}` : "用户还没有明确标题。",
-    structuredIntent.genre ? `用户提到的题材：${truncateFact(structuredIntent.genre)}` : null,
-    structuredIntent.description ? `用户提到的设定：${truncateFact(structuredIntent.description)}` : null,
-    structuredIntent.styleTone ? `用户提到的风格：${truncateFact(structuredIntent.styleTone)}` : null,
+    structuredIntent.novelTitle ? `El usuario ha mencionado el título:${truncateFact(structuredIntent.novelTitle)}` : "El usuario aún no ha especificado el título.",
+    structuredIntent.genre ? `Temas mencionados por los usuarios:${truncateFact(structuredIntent.genre)}` : null,
+    structuredIntent.description ? `Configuraciones mencionadas por los usuarios:${truncateFact(structuredIntent.description)}` : null,
+    structuredIntent.styleTone ? `Estilos mencionados por los usuarios:${truncateFact(structuredIntent.styleTone)}` : null,
   ].filter((item): item is string => Boolean(item));
 
-  return lines.length > 0 ? lines.join("\n") : "当前没有额外的结构化创作线索。";
+  return lines.length > 0 ? lines.join("\n") : "Actualmente no hay señales de creación estructuradas adicionales.";
 }
 
 function fallbackForMissingTitle(scene: GuidanceScene): string {
   if (scene === "produce_missing_title") {
-    return "可以，我们先把这本书的起点定下来。你想先给它一个暂定标题，还是先说说题材、主角和核心冲突？";
+    return "Bien, establezcamos primero el punto de partida de este libro. ¿Quieres darle primero un título provisional o empezar hablando del tema, el protagonista y el conflicto central?";
   }
-  return "可以，我们先把这本书的雏形定下来。你想先给它一个暂定标题，还是先告诉我你想写什么类型、谁是主角？";
+  return "Bien, primero finalicemos el prototipo de este libro. ¿Quieres darle primero un título provisional o decirme primero qué género quieres escribir y quién es el protagonista?";
 }
 
 async function composeWarmGuidance(input: {
@@ -91,12 +91,12 @@ async function composeWarmGuidance(input: {
   try {
     const resolvedMaxTokens = resolveGuidanceMaxTokens(input.context.maxTokens);
     const sceneInstruction = input.scene === "create_missing_title"
-      ? "用户刚表达想写一本小说，但还没有形成可创建的标题。"
+      ? "El usuario acaba de expresar su deseo de escribir una novela, pero aún no ha desarrollado un título para crearla."
       : input.scene === "produce_missing_title"
-        ? "用户想直接开始整本生产，但当前没有可用的小说标题或小说上下文。"
+        ? "El usuario desea iniciar la producción completa del libro directamente, pero actualmente no hay ningún título ni contexto de novela disponibles."
         : input.scene === "create_setup"
-          ? "小说已经创建成功，现在要继续做开书初始化引导。"
-          : "用户刚切换回一部小说的工作区，需要继续未完成的初始化。";
+          ? "La novela se creó con éxito y ahora debemos continuar con la guía de inicialización de apertura del libro."
+          : "El usuario acaba de regresar al espacio de trabajo de una novela y necesita continuar con la inicialización inacabada.";
     if (guidanceLLMFactory === getLLM) {
       const result = await runTextPrompt({
         asset: runtimeSetupGuidancePrompt,
@@ -153,7 +153,7 @@ export async function composeCreateNovelSetupAnswer(
       scene: "create_missing_title",
       context,
       structuredIntent,
-      facts: "当前还没有创建成功的小说，也没有稳定的小说标题。",
+      facts: "Actualmente no existe ninguna novela exitosa ni ningún título de novela estable.",
       fallback: fallbackForMissingTitle("create_missing_title"),
     });
   }
@@ -167,11 +167,11 @@ export async function composeCreateNovelSetupAnswer(
       context,
       structuredIntent,
       facts: buildNovelSetupGuidanceFacts(setup),
-      fallback: formatNovelSetupGuidance(`已创建小说《${title}》，我们先把最关键的设定补齐。`, setup),
+      fallback: formatNovelSetupGuidance(`La novela "${title}», primero completemos las configuraciones más críticas.`, setup),
     });
   }
 
-  return title ? `已创建小说《${title}》。` : "已创建小说。";
+  return title ? `La novela "${title}».` : "Novela creada.";
 }
 
 export async function composeSelectNovelWorkspaceSetupAnswer(
@@ -182,7 +182,7 @@ export async function composeSelectNovelWorkspaceSetupAnswer(
 ): Promise<string> {
   const selected = getSuccessfulOutput(results, "select_novel_workspace");
   if (!selected) {
-    return "告诉我你想切到哪本小说，我就继续接着它的设定往下推进。";
+    return "Dime a qué novela quieres cambiar y seguiré avanzando con su ambientación.";
   }
 
   const title = typeof selected.title === "string" ? selected.title.trim() : "";
@@ -194,11 +194,11 @@ export async function composeSelectNovelWorkspaceSetupAnswer(
       context,
       structuredIntent,
       facts: buildNovelSetupGuidanceFacts(setup),
-      fallback: formatNovelSetupGuidance(`已切换到小说《${title}》的工作区，我们继续把设定补完整。`, setup),
+      fallback: formatNovelSetupGuidance(`Cambiado a la novela "${title}"Espacio de trabajo, continuamos completando la configuración.`, setup),
     });
   }
 
-  return title ? `已将当前工作区切换到《${title}》。` : "已切换当前工作区。";
+  return title ? `El espacio de trabajo actual ha sido cambiado a "${title}».` : "El espacio de trabajo actual ha sido cambiado.";
 }
 
 export async function composeMissingNovelKickoffAnswer(
@@ -213,8 +213,8 @@ export async function composeMissingNovelKickoffAnswer(
     context,
     structuredIntent,
     facts: [
-      "当前没有可用的小说上下文。",
-      structuredIntent?.novelTitle ? `当前已有标题线索：${truncateFact(structuredIntent.novelTitle)}` : "当前还没有可靠标题。",
+      "Actualmente no hay ningún contexto novedoso disponible.",
+      structuredIntent?.novelTitle ? `Actualmente hay pistas de títulos:${truncateFact(structuredIntent.novelTitle)}` : "Actualmente no existe ningún título confiable.",
     ].join("\n"),
     fallback: fallbackForMissingTitle(scene),
   });

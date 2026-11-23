@@ -39,7 +39,7 @@ import type { DirectorPhaseCallbacks, DirectorPhaseDependencies } from "./novelD
 import { resetDirectorDownstreamChapterState } from "../recovery/novelDirectorDownstreamReset";
 
 function buildChapterOrderRangeLabel(startOrder: number, endOrder: number): string {
-  return startOrder === endOrder ? `第 ${startOrder} 章` : `第 ${startOrder}-${endOrder} 章`;
+  return startOrder === endOrder ? `Cap. ${startOrder}` : `Cap. ${startOrder}-${endOrder}`;
 }
 
 function buildFastStartPlanningGuidance(request: DirectorConfirmRequest): string | undefined {
@@ -48,9 +48,9 @@ function buildFastStartPlanningGuidance(request: DirectorConfirmRequest): string
     return undefined;
   }
   return [
-    "本次采用快速开篇：首个可执行节奏段只规划开篇路线，不提前锁死远期章节。",
-    `首批路线必须覆盖 ${preparation.routeWindow.min}-${preparation.routeWindow.target} 章，优先形成可立即进入正文的因果链。`,
-    `正文前只需要完整细化未来 ${preparation.routeWindow.detailAhead} 章，其余章节保留为简略路线。`,
+    "Esta vez, se adopta un comienzo rápido: el primer segmento de ritmo ejecutable solo planifica la ruta inicial y no bloquea los capítulos futuros por adelantado.",
+    `Las primeras rutas deben ser cubiertas ${preparation.routeWindow.min}-${preparation.routeWindow.target} Capítulo, dé prioridad a la formación de una cadena causal que pueda ingresar inmediatamente al texto principal.`,
+    `Sólo necesitas detallar completamente el futuro antes del texto principal. ${preparation.routeWindow.detailAhead} Capítulo, los capítulos restantes se mantienen como rutas abreviadas.`,
   ].join("\n");
 }
 
@@ -106,14 +106,14 @@ function buildStructuredOutlinePhaseUpdate(event: VolumeGenerationPhaseEvent): {
   if (event.scope === "beat_sheet") {
     return {
       itemKey: "beat_sheet",
-      itemLabel: event.label.trim() || (event.phase === "load_context" ? "正在整理节奏板上下文" : "正在生成节奏板"),
+      itemLabel: event.label.trim() || (event.phase === "load_context" ? "Organizar el contexto del tablero de ritmo" : "Generando tablero de ritmo"),
       progress: DIRECTOR_PROGRESS.beatSheet,
     };
   }
   if (event.scope === "chapter_list") {
     return {
       itemKey: "chapter_list",
-      itemLabel: event.label.trim() || (event.phase === "load_context" ? "正在整理拆章上下文" : "正在生成章节列表"),
+      itemLabel: event.label.trim() || (event.phase === "load_context" ? "Recopilación del contexto de la división de capítulos" : "Generando lista de capítulos"),
       progress: DIRECTOR_PROGRESS.chapterList + (event.chapterProgress && event.chapterProgress.totalChapters > 0
         ? (event.chapterProgress.completedChapters / event.chapterProgress.totalChapters) * (0.8 - DIRECTOR_PROGRESS.chapterList)
         : 0),
@@ -122,7 +122,7 @@ function buildStructuredOutlinePhaseUpdate(event: VolumeGenerationPhaseEvent): {
   if (event.scope === "rebalance") {
     return {
       itemKey: "chapter_list",
-      itemLabel: event.label.trim() || "正在校准相邻卷衔接",
+      itemLabel: event.label.trim() || "Calibración de conexiones de volumen adyacentes",
       progress: 0.8,
     };
   }
@@ -191,7 +191,7 @@ export async function runDirectorStructuredOutlinePhase(input: {
   });
   const firstVolume = baseWorkspace.volumes[0];
   if (!firstVolume) {
-    throw new Error("自动导演未能生成可用卷骨架。");
+    throw new Error("Auto Director no pudo generar un esqueleto de volumen utilizable.");
   }
   const detailPlan = normalizeDirectorAutoExecutionPlan(
     isDirectorAutoExecutionRunMode(normalizeDirectorRunMode(request.runMode))
@@ -203,7 +203,7 @@ export async function runDirectorStructuredOutlinePhase(input: {
     .slice()
     .sort((left, right) => left.sortOrder - right.sortOrder);
   if (detailPlan.mode === "volume" && (detailPlan.volumeOrder ?? 1) > sortedVolumes.length) {
-    throw new Error(`当前卷规划只有 ${sortedVolumes.length} 卷，不能直接自动执行第 ${detailPlan.volumeOrder} 卷。`);
+    throw new Error(`El plan de volumen actual solo tiene ${sortedVolumes.length} volumen, no puede ejecutar directamente y automáticamente ${detailPlan.volumeOrder} rollo.`);
   }
 
   const directorSession = buildDirectorSessionState({
@@ -244,20 +244,20 @@ export async function runDirectorStructuredOutlinePhase(input: {
     });
     const cursorKey = buildStructuredOutlineCursorKey(recoveryCursor);
     if (cursorKey === previousCursorKey) {
-      throw new Error("自动导演结构化大纲恢复没有推进，请检查章节规划生成结果后重试。");
+      throw new Error("La recuperación automática del esquema estructurado del director no avanza. Verifique los resultados de la generación de planificación del capítulo y vuelva a intentarlo.");
     }
     previousCursorKey = cursorKey;
 
     if (recoveryCursor.step === "beat_sheet") {
       const targetVolume = workspace.volumes.find((volume) => volume.id === recoveryCursor.volumeId);
       if (!targetVolume) {
-        throw new Error("自动导演恢复时缺少待生成节奏板的目标卷。");
+        throw new Error("Falta el volumen objetivo para generar el tablero de ritmo durante la recuperación automática del director.");
       }
       workspace = await runDirectorTrackedStep({
         taskId,
         stage: "structured_outline",
         itemKey: "beat_sheet",
-        itemLabel: `正在生成第 ${targetVolume.sortOrder} 卷节奏板`,
+        itemLabel: `Generando el ${targetVolume.sortOrder} tablero de ritmo rodante`,
         progress: DIRECTOR_PROGRESS.beatSheet,
         volumeId: targetVolume.id,
         callbacks,
@@ -296,17 +296,17 @@ export async function runDirectorStructuredOutlinePhase(input: {
     if (recoveryCursor.step === "chapter_list") {
       const targetVolume = workspace.volumes.find((volume) => volume.id === recoveryCursor.volumeId);
       if (!targetVolume) {
-        throw new Error("自动导演恢复时缺少待拆章的目标卷。");
+        throw new Error("Falta el volumen de destino que se va a dividir durante la recuperación automática del director.");
       }
       if (!recoveryCursor.beatKey) {
-        throw new Error("自动导演恢复时缺少待生成章节的目标节奏段。");
+        throw new Error("Al currículum automático del director le faltan segmentos de tempo objetivo para los capítulos que se generarán.");
       }
       const targetBeatKey = recoveryCursor.beatKey;
       workspace = await runDirectorTrackedStep({
         taskId,
         stage: "structured_outline",
         itemKey: "chapter_list",
-        itemLabel: `正在生成第 ${targetVolume.sortOrder} 卷章节列表`,
+        itemLabel: `Generando el ${targetVolume.sortOrder} Lista de capítulos de volumen`,
         progress: DIRECTOR_PROGRESS.chapterList,
         volumeId: targetVolume.id,
         callbacks,
@@ -355,7 +355,7 @@ export async function runDirectorStructuredOutlinePhase(input: {
       await new DirectorTaskStateWriter(dependencies.workflowService).markRunning(taskId, {
         stage: "structured_outline",
         itemKey: "chapter_list",
-        itemLabel: `第 ${targetVolume.sortOrder} 卷章节列表已生成`,
+        itemLabel: `Cap. ${targetVolume.sortOrder} Se ha generado la lista de capítulos de volumen.`,
         progress: DIRECTOR_PROGRESS.chapterList,
         volumeId: targetVolume.id,
       });
@@ -376,7 +376,7 @@ export async function runDirectorStructuredOutlinePhase(input: {
         || !targetDetailMode
         || recoveryCursor.nextChapterIndex == null
       ) {
-        throw new Error("自动导演恢复时缺少章节细化所需游标。");
+        throw new Error("Falta el cursor necesario para refinar el capítulo durante el currículum automático del director.");
       }
       const targetVolumeId = recoveryCursor.volumeId;
       const targetChapterId = recoveryCursor.chapterId;
@@ -455,7 +455,7 @@ export async function runDirectorStructuredOutlinePhase(input: {
   const allowIncrementalExecutionWindow = isDirectorAutoExecutionRunMode(normalizeDirectorRunMode(request.runMode));
   if (targetChapterRange && maxPreparedChapterOrder < targetChapterRange.endOrder && !allowIncrementalExecutionWindow) {
     throw new Error(
-      `当前已生成的章节规划最多只覆盖到第 ${maxPreparedChapterOrder} 章，不能直接自动执行${buildChapterOrderRangeLabel(targetChapterRange.startOrder, targetChapterRange.endOrder)}。`,
+      `El plan del capítulo generado actualmente solo cubre hasta el ${maxPreparedChapterOrder} Capítulo, no se puede ejecutar automáticamente directamente${buildChapterOrderRangeLabel(targetChapterRange.startOrder, targetChapterRange.endOrder)}.`,
     );
   }
 
@@ -463,7 +463,7 @@ export async function runDirectorStructuredOutlinePhase(input: {
     taskId,
     "structured_outline",
     "chapter_sync",
-    "正在同步已准备章节到执行区",
+    "Sincronización de capítulos preparados con el área de ejecución",
     DIRECTOR_PROGRESS.chapterSync,
   );
   logMemoryUsage({
@@ -507,14 +507,14 @@ export async function runDirectorStructuredOutlinePhase(input: {
   });
   const selectedChapters = syncCursor.selectedChapters;
   if (selectedChapters.length === 0) {
-    throw new Error("自动导演未能准备出可执行的章节范围。");
+    throw new Error("Auto Director no pudo preparar un rango de capítulos ejecutables.");
   }
   const selectedChapterOrders = selectedChapters.map((chapter) => chapter.chapterOrder).sort((left, right) => left - right);
   if (targetChapterRange && !allowIncrementalExecutionWindow) {
     const missingOrders = findMissingSelectedChapterOrders(selectedChapterOrders, targetChapterRange);
     if (missingOrders.length > 0) {
       throw new Error(
-        `自动导演已准备的章节规划缺少第 ${missingOrders.slice(0, 5).join("、")} 章，不能直接自动执行${buildChapterOrderRangeLabel(targetChapterRange.startOrder, targetChapterRange.endOrder)}。`,
+        `Al plan del capítulo preparado por el director automático le falta el capítulo. ${missingOrders.slice(0, 5).join(",")} Capítulo, no se puede ejecutar automáticamente directamente${buildChapterOrderRangeLabel(targetChapterRange.startOrder, targetChapterRange.endOrder)}.`,
       );
     }
   }
@@ -529,7 +529,7 @@ export async function runDirectorStructuredOutlinePhase(input: {
     taskId,
     "structured_outline",
     "chapter_detail_bundle",
-    `${autoExecutionScopeLabel}细化已完成，正在同步章节执行资源`,
+    `${autoExecutionScopeLabel}Refinamiento completado, los recursos de ejecución del capítulo se están sincronizando`,
     DIRECTOR_PROGRESS.chapterDetailDone,
     {
       chapterId: selectedChapters[0]?.id ?? null,
@@ -538,7 +538,7 @@ export async function runDirectorStructuredOutlinePhase(input: {
   );
   const persistedChapters = await dependencies.novelContextService.listChapters(novelId);
   if (persistedChapters.length === 0) {
-    throw new Error("自动导演已生成拆章结果，但章节资源没有成功同步到执行区。");
+    throw new Error("El director automático generó resultados de división de capítulos, pero los recursos del capítulo no se sincronizaron correctamente con el área de ejecución.");
   }
   const persistedChapterByOrder = new Map(persistedChapters.map((chapter) => [chapter.order, chapter] as const));
   // 懒规划（JIT）模式：task sheet 尚未预生成属预期状态，跳过执行上下文完整性检查。
@@ -550,7 +550,7 @@ export async function runDirectorStructuredOutlinePhase(input: {
     });
     if (missingExecutionContextOrders.length > 0) {
       throw new Error(
-        `${autoExecutionScopeLabel}还有第 ${missingExecutionContextOrders.slice(0, 5).join("、")} 章缺少已同步的章节执行上下文，不能直接进入章节执行。请先补齐基础章节信息。`,
+        `${autoExecutionScopeLabel}y el tercero ${missingExecutionContextOrders.slice(0, 5).join(",")} El capítulo carece de un contexto de ejecución de capítulo sincronizado y no puede ingresar directamente a la ejecución del capítulo. Primero complete la información básica del capítulo.`,
       );
     }
   }
@@ -614,8 +614,8 @@ export async function runDirectorStructuredOutlinePhase(input: {
   await stateWriter.persistCheckpoint(taskId, {
     stage: "chapter_execution",
     checkpointType: "production_experience_required",
-    checkpointSummary: `《${request.candidate.workingTitle.trim() || request.title?.trim() || "当前项目"}》已完成前期准备，请选择创作界面。`,
-    itemLabel: `${autoExecutionScopeLabel}已可开写，等待选择创作界面`,
+    checkpointSummary: `«${request.candidate.workingTitle.trim() || request.title?.trim() || "Proyecto actual"}»Se han completado los preparativos preliminares, seleccione la interfaz de creación.`,
+    itemLabel: `${autoExecutionScopeLabel}Puedes empezar a escribir ahora, esperando seleccionar la interfaz de creación.`,
     volumeId: selectedChapters[0]?.volumeId ?? firstVolume.id,
     chapterId: selectedChapters[0]?.id ?? null,
     progress: DIRECTOR_PROGRESS.chapterBatchReady,

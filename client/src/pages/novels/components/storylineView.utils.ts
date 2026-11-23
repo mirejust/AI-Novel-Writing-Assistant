@@ -37,36 +37,36 @@ function buildFallbackPhases(lines: string[]): { early: string; middle: string; 
   }
   const blockSize = Math.max(1, Math.ceil(lines.length / 3));
   return {
-    early: lines.slice(0, blockSize).join("；"),
-    middle: lines.slice(blockSize, blockSize * 2).join("；"),
-    late: lines.slice(blockSize * 2).join("；"),
+    early: lines.slice(0, blockSize).join(";"),
+    middle: lines.slice(blockSize, blockSize * 2).join(";"),
+    late: lines.slice(blockSize * 2).join(";"),
   };
 }
 
 export function parseStorylineStructuredView(draftText: string): StorylineStructuredView {
   const lines = normalizeLines(draftText);
   const fallbackPhases = buildFallbackPhases(lines);
-  const coreTheme = findByKeywords(lines, ["核心主题", "主题"]);
-  const mainGoal = findByKeywords(lines, ["主线目标", "目标", "核心任务"]);
-  const earlyPhase = findByKeywords(lines, ["前期", "开篇", "第一阶段"]) || fallbackPhases.early;
-  const middlePhase = findByKeywords(lines, ["中期", "第二阶段", "转折"]) || fallbackPhases.middle;
-  const latePhase = findByKeywords(lines, ["后期", "第三阶段", "收束", "结局阶段"]) || fallbackPhases.late;
-  const growthCurve = findByKeywords(lines, ["成长", "成长路径", "成长弧"]);
-  const emotionTrend = findByKeywords(lines, ["情感", "情绪", "情感线"]);
-  const coreConflicts = findByKeywords(lines, ["冲突", "矛盾", "对抗"]);
-  const endingDirection = findByKeywords(lines, ["结局", "终局", "收尾"]);
-  const forbiddenItems = findByKeywords(lines, ["禁止", "避免", "禁忌"]);
+  const coreTheme = findByKeywords(lines, ["Temas centrales", "Tema"]);
+  const mainGoal = findByKeywords(lines, ["Objetivo principal", "Objetivo", "Misión central"]);
+  const earlyPhase = findByKeywords(lines, ["Etapa temprana", "Comienzo", "Primera etapa"]) || fallbackPhases.early;
+  const middlePhase = findByKeywords(lines, ["Mediano plazo", "Segunda etapa", "Punto de inflexión"]) || fallbackPhases.middle;
+  const latePhase = findByKeywords(lines, ["Etapa posterior", "La tercera etapa", "Envolver", "Etapa final"]) || fallbackPhases.late;
+  const growthCurve = findByKeywords(lines, ["Crecer", "Camino de crecimiento", "Arco de crecimiento"]);
+  const emotionTrend = findByKeywords(lines, ["Emoción", "Emociones", "Linea emocional"]);
+  const coreConflicts = findByKeywords(lines, ["Conflicto", "Contradicción", "Confrontación"]);
+  const endingDirection = findByKeywords(lines, ["Finalizando", "Final", "Final"]);
+  const forbiddenItems = findByKeywords(lines, ["Prohibido", "Evitar", "Tabú"]);
 
   return {
-    coreTheme: coreTheme || "未标注",
-    mainGoal: mainGoal || "未标注",
-    earlyPhase: earlyPhase || "未标注",
-    middlePhase: middlePhase || "未标注",
-    latePhase: latePhase || "未标注",
-    growthCurve: growthCurve || "未标注",
-    emotionTrend: emotionTrend || "未标注",
-    coreConflicts: coreConflicts || "未标注",
-    endingDirection: endingDirection || "未标注",
-    forbiddenItems: forbiddenItems || "未标注",
+    coreTheme: coreTheme || "Sin etiquetar",
+    mainGoal: mainGoal || "Sin etiquetar",
+    earlyPhase: earlyPhase || "Sin etiquetar",
+    middlePhase: middlePhase || "Sin etiquetar",
+    latePhase: latePhase || "Sin etiquetar",
+    growthCurve: growthCurve || "Sin etiquetar",
+    emotionTrend: emotionTrend || "Sin etiquetar",
+    coreConflicts: coreConflicts || "Sin etiquetar",
+    endingDirection: endingDirection || "Sin etiquetar",
+    forbiddenItems: forbiddenItems || "Sin etiquetar",
   };
 }

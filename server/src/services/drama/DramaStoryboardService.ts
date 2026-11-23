@@ -8,7 +8,7 @@ export class DramaStoryboardService {
   async generateStoryboard(projectId: string, episodeOrder: number, options: DramaLLMOptions = {}) {
     const context = await dramaContextAssembler.buildEpisodeContext(projectId, episodeOrder);
     if (!context.episode.content?.trim()) {
-      throw new Error(`第 ${episodeOrder} 集尚未生成台本，不能生成分镜。`);
+      throw new Error(`Cap. ${episodeOrder} El episodio aún no ha generado un guión y no puede generar guiones gráficos.`);
     }
     const result = await runStructuredPrompt({
       asset: dramaStoryboardPrompt,

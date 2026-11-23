@@ -70,7 +70,7 @@ export function registerNovelCharacterVisibleProfileRoutes(
         res.status(200).json({
           success: true,
           data,
-          message: "外显资料建议已生成。",
+          message: "Sugerencias de perfil explícitas generadas.",
         } satisfies ApiResponse<CharacterVisibleProfileSuggestion>);
       } catch (error) {
         next(error);
@@ -91,7 +91,7 @@ export function registerNovelCharacterVisibleProfileRoutes(
         res.status(200).json({
           success: true,
           data,
-          message: data.appliedFields.length > 0 ? "外显资料已写入角色卡。" : "没有新的外显资料需要写入。",
+          message: data.appliedFields.length > 0 ? "Se han escrito datos explícitos en la tarjeta de personaje." : "No es necesario escribir nuevos datos explícitos.",
         } satisfies ApiResponse<CharacterVisibleProfileApplyResult>);
       } catch (error) {
         next(error);
@@ -109,7 +109,7 @@ export function registerNovelCharacterVisibleProfileRoutes(
         res.status(200).json({
           success: true,
           data,
-          message: "全书角色外显资料建议已生成。",
+          message: "Se han generado sugerencias para apariciones de personajes a lo largo del libro.",
         } satisfies ApiResponse<CharacterVisibleProfileBatchResult>);
       } catch (error) {
         next(error);
@@ -128,7 +128,7 @@ export function registerNovelCharacterVisibleProfileRoutes(
         res.status(200).json({
           success: true,
           data,
-          message: "已按确认结果写入角色外显资料。",
+          message: "Los datos externos del personaje se han escrito de acuerdo con el resultado de la confirmación.",
         } satisfies ApiResponse<{ novelId: string; results: CharacterVisibleProfileApplyResult[] }>);
       } catch (error) {
         next(error);

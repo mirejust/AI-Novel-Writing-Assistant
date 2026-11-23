@@ -225,12 +225,12 @@ export default function TaskCenterPage() {
   const selectedDirectorRuntimeProjectionForDisplay = staleActionProjection
     ? null
     : selectedDirectorRuntimeProjection;
-  const listErrorMessage = listQuery.error instanceof Error ? listQuery.error.message : listQuery.isError ? "任务列表读取失败，请重试。" : null;
+  const listErrorMessage = listQuery.error instanceof Error ? listQuery.error.message : listQuery.isError ? "No se pudo leer la lista de tareas, inténtelo nuevamente." : null;
   const overviewErrorMessage = overviewQuery.error instanceof Error
     ? overviewQuery.error.message
-    : overviewQuery.isError ? "任务概览读取失败，请重试。" : null;
-  const detailErrorMessage = detailQuery.error instanceof Error ? detailQuery.error.message : detailQuery.isError ? "任务详情读取失败，请重试。"
-    : selectedKind && selectedId && detailQuery.isSuccess && !selectedTask ? "找不到这条运行记录，请检查链接或从列表选择另一条。" : null;
+    : overviewQuery.isError ? "No se pudo leer la descripción general de la tarea. Inténtelo de nuevo." : null;
+  const detailErrorMessage = detailQuery.error instanceof Error ? detailQuery.error.message : detailQuery.isError ? "No se pudieron leer los detalles de la tarea, inténtelo de nuevo."
+    : selectedKind && selectedId && detailQuery.isSuccess && !selectedTask ? "No se puede encontrar esta ejecución, verifique el enlace o seleccione otra de la lista." : null;
   const recommendedBlockingTask = allRows.find(isTaskMustHandle) ?? null;
   const hasMustHandleTask = mustHandleCount > 0 || blockingCount > 0;
   const recommendedRecoveryCandidate = failedTaskCount === 0
@@ -256,9 +256,9 @@ export default function TaskCenterPage() {
     <div className="space-y-5">
       <WorkspaceHeader
         icon={ListChecks}
-        context="执行历史与状态"
-        title="运行记录"
-        description="查看创作、拆书、知识索引和图片任务的状态、错误与来源位置。继续、恢复和重试请回到对应工作页面。"
+        context="Historial y estado de ejecución"
+        title="Registro de operación"
+        description="Vea el estado, los errores y las ubicaciones de origen de las tareas de creación, división de libros, indexación de conocimientos e imágenes. Para continuar, reanudar y volver a intentarlo, regrese a la página de trabajo correspondiente."
         actions={(
           <Button
             type="button"
@@ -267,7 +267,7 @@ export default function TaskCenterPage() {
             disabled={overviewQuery.isFetching || recoveryCandidatesQuery.isFetching || listQuery.isFetching}
           >
             <RefreshCw className={overviewQuery.isFetching || recoveryCandidatesQuery.isFetching || listQuery.isFetching ? "h-4 w-4 animate-spin" : "h-4 w-4"} aria-hidden="true" />
-            刷新记录
+            actualizar registro
           </Button>
         )}
       />
@@ -276,36 +276,36 @@ export default function TaskCenterPage() {
         className="rounded-2xl border-transparent px-5 py-3 shadow-none"
         icon={overviewErrorMessage ? RefreshCw : hasMustHandleTask ? ShieldAlert : Activity}
         tone={overviewQuery.isLoading ? "info" : overviewErrorMessage ? "danger" : hasMustHandleTask ? "danger" : waitingActionCount > 0 ? "info" : qualityReminderCount > 0 ? "warning" : runningCount + queuedCount > 0 ? "info" : allRows.length > 0 ? "success" : "neutral"}
-        title={overviewQuery.isLoading ? "正在读取全局任务状态" : overviewErrorMessage ? "重新读取任务概览" : hasMustHandleTask ? "先查看必须处理的任务" : waitingActionCount > 0 ? "完成等待中的操作" : qualityReminderCount > 0 ? "查看质量提醒" : runningCount + queuedCount > 0 ? "关注正在推进的任务" : allRows.length > 0 ? "当前没有阻塞任务" : "任务会在执行后汇总到这里"}
+        title={overviewQuery.isLoading ? "Lectura del estado global de la tarea" : overviewErrorMessage ? "Volver a leer la descripción general de la tarea" : hasMustHandleTask ? "Consulta las tareas que se deben realizar primero" : waitingActionCount > 0 ? "Operación pendiente completa" : qualityReminderCount > 0 ? "Ver alertas de calidad" : runningCount + queuedCount > 0 ? "Presta atención a las tareas en curso." : allRows.length > 0 ? "Actualmente no hay tareas de bloqueo" : "Las tareas se resumirán aquí después de la ejecución."}
         description={overviewQuery.isLoading
-          ? "正在汇总执行、等待操作、失败和可恢复任务，请稍候。"
+          ? "Resumiendo ejecución, operaciones en espera, tareas fallidas y reanudables, espere."
           : overviewErrorMessage
-            ? `${overviewErrorMessage} 当前不会据此判断是否存在阻塞任务。`
+            ? `${overviewErrorMessage} Actualmente, no se utilizará para determinar si existe una tarea de bloqueo.`
             : hasMustHandleTask
               ? recoveryCandidatesQuery.isLoading && !recommendedBlockingTask && failedTaskCount === 0
-                ? "正在定位可恢复任务；读取完成后会显示对应来源位置。"
-                : "阻塞状态可能影响对应来源流程；先查看原因和恢复位置，再回到来源页面处理。"
+                ? "Localizar la tarea reanudable; la ubicación de la fuente correspondiente se mostrará una vez completada la lectura."
+                : "El estado de bloqueo puede afectar el proceso fuente correspondiente; Primero verifique la causa y la ubicación de recuperación y luego regrese a la página de origen para su procesamiento."
               : waitingActionCount > 0
-                ? "候选确认、章节批次继续等节点需要你的操作，但不代表任务发生故障。"
+                ? "Los nodos como la confirmación de candidatos y la continuación del lote de capítulos requieren su operación, pero eso no significa que la tarea haya fallado."
                 : qualityReminderCount > 0
-                  ? "这些提醒不会阻止全书继续执行，可以按影响范围安排局部修复。"
+                  ? "Estos recordatorios no impedirán que todo el libro continúe ejecutándose, y se pueden organizar reparaciones locales de acuerdo con el alcance del impacto."
                   : runningCount + queuedCount > 0
-                    ? "系统会持续刷新进度，普通运行状态不需要手动干预。"
+                    ? "El sistema actualizará continuamente el progreso y no se requiere intervención manual en el estado de ejecución normal."
                     : allRows.length > 0
-                      ? "已完成记录和质量提醒会保留在详情中，便于后续追溯。"
-                      : "从小说、拆书、知识库或图片工作区发起任务后，可在这里查看状态。"}
+                      ? "Los registros completos y los recordatorios de calidad se conservarán en los detalles para facilitar el seguimiento."
+                      : "Después de iniciar una tarea desde una novela, un libro abierto, una base de conocimientos o un espacio de trabajo de imágenes, puede ver el estado aquí."}
         consequence={overviewErrorMessage
-          ? "只重新读取任务概览，不会恢复、重试或取消任务。"
+          ? "Solo se vuelve a leer la descripción general de la tarea; la tarea no se reanudará, se reintentará ni se cancelará."
           : !overviewQuery.isLoading && hasRecommendedAction
             ? recommendedTask
-              ? "只定位到推荐任务，不会自动继续、重试或取消。"
+              ? "Solo se enfocan las tareas recomendadas y no se continuarán, intentarán ni cancelarán automáticamente."
               : shouldOpenFailedFilter
-                ? "只筛选失败任务，不会自动恢复、重试或取消任务。"
-                : "只重新读取恢复候选，不会自动执行恢复。"
+                ? "Solo se filtran las tareas fallidas y las tareas no se recuperarán, intentarán ni cancelarán automáticamente."
+                : "Sólo se vuelven a leer los candidatos a recuperación; la recuperación no se realiza automáticamente."
             : undefined}
         action={overviewErrorMessage ? (
           <Button type="button" size="sm" variant="outline" onClick={() => void overviewQuery.refetch()}>
-            重新读取
+            releer
           </Button>
         ) : !overviewQuery.isLoading && hasRecommendedAction ? (
           <Button
@@ -332,7 +332,7 @@ export default function TaskCenterPage() {
               });
             }}
           >
-            {shouldRetryRecoveryLookup ? "重新读取恢复任务" : hasMustHandleTask ? "查看需处理任务" : "查看推荐任务"}
+            {shouldRetryRecoveryLookup ? "Vuelva a leer las tareas de recuperación" : hasMustHandleTask ? "Ver tareas a procesar" : "Ver tareas recomendadas"}
           </Button>
         ) : undefined}
       />
@@ -388,7 +388,7 @@ export default function TaskCenterPage() {
           dashboardView={selectedDirectorDashboardView}
           runtimeProjection={selectedDirectorRuntimeProjectionForDisplay}
           noticeSeverity={selectedTask ? getTaskNoticeSeverity(selectedTask) : "normal"}
-          noticeTitle={selectedTask ? getTaskNoticeTitle(selectedTask) : "任务提醒"}
+          noticeTitle={selectedTask ? getTaskNoticeTitle(selectedTask) : "Recordatorio de tarea"}
           failureIsQualityReminder={selectedTaskHasQualityFailure}
           steps={selectedTaskSteps}
           milestones={selectedTask?.kind === "novel_workflow" && Array.isArray(selectedTaskMeta.milestones)

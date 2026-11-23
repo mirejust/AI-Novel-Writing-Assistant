@@ -143,9 +143,9 @@ export class TimelineCheckerService {
       issues.push({
         type: "future_event_leak",
         severity: this.policy.futureEventLeakSeverity,
-        message: `本章提前写出或确认了后续事件：${forbidden.title}`,
-        evidence: evidence ? `${evidence.title}：${evidence.summary}` : forbidden.title,
-        suggestedFix: `删除或改写为铺垫，不要在本章确认“${forbidden.title}”已经发生。`,
+        message: `Los acontecimientos posteriores se anotan o confirman de antemano en este capítulo:${forbidden.title}`,
+        evidence: evidence ? `${evidence.title}:${evidence.summary}` : forbidden.title,
+        suggestedFix: `Eliminar o reescribir como presagio, no confirmar en este capítulo "${forbidden.title}"Ha sucedido.`,
         relatedEventIds: [forbidden.id],
         relatedHookIds: [],
       });
@@ -169,9 +169,9 @@ export class TimelineCheckerService {
       .map((hook) => ({
         type: "unresolved_previous_hook" as const,
         severity: isImmediateBlockingHook(hook) || hook.priority === "critical" ? "blocking" as const : "error" as const,
-        message: `本章未承接上一章遗留钩子：${hook.title}`,
+        message: `Este capítulo no hereda los ganchos que quedaron del capítulo anterior:${hook.title}`,
         evidence: hook.description,
-        suggestedFix: `章节开头或中段必须回应“${hook.title}”，不要直接跳到后续事件。`,
+        suggestedFix: `El inicio o mitad del capítulo debe responder a "${hook.title}”, no salte directamente a eventos posteriores.`,
         relatedEventIds: [],
         relatedHookIds: [hook.id],
       }));
@@ -181,9 +181,9 @@ export class TimelineCheckerService {
       .map((hook) => ({
         type: "delayed_promise" as const,
         severity: resolveModeOf(hook) === "short_arc" ? "warning" as const : "info" as const,
-        message: `本章暂未回收可延后钩子：${hook.title}`,
+        message: `Este capítulo aún no ha reciclado los ganchos aplazables:${hook.title}`,
         evidence: hook.description,
-        suggestedFix: `该钩子属于 ${resolveModeOf(hook)}，可继续保留，但后续章节应有可见推进。`,
+        suggestedFix: `Este gancho pertenece a ${resolveModeOf(hook)}, se puede seguir conservando, pero los capítulos siguientes deberían tener avances visibles.`,
         relatedEventIds: [],
         relatedHookIds: [hook.id],
       }));
@@ -198,13 +198,13 @@ export class TimelineCheckerService {
     const previousDayLabels = input.timelineContext.previousEvents
       .map((event) => event.storyTimeLabel ?? "")
       .filter(Boolean);
-    if (previousDayLabels.length > 0 && input.timelineContext.currentTime?.label?.includes("前")) {
+    if (previousDayLabels.length > 0 && input.timelineContext.currentTime?.label?.includes("adelante")) {
       return [{
         type: "timeline_regression",
         severity: "warning",
-        message: "本章时间标签疑似倒退，需要确认是否为回忆或插叙。",
+        message: "Se sospecha que la etiqueta de tiempo de este capítulo está al revés y es necesario confirmar si se trata de un recuerdo o una narración.",
         evidence: input.timelineContext.currentTime.label,
-        suggestedFix: "若不是回忆，调整本章时间锚点，使其顺承上一章。",
+        suggestedFix: "Si no es un recuerdo, ajuste el ancla de tiempo de este capítulo para que siga al capítulo anterior.",
         relatedEventIds: [],
         relatedHookIds: [],
       }];
@@ -228,9 +228,9 @@ export class TimelineCheckerService {
       issues.push({
         type: "repeated_event",
         severity: "warning",
-        message: `本章疑似重复已经发生过的事件：${match.title}`,
-        evidence: `${event.title}：${event.summary}`,
-        suggestedFix: "确认本章是在推进后果，而不是把同一事件重新发生一遍。",
+        message: `Se sospecha que este capítulo repite eventos que ya sucedieron:${match.title}`,
+        evidence: `${event.title}:${event.summary}`,
+        suggestedFix: "Asegúrese de que este capítulo avance en las consecuencias, no que repita el mismo evento una y otra vez.",
         relatedEventIds: [match.id],
         relatedHookIds: [],
       });
@@ -259,9 +259,9 @@ export class TimelineCheckerService {
         issues.push({
           type: "state_conflict",
           severity: "error",
-          message: `本章状态变化与既有确认状态冲突：${change.targetType}:${change.targetId}.${change.field}`,
-          evidence: `此前=${previous.after}；本章=${change.after}`,
-          suggestedFix: "如果状态已改变，需要先写出明确恢复、转移或反转过程；否则应保持既有状态。",
+          message: `Los cambios de estado en este capítulo entran en conflicto con el estado de confirmación existente:${change.targetType}:${change.targetId}.${change.field}`,
+          evidence: `Antes =${previous.after};Capítulo=${change.after}`,
+          suggestedFix: "Si el estado ha cambiado, primero se debe redactar un proceso claro de recuperación, transferencia o reversión; de lo contrario, deberá mantenerse el estatus actual.",
           relatedEventIds: [],
           relatedHookIds: [],
         });
@@ -284,9 +284,9 @@ export class TimelineCheckerService {
       .map((planned) => ({
         type: "missing_planned_event" as const,
         severity: "error" as const,
-        message: `本章没有完成计划时间线事件：${planned.title}`,
+        message: `Este capítulo no completó los eventos planificados en el cronograma:${planned.title}`,
         evidence: planned.summary,
-        suggestedFix: `补写或改写正文，让“${planned.title}”在本章真实发生；如果计划错误，应先调整时间线计划。`,
+        suggestedFix: `Complemente o reescriba el texto para que "${planned.title}"Realmente sucedió en este capítulo; si el plan es incorrecto, primero se debe ajustar el cronograma.`,
         relatedEventIds: [planned.id],
         relatedHookIds: [],
       }));
@@ -298,7 +298,7 @@ export class TimelineCheckerService {
     chapterContent: string;
   }): TimelineIssue[] {
     return input.timelineContext.continuityRequirements
-      .filter((requirement) => requirement.includes("must_not_happen") || requirement.includes("禁止提前发生"))
+      .filter((requirement) => requirement.includes("must_not_happen") || requirement.includes("Prohibido que ocurra por adelantado"))
       .flatMap((requirement) => {
         const matched = input.extractedEvents.find((event) => {
           const title = compact(event.title);
@@ -308,8 +308,8 @@ export class TimelineCheckerService {
           ? [{
               type: "forbidden_event_occurred" as const,
               severity: "blocking" as const,
-              message: "本章发生了时间线禁止提前发生的事件。",
-              evidence: `${matched.title}：${matched.summary}`,
+              message: "Este capítulo contiene eventos que la línea de tiempo prohíbe que sucedan antes.",
+              evidence: `${matched.title}:${matched.summary}`,
               suggestedFix: requirement,
               relatedEventIds: [],
               relatedHookIds: [],
@@ -325,9 +325,9 @@ export class TimelineCheckerService {
     return [{
       type: "unclear_time_anchor",
       severity: "info" as TimelineIssueSeverity,
-      message: "本章没有明确章节时间锚点。",
-      evidence: "ChapterTimeAnchor 缺失",
-      suggestedFix: "为本章补充 timeLabel，以便后续章节判断时间推进。",
+      message: "Este capítulo no tiene un ancla temporal clara.",
+      evidence: "Falta el ancla ChapterTime",
+      suggestedFix: "Agregue una etiqueta de tiempo a este capítulo para que los capítulos siguientes puedan juzgar el avance del tiempo.",
       relatedEventIds: [],
       relatedHookIds: [],
     }];

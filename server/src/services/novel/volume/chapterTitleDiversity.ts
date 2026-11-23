@@ -17,9 +17,9 @@ function normalizeChapterTitle(title: string): string {
     .replace(/^["'“”‘’《》〈〉「」『』【】]+|["'“”‘’《》〈〉「」『』【】]+$/gu, "")
     .replace(/\s+/g, " ")
     .trim()
-    .replace(/,/g, "，")
-    .replace(/:/g, "：")
-    .replace(/\?/g, "？");
+    .replace(/,/g, ",")
+    .replace(/:/g, ":")
+    .replace(/\?/g, "?");
 }
 
 export function getChapterTitleCollisionIssue(
@@ -30,14 +30,14 @@ export function getChapterTitleCollisionIssue(
   for (const title of candidateTitles) {
     const normalized = normalizeChapterTitle(title);
     if (normalized && reserved.has(normalized)) {
-      return `章节标题出现重复：${normalized}。请确保每章标题唯一。`;
+      return `Los títulos de los capítulos están duplicados:${normalized}. Asegúrese de que el título de cada capítulo sea único.`;
     }
   }
   return null;
 }
 
 export function isChapterTitleDuplicateIssue(message: string | null | undefined): boolean {
-  return message?.includes("章节标题出现重复") ?? false;
+  return message?.includes("Los títulos de los capítulos están duplicados.") ?? false;
 }
 
 function countChapterTitleCoreChars(title: string): number {
@@ -49,16 +49,16 @@ function countChapterTitleCoreChars(title: string): number {
 function getChapterTitleBasicQualityIssue(title: string): string | null {
   const normalized = normalizeChapterTitle(title);
   if (!normalized) {
-    return "章节标题不能为空。";
+    return "El título del capítulo no puede estar vacío.";
   }
 
   if (CHAPTER_TITLE_FIRST_PERSON_PATTERN.test(normalized)) {
-    return `章节标题不应使用第一人称或口号式主角自述：${normalized}。请改成客观章名，例如事件、地点、冲突、异动或结果。`;
+    return `Los títulos de los capítulos no deben utilizar descripciones del protagonista en primera persona o en forma de eslogan:${normalized}. Cámbielo por el nombre de un capítulo objetivo, como evento, lugar, conflicto, cambio o resultado.`;
   }
 
   const coreCharCount = countChapterTitleCoreChars(normalized);
   if (coreCharCount > CHAPTER_TITLE_MAX_CORE_CHARS) {
-    return `章节标题过长：${normalized}。请压缩到 ${CHAPTER_TITLE_MAX_CORE_CHARS} 个核心字以内，避免写成剧情梗概。`;
+    return `El título del capítulo es demasiado largo:${normalized}. Por favor comprimir a ${CHAPTER_TITLE_MAX_CORE_CHARS} Dentro de tres palabras centrales, evite escribir un resumen de la trama.`;
   }
 
   if (
@@ -66,7 +66,7 @@ function getChapterTitleBasicQualityIssue(title: string): string | null {
     && /[，,]/u.test(normalized)
     && /但|却|可|于是|因此|同时|然后/u.test(normalized)
   ) {
-    return `章节标题像剧情梗概：${normalized}。请改成更短的章节名，不要把完整因果句写进标题。`;
+    return `Los títulos de los capítulos son como sinopsis de la trama:${normalized}. Cambie el título del capítulo por uno más corto y no incluya la oración completa de causa y efecto en el título.`;
   }
 
   return null;
@@ -77,13 +77,13 @@ export function detectChapterTitleSurfaceFrame(title: string): ChapterTitleSurfa
   if (!normalized) {
     return "plain_statement";
   }
-  if (normalized.includes("：")) {
+  if (normalized.includes(":")) {
     return "colon_split";
   }
-  if (normalized.includes("，")) {
+  if (normalized.includes(",")) {
     return "comma_split";
   }
-  if (normalized.includes("？")) {
+  if (normalized.includes("?")) {
     return "question_hook";
   }
   if (CHAPTER_TITLE_OF_PHRASE_PATTERN.test(normalized)) {
@@ -102,18 +102,18 @@ function maximumSingleFrameCount(titleCount: number): number {
 
 function formatFrameLabel(frame: ChapterTitleSurfaceFrame): string {
   if (frame === "of_phrase") {
-    return "“X的Y / X中的Y”";
+    return "\"Y de X/Y de X\"";
   }
   if (frame === "comma_split") {
-    return "“A，B / 四字动作，四字结果”";
+    return "\"A, B / acción de cuatro caracteres, resultado de cuatro caracteres\"";
   }
   if (frame === "colon_split") {
-    return "“A：B”";
+    return "\"A:B\"";
   }
   if (frame === "question_hook") {
-    return "“问题钩子型”";
+    return "\"Tipo gancho de pregunta\"";
   }
-  return "“平铺直述型”";
+  return "\"Tipo directo plano\"";
 }
 
 export type ChapterTitleDiversitySeverity = "blocking" | "severe" | "marginal";
@@ -161,7 +161,7 @@ export function assessChapterTitleDiversity(titles: string[]): ChapterTitleDiver
     const title = entry.normalized;
     if (seenTitles.has(title)) {
       return {
-        issue: `章节标题出现重复：${title}。请确保每章标题唯一。`,
+        issue: `Los títulos de los capítulos están duplicados:${title}. Asegúrese de que el título de cada capítulo sea único.`,
         severity: "blocking",
         offendingTitles: [entry.raw],
       };
@@ -201,9 +201,9 @@ export function assessChapterTitleDiversity(titles: string[]): ChapterTitleDiver
   const maxAllowedOfPhraseCount = maximumOfPhraseCount(normalizedTitles.length);
   if (ofPhraseCount > maxAllowedOfPhraseCount) {
     const issue = [
-      `章节标题结构过于集中：${ofPhraseCount}/${normalizedTitles.length} 个标题使用了“X的Y / X中的Y”式结构。`,
-      ofPhraseExamples.length > 0 ? `重复骨架示例：${ofPhraseExamples.join("、")}。` : "",
-      "请降低这类标题占比，改用动作推进型、冲突压迫型、异常发现型、结果兑现型等不同章名。",
+      `La estructura del título del capítulo está demasiado concentrada:${ofPhraseCount}/${normalizedTitles.length} Un título utiliza la estructura "Y de X / Y de X".`,
+      ofPhraseExamples.length > 0 ? `Ejemplo de esqueleto repetido:${ofPhraseExamples.join(",")}.` : "",
+      "Reduzca la proporción de este tipo de títulos y utilice diferentes nombres de capítulos, como tipo de avance de acción, tipo de presión de conflicto, tipo de descubrimiento de anomalías, tipo de realización de resultados, etc.",
     ].filter(Boolean).join("");
     // Marginal band: the frame overshoots its allowance by at most one title
     // and still covers less than half of the list. At or above half of the
@@ -228,9 +228,9 @@ export function assessChapterTitleDiversity(titles: string[]): ChapterTitleDiver
   if (dominantFrame !== "plain_statement" && dominantFrameCount > maxAllowedSingleFrameCount) {
     const examples = frameExamples.get(dominantFrame) ?? [];
     const issue = [
-      `章节标题结构过于集中：${dominantFrameCount}/${normalizedTitles.length} 个标题都落在 ${formatFrameLabel(dominantFrame)} 骨架上。`,
-      examples.length > 0 ? `重复骨架示例：${examples.join("、")}。` : "",
-      "请把标题改得更分散，混用动作推进型、冲突压迫型、异常发现型、结果兑现型、决断转向型等不同句法。",
+      `La estructura del título del capítulo está demasiado concentrada:${dominantFrameCount}/${normalizedTitles.length} todos los títulos caen bajo ${formatFrameLabel(dominantFrame)} Sobre el esqueleto.`,
+      examples.length > 0 ? `Ejemplo de esqueleto repetido:${examples.join(",")}.` : "",
+      "Cambie el título para que esté más disperso y utilice diferentes sintaxis, como tipo de promoción de acciones, tipo de conflicto, tipo de descubrimiento de anomalías, tipo de cumplimiento de resultados, tipo de giro decisivo, etc.",
     ].filter(Boolean).join("");
     // Crossing the single-frame allowance means the frame already holds more
     // than half of the list, so this finding is never marginal.
@@ -238,7 +238,7 @@ export function assessChapterTitleDiversity(titles: string[]): ChapterTitleDiver
   }
 
   if (maxFrameClusterCount > 3 && dominantClusterFrame && dominantClusterFrame !== "plain_statement") {
-    const issue = `相邻章节标题结构过于重复：连续 ${maxFrameClusterCount} 个标题都在使用 ${formatFrameLabel(dominantClusterFrame)} 骨架。请把相邻章名改成不同句法。`;
+    const issue = `La estructura del título de los capítulos adyacentes es demasiado repetitiva: continua ${maxFrameClusterCount} los títulos están en uso ${formatFrameLabel(dominantClusterFrame)} esqueleto. Cambie los nombres de los capítulos adyacentes a una sintaxis diferente.`;
     const clusterFrameCount = frameCounts.get(dominantClusterFrame) ?? 0;
     const severity: ChapterTitleDiversitySeverity = maxFrameClusterCount <= 4
       && clusterFrameCount * 2 < normalizedTitles.length
@@ -262,12 +262,12 @@ export function isChapterTitleDiversityIssue(message: string | null | undefined)
   if (!normalized) {
     return false;
   }
-  return normalized.includes("章节标题结构过于集中")
-    || normalized.includes("相邻章节标题结构过于重复")
-    || normalized.includes("章节标题出现重复")
-    || normalized.includes("章节标题不应使用第一人称")
-    || normalized.includes("章节标题过长")
-    || normalized.includes("章节标题像剧情梗概");
+  return normalized.includes("La estructura del título del capítulo está demasiado concentrada.")
+    || normalized.includes("La estructura del título de los capítulos adyacentes es demasiado repetitiva.")
+    || normalized.includes("Los títulos de los capítulos están duplicados.")
+    || normalized.includes("Los títulos de los capítulos no deben estar en primera persona.")
+    || normalized.includes("El título del capítulo es demasiado largo.")
+    || normalized.includes("Los títulos de los capítulos parecen sinopsis de la trama.");
 }
 
 export function isBlockingChapterTitleQualityIssue(message: string | null | undefined): boolean {
@@ -275,9 +275,9 @@ export function isBlockingChapterTitleQualityIssue(message: string | null | unde
   if (!normalized) {
     return false;
   }
-  return normalized.includes("章节标题不应使用第一人称")
-    || normalized.includes("章节标题过长")
-    || normalized.includes("章节标题像剧情梗概");
+  return normalized.includes("Los títulos de los capítulos no deben estar en primera persona.")
+    || normalized.includes("El título del capítulo es demasiado largo.")
+    || normalized.includes("Los títulos de los capítulos parecen sinopsis de la trama.");
 }
 
 export function assertChapterTitleDiversity(titles: string[]): void {

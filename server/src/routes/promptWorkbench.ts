@@ -28,7 +28,7 @@ router.use(authMiddleware);
 router.get("/creation-flow/templates/:key", (req, res) => {
   const data = readCreationFlowTemplate(req.params.key);
   if (!data) {
-    res.status(404).json({ success: false, message: "未找到此步骤的提示词。" });
+    res.status(404).json({ success: false, message: "No se encontró ninguna palabra indicadora para este paso." });
     return;
   }
   res.json({ success: true, data } satisfies ApiResponse<typeof data>);

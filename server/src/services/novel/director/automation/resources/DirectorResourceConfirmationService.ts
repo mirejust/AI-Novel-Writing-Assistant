@@ -55,13 +55,13 @@ export class DirectorResourceConfirmationService {
       try {
         const assertExecutionOwnership = async (db: Prisma.TransactionClient = prisma) => {
           if (!await this.readAuthority(input, db)) {
-            throw new AppError("资源确认的创作任务归属或运行模式已变化，请返回本书工作台。", 409);
+            throw new AppError("La propiedad de la tarea de creación o el modo de operación de confirmación de recursos ha cambiado; regrese al banco de trabajo de este libro.", 409);
           }
           const protectedArtifact = await db.directorArtifact.findFirst({ where: {
             novelId: input.novelId, protectedUserContent: true,
             OR: [{ targetType: "chapter", targetId: chapter.id }, { contentTable: "Chapter", contentId: chapter.id }],
           }, select: { id: true } });
-          if (protectedArtifact) throw new AppError("本章包含受保护内容，请在本书工作台核对资源变动。", 409);
+          if (protectedArtifact) throw new AppError("Este capítulo contiene contenido protegido; verifique los cambios de recursos en el banco de trabajo del libro.", 409);
         };
         // Protected user content is never submitted to automatic confirmation.
         const protectedArtifact = await prisma.directorArtifact.findFirst({ where: {
@@ -78,7 +78,7 @@ export class DirectorResourceConfirmationService {
           runMode: "full_book_autopilot", provider: input.provider, model: input.model, temperature: input.temperature,
           resourceReview: { expectedChapterContent: content, assertExecutionOwnership },
         });
-        if (result.reviewFailed) await this.checkpoints.fail(identity, new Error(result.reason ?? "资源核验失败"));
+        if (result.reviewFailed) await this.checkpoints.fail(identity, new Error(result.reason ?? "Error en la verificación de recursos"));
         else await this.checkpoints.succeed(identity, { decision: result.decision, proposalIds: result.proposalIds });
       } catch (error) {
         await this.checkpoints.fail(identity, error);

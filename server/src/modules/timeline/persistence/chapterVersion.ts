@@ -10,7 +10,7 @@ export function buildTimelineContentHash(content: string): string {
 
 export class TimelineContentVersionError extends Error {
   constructor() {
-    super("章节正文版本已变化，时间线同步将使用最新正文。");
+    super("La versión del texto del capítulo ha cambiado y se utilizará el texto más reciente para la sincronización de la línea de tiempo.");
     this.name = "TimelineContentVersionError";
   }
 }

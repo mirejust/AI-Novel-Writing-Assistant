@@ -52,7 +52,7 @@ function buildOwnerLabel(row: {
   novel?: { title: string } | null;
   title: string;
 }): string {
-  return row.novel?.title?.trim() || row.title.trim() || "小说主任务";
+  return row.novel?.title?.trim() || row.title.trim() || "La tarea principal de la novela.";
 }
 
 function parseLinkedPipelineJobId(seedPayloadJson?: string | null): string | null {
@@ -100,7 +100,7 @@ function parseTaskNotice(seedPayloadJson?: string | null): DirectorTaskNotice | 
     action: action && typeof action.type === "string" && typeof action.label === "string"
       ? {
         type: action.type === "open_structured_outline" ? "open_structured_outline" : "open_structured_outline",
-        label: action.label.trim() || "打开当前卷拆章",
+        label: action.label.trim() || "Abra el volumen actual y descomprima el capítulo.",
         volumeId: typeof action.volumeId === "string" && action.volumeId.trim()
           ? action.volumeId.trim()
           : (seedResumeTarget?.volumeId?.trim() || null),
@@ -259,7 +259,7 @@ function mapSummary(row: {
     targetResources.push({
       type: "generation_job" as const,
       id: linkedPipelineJobId,
-      label: "章节流水线",
+      label: "Canalización de capítulos",
       route: `/novels/${row.novelId}/edit`,
     });
   }
@@ -277,7 +277,7 @@ function mapSummary(row: {
     : explainability.blockingReason;
   const checkpointSummary = isSkippableReviewBlockedFailure
     ? buildSkippableAutoExecutionReviewCheckpointSummary({
-      scopeLabel: autoExecution?.scopeLabel?.trim() || "前 10 章",
+      scopeLabel: autoExecution?.scopeLabel?.trim() || "primeros 10 capitulos",
       autoExecution,
     })
     : row.checkpointSummary;
@@ -289,9 +289,9 @@ function mapSummary(row: {
   const recoveryHint = isSkippableReviewBlockedFailure
     ? buildSkippableAutoExecutionReviewRecoveryHint(autoExecution)
     : status === "failed" && row.lane === "auto_director" && row.currentItemKey === "candidate_direction_batch"
-      ? "在这本书的开书页重试，导演会沿用已保存的想法和设置，重新生成本轮方向。"
+      ? "Vuelva a intentarlo en la página inicial del libro y el director regenerará la dirección actual utilizando las ideas y configuraciones guardadas."
       : pendingManualRecovery
-        ? (row.lastError?.trim() || "服务重启后任务已暂停，等待手动恢复。")
+        ? (row.lastError?.trim() || "Una vez reiniciado el servicio, la tarea se suspendió y está esperando la recuperación manual.")
         : buildTaskRecoveryHint("novel_workflow", status);
   return {
     id: row.id,
@@ -300,11 +300,11 @@ function mapSummary(row: {
     status,
     pendingManualRecovery,
     progress: row.progress,
-    currentStage: completedOpening ? "开书准备" : row.currentStage,
+    currentStage: completedOpening ? "Listo para abrir el libro" : row.currentStage,
     currentItemKey: row.currentItemKey,
     currentItemLabel: row.currentItemLabel,
-    executionScopeLabel: completedOpening ? "开书准备" : autoExecution?.scopeLabel?.trim() || null,
-    displayStatus: completedOpening ? "开书方向已确认" : explainability.displayStatus,
+    executionScopeLabel: completedOpening ? "Listo para abrir el libro" : autoExecution?.scopeLabel?.trim() || null,
+    displayStatus: completedOpening ? "Dirección de apertura del libro confirmada" : explainability.displayStatus,
     blockingReason,
     resumeAction: explainability.resumeAction,
     lastHealthyStage: explainability.lastHealthyStage,
@@ -320,7 +320,7 @@ function mapSummary(row: {
     checkpointType,
     checkpointSummary,
     resumeTarget,
-    nextActionLabel: completedOpening ? "打开小说导演台" : buildNovelWorkflowNextActionLabel(
+    nextActionLabel: completedOpening ? "Abre el escritorio del director de novelas." : buildNovelWorkflowNextActionLabel(
       status,
       checkpointType,
       autoExecution?.scopeLabel ?? null,
@@ -450,7 +450,7 @@ export class NovelWorkflowTaskAdapter {
       const command = await prisma.directorRunCommand.findFirst({where:{taskId:id},orderBy:[{createdAt:"desc"},{id:"desc"}]});
       if (command && ["generate_candidates","refine_candidates","patch_candidate","refine_titles","confirm_candidate"].includes(command.commandType)
         && ["leased","running"].includes(command.status) && command.leaseExpiresAt && command.leaseExpiresAt <= new Date()) {
-        row = {...row,status:"failed",pendingManualRecovery:true,lastError:"开书操作中断，请重试。"};
+        row = {...row,status:"failed",pendingManualRecovery:true,lastError:"La operación de apertura del libro fue interrumpida, inténtelo nuevamente."};
       }
     }
 
@@ -496,7 +496,7 @@ export class NovelWorkflowTaskAdapter {
         cancelRequestedAt: row.cancelRequestedAt?.toISOString() ?? null,
       },
       steps: isCompletedOpeningHandoff(row) ? [{
-        key: "opening_complete", label: "确认开书方向", status: "succeeded",
+        key: "opening_complete", label: "Confirmar la dirección de apertura", status: "succeeded",
         startedAt: row.startedAt?.toISOString() ?? null, updatedAt: summary.updatedAt,
       }] : buildNovelWorkflowDetailSteps({
         lane: row.lane,

@@ -131,7 +131,7 @@ export class StyleBindingService {
       const existing = await tx.styleBinding.findFirst({ where: { targetType: "novel", targetId: novelId } });
       if (existing) return;
       const profile = await tx.styleProfile.findUnique({ where: { id: styleProfileId }, select: { status: true } });
-      if (!profile || profile.status !== "active") throw new Error("请选择可用的写法档案后确认开书。");
+      if (!profile || profile.status !== "active") throw new Error("Seleccione un archivo de escritura disponible y confirme la apertura del libro.");
       const id = `novel-default:${novelId}`;
       await tx.styleBinding.upsert({ where: { id }, update: {}, create: {
         id, styleProfileId, targetType: "novel", targetId: novelId, priority: 1, weight: 1, enabled: true,

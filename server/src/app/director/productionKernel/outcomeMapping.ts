@@ -19,7 +19,7 @@ export function mapProductionUnitOutcome(outcome: UnitOutcome): MappedProduction
     code, action: manual ? "pause_for_manual" : "defer_and_continue" }));
   const result: MappedProductionUnit = { unit: { ...progress.unit }, closed: false, debts };
   const stop = (signal: StopSignal): MappedProductionUnit => ({ ...result, stopSignal: signal });
-  const integrity = () => stop({ kind: "data_integrity", action: "fail_task", source: "runtime", reason: "章节正文与完成记录不一致，请返回章节页面检查。" });
+  const integrity = () => stop({ kind: "data_integrity", action: "fail_task", source: "runtime", reason: "El texto del capítulo no coincide con el registro de finalización; regrese a la página del capítulo para verificarlo." });
   if (outcome.status === "completed") {
     if (!saved || !progress.completed.includes("reconcile") || !["completed", "degraded"].includes(progress.reconcileStatus ?? "")) return integrity();
     return { ...result, closed: true };
@@ -31,20 +31,20 @@ export function mapProductionUnitOutcome(outcome: UnitOutcome): MappedProduction
       // A book-level opt-in review rejection is a runtime gate: it must block commit in
       // any issue policy, so it cannot rely on the quality_first-only pause signal.
       return stop({ kind: "manual_recovery", action: "pause_for_manual", source: "runtime",
-        reason: "本章写法复核未通过，请从章节页面确认后继续创作。" });
+        reason: "La revisión escrita de este capítulo falló. Confirme desde la página del capítulo y continúe escribiendo." });
     }
     if (!saved || !progress.qualityPause || progress.qualityPause.acknowledged
       || progress.qualityPause.contentHash !== progress.committedContentHash) return integrity();
-    return stop({ kind: "manual_recovery", action: "pause_for_manual", source: "quality", reason: "本章正文已保存，请从章节页面检查质量提醒后继续创作。" });
+    return stop({ kind: "manual_recovery", action: "pause_for_manual", source: "quality", reason: "El texto de este capítulo ha sido guardado. Consulte el recordatorio de calidad de la página del capítulo antes de continuar." });
   }
   if (outcome.status === "stopped" && outcome.reason === "global_book") {
-    return stop({ kind: "replan", action: "stop_for_replan", source: "quality", reason: "当前章节需要调整整书规划，请从创作页面检查后续安排。" });
+    return stop({ kind: "replan", action: "stop_for_replan", source: "quality", reason: "El capítulo actual necesita ajustar el plan general del libro; consulte los arreglos de seguimiento desde la página de creación." });
   }
   if (outcome.status === "failed") {
     if (outcome.reason === "data_integrity") return integrity();
     if (outcome.reason === "no_usable_content") return stop({kind: "manual_recovery", action: "pause_for_manual", source: "runtime", reason: "generation_output_unusable"});
-    return stop({ kind: "safety", action: "fail_task", source: "runtime", reason: "本章写作未能安全完成，请返回章节页面检查。" });
+    return stop({ kind: "safety", action: "fail_task", source: "runtime", reason: "La redacción de este capítulo no se pudo completar de manera segura; regrese a la página del capítulo para verificar." });
   }
   return stop({ kind: "manual_recovery", action: "pause_for_manual", source: "runtime",
-    reason: outcome.status === "budget_exhausted" ? "本章可用额度不足，请从创作页面调整额度后继续。" : "本章写作结果尚未确认，请返回章节页面检查后继续。" });
+    reason: outcome.status === "budget_exhausted" ? "La cuota disponible para este capítulo es insuficiente. Ajuste la cuota desde la página de creación antes de continuar." : "El resultado de la redacción de este capítulo aún no se ha confirmado. Regrese a la página del capítulo para verificar antes de continuar." });
 }

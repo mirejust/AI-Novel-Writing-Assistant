@@ -134,17 +134,17 @@ export function parseChapterNumber(raw: string): number | null {
     八: 8,
     九: 9,
   };
-  if (chars === "十") {
+  if (chars === "diez") {
     return 10;
   }
-  if (chars.includes("百")) {
-    const [hundredsRaw, tailRaw] = chars.split("百");
+  if (chars.includes("Centenar")) {
+    const [hundredsRaw, tailRaw] = chars.split("Centenar");
     const hundreds = hundredsRaw ? (digitMap[hundredsRaw] ?? 0) : 1;
     const tail = tailRaw ? parseChapterNumber(tailRaw) ?? 0 : 0;
     return hundreds * 100 + tail;
   }
-  if (chars.includes("十")) {
-    const [tensRaw, onesRaw] = chars.split("十");
+  if (chars.includes("diez")) {
+    const [tensRaw, onesRaw] = chars.split("diez");
     const tens = tensRaw ? (digitMap[tensRaw] ?? 0) : 1;
     const ones = onesRaw ? (digitMap[onesRaw] ?? 0) : 0;
     const value = tens * 10 + ones;
@@ -318,13 +318,13 @@ export function normalizeIntentPayload(raw: unknown, input: PlannerInput): Recor
   }
   if (typeof payload.projectMode === "string" && payload.projectMode.trim()) {
     const projectModeValue = payload.projectMode.trim();
-    normalized.projectMode = projectModeValue === "AI 主导"
+    normalized.projectMode = projectModeValue === "Dirigido por IA"
       ? "ai_led"
-      : projectModeValue === "人机协作"
+      : projectModeValue === "Colaboración hombre-máquina"
         ? "co_pilot"
-        : projectModeValue === "草稿优先"
+        : projectModeValue === "Borrador primero"
           ? "draft_mode"
-          : projectModeValue === "自动流水线"
+          : projectModeValue === "Línea de montaje automática"
             ? "auto_pipeline"
             : projectModeValue;
   } else {
@@ -332,17 +332,17 @@ export function normalizeIntentPayload(raw: unknown, input: PlannerInput): Recor
   }
   if (typeof payload.pacePreference === "string" && payload.pacePreference.trim()) {
     const paceValue = payload.pacePreference.trim();
-    normalized.pacePreference = paceValue === "快节奏" ? "fast" : paceValue === "慢节奏" ? "slow" : paceValue === "均衡" ? "balanced" : paceValue;
+    normalized.pacePreference = paceValue === "Ritmo rápido" ? "fast" : paceValue === "Ritmo lento" ? "slow" : paceValue === "Equilibrado" ? "balanced" : paceValue;
   } else {
     delete normalized.pacePreference;
   }
   if (typeof payload.narrativePov === "string" && payload.narrativePov.trim()) {
     const povValue = payload.narrativePov.trim();
-    normalized.narrativePov = povValue === "第一人称"
+    normalized.narrativePov = povValue === "Primera persona"
       ? "first_person"
-      : povValue === "第三人称"
+      : povValue === "Tercera persona"
         ? "third_person"
-        : povValue === "混合"
+        : povValue === "mezcla"
           ? "mixed"
           : povValue;
   } else {
@@ -350,11 +350,11 @@ export function normalizeIntentPayload(raw: unknown, input: PlannerInput): Recor
   }
   if (typeof payload.emotionIntensity === "string" && payload.emotionIntensity.trim()) {
     const emotionValue = payload.emotionIntensity.trim();
-    normalized.emotionIntensity = emotionValue === "低" || emotionValue === "低情绪强度"
+    normalized.emotionIntensity = emotionValue === "Bajo" || emotionValue === "baja intensidad emocional"
       ? "low"
-      : emotionValue === "中" || emotionValue === "中等情绪强度"
+      : emotionValue === "Medio" || emotionValue === "intensidad emocional media"
         ? "medium"
-        : emotionValue === "高" || emotionValue === "高情绪强度"
+        : emotionValue === "Alto" || emotionValue === "alta intensidad emocional"
           ? "high"
           : emotionValue;
   } else {
@@ -362,11 +362,11 @@ export function normalizeIntentPayload(raw: unknown, input: PlannerInput): Recor
   }
   if (typeof payload.aiFreedom === "string" && payload.aiFreedom.trim()) {
     const freedomValue = payload.aiFreedom.trim();
-    normalized.aiFreedom = freedomValue === "低" || freedomValue === "低 AI 自由度"
+    normalized.aiFreedom = freedomValue === "Bajo" || freedomValue === "Bajos grados de libertad de la IA"
       ? "low"
-      : freedomValue === "中" || freedomValue === "中 AI 自由度" || freedomValue === "中等 AI 自由度"
+      : freedomValue === "Medio" || freedomValue === "Grados de libertad medios de la IA" || freedomValue === "Libertad moderada de IA"
         ? "medium"
-        : freedomValue === "高" || freedomValue === "高 AI 自由度"
+        : freedomValue === "Alto" || freedomValue === "Alta libertad de IA"
           ? "high"
           : freedomValue;
   } else {

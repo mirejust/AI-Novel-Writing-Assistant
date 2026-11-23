@@ -59,7 +59,7 @@ export function usePromptSlotPersistence(input: UsePromptSlotPersistenceInput) {
   const saveMutation = useMutation({
     mutationFn: (updates: Record<string, unknown>) => {
       if (!prompt) {
-        throw new Error("请选择提示词后再保存。");
+        throw new Error("Seleccione la palabra solicitada antes de guardar.");
       }
       return saveSlotOverride({
         scope,
@@ -78,7 +78,7 @@ export function usePromptSlotPersistence(input: UsePromptSlotPersistenceInput) {
   const resetMutation = useMutation({
     mutationFn: (slotKeys: string[]) => {
       if (!prompt) {
-        throw new Error("请选择提示词后再重置。");
+        throw new Error("Seleccione la palabra indicada y luego reiníciela.");
       }
       return deleteSlotOverride({
         scope,
@@ -97,7 +97,7 @@ export function usePromptSlotPersistence(input: UsePromptSlotPersistenceInput) {
   const adoptMutation = useMutation({
     mutationFn: (slotKeys: string[]) => {
       if (!prompt) {
-        throw new Error("请选择提示词后再处理更新。");
+        throw new Error("Seleccione la palabra solicitada antes de procesar la actualización.");
       }
       return applyOfficialSlots({
         promptId: prompt.id,
@@ -115,7 +115,7 @@ export function usePromptSlotPersistence(input: UsePromptSlotPersistenceInput) {
   const keepMutation = useMutation({
     mutationFn: (slotKeys: string[]) => {
       if (!prompt) {
-        throw new Error("请选择提示词后再处理更新。");
+        throw new Error("Seleccione la palabra solicitada antes de procesar la actualización.");
       }
       return keepMySlots({
         promptId: prompt.id,

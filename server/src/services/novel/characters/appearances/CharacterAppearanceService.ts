@@ -49,19 +49,19 @@ export class CharacterAppearanceService {
         await writeCharacterAppearances(tx, input);
         return;
       }
-      if (!input.directorRunId) throw new AppError("角色出场回填缺少本次创作归属。", 409);
+      if (!input.directorRunId) throw new AppError("El relleno de apariencia del personaje carece de atribución para esta creación.", 409);
       const run = await tx.directorNextRun.findFirst({where: {id: input.directorRunId, novelId: input.novelId}});
-      if (!run) throw new AppError("角色出场记录不属于本次创作。", 409);
+      if (!run) throw new AppError("Los registros de apariencia de los personajes no pertenecen a esta creación.", 409);
       const epoch = readRunExecutionEpoch(run.contractJson);
       const lock = await tx.novel.updateMany({where: {id: input.novelId, directorEpoch: epoch}, data: {directorEpoch: {increment: 0}}});
-      if (!lock.count) throw new AppError("本书创作归属已变化。", 409);
+      if (!lock.count) throw new AppError("La autoría de este libro ha cambiado.", 409);
       await assertNovelDirectorVersion(input.novelId, "v2", epoch, tx);
       const current = await tx.directorNextRun.findFirst({where: {novelId: input.novelId}, orderBy: [{createdAt:"desc"},{id:"desc"}], select:{id:true}});
-      if (current?.id !== run.id) throw new AppError("本次创作已被后续批次替换，不能回填角色出场记录。", 409);
+      if (current?.id !== run.id) throw new AppError("Esta creación ha sido reemplazada por lotes posteriores y los registros de apariencia de los personajes no se pueden completar.", 409);
       const control = await tx.directorNextRunControl.findUnique({where: {runId: run.id}});
-      if (!control || !["queued", "running"].includes(control.status)) throw new AppError("本次创作已停止，不能回填角色出场记录。", 409);
+      if (!control || !["queued", "running"].includes(control.status)) throw new AppError("Esta creación se ha detenido y los registros de apariencia de los personajes no se pueden reponer.", 409);
       const active = await tx.directorNextRunControl.updateMany({where: {runId: run.id, status: control.status, version: control.version}, data: {version: {increment: 0}}});
-      if (!active.count) throw new AppError("本次创作状态已变化。", 409);
+      if (!active.count) throw new AppError("El estado de esta creación ha cambiado.", 409);
       await writeCharacterAppearances(tx, input);
     }), {label: "director_v2.character_appearances"});
   }
@@ -69,7 +69,7 @@ export class CharacterAppearanceService {
   async read(novelId: string, characterId: string): Promise<DirectorCharacterAppearances> {
     await assertNovelDirectorVersion(novelId, "v2");
     const character = await prisma.character.findFirst({where: {id: characterId, novelId}, select: {id: true, name: true}});
-    if (!character) throw new AppError("本书没有这个角色。", 404);
+    if (!character) throw new AppError("No existe tal personaje en este libro.", 404);
     const chapters = await this.readChapters(novelId, [character]);
     return {novelId, characterId, chapters: chapters.map(({plannedCharacterIds, ...chapter}) => ({
       ...chapter, planned: plannedCharacterIds.includes(characterId),

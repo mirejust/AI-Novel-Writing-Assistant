@@ -121,7 +121,7 @@ export class BookAnalysisSourceCacheService {
       });
       if (!note) {
         await budget?.onSectionFinished(tokenUsage);
-        throw new AppError("AI 未返回可用的原文分析笔记，请检查模型配置后重试。", 502);
+        throw new AppError("AI no devolvió notas de análisis de texto originales utilizables. Verifique la configuración del modelo e inténtelo nuevamente.", 502);
       }
 
       const key = { ...identity, sourceScopeKey: segmentKeys[index] };

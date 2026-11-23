@@ -128,10 +128,10 @@ export default function NovelList() {
     mutationFn: (id: string) => deleteNovel(id),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: queryKeys.novels.all });
-      toast.success("小说已删除。");
+      toast.success("La novela ha sido eliminada.");
     },
     onError: (error) => {
-      toast.error(error instanceof Error ? error.message : "删除小说失败。");
+      toast.error(error instanceof Error ? error.message : "No se pudo eliminar la novela.");
     },
   });
 
@@ -144,10 +144,10 @@ export default function NovelList() {
     ),
     onSuccess: ({ blob, fileName }) => {
       createDownload(blob, fileName);
-      toast.success("导出已开始。");
+      toast.success("La exportación ha comenzado.");
     },
     onError: (error) => {
-      toast.error(error instanceof Error ? error.message : "导出小说失败。");
+      toast.error(error instanceof Error ? error.message : "No se pudo exportar la novela.");
     },
   });
 
@@ -181,8 +181,8 @@ export default function NovelList() {
         error instanceof Error
           ? error.message
           : input.mode === "auto_execute_range"
-            ? "继续自动执行当前章节范围失败。"
-            : "继续自动导演失败。",
+            ? "Error al continuar con la ejecución automática del rango de capítulos actual."
+            : "No se pudo reanudar el director automático.",
       );
     },
   });
@@ -203,7 +203,7 @@ export default function NovelList() {
   }, [page, totalPages]);
 
   const handleDelete = (novelId: string, title: string) => {
-    const confirmed = window.confirm(`确认删除《${title}》吗？将删除本书正文、章节与角色资料、任务及归档记录、AI 调用日志与回答历史、诊断和检索记录，以及本书生成图片与封面（共享文件保留）。此操作不可恢复。独立的大纲项目、导入原稿、衍生或续写小说及全局素材会保留。`);
+    const confirmed = window.confirm(`Confirmar eliminación${title}»? Se eliminarán el texto principal del libro, los capítulos y la información de los personajes, los registros de misión y archivo, los registros de llamadas de IA y el historial de respuestas, los registros de diagnóstico y recuperación, así como las imágenes y portadas generadas por el libro (se conservarán los archivos compartidos). Esta operación es irreversible. Se conservan los proyectos individuales, los manuscritos importados, las novelas derivadas o de continuación y los activos globales.`);
     if (!confirmed) {
       return;
     }
@@ -316,11 +316,11 @@ export default function NovelList() {
       ) : novelListQuery.isError ? (
         <Card>
           <CardHeader>
-            <CardTitle>加载小说列表失败</CardTitle>
-            <CardDescription>当前无法读取项目列表，可以重试一次。</CardDescription>
+            <CardTitle>No se pudo cargar la lista de novelas</CardTitle>
+            <CardDescription>La lista de proyectos no se puede leer en este momento, puedes intentarlo nuevamente.</CardDescription>
           </CardHeader>
           <CardContent>
-            <Button onClick={() => void novelListQuery.refetch()}>重新加载</Button>
+            <Button onClick={() => void novelListQuery.refetch()}>Recargar</Button>
           </CardContent>
         </Card>
       ) : novels.length === 0 ? (
@@ -331,7 +331,7 @@ export default function NovelList() {
             <div className="space-y-7">
               {continueNovels.length > 0 ? (
                 <section className="space-y-3">
-                  <h2 className="text-lg font-semibold">继续创作</h2>
+                  <h2 className="text-lg font-semibold">Seguir creando</h2>
                   <div className="grid w-full grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-4">
                     {continueNovels.map((novel) => (
                       <NovelContinueCard key={`continue-${novel.id}`} novel={novel} onManageCover={setCoverNovelId} onDelete={handleDelete} />
@@ -340,7 +340,7 @@ export default function NovelList() {
                 </section>
               ) : null}
               <section className="space-y-3">
-                <h2 className="text-lg font-semibold">我的作品</h2>
+                <h2 className="text-lg font-semibold">Mi trabajo</h2>
                 <div className="grid w-full grid-cols-[repeat(auto-fill,minmax(230px,1fr))] gap-4">
                   {novels.filter((novel) => !continueNovels.some((item) => item.id === novel.id)).map((novel) => (
                     <NovelShelfCard key={novel.id} novel={novel} onManageCover={setCoverNovelId} onDownload={setExportNovel} onDelete={handleDelete} />
@@ -380,12 +380,12 @@ export default function NovelList() {
       )}
 
       <Dialog open={Boolean(exportNovel)} onOpenChange={(open) => { if (!open) setExportNovel(null); }}>
-        <AppDialogContent title="导出作品" description={`选择《${exportNovel?.novelTitle ?? ""}》的下载格式。`} className="max-w-md">
+        <AppDialogContent title="Exportar obra" description={`Elegir"${exportNovel?.novelTitle ?? ""}»Formato de descarga.`} className="max-w-md">
           <div className="flex flex-wrap gap-2">
-            {([ ["txt", "TXT 正文"], ["zip", "分章 ZIP"], ["markdown", "Markdown"], ["json", "JSON"] ] as const).map(([format, label]) => (
+            {([ ["txt", "Texto textual"], ["zip", "Capítulo por ZIP"], ["markdown", "Markdown"], ["json", "JSON"] ] as const).map(([format, label]) => (
               <Button key={format} variant="outline" disabled={downloadNovelMutation.isPending}
                 onClick={() => { if (exportNovel) downloadNovelMutation.mutate({ ...exportNovel, format }); }}>
-                {downloadNovelMutation.isPending && downloadNovelMutation.variables.format === format ? "导出中..." : label}
+                {downloadNovelMutation.isPending && downloadNovelMutation.variables.format === format ? "Exportando..." : label}
               </Button>
             ))}
           </div>
@@ -419,20 +419,20 @@ export default function NovelList() {
       >
         <AppDialogContent
           className="max-w-2xl"
-          title="AI 驾驶舱"
+          title="Cabina de IA"
           description={
             selectedCockpitNovel?.title
-              ? `查看《${selectedCockpitNovel.title}》的 AI 推进状态和下一步动作。`
-              : "查看这本书的 AI 推进状态和下一步动作。"
+              ? `Controlar"${selectedCockpitNovel.title}» Estado de avance de la IA y próxima acción.`
+              : "Consulte el estado de avance de la IA del libro y los próximos pasos."
           }
         >
           {cockpitProjectionQuery.isPending ? (
             <div className="rounded-lg border p-3 text-sm text-muted-foreground">
-              读取这本书的 AI 状态...
+              Lea el estado de la IA de este libro...
             </div>
           ) : cockpitProjectionQuery.isError ? (
             <div className="rounded-lg border p-3">
-              <div className="text-sm text-muted-foreground">无法读取这本书的 AI 状态，请稍后重试。</div>
+              <div className="text-sm text-muted-foreground">No se puede leer el estado de la IA de este libro. Vuelva a intentarlo más tarde.</div>
               <Button
                 type="button"
                 size="sm"
@@ -440,7 +440,7 @@ export default function NovelList() {
                 className="mt-3"
                 onClick={() => void cockpitProjectionQuery.refetch()}
               >
-                重新读取
+                releer
               </Button>
             </div>
           ) : cockpitProjection ? (
@@ -455,7 +455,7 @@ export default function NovelList() {
               }}
             />
           ) : (
-            <AICockpit fallbackSummary="这本书没有需要处理的 AI 自动推进任务。" />
+            <AICockpit fallbackSummary="El libro no tiene tareas de avance automático de IA con las que lidiar." />
           )}
         </AppDialogContent>
       </Dialog>

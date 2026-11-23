@@ -295,7 +295,7 @@ export class ChapterContentFinalizationService {
     const obligationCoverage = runtimePackage.obligationCoverage ?? {
       status: "satisfied" as const,
       missing: [],
-      summary: "旧运行记录未包含章节义务覆盖信息。",
+      summary: "Los registros de ejecución antiguos no contienen información de cobertura de obligación del capítulo.",
     };
     const filtered = filterAcceptedFactItems({
       chapterOrder,
@@ -362,7 +362,7 @@ export class ChapterContentFinalizationService {
       runId: input.runId,
       novelId: input.novelId,
       nodeKey: "chapter_execution_node",
-      summary: `本章 ${input.excluded.length} 条义务未由验收确认，未写入事实账本。`,
+      summary: `este capitulo ${input.excluded.length} Las obligaciones de los artículos no se confirman con la aceptación y no se registran en el libro de hechos.`,
       affectedScope: `chapter:${input.chapterId}`,
       severity: "medium",
       metadata: {

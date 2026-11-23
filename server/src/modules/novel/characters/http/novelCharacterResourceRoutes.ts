@@ -52,7 +52,7 @@ export function registerNovelCharacterResourceRoutes(
         res.status(200).json({
           success: true,
           data,
-          message: "角色关键资源已加载。",
+          message: "Se han cargado recursos clave de personajes.",
         } satisfies ApiResponse<typeof data>);
       } catch (error) {
         next(error);
@@ -70,7 +70,7 @@ export function registerNovelCharacterResourceRoutes(
         res.status(200).json({
           success: true,
           data,
-          message: "角色资源已加载。",
+          message: "Se han cargado los recursos de personajes.",
         } satisfies ApiResponse<typeof data>);
       } catch (error) {
         next(error);
@@ -88,7 +88,7 @@ export function registerNovelCharacterResourceRoutes(
         res.status(200).json({
           success: true,
           data,
-          message: "本章关键资源已加载。",
+          message: "Se han cargado recursos clave para este capítulo.",
         } satisfies ApiResponse<typeof data>);
       } catch (error) {
         next(error);
@@ -107,7 +107,7 @@ export function registerNovelCharacterResourceRoutes(
         res.status(200).json({
           success: true,
           data,
-          message: "资源变化已提取，低风险变化会用于后续写作。",
+          message: "Los cambios de recursos se extraen y los cambios de bajo riesgo se utilizan en escritos posteriores.",
         } satisfies ApiResponse<typeof data>);
       } catch (error) {
         next(error);
@@ -126,7 +126,7 @@ export function registerNovelCharacterResourceRoutes(
         res.status(200).json({
           success: true,
           data,
-          message: "最近章节资源已回填。",
+          message: "Se han reabastecido los recursos de los capítulos recientes.",
         } satisfies ApiResponse<typeof data>);
       } catch (error) {
         next(error);
@@ -144,7 +144,7 @@ export function registerNovelCharacterResourceRoutes(
         res.status(200).json({
           success: true,
           data,
-          message: "资源变更已确认，后续写作会参考它。",
+          message: "Se ha reconocido el cambio de recursos y se hará referencia a él en escritos posteriores.",
         } satisfies ApiResponse<typeof data>);
       } catch (error) {
         next(error);
@@ -162,7 +162,7 @@ export function registerNovelCharacterResourceRoutes(
         res.status(200).json({
           success: true,
           data,
-          message: "资源变更已忽略，不会影响后续写作。",
+          message: "Los cambios de recursos se han ignorado y no afectarán la escritura posterior.",
         } satisfies ApiResponse<typeof data>);
       } catch (error) {
         next(error);

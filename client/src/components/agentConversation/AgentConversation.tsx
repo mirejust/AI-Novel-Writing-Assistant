@@ -95,22 +95,22 @@ export function AgentConversation<Result extends { id: string; status: string }>
     <header className="agent-heading">
       <span className="agent-mark" aria-hidden="true"><Feather size={20} /></span>
       <div><h3>{title}</h3>{typeof context === "string" ? <p>{context}</p> : context}</div>
-      <button type="button" className="agent-refresh" title="刷新对话" aria-label="刷新对话" disabled={history.isFetching} onClick={() => void history.refetch()}><RefreshCw size={15} /></button>
+      <button type="button" className="agent-refresh" title="Actualizar conversación" aria-label="Actualizar conversación" disabled={history.isFetching} onClick={() => void history.refetch()}><RefreshCw size={15} /></button>
     </header>
     <div className="agent-feed" ref={feedRef} onScroll={event => {
       const feed = event.currentTarget;
       followReply.current = feed.scrollHeight - feed.scrollTop - feed.clientHeight < 48;
     }}>
-      {history.isLoading && <p role="status">正在读取对话…</p>}
-      {history.isError && <p role="alert">对话读取失败，请刷新对话。</p>}
+      {history.isLoading && <p role="status">Leyendo conversación...</p>}
+      {history.isError && <p role="alert">No se pudo leer la conversación; actualice la conversación.</p>}
       {history.isSuccess && !turns.length && <div className="agent-welcome">
         <h4>{welcome.title}</h4><p>{welcome.body}</p>
-        {!value.trim() && <div className="agent-starters" role="group" aria-label="选择讨论起点">
+        {!value.trim() && <div className="agent-starters" role="group" aria-label="Elija un punto de partida para la discusión">
           {welcome.starters.map(item => <button key={item.label} type="button" onClick={() => compose(item.text)}>
             {item.label}<ArrowUpRight size={15} aria-hidden="true" /></button>)}
         </div>}
       </div>}
-      {!!turns.length && <ol className="agent-messages" aria-label="对话记录">
+      {!!turns.length && <ol className="agent-messages" aria-label="Registro de conversación">
         {turns.map((turn, index) => {
           const from = turn.parentResultId ? byResultId.get(turn.parentResultId) : undefined;
           const result = turn.result;
@@ -118,11 +118,11 @@ export function AgentConversation<Result extends { id: string; status: string }>
           const expanded = !!result && opened?.result.id === result.id;
           const live = turn.status === "running" && preview?.turnId === turn.id ? preview : null;
           return <li key={turn.id} ref={index === turns.length - 1 ? lastTurn : undefined}>
-            <div className="agent-author"><small>你{from && ` · 追问第 ${from.number} 轮`}</small><p>{turn.requestText}</p></div>
+            <div className="agent-author"><small>Tu{from && ` · Pregunta No. ${from.number} rueda`}</small><p>{turn.requestText}</p></div>
             <div className="agent-reply"><small><Feather size={13} aria-hidden="true" />{title}{!draft && ` · ${versionLabel(turn.contextVersion)}`}</small>
               <AgentThinking steps={live?.thinking ?? turn.thinking} running={turn.status === "running"} />
               {turn.status === "running" ? <>
-                <p role="status" className="text-muted-foreground">{live?.stage || "正在整理你的想法…"}</p>
+                <p role="status" className="text-muted-foreground">{live?.stage || "Cotejando tus pensamientos..."}</p>
                 {live?.text && <div className="agent-prose"><MarkdownViewer content={live.text} /></div>}
               </> : turn.status === "completed" && turn.replyText ? <div className="agent-prose"><MarkdownViewer content={turn.replyText} /></div>
                 : turn.replyText && <p role={turn.status === "failed" ? "alert" : undefined}>{turn.replyText}</p>}
@@ -136,12 +136,12 @@ export function AgentConversation<Result extends { id: string; status: string }>
                     </span>
                   </span>
                   <span className="agent-draft-footer"><span>{draft.counts}</span><span className="agent-draft-action">
-                    {expanded && !onOpenResult ? "收起大纲" : "查看大纲"}<ChevronDown size={14} aria-hidden="true" /></span></span>
-                </> : <><FileText size={14} aria-hidden="true" />查看第 {index + 1} 轮提案 · {describeResult(result)}<ChevronDown size={13} aria-hidden="true" /></>}
+                    {expanded && !onOpenResult ? "Contraer esquema" : "Ver esquema"}<ChevronDown size={14} aria-hidden="true" /></span></span>
+                </> : <><FileText size={14} aria-hidden="true" />Ver el {index + 1} Ronda de propuestas · {describeResult(result)}<ChevronDown size={13} aria-hidden="true" /></>}
               </button>}
               {(turn.status === "failed" || turn.status === "interrupted") && <button className="agent-text-action" type="button" disabled={busy || disabled}
-                onClick={() => { if (from) setOpenedId(from.result.id); compose(turn.requestText); }}>用这条要求继续</button>}
-              {running?.id === turn.id && <button className="agent-text-action" type="button" disabled={stop.isPending} onClick={() => stop.mutate(turn.id)}><Square size={11} />结束本轮</button>}
+                onClick={() => { if (from) setOpenedId(from.result.id); compose(turn.requestText); }}>Continuar con esta solicitud</button>}
+              {running?.id === turn.id && <button className="agent-text-action" type="button" disabled={stop.isPending} onClick={() => stop.mutate(turn.id)}><Square size={11} />Termina esta ronda</button>}
               {result && expanded && renderResult && <div className="agent-review" data-draft={!!draft} key={result.id}>
                 {renderResult(result, busy, index + 1)}
               </div>}
@@ -152,11 +152,11 @@ export function AgentConversation<Result extends { id: string; status: string }>
     </div>
     <form className="agent-compose" onSubmit={e => { e.preventDefault(); submit(); }}>
       <div className="agent-input">
-        {parent && <div className="agent-reference" id={topicId} title={`第 ${parent.number} 轮提案`}>
+        {parent && <div className="agent-reference" id={topicId} title={`Cap. ${parent.number} propuesta redonda`}>
           <BookOpen size={14} aria-hidden="true" />{followUpTopic(parent.result, parent.number)}
         </div>}
         <textarea ref={editor} aria-label={inputLabel} aria-describedby={parent ? topicId : undefined} rows={2} value={value} maxLength={maxLength}
-          placeholder={parent ? followUpPlaceholder : turns.length ? "接着说说你的想法…" : placeholder} disabled={send.isPending} onChange={event => onChange(event.target.value)}
+          placeholder={parent ? followUpPlaceholder : turns.length ? "Entonces dime lo que piensas..." : placeholder} disabled={send.isPending} onChange={event => onChange(event.target.value)}
           onKeyDown={event => {
             if (event.key !== "Enter" || event.shiftKey || event.altKey || event.ctrlKey || event.metaKey
               || event.nativeEvent.isComposing || event.nativeEvent.keyCode === 229) return;

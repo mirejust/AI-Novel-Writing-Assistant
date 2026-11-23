@@ -4,11 +4,11 @@ export function buildOpeningDirectionPreview(prompt: Pick<PromptCatalogItem, "id
   if (prompt.id !== "novel.director.direction_pair" && prompt.id !== "novel.director.candidates") {
     return undefined;
   }
-  const idea = "边关小卒每天替将军写家书。山口即将封冻，城里还等着这批信。";
+  const idea = "Los guardias fronterizos escriben cartas al general a casa todos los días. El paso de montaña está a punto de congelarse y estas cartas todavía esperan en la ciudad.";
   const promptInput = { idea, context: {}, count: 2, batches: [], presets: [] };
   const directions = {
-    A: { choice: "冒名领信，查清谁在给阵亡的士卒回信", engine: "小卒每借一个名字领信，就多一层暴露身份的风险，也多一条追查寄信人的线索。" },
-    B: { choice: "带一群送信人赶在雪封前出关", engine: "小卒每护送一队信使抵达下一站，就要在剩余粮马与仍被困的村镇之间重新取舍。" },
+    A: { choice: "Finge recibir la carta y descubre quién responde a los soldados caídos.", engine: "Cada vez que un peón toma prestado un nombre para recibir una carta, existe un riesgo adicional de revelar su identidad y una pista más para rastrear al remitente." },
+    B: { choice: "Dirige un grupo de mensajeros para salir de la aduana antes de que se congele la nieve.", engine: "Cada vez que el peón escolta a un equipo de mensajeros a la siguiente parada, tienen que elegir entre los caballos de grano restantes y los pueblos y ciudades que aún están atrapados." },
   };
   return {
     promptInput: prompt.id === "novel.director.candidates" && prompt.version === "v3"

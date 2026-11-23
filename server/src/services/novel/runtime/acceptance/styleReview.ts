@@ -47,7 +47,7 @@ export function applyAcceptanceStyleContext(
     required: true, allowSummary: false,
     content: [buildWriterStyleContractText(contractFor(context), getAcceptanceNarrativePov(context)),
       ...(contractFor(context)?.meta.antiAiRulePolicies?.length ? [
-        "反 AI 规则目录（对应上面的规则；autoRewrite 表示是否允许自动修文）：",
+        "Directorio de reglas anti-AI (correspondiente a las reglas anteriores; autoRewrite indica si se permite la revisión automática):",
         ...contractFor(context)!.meta.antiAiRulePolicies!.map(rule => JSON.stringify(rule)),
       ] : []),
     ].join("\n"),
@@ -68,7 +68,7 @@ export function buildAcceptanceStyleReport(
       const ruleId = issue.styleRuleId ?? issue.code;
       return {
       ruleId, issueCode: issue.code, layer: issue.layer,
-      ruleName: rule?.name ?? "写法与反 AI 表达", ruleType: rule?.type ?? "style" as const,
+      ruleName: rule?.name ?? "Método de escritura y expresión anti-IA.", ruleType: rule?.type ?? "style" as const,
       severity: issue.severity === "critical" ? "high" as const : issue.severity,
       source: meta?.globalAntiAiRuleIds?.includes(ruleId) ? "global_anti_ai" as const
         : meta?.styleAntiAiRuleIds?.includes(ruleId) ? "style_anti_ai" as const : "style_contract" as const,
@@ -82,7 +82,7 @@ export function buildAcceptanceStyleReport(
     const rule = meta?.antiAiRulePolicies?.find(rule => rule.id === item.styleRuleId);
     const ruleId = item.styleRuleId ?? item.code;
     violations.push({
-      ruleId, issueCode: item.code, layer: item.layer, ruleName: rule?.name ?? "写法建议",
+      ruleId, issueCode: item.code, layer: item.layer, ruleName: rule?.name ?? "Sugerencias de escritura",
       ruleType: rule?.type ?? "style", severity: item.severity,
       source: meta?.globalAntiAiRuleIds?.includes(ruleId) ? "global_anti_ai"
         : meta?.styleAntiAiRuleIds?.includes(ruleId) ? "style_anti_ai" : "style_contract",
@@ -119,7 +119,7 @@ export function applyAcceptanceStyleRepairPolicy(
   const requiresExplicitRecovery = assessment.status === "needs_manual_review" || assessment.repairability === "plan_misalignment";
   return { ...assessment, blockingIssues, repairDirectives,
     ...(!hasRepairWork && !requiresExplicitRecovery ? { status: "continue_with_risk" as const, continuePolicy: "continue" as const, repairability: "none" as const } : {}),
-    riskTags: [...assessment.riskTags, ...deferred.map(issue => `写法提醒：${issue.fixSuggestion}`)],
+    riskTags: [...assessment.riskTags, ...deferred.map(issue => `Recordatorio de escritura:${issue.fixSuggestion}`)],
     styleReview: assessment.styleReview ? { ...assessment.styleReview,
       issueCodes: assessment.styleReview.issueCodes.filter(code => !deferredCodes.has(code)),
       observations: [...(assessment.styleReview.observations ?? []), ...deferred.filter(issue => issue.layer).map(issue => ({

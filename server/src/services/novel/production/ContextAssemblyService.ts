@@ -60,7 +60,7 @@ function buildPayoffDirective(
       title: payoff.title,
       ledgerKey: payoff.ledgerKey,
       operation: "forbid",
-      reason: "该 payoff 触及当前受保护信息，本章只能保持压力或铺垫，不得揭开答案。",
+      reason: "Esta recompensa afecta a la información actualmente protegida, y este capítulo sólo puede mantener la presión o presagiar, no revelar respuestas.",
       forbiddenReveal,
     };
   }
@@ -75,7 +75,7 @@ function buildPayoffDirective(
         : "touch";
   const reason = payoff.statusReason?.trim()
     || payoff.summary?.trim()
-    || "按当前章节窗口轻触该伏笔，不提前兑现。";
+    || "Toque el presagio en la ventana del capítulo actual y no se respetará por adelantado.";
   return {
     title: payoff.title,
     ledgerKey: payoff.ledgerKey,

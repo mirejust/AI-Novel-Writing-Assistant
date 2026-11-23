@@ -96,7 +96,7 @@ const antiAiRuleSchema = z.object({
 
 const antiAiRuleUpdateSchema = antiAiRuleSchema.partial().refine(
   (value) => Object.keys(value).length > 0,
-  { message: "至少提供一个更新字段。" },
+  { message: "Proporcione al menos un campo de actualización." },
 );
 
 const antiAiRuleDraftFieldsSchema = z.object({
@@ -155,7 +155,7 @@ const testWriteSchema = z.object({
 });
 
 const detectionSchema = z.object({
-  content: z.string().min(1).refine(value => Boolean(value.trim()), "正文不能为空。"),
+  content: z.string().min(1).refine(value => Boolean(value.trim()), "El texto no puede estar vacío."),
   styleProfileId: z.string().trim().optional(),
   novelId: z.string().trim().optional(),
   chapterId: z.string().trim().optional(),
@@ -167,7 +167,7 @@ const detectionSchema = z.object({
 });
 
 const rewriteSchema = z.object({
-  content: z.string().min(1).refine(value => Boolean(value.trim()), "正文不能为空。"),
+  content: z.string().min(1).refine(value => Boolean(value.trim()), "El texto no puede estar vacío."),
   styleProfileId: z.string().trim().optional(),
   novelId: z.string().trim().optional(),
   chapterId: z.string().trim().optional(),
@@ -201,7 +201,7 @@ router.get("/style-profiles", async (_req, res, next) => {
     res.status(200).json({
       success: true,
       data,
-      message: "获取写法资产列表成功。",
+      message: "Obtención exitosa de la lista de activos de escritura.",
     } satisfies ApiResponse<typeof data>);
   } catch (error) {
     next(error);
@@ -214,7 +214,7 @@ router.post("/style-profiles", validate({ body: manualProfileSchema }), async (r
     res.status(201).json({
       success: true,
       data,
-      message: "创建写法资产成功。",
+      message: "El recurso de escritura se creó correctamente.",
     } satisfies ApiResponse<typeof data>);
   } catch (error) {
     next(error);
@@ -227,7 +227,7 @@ router.post("/style-profiles/from-book-analysis", validate({ body: fromBookAnaly
     res.status(201).json({
       success: true,
       data,
-      message: "从拆书生成写法成功。",
+      message: "La generación de métodos de escritura a partir de libros divididos fue un éxito.",
     } satisfies ApiResponse<typeof data>);
   } catch (error) {
     next(error);
@@ -240,7 +240,7 @@ router.post("/style-profiles/from-template", validate({ body: fromTemplateSchema
     res.status(201).json({
       success: true,
       data,
-      message: "从模板创建写法成功。",
+      message: "El método de escritura se creó correctamente a partir de la plantilla.",
     } satisfies ApiResponse<typeof data>);
   } catch (error) {
     next(error);
@@ -253,7 +253,7 @@ router.post("/style-profiles/from-brief", validate({ body: fromBriefSchema }), a
     res.status(201).json({
       success: true,
       data,
-      message: "AI 生成写法成功。",
+      message: "Método de escritura generado por IA con éxito.",
     } satisfies ApiResponse<typeof data>);
   } catch (error) {
     next(error);
@@ -267,14 +267,14 @@ router.get("/style-profiles/:id", validate({ params: idSchema }), async (req, re
     if (!data) {
       res.status(404).json({
         success: false,
-        error: "写法资产不存在。",
+        error: "El activo de escritura no existe.",
       } satisfies ApiResponse<null>);
       return;
     }
     res.status(200).json({
       success: true,
       data,
-      message: "获取写法资产详情成功。",
+      message: "Se obtuvieron los detalles del activo de escritura con éxito.",
     } satisfies ApiResponse<typeof data>);
   } catch (error) {
     next(error);
@@ -288,7 +288,7 @@ router.put("/style-profiles/:id", validate({ params: idSchema, body: manualProfi
     res.status(200).json({
       success: true,
       data,
-      message: "更新写法资产成功。",
+      message: "Actualice los recursos de escritura con éxito.",
     } satisfies ApiResponse<typeof data>);
   } catch (error) {
     next(error);
@@ -301,7 +301,7 @@ router.delete("/style-profiles/:id", validate({ params: idSchema }), async (req,
     await styleProfileService.deleteProfile(id);
     res.status(200).json({
       success: true,
-      message: "删除写法资产成功。",
+      message: "Los recursos de escritura se eliminaron correctamente.",
     } satisfies ApiResponse<null>);
   } catch (error) {
     next(error);
@@ -318,7 +318,7 @@ router.post("/style-profiles/:id/test-write", validate({ params: idSchema, body:
     res.status(200).json({
       success: true,
       data,
-      message: "试写完成。",
+      message: "Escritura de prueba completada.",
     } satisfies ApiResponse<typeof data>);
   } catch (error) {
     next(error);
@@ -331,7 +331,7 @@ router.get("/style-templates", async (_req, res, next) => {
     res.status(200).json({
       success: true,
       data,
-      message: "获取模板成功。",
+      message: "Plantilla obtenida con éxito.",
     } satisfies ApiResponse<typeof data>);
   } catch (error) {
     next(error);
@@ -344,7 +344,7 @@ router.get("/anti-ai-rules", async (_req, res, next) => {
     res.status(200).json({
       success: true,
       data,
-      message: "获取反AI规则成功。",
+      message: "Obtuvo reglas anti-IA con éxito.",
     } satisfies ApiResponse<typeof data>);
   } catch (error) {
     next(error);
@@ -358,7 +358,7 @@ router.get("/anti-ai-rules/effective", validate({ query: effectiveAntiAiRulesQue
     res.status(200).json({
       success: true,
       data,
-      message: "获取生效反 AI 规则成功。",
+      message: "Obtuvo con éxito reglas efectivas contra la IA.",
     } satisfies ApiResponse<typeof data>);
   } catch (error) {
     next(error);
@@ -371,7 +371,7 @@ router.post("/anti-ai-rules/ai-draft", validate({ body: antiAiRuleAiDraftSchema 
     res.status(200).json({
       success: true,
       data,
-      message: "反 AI 规则草稿已生成。",
+      message: "Se ha generado un borrador de norma contra la IA.",
     } satisfies ApiResponse<typeof data>);
   } catch (error) {
     next(error);
@@ -384,7 +384,7 @@ router.post("/anti-ai-rules", validate({ body: antiAiRuleSchema }), async (req, 
     res.status(201).json({
       success: true,
       data,
-      message: "创建反AI规则成功。",
+      message: "La regla anti-IA se creó correctamente.",
     } satisfies ApiResponse<typeof data>);
   } catch (error) {
     next(error);
@@ -398,7 +398,7 @@ router.put("/anti-ai-rules/:id", validate({ params: antiRuleIdSchema, body: anti
     res.status(200).json({
       success: true,
       data,
-      message: "更新反AI规则成功。",
+      message: "Se actualizaron las reglas anti-IA con éxito.",
     } satisfies ApiResponse<typeof data>);
   } catch (error) {
     next(error);
@@ -412,7 +412,7 @@ router.get("/style-bindings", validate({ query: bindingQuerySchema }), async (re
     res.status(200).json({
       success: true,
       data,
-      message: "获取写法绑定成功。",
+      message: "Obtenga el enlace del método de escritura con éxito.",
     } satisfies ApiResponse<typeof data>);
   } catch (error) {
     next(error);
@@ -425,7 +425,7 @@ router.post("/style-bindings", validate({ body: bindingSchema }), async (req, re
     res.status(201).json({
       success: true,
       data,
-      message: "创建写法绑定成功。",
+      message: "El enlace del método de escritura se creó correctamente.",
     } satisfies ApiResponse<typeof data>);
   } catch (error) {
     next(error);
@@ -438,7 +438,7 @@ router.delete("/style-bindings/:id", validate({ params: bindingIdSchema }), asyn
     await styleBindingService.deleteBinding(id);
     res.status(200).json({
       success: true,
-      message: "删除写法绑定成功。",
+      message: "Elimine el enlace del método de escritura con éxito.",
     } satisfies ApiResponse<null>);
   } catch (error) {
     next(error);
@@ -473,7 +473,7 @@ router.post("/style-recommendations/novels/:id", validate({
     res.status(200).json({
       success: true,
       data,
-      message: "写法推荐已生成。",
+      message: "Se han generado recomendaciones de escritura.",
     } satisfies ApiResponse<typeof data>);
   } catch (error) {
     next(error);
@@ -486,7 +486,7 @@ router.post("/style-detection/check", validate({ body: detectionSchema }), async
     res.status(200).json({
       success: true,
       data,
-      message: "写法检测完成。",
+      message: "Se completa la detección del método de escritura.",
     } satisfies ApiResponse<typeof data>);
   } catch (error) {
     next(error);
@@ -499,7 +499,7 @@ router.post("/style-detection/rewrite", validate({ body: rewriteSchema }), async
     res.status(200).json({
       success: true,
       data,
-      message: data.content === req.body.content ? "保留原稿，可查看写法建议。" : "局部修订预览已生成。",
+      message: data.content === req.body.content ? "Conserve el manuscrito original y vea las sugerencias de escritura." : "Se genera una vista previa de revisión parcial.",
     } satisfies ApiResponse<typeof data>);
   } catch (error) {
     next(error);

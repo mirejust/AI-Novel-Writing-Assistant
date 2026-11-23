@@ -28,7 +28,7 @@ export class OutlineFeedbackService {
 
   private async binding(db: Db, projectId: string) {
     const b = await db.outlineBookBinding.findUnique({where: {projectId}});
-    if (!b || await db.manuscriptProject.findFirst({where: {OR: [{novelId: b.novelId}, {workingOutlineProjectId: projectId}]}, select: {id: true}})) throw conflict("仅大纲开书作品可使用章节反馈。");
+    if (!b || await db.manuscriptProject.findFirst({where: {OR: [{novelId: b.novelId}, {workingOutlineProjectId: projectId}]}, select: {id: true}})) throw conflict("La retroalimentación del capítulo solo está disponible para trabajos de apertura de esquema.");
     return b;
   }
   async status(projectId: string): Promise<OutlineFeedbackStatus> {
@@ -69,14 +69,14 @@ export class OutlineFeedbackService {
     const b = await this.binding(this.db, projectId);
     const settings = outlineFeedbackSettingsSchema.parse(JSON.parse(b.feedbackSettingsJson));
     const chapter = await this.db.chapter.findFirst({where: {id: chapterId, novelId: b.novelId}, select: {id: true, order: true, chapterSummary: {select: {summary: true}}}});
-    if (!chapter?.chapterSummary?.summary.trim()) throw conflict("请先保存本章摘要。");
+    if (!chapter?.chapterSummary?.summary.trim()) throw conflict("Guarde primero el resumen de este capítulo.");
     const mapping: OutlineBookMapping = JSON.parse(b.mappingJson);
     if (automatic && !feedbackDue(settings, chapter.order, mapping)) return null;
     const key = createHash("sha256").update(`${projectId}:${requestKey ?? `auto:${chapterId}:${chapter.chapterSummary.summary}`}`).digest("hex");
     const prior = await this.db.outlineFeedbackRun.findUnique({where: {requestKey: key}});
     if (prior) { if (prior.status === "pending") this.schedule(prior.id); return receipt(prior); }
     const current = await new OutlineRepository(this.db).getCurrent(projectId);
-    if (!current?.revision) throw conflict("找不到工作大纲。");
+    if (!current?.revision) throw conflict("No puedo encontrar el esquema del trabajo.");
     const workspace = await this.db.volumePlanVersion.findFirst({where: {novelId: b.novelId, status: "active"}, orderBy: {version: "desc"}});
     const document = applyOutlinePolicy(validateOutlineDocument(JSON.parse(current.revision.documentJson)), JSON.parse(b.policyJson));
     const snapshot: Snapshot = {baseVersion: current.project.currentVersion, policyVersion: b.policyVersion, revisionId: b.revisionId,
@@ -101,11 +101,11 @@ export class OutlineFeedbackService {
       const fields = new Set<string>();
       for (const op of output.operations) {
         const node = snapshot.prompt.nodes.find(n => n.nodeId === op.nodeId);
-        if (seen.has(op.operationId) || !node || !Object.keys(op.fields).length || Object.keys(op.fields).some(f => !(f in node.fields))) throw conflict("反馈包含重复操作或越界字段，请重试分析。");
+        if (seen.has(op.operationId) || !node || !Object.keys(op.fields).length || Object.keys(op.fields).some(f => !(f in node.fields))) throw conflict("Los comentarios contienen operaciones duplicadas o campos fuera de límites; intente realizar el análisis nuevamente.");
         seen.add(op.operationId);
         for (const field of Object.keys(op.fields)) {
           const key = `${op.nodeId}:${field}`;
-          if (fields.has(key)) throw conflict("同一字段存在重复建议，请重试分析。");
+          if (fields.has(key)) throw conflict("Hay sugerencias duplicadas en el mismo campo, intente realizar el análisis nuevamente.");
           fields.add(key);
         }
       }
@@ -121,7 +121,7 @@ export class OutlineFeedbackService {
         await tx.outlineFeedbackRun.update({where: {id}, data: {status: "completed", itemsJson: JSON.stringify(items)}});
       });
     } catch {
-      await this.db.outlineFeedbackRun.updateMany({where: {id, status: "running", attempt: claimed.attempt}, data: {status: "failed", error: "章节反馈分析未完成，请重试。"}});
+      await this.db.outlineFeedbackRun.updateMany({where: {id, status: "running", attempt: claimed.attempt}, data: {status: "failed", error: "El análisis de comentarios del capítulo no se ha completado, inténtelo de nuevo."}});
     }
   }
   async retry(projectId: string, id: string) {
@@ -129,44 +129,44 @@ export class OutlineFeedbackService {
     // A crashed in-process worker is reclaimable after its bounded model timeout window.
     const changed = await this.db.outlineFeedbackRun.updateMany({where: {id, projectId, OR: [{status: "failed"}, {status: "running", updatedAt: {lt: new Date(Date.now()-10*60_000)}}]}, data: {status: "pending", error: null}});
     const run = await this.db.outlineFeedbackRun.findFirst({where: {id, projectId}});
-    if (!run || !changed.count && run.status !== "pending") throw conflict("此分析不能重试。");
+    if (!run || !changed.count && run.status !== "pending") throw conflict("Este análisis no se puede volver a intentar.");
     this.schedule(id); return {id, status: "pending"};
   }
   async decide(projectId: string, id: string, operationIds: string[], decision: "adopted" | "rejected"): Promise<OutlineFeedbackDecisionResult> {
     return this.db.$transaction(async tx => {
       const b = await this.binding(tx, projectId);
       const run = await tx.outlineFeedbackRun.findFirst({where: {id, projectId, status: "completed"}});
-      if (!run) throw conflict("找不到已完成的反馈。");
+      if (!run) throw conflict("Comentarios completos no encontrados.");
       const items: Item[] = JSON.parse(run.itemsJson), snapshot: Snapshot = JSON.parse(run.inputJson);
       const selected = [...new Set(operationIds)].map(key => {
         const item = items.find(i => i.operationId === key);
-        if (!item || item.status !== "pending" && item.status !== decision) throw conflict("建议已处理或不存在。");
+        if (!item || item.status !== "pending" && item.status !== decision) throw conflict("La sugerencia ha sido procesada o no existe.");
         return item;
       }).filter(i => i.status === "pending");
       if (!selected.length) return {id, items};
       // Serialize decisions on this run, including rejection-only requests.
       const lock = await tx.outlineFeedbackRun.updateMany({where: {id, itemsJson: run.itemsJson}, data: {updatedAt: new Date()}});
-      if (!lock.count) throw conflict("反馈已变化，请刷新。");
+      if (!lock.count) throw conflict("Los comentarios han cambiado, actualice.");
       if (decision === "adopted") {
         const sourceSummary = await tx.chapterSummary.findUnique({where: {chapterId: run.chapterId}, select: {summary: true}});
-        if (sourceSummary?.summary.slice(0, 3000) !== snapshot.prompt.summary) throw conflict("本章摘要已变化，请重新分析。");
-        if (b.policyVersion !== snapshot.policyVersion || b.revisionId !== snapshot.revisionId) throw conflict("大纲策略已变化，请重新分析。");
+        if (sourceSummary?.summary.slice(0, 3000) !== snapshot.prompt.summary) throw conflict("El resumen de este capítulo ha cambiado, vuelva a analizarlo.");
+        if (b.policyVersion !== snapshot.policyVersion || b.revisionId !== snapshot.revisionId) throw conflict("La estrategia general ha cambiado, vuelva a analizarla.");
         const repository = new OutlineRepository(tx as PrismaClient, true);
         const current = await repository.getCurrent(projectId);
-        if (!current?.revision || current.project.currentVersion !== snapshot.baseVersion) throw conflict("工作大纲已变化，请重新分析。");
+        if (!current?.revision || current.project.currentVersion !== snapshot.baseVersion) throw conflict("El esquema de trabajo ha cambiado, vuelva a analizarlo.");
         const mapping: OutlineBookMapping = JSON.parse(b.mappingJson), policy: OutlineBookPolicy = JSON.parse(b.policyJson);
         const document = applyOutlinePolicy(validateOutlineDocument(JSON.parse(current.revision.documentJson)), policy);
         const allowed = feedbackNodes(document, mapping, policy, run.chapterOrder);
         const latestWritten = await tx.chapter.findFirst({where: {novelId: b.novelId, OR: [{content: {not: ""}}, {generationState: {not: "planned"}}]}, orderBy: {order: "desc"}, select: {order: true}});
         const workspace = await tx.volumePlanVersion.findFirst({where: {novelId: b.novelId, status: "active"}, orderBy: {version: "desc"}});
-        if (!workspace || workspace.id !== snapshot.workspaceId || outlineHash(JSON.parse(workspace.contentJson)) !== snapshot.workspaceHash) throw conflict("章节规划已变化，请重新分析。");
+        if (!workspace || workspace.id !== snapshot.workspaceId || outlineHash(JSON.parse(workspace.contentJson)) !== snapshot.workspaceHash) throw conflict("El plan del capítulo ha cambiado, vuelva a analizarlo.");
         const working: VolumePlanDocument = JSON.parse(workspace.contentJson);
         let version = snapshot.baseVersion;
         for (const item of selected) {
           const node = allowed.find(n => n.nodeId === item.nodeId);
-          if (!node || Object.keys(item.fields).some(f => !(f in node.fields))) throw conflict("目标字段已锁定或不在反馈范围内。");
+          if (!node || Object.keys(item.fields).some(f => !(f in node.fields))) throw conflict("El campo objetivo está bloqueado o está fuera del rango de retroalimentación.");
           const mapped = mapping.chapters.find(c => c.nodeId === item.nodeId);
-          if (mapped && mapped.chapterOrder <= Math.max(run.chapterOrder, latestWritten?.order ?? 0)) throw conflict("不能修改已写作或当前章节。");
+          if (mapped && mapped.chapterOrder <= Math.max(run.chapterOrder, latestWritten?.order ?? 0)) throw conflict("No se pueden modificar capítulos ya escritos o actuales.");
           await tx.outlineProposal.update({where: {id: item.proposalId}, data: {baseVersion: version}});
           await new OutlineProposalService(repository).apply(projectId, item.proposalId, [item.operationId], true);
           version++;
@@ -180,7 +180,7 @@ export class OutlineFeedbackService {
           const affected = mapped ? [mapped] : mapping.chapters.filter(c => c.chapterOrder > Math.max(run.chapterOrder, latestWritten?.order ?? 0) && relatedChapterIds.has(c.nodeId));
           for (const target of affected) {
             const chapter = working.volumes.flatMap(v => v.chapters).find(c => c.id === target.planId && c.chapterId === target.chapterId);
-            if (!chapter) throw conflict("后续章纲映射不完整。");
+            if (!chapter) throw conflict("El mapeo de los capítulos siguientes está incompleto.");
             // Invalidate execution details so A2 rebuilds them from the accepted source fields.
             if (mapped) Object.assign(chapter, item.fields);
             chapter.taskSheet = null; chapter.sceneCards = null;
@@ -188,15 +188,15 @@ export class OutlineFeedbackService {
             const saved = await tx.chapter.updateMany({where: {id: target.chapterId, generationState: "planned", AND: [
               {OR: [{content: ""}, {content: null}]}, {OR: [{chapterStatus: {not: "generating"}}, {chapterStatus: null}]},
             ]}, data: {expectation: chapter.summary, taskSheet: null, sceneCards: null}});
-            if (!saved.count) throw conflict("后续章节已开始写作，请重新分析。");
+            if (!saved.count) throw conflict("Los capítulos siguientes han sido escritos, analícelos nuevamente.");
             await tx.storyPlan.updateMany({where: {novelId: b.novelId, chapterId: target.chapterId, level: "chapter"}, data: {status: "stale"}});
           }
           item.status = decision;
         }
         const changed = await tx.outlineBookBinding.updateMany({where: {id: b.id, policyVersion: snapshot.policyVersion}, data: {policyJson: JSON.stringify(policy), policyVersion: {increment: 1}}});
-        if (!changed.count) throw conflict("大纲策略已变化。");
+        if (!changed.count) throw conflict("Las estrategias de delineamiento han cambiado.");
         const savedWorkspace = await tx.volumePlanVersion.updateMany({where: {id: workspace.id, contentJson: workspace.contentJson}, data: {contentJson: JSON.stringify(working)}});
-        if (!savedWorkspace.count) throw conflict("章节规划已变化，请重新分析。");
+        if (!savedWorkspace.count) throw conflict("El plan del capítulo ha cambiado, vuelva a analizarlo.");
         snapshot.baseVersion = version; snapshot.policyVersion++;
         snapshot.workspaceHash = outlineHash(working);
         // Remaining independent items can be reviewed against the newly accepted version.

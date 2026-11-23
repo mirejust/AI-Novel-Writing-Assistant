@@ -8,7 +8,7 @@ type ContractText = Pick<ReturnType<typeof savedExecutionContract>, "taskSheet" 
 
 export async function readExecutionContracts(db: Pick<Database, "chapter">, contract: RunContract) {
   const range = contract.chapterRange;
-  if (!range) throw new Error("缺少已授权的章节范围。");
+  if (!range) throw new Error("Falta rango de sección autorizada.");
   const rows = await db.chapter.findMany({
     where: {novelId: contract.novelId, order: {gte: range.from, lte: range.to}},
     orderBy: {order: "asc"}, select: {id: true, order: true, taskSheet: true, sceneCards: true,
@@ -16,7 +16,7 @@ export async function readExecutionContracts(db: Pick<Database, "chapter">, cont
   });
   if (rows.length !== range.to - range.from + 1 || rows.some((row, i) =>
     row.order !== range.from + i || !row.taskSheet?.trim() || !row.sceneCards?.trim())) {
-    throw new Error("请保存本批每一章完整的章节任务与场景。");
+    throw new Error("Guarde las tareas y escenas completas de cada capítulo de este lote.");
   }
   return rows.map(savedExecutionContract);
 }
@@ -41,7 +41,7 @@ export async function verifyConfirmedExecutionContract(
   const approval = await db.directorNextArtifact.findFirst(selectApproval);
   if (!approval || !["confirmed", "user_edited"].includes(approval.status)) return false;
   const saved = await readExecutionContracts(db, contract);
-  const mismatch = () => new Error("本批章节任务或场景与确认稿不符，请返回导演台重新核对。");
+  const mismatch = () => new Error("Las tareas o escenas de este lote de capítulos no coinciden con el borrador confirmado; regrese al escritorio del director para volver a verificar.");
   if (!saved.some(row => row.chapterId === chapterId)) throw mismatch();
   if (artifactContentHash(saved) === approval.contentHash) return true;
   if (approval.status === "user_edited") {

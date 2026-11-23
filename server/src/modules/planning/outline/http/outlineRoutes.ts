@@ -10,7 +10,7 @@ import characterImpactRoutes from "../characterImpact/http";
 import { z, ZodError } from "zod";
 import { outlineRetrySetupSchema } from "@ai-novel/shared/types/outlineOpenBook";
 import { OutlineOpenBookError } from "../openBook";
-const openBookError = (e: unknown) => e instanceof ZodError ? new OutlineOpenBookError("OUTLINE_OPEN_INVALID", e.issues.map(i => `${i.path.join(".")}: ${i.message}`).join("；"), 422) : e;
+const openBookError = (e: unknown) => e instanceof ZodError ? new OutlineOpenBookError("OUTLINE_OPEN_INVALID", e.issues.map(i => `${i.path.join(".")}: ${i.message}`).join(";"), 422) : e;
 import { outlineImportPreviewService, outlineProjectService, outlineProposalService, outlineOpenBookService, outlinePolicyService } from "..";
 import { exportOutlineJson, exportOutlineMarkdown } from "../application/OutlineTransferService";
 
@@ -89,7 +89,7 @@ router.patch("/:id", route(async req => {
   const body = z.object({ title: z.string().min(1).max(200), expectedVersion: z.number().int() }).parse(req.body);
   const current = await outlineProjectService.get(id.parse(req.params.id));
   if (!current || current.currentVersion !== body.expectedVersion) throw new Error("OUTLINE_VERSION_CONFLICT");
-  if (!current.document) throw new Error("大纲内容不存在");
+  if (!current.document) throw new Error("El contenido del esquema no existe.");
   const document = { ...current.document, story: { ...current.document.story, title: body.title } };
   return outlineProjectService.save(current.id, body.expectedVersion, document);
 }));
@@ -108,10 +108,10 @@ router.post("/:id/proposals/:proposalId/apply", route(async req => {
 }));
 router.post("/:id/proposals/:proposalId/reject", route(async req => outlineProposalService.reject(id.parse(req.params.id), id.parse(req.params.proposalId))));
 router.get("/:id/export", route(async req => {
-  const current = await outlineProjectService.get(id.parse(req.params.id)); if (!current) throw new Error("大纲项目不存在");
+  const current = await outlineProjectService.get(id.parse(req.params.id)); if (!current) throw new Error("El elemento del esquema no existe");
   const revision = req.query.revisionId ? await outlineProjectService.getRevision(current.id, id.parse(req.query.revisionId)) : null;
   const document = revision?.document ?? current.document;
-  if (!document) throw new Error("大纲内容不存在");
+  if (!document) throw new Error("El contenido del esquema no existe.");
   const format = z.enum(["json", "markdown"]).parse(req.query.format ?? "json");
   return format === "json" ? exportOutlineJson(current.title, revision?.version ?? current.currentVersion, document) : exportOutlineMarkdown(document);
 }));

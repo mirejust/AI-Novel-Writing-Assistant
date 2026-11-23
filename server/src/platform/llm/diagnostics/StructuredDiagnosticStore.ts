@@ -5,38 +5,38 @@ import { prisma } from "../../../db/prisma";
 export interface StructuredDiagnosticContext { invocationId: string; nextAttempt: number }
 
 const messages: Record<StructuredFailureReason, string> = {
-  empty_response: "模型返回了空内容。请检查所选模型的结构化输出能力后重试。",
-  reasoning_budget_exhausted: "模型的输出额度用于思考，尚未返回可用方案。请检查模型输出额度与思考设置。",
-  output_budget_exhausted: "模型输出达到本次额度，方案未完整返回。请检查输出额度后重试。",
-  blocked: "模型明确拒绝或过滤了这次请求。请调整创作要求或核对模型服务提示。",
-  rate_limited: "模型服务暂时限流，请等待后继续。",
-  network: "连接模型服务时发生网络异常，可以稍后继续。",
-  timeout: "本次模型请求超时，可以检查服务状态后继续。",
-  cancelled: "本次请求已取消。",
-  invalid_json: "模型返回的方案格式不完整或不符合 JSON 要求，请继续重试。",
-  schema_validation: "模型返回的方案缺少必要字段或结构不符合要求，请继续重试。",
-  business_validation: "模型返回的方案未满足创作约定，请继续重试。",
-  unknown: "本次请求未完成，已有证据不足以确定具体原因。请查看诊断标识后核对模型服务。",
+  empty_response: "El modelo devolvió contenido vacío. Verifique las capacidades de salida estructurada del modelo seleccionado e inténtelo nuevamente.",
+  reasoning_budget_exhausted: "La cantidad de salida del modelo se utiliza para pensar y las soluciones disponibles aún no se han devuelto. Verifique los límites de salida del modelo y la configuración de pensamiento.",
+  output_budget_exhausted: "La producción del modelo alcanzó esta cuota y el plan no se devolvió por completo. Verifique la cuota de salida e inténtelo nuevamente.",
+  blocked: "La modelo negó o filtró explícitamente esta solicitud. Ajuste sus requisitos de creación o consulte las indicaciones del servicio modelo.",
+  rate_limited: "El servicio de modelo está temporalmente limitado, espere antes de continuar.",
+  network: "Se produjo una excepción de red al conectarse al servicio modelo. Puedes continuar más tarde.",
+  timeout: "Esta solicitud de modelo caduca, puede verificar el estado del servicio antes de continuar.",
+  cancelled: "Esta solicitud ha sido cancelada.",
+  invalid_json: "El formato de esquema devuelto por el modelo está incompleto o no cumple con los requisitos de JSON; continúe intentándolo nuevamente.",
+  schema_validation: "El esquema devuelto por el modelo carece de los campos necesarios o la estructura no cumple con los requisitos. Continúe intentándolo de nuevo.",
+  business_validation: "La solución devuelta por el modelo no cumple con el acuerdo de creación, continúe intentándolo nuevamente.",
+  unknown: "Esta solicitud no se ha completado y la evidencia existente es insuficiente para determinar el motivo específico. Verifique el servicio del modelo después de ver el indicador de diagnóstico.",
 };
 
 export function describeShortStoryPlanBudgetFailure(response: StructuredResponseEvidence): string | undefined {
   const reason = response.failureReason;
   if (reason !== "output_budget_exhausted" && reason !== "reasoning_budget_exhausted") return undefined;
   const result = reason === "reasoning_budget_exhausted"
-    ? "模型用完输出额度后仍未生成短篇计划。"
-    : "短篇计划在返回完整内容前被截断。";
+    ? "El modelo no ha generado un plan corto después de agotar su cuota de producción."
+    : "Los planes breves se truncaron antes de volver al contenido completo.";
   const limit = response.maxTokens;
-  const requested = limit == null ? "" : `本次请求上限为 ${limit.toLocaleString("zh-CN")} Token。`;
-  const modelSettings = "请在“设置 → 模型与厂商 → 模型兼容性”核对当前模型和接口的实际输出上限，或更换模型后重试。";
+  const requested = limit == null ? "" : `El límite superior para esta solicitud es ${limit.toLocaleString("zh-CN")} Simbólico.`;
+  const modelSettings = "Verifique el límite superior de salida real del modelo y la interfaz actuales en \"Configuración → Modelo y proveedor → Compatibilidad del modelo\", o cambie el modelo e inténtelo nuevamente.";
   const used = response.tokenUsage?.completionTokens;
   if (limit != null && used != null && used < limit) {
-    return `${result}${requested}模型服务报告输出了 ${used.toLocaleString("zh-CN")} Token。${modelSettings}`;
+    return `${result}${requested}Se genera el informe de servicio modelo. ${used.toLocaleString("zh-CN")} Simbólico.${modelSettings}`;
   }
   const trace = response.budgetTrace;
   if (trace?.source === "endpoint" || (limit != null && trace?.endpointMaxTokens === limit)) {
-    return `${result}${requested}本次请求已达到模型设置中的上限。${modelSettings}`;
+    return `${result}${requested}Esta solicitud ha alcanzado el límite superior en la configuración del modelo.${modelSettings}`;
   }
-  return `${result}${requested}请在“设置 → 模型路由管理 → 大纲策划 → 最大输出长度”按所用模型支持的额度调整后重试，也可以更换大纲策划的模型。`;
+  return `${result}${requested}Vaya a "Configuración → Gestión de enrutamiento del modelo → Planificación del esquema → Longitud máxima de salida" y ajústelo de acuerdo con la cantidad admitida por el modelo utilizado e inténtelo nuevamente. También puede cambiar el modelo para la planificación del esquema.`;
 }
 
 export async function beginStructuredDiagnostic(input: {
@@ -72,7 +72,7 @@ export async function latestStructuredDiagnostic(taskId: string, includeUnfinish
   const response = JSON.parse(row.detailsJson) as StructuredResponseEvidence;
   const attempts = await prisma.structuredInvocationDiagnostic.count({ where: { invocationId: row.invocationId } });
   return { id: row.id, reason: response.failureReason, message: row.status === "running"
-    ? "本次请求尚无完成记录；软件重启后可从已保存的内容继续。"
+    ? "No hay ningún registro de finalización para esta solicitud; puede continuar desde el contenido guardado después de reiniciar el software."
     : (row.promptId === "novel.short_story.plan" ? describeShortStoryPlanBudgetFailure(response) : undefined)
       ?? messages[response.failureReason ?? "unknown"], provider: row.provider, model: row.model, strategy: row.strategy,
     attempts, retryAt: response.retryAfterMs ? new Date(row.updatedAt.getTime() + response.retryAfterMs).toISOString() : null, response };

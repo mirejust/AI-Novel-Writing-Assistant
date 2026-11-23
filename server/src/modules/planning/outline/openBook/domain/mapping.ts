@@ -17,21 +17,21 @@ export function validateOpenBookDocument(value: unknown): OutlineDocument {
   const doc = validateOutlineDocument(value);
   const types = new Map<string, string>([[doc.story.nodeId, "story"], ...(["volumes", "chapters", "characters", "payoffs", "facts"] as const).flatMap(group => doc[group].map(n => [n.nodeId, group] as [string, string]))]);
   const ref = (owner: string, field: string, id: string, allowed: string[]) => {
-    if (!allowed.includes(types.get(id) ?? "")) fail(`${owner}.${field} 引用类型错误：${id}`);
+    if (!allowed.includes(types.get(id) ?? "")) fail(`${owner}.${field} Error de tipo de referencia:${id}`);
   };
   const uniqueOrder = (nodes: Array<{ order: number; nodeId: string }>, label: string) => {
-    if (new Set(nodes.map(n => n.order)).size !== nodes.length) fail(`${label}排序重复`);
-    if (nodes.some(n => n.order < 0)) fail(`${label}排序不能为负数`);
+    if (new Set(nodes.map(n => n.order)).size !== nodes.length) fail(`${label}ordenar duplicado`);
+    if (nodes.some(n => n.order < 0)) fail(`${label}La clasificación no puede ser negativa`);
   };
-  uniqueOrder(doc.volumes, "卷");
+  uniqueOrder(doc.volumes, "rollo");
   for (const v of doc.volumes) {
-    if (new Set(v.chapterNodeIds).size !== v.chapterNodeIds.length) fail(`${v.nodeId}.chapterNodeIds 重复`);
+    if (new Set(v.chapterNodeIds).size !== v.chapterNodeIds.length) fail(`${v.nodeId}.chapterNodeIds duplicado`);
     v.chapterNodeIds.forEach(id => ref(v.nodeId, "chapterNodeIds", id, ["chapters"]));
     const chapters = doc.chapters.filter(c => c.volumeNodeId === v.nodeId);
     uniqueOrder(chapters, v.nodeId);
-    if (chapters.length !== v.chapterNodeIds.length || chapters.some(c => !v.chapterNodeIds.includes(c.nodeId))) fail(`${v.nodeId} 卷章双向引用不一致`);
+    if (chapters.length !== v.chapterNodeIds.length || chapters.some(c => !v.chapterNodeIds.includes(c.nodeId))) fail(`${v.nodeId} Referencias inconsistentes en ambas direcciones de volúmenes y capítulos.`);
     const declared = v.chapterNodeIds;
-    if (chapters.sort((a, b) => a.order - b.order).some((c, i) => declared[i] !== c.nodeId)) fail(`${v.nodeId} 章节引用次序与 order 矛盾`);
+    if (chapters.sort((a, b) => a.order - b.order).some((c, i) => declared[i] !== c.nodeId)) fail(`${v.nodeId} El orden de las citas de los capítulos entra en conflicto con el orden`);
   }
   for (const c of doc.chapters) {
     ref(c.nodeId, "volumeNodeId", c.volumeNodeId, ["volumes"]);
@@ -41,10 +41,10 @@ export function validateOpenBookDocument(value: unknown): OutlineDocument {
   for (const c of doc.characters) c.appearanceNodeIds.forEach(id => ref(c.nodeId, "appearanceNodeIds", id, ["volumes", "chapters"]));
   for (const p of doc.payoffs) [...p.setupChapterNodeIds, ...p.payoffChapterNodeIds].forEach(id => ref(p.nodeId, "chapterRefs", id, ["chapters"]));
   for (const f of doc.facts) {
-    if (f.scope.type !== "story" && !f.scope.nodeId) fail(`${f.nodeId}.scope 缺少目标`);
+    if (f.scope.type !== "story" && !f.scope.nodeId) fail(`${f.nodeId}.alcance falta objetivo`);
     if (f.scope.nodeId) ref(f.nodeId, "scope", f.scope.nodeId, [f.scope.type === "story" ? "story" : f.scope.type === "volume" ? "volumes" : "chapters"]);
   }
-  if (!(doc.story.premise.trim() || doc.story.synopsis.trim())) fail("故事想法不能为空");
+  if (!(doc.story.premise.trim() || doc.story.synopsis.trim())) fail("La idea de la historia no puede estar vacía.");
   return doc;
 }
 
@@ -54,14 +54,14 @@ export function mapOutlineBook(value: unknown, raw: OutlineOpenBookInput, bindin
   const volumes = [...doc.volumes].sort((a, b) => a.order - b.order);
   const counts = volumes.map(v => doc.chapters.filter(c => c.volumeNodeId === v.nodeId).length);
   const quotas = volumes.map((v, i) => input.volumeQuotas[v.nodeId] ?? Math.max(1, counts[i], v.beats ? inferRequiredChapterCountFromBeatSheet({beats: v.beats}) : 0));
-  for (const key of Object.keys(input.volumeQuotas)) if (!volumes.some(v => v.nodeId === key)) fail(`篇幅分配包含未知卷：${key}`);
-  if (quotas.some((q, i) => q < counts[i])) fail("卷章数预算不能少于已有章纲");
+  for (const key of Object.keys(input.volumeQuotas)) if (!volumes.some(v => v.nodeId === key)) fail(`La asignación de espacio incluye volúmenes desconocidos:${key}`);
+  if (quotas.some((q, i) => q < counts[i])) fail("El presupuesto para el número de capítulos no puede ser inferior al número de capítulos existentes.");
   const total = input.bookSettings.estimatedChapterCount;
   let remaining = total - quotas.reduce((a, b) => a + b, 0);
-  if (remaining < 0) fail("目标章数不足以容纳卷预算");
+  if (remaining < 0) fail("El número objetivo de capítulos no es suficiente para dar cabida al volumen presupuestado.");
   const flexible = volumes.map((v, i) => !input.volumeQuotas[v.nodeId] && !v.beats && (v.planningDepth === "rough" || counts[i] === 0) ? i : -1).filter(i => i >= 0);
   if (remaining && volumes.length) {
-    if (!flexible.length) fail("请明确卷篇幅分配，使卷章数之和等于目标章数");
+    if (!flexible.length) fail("Especifique la asignación de volumen para que la suma de los volúmenes y capítulos sea igual al número objetivo de capítulos.");
     flexible.forEach((i, n) => { const extra = Math.floor(remaining / (flexible.length - n)); quotas[i] += extra; remaining -= extra; });
   }
   const stableId = (kind: string, id: string) => `${kind}_${outlineHash([bindingId, kind, id]).slice(0, 32)}`;
@@ -72,7 +72,7 @@ export function mapOutlineBook(value: unknown, raw: OutlineOpenBookInput, bindin
       const sheet = {beats: v.beats};
       const coverage = validateBeatSheetChapterCoverage({beatSheet:sheet, targetChapterCount:quotas[i]});
       if (!coverage.accepted || !createVolumeBeatSheetSchema(quotas[i]).safeParse(sheet).success)
-        fail(`${v.title}（${v.nodeId}）的节奏板与本次 ${quotas[i]} 章预算不符，请调整卷预算或回到该卷重新规划节奏。`);
+        fail(`${v.title}(${v.nodeId}) el tablero de ritmo y esta vez ${quotas[i]} El presupuesto del capítulo no coincide, ajuste el presupuesto del volumen o vuelva al volumen y vuelva a planificar el ritmo.`);
     }
     const volumeId = stableId("vol", v.nodeId);
     mapping.volumes.push({ nodeId: v.nodeId, volumeId, chapterQuota: quotas[i], from: order, to: order + quotas[i] - 1 });
@@ -94,9 +94,9 @@ export function mapOutlineBook(value: unknown, raw: OutlineOpenBookInput, bindin
   }
   for (const choice of input.allowOptimize) {
     const rule = policy.rules.find(r => r.nodeId === choice.nodeId && r.field === choice.field);
-    if (!rule || rule.mode === "hard_constraint") fail(`不能放开固定设定或身份字段：${choice.nodeId}.${choice.field}`);
+    if (!rule || rule.mode === "hard_constraint") fail(`No se pueden liberar configuraciones fijas o campos de identidad:${choice.nodeId}.${choice.field}`);
   }
   const sourceDocumentHash = outlineHash(doc);
   const requestHash = outlineHash({ sourceDocumentHash, input });
-  return { document: doc, mapping, policy, sourceDocumentHash, requestHash, settings: input.bookSettings, warnings: doc.characters.filter((c, i) => doc.characters.findIndex(x => x.name === c.name) !== i).map(c => `同名人物分别保留：${c.name}`) };
+  return { document: doc, mapping, policy, sourceDocumentHash, requestHash, settings: input.bookSettings, warnings: doc.characters.filter((c, i) => doc.characters.findIndex(x => x.name === c.name) !== i).map(c => `Los caracteres con el mismo nombre se conservan respectivamente:${c.name}`) };
 }

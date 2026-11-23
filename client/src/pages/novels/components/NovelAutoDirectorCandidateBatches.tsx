@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { AUTO_DIRECTOR_MOBILE_CLASSES } from "@/mobile/autoDirector";
 
-const openingLabels = { auto_to_ready: "选用并自动准备", stage_review: "选用并逐阶段确认" };
+const openingLabels = { auto_to_ready: "Seleccionar y preparar automáticamente", stage_review: "Elige y confirma paso a paso" };
 
 interface NovelAutoDirectorCandidateBatchesProps {
   batches: DirectorCandidateBatch[];
@@ -36,8 +36,8 @@ function buildFallbackTitleOption(candidate: DirectorCandidate): TitleFactorySug
     title: candidate.workingTitle,
     clickRate: 60,
     style: "high_concept",
-    angle: "当前方案书名",
-    reason: "当前沿用导演候选方案的书名。",
+    angle: "Título del proyecto actual",
+    reason: "Actualmente utilizando el título del libro candidato del director.",
   };
 }
 
@@ -54,8 +54,8 @@ interface StoryField {
 }
 
 const fieldLabels = {
-  ...candidateFieldLabel, plannedDirection: "本案方向", coreConflict: "冲突展开",
-  hookStrategy: "开篇看什么", progressionLoop: "后面追什么", platform: "平台建议", foundation: "创作基础",
+  ...candidateFieldLabel, plannedDirection: "Dirección de este caso", coreConflict: "El conflicto se desarrolla",
+  hookStrategy: "Qué leer al principio", progressionLoop: "¿Qué estás persiguiendo?", platform: "Recomendaciones de plataforma", foundation: "Conceptos básicos de creación",
 };
 
 // Typeset the saved conflict without rewriting the candidate or clipping a sentence.
@@ -81,7 +81,7 @@ function CandidateStoryNotes({ fields }: { fields: StoryField[] }) {
   const id = useId();
   return <section className="candidate-story-notes">
     <button type="button" aria-expanded={open} aria-controls={id} onClick={() => setOpen(!open)}>
-      完整设定与推荐理由<ChevronDown size={15} />
+      Configuración completa y motivos recomendados.<ChevronDown size={15} />
     </button>
     <StoryFields id={id} hidden={!open} fields={fields} />
   </section>;
@@ -99,10 +99,10 @@ function CandidatePairs({ children }: { children: ReactElement[] }) {
 }
 
 function foundationSourceLabel(source: "user_selected" | "ai_recommended" | "market_recommended" | undefined): string {
-  if (source === "user_selected") return "你的选择";
-  if (source === "ai_recommended") return "AI 补充";
-  if (source === "market_recommended") return "雷达推荐";
-  return "创作基础";
+  if (source === "user_selected") return "Tu elección";
+  if (source === "ai_recommended") return "Suplemento de IA";
+  if (source === "market_recommended") return "Recomendación de radar";
+  return "Conceptos básicos de creación";
 }
 
 export default function NovelAutoDirectorCandidateBatches(props: NovelAutoDirectorCandidateBatchesProps) {
@@ -125,7 +125,7 @@ export default function NovelAutoDirectorCandidateBatches(props: NovelAutoDirect
   if (batches.length === 0) {
     return (
       <div className={`py-10 text-center text-sm text-muted-foreground ${AUTO_DIRECTOR_MOBILE_CLASSES.wrapText}`}>
-        先给 AI 一句灵感，它会先产出第一批整本书方向候选。
+        Primero, déle a la IA una oración de inspiración y primero producirá el primer lote de candidatos para toda la dirección del libro.
       </div>
     );
   }
@@ -141,12 +141,12 @@ export default function NovelAutoDirectorCandidateBatches(props: NovelAutoDirect
           className="min-w-0"
         >
           <header className="candidate-round">
-            <h3 id={candidateAnchor(batch.id, "")} tabIndex={-1}>{batch.roundLabel} · {batch.candidates.length} 套方向</h3>
+            <h3 id={candidateAnchor(batch.id, "")} tabIndex={-1}>{batch.roundLabel} · {batch.candidates.length} Establecer dirección</h3>
             {batch.refinementSummary?.trim() && <p>{batch.refinementSummary}</p>}
             {batch.presets.length > 0 && <p>{batch.presets.map(preset =>
               DIRECTOR_CORRECTION_PRESETS.find(item => item.value === preset)?.label
             ).filter(Boolean).join(" · ")}</p>}
-            {batch.candidates.length > 1 && <nav aria-label={`${batch.roundLabel}方向目录`}>
+            {batch.candidates.length > 1 && <nav aria-label={`${batch.roundLabel}Directorio de dirección`}>
               {batch.candidates.map((candidate, index) => {
                 const anchor = candidateAnchor(batch.id, candidate.id);
                 return <button key={candidate.id} type="button" onClick={() => {
@@ -161,23 +161,23 @@ export default function NovelAutoDirectorCandidateBatches(props: NovelAutoDirect
             const titleOptions = resolveCandidateTitleOptions(candidate);
             const conflict = conflictExcerpt(candidate.coreConflict);
             const lead = conflict.lead || candidate.logline;
-            const platform = candidate.recommendedWritingPlatform === "qidian_male" ? "起点男频"
-              : candidate.recommendedWritingPlatform === "jinjiang_female" ? "晋江女频"
-              : candidate.recommendedWritingPlatform === "fanqie_free" ? "番茄免费网文" : "";
+            const platform = candidate.recommendedWritingPlatform === "qidian_male" ? "Canal masculino qidian"
+              : candidate.recommendedWritingPlatform === "jinjiang_female" ? "Canal femenino de jinjiang"
+              : candidate.recommendedWritingPlatform === "fanqie_free" ? "Artículos web sin tomate" : "";
             return (
               <article key={candidate.id} id={anchor} className="candidate-manuscript" aria-labelledby={anchor + "-title"}>
                 <header>
                   <div className="candidate-byline">
-                    <span className="candidate-number">方案 {candidateIndex + 1}</span>
-                    {discussionKey === anchor && <span className="candidate-discussing"><MessageCircle size={14} />当前讨论方向</span>}
-                    <span className="candidate-length">约 {candidate.targetChapterCount} 章</span>
+                    <span className="candidate-number">plan {candidateIndex + 1}</span>
+                    {discussionKey === anchor && <span className="candidate-discussing"><MessageCircle size={14} />Dirección de discusión actual</span>}
+                    <span className="candidate-length">aprox. {candidate.targetChapterCount} Cap.</span>
                   </div>
                   <h4 className="candidate-book-title" id={anchor + "-title"} tabIndex={-1}>{candidate.workingTitle}</h4>
                   {lead && <dl className="candidate-lead">
-                    <dt>{conflict.lead ? "核心冲突" : candidateFieldLabel.logline}</dt>
+                    <dt>{conflict.lead ? "Conflicto central" : candidateFieldLabel.logline}</dt>
                     <dd>{lead}</dd>
                   </dl>}
-                  {candidate.toneKeywords.length > 0 && <ul className="candidate-keywords" aria-label="故事关键词">
+                  {candidate.toneKeywords.length > 0 && <ul className="candidate-keywords" aria-label="Palabras clave de la historia">
                     {candidate.toneKeywords.map((keyword, index) => <li key={index}>{keyword}</li>)}
                   </ul>}
                 </header>
@@ -197,21 +197,21 @@ export default function NovelAutoDirectorCandidateBatches(props: NovelAutoDirect
                   { row: "whyItFits", value: candidate.whyItFits },
                   { row: "platform", value: [platform, candidate.writingPlatformReason].filter(Boolean).join(" · ") },
                   { row: "foundation", value: candidate.productionFoundation && [
-                    `${candidate.productionFoundation.genre.path}（${foundationSourceLabel(candidate.productionFoundation.genre.source)}）`,
-                    `${candidate.productionFoundation.primaryStoryMode.path}（${foundationSourceLabel(candidate.productionFoundation.primaryStoryMode.source)}）`,
+                    `${candidate.productionFoundation.genre.path}(${foundationSourceLabel(candidate.productionFoundation.genre.source)})`,
+                    `${candidate.productionFoundation.primaryStoryMode.path}(${foundationSourceLabel(candidate.productionFoundation.primaryStoryMode.source)})`,
                     candidate.productionFoundation.secondaryStoryMode &&
-                      `${candidate.productionFoundation.secondaryStoryMode.path}（${foundationSourceLabel(candidate.productionFoundation.secondaryStoryMode.source)}）`,
+                      `${candidate.productionFoundation.secondaryStoryMode.path}(${foundationSourceLabel(candidate.productionFoundation.secondaryStoryMode.source)})`,
                   ].filter(Boolean).join(" · ") },
                 ]} />
 
                 <details className="candidate-title-options group mt-4">
                   <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-medium text-foreground">
-                    调整书名
+                    Ajustar el título del libro
                     <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground transition group-open:rotate-180" />
                   </summary>
                   <div className="mt-4 space-y-5">
                     <div>
-                      <div className="text-xs font-medium text-muted-foreground">可选书名</div>
+                      <div className="text-xs font-medium text-muted-foreground">Título del libro opcional</div>
                       <div className="mt-2 divide-y divide-border/45">
                         {titleOptions.map((option) => {
                           const active = option.title === candidate.workingTitle;
@@ -233,7 +233,7 @@ export default function NovelAutoDirectorCandidateBatches(props: NovelAutoDirect
                                   </span>
                                 </span>
                                 <span className={`mt-1 block line-clamp-2 text-xs leading-5 text-muted-foreground ${AUTO_DIRECTOR_MOBILE_CLASSES.wrapText}`}>
-                                  {option.reason?.trim() || option.angle || "可直接作为这套方向的书名。"}
+                                  {option.reason?.trim() || option.angle || "Puede utilizarse directamente como título de este conjunto de libros."}
                                 </span>
                               </span>
                               <span className={cn("shrink-0 text-xs tabular-nums", active ? "text-primary" : "text-muted-foreground")}>
@@ -249,13 +249,13 @@ export default function NovelAutoDirectorCandidateBatches(props: NovelAutoDirect
                       <div className="min-w-0">
                         <div className="flex items-center gap-2 text-sm font-medium text-foreground">
                           <RefreshCw className="h-4 w-4 text-muted-foreground" />
-                          重做标题组
+                          Rehacer grupo de títulos
                         </div>
                         <Input
                           className="mt-2 bg-background"
                           value={titlePatchFeedbacks[candidate.id] ?? ""}
                           onChange={(event) => onTitlePatchFeedbackChange(candidate.id, event.target.value)}
-                          placeholder="例如：更偏都市冷感，不要像旧式升级文。"
+                          placeholder="Por ejemplo: es más urbano y genial, no como un artículo actualizado de estilo antiguo."
                         />
                         <div className="mt-2">
                           <Button
@@ -267,7 +267,7 @@ export default function NovelAutoDirectorCandidateBatches(props: NovelAutoDirect
                             onClick={() => onRefineTitle(batch.id, candidate, titlePatchFeedbacks[candidate.id] ?? "")}
                           >
                             <Wand2 className="h-4 w-4" />
-                            {isRefiningTitle ? "重做中..." : "AI 重做标题组"}
+                            {isRefiningTitle ? "Rehaciendo..." : "Grupo de títulos reelaborado por IA"}
                           </Button>
                         </div>
                       </div>
@@ -277,14 +277,14 @@ export default function NovelAutoDirectorCandidateBatches(props: NovelAutoDirect
                 </details>
                 <footer className="candidate-decision">
                   {batch.candidates.length > 1 && <button type="button" className="text-sm text-muted-foreground hover:text-foreground"
-                    onClick={() => document.getElementById(candidateAnchor(batch.id, ""))?.focus()}>返回本轮目录</button>}
+                    onClick={() => document.getElementById(candidateAnchor(batch.id, ""))?.focus()}>Volver al directorio de ronda actual</button>}
                   {openingMode && <Button type="button" size="sm" variant="secondary" disabled={isConfirming || isApplying}
                     onClick={() => void onConfirmCandidate(candidate, batch, alternativeMode)}>
                     {openingLabels[alternativeMode]}
                   </Button>}
                   <Button type="button" size="sm" disabled={isConfirming || isApplying}
                     onClick={() => void onConfirmCandidate(candidate, batch, openingMode)}>
-                    {isConfirming ? "创建中…" : openingMode ? openingLabels[openingMode] : "选用这套"}<ArrowRight size={15} />
+                    {isConfirming ? "Creando…" : openingMode ? openingLabels[openingMode] : "Elige este conjunto"}<ArrowRight size={15} />
                   </Button>
                 </footer>
               </article>

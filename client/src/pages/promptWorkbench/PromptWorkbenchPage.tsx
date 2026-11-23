@@ -42,10 +42,10 @@ export default function PromptWorkbenchPage() {
   }
   return <div className="prompt-management">
     <header className="prompt-management-bar">
-      <h1>提示词管理</h1>
-      <nav className="prompt-view-switch" aria-label="提示词管理视图">
-        <button type="button" aria-pressed={view === "flow"} onClick={() => setView("flow")}><GitBranch size={15} />创作流程</button>
-        <button type="button" aria-pressed={view === "catalog"} onClick={() => openCatalog()}><LibraryBig size={15} />全部提示词</button>
+      <h1>Gestión rápida de palabras</h1>
+      <nav className="prompt-view-switch" aria-label="Vista rápida de administración de palabras">
+        <button type="button" aria-pressed={view === "flow"} onClick={() => setView("flow")}><GitBranch size={15} />Proceso creativo</button>
+        <button type="button" aria-pressed={view === "catalog"} onClick={() => openCatalog()}><LibraryBig size={15} />Todas las palabras rápidas</button>
       </nav>
     </header>
     <div className="management-view" hidden={view !== "flow"}><CreationFlow onOpenCatalog={openCatalog} /></div>
@@ -265,7 +265,7 @@ function PromptCatalogWorkspace({ requestedPrompt }: { requestedPrompt?: { id: s
 
   return (
     <WorkspaceColumns layoutId="prompt-workbench" gap={0} minCenter={440}
-      left={!immersiveMode && !writingLab ? { label: "调整提示词目录宽度", initial: "260px", min: 160 } : undefined}
+      left={!immersiveMode && !writingLab ? { label: "Ajustar el ancho de la lista de palabras emergentes", initial: "260px", min: 160 } : undefined}
       className={cn(
         "prompt-workbench-theme flex h-full min-h-0 overflow-hidden bg-background text-foreground lg:workspace-split",
         immersiveMode && "fixed inset-0 z-50 h-screen bg-background",
@@ -293,7 +293,7 @@ function PromptCatalogWorkspace({ requestedPrompt }: { requestedPrompt?: { id: s
             prompt={selectedPrompt}
             simplified={writingLab}
             advanced={isAdvancedMode}
-            heading={writingLab ? "正文效果实验室" : undefined}
+            heading={writingLab ? "Laboratorio de efectos de texto" : undefined}
             immersive={immersiveMode}
             onImmersiveChange={setImmersiveMode}
             entrypoint={entrypoint}
@@ -317,24 +317,24 @@ function PromptCatalogWorkspace({ requestedPrompt }: { requestedPrompt?: { id: s
                   <div>
                     <Tabs value={activeEditMode} onValueChange={(value) => setEditMode(value as PromptEditMode)}>
                       <TabsList>
-                        <TabsTrigger value="slots">常用调整</TabsTrigger>
-                        {advancedTemplateSupported ? <TabsTrigger value="advanced">完整模板</TabsTrigger> : null}
+                        <TabsTrigger value="slots">Ajustes de uso común</TabsTrigger>
+                        {advancedTemplateSupported ? <TabsTrigger value="advanced">Plantilla completa</TabsTrigger> : null}
                       </TabsList>
                     </Tabs>
                     <p className="mt-2 text-sm text-muted-foreground">{isAdvancedMode
-                      ? "直接编辑完整指令，适合需要深入定制的写法。"
-                      : "从主要调整开始；只改需要的部分，默认设置即可使用。"}</p>
+                      ? "Edite directamente instrucciones completas, adecuadas para escritura que requiera una personalización profunda."
+                      : "Comience con los ajustes principales; cambie sólo lo que necesite y la configuración predeterminada funcionará."}</p>
                   </div>
                   {isAdvancedMode ? <Button variant="ghost" size="sm" aria-expanded={showContext}
-                    onClick={() => setShowContext((value) => !value)}>{showContext ? "收起资料引用" : "查看资料引用"}</Button> : null}
+                    onClick={() => setShowContext((value) => !value)}>{showContext ? "Cerrar cita de datos" : "Ver citas"}</Button> : null}
                 </div>
                 {!isAdvancedMode && slotState.isNovelScopeDisabled ? (
                   <div className="rounded-md bg-muted/[0.35] px-4 py-3 text-sm text-muted-foreground">
-                    选择小说以单独设置本书要求，或切换到“所有小说”调整默认要求。
+                    Seleccione una novela para establecer los requisitos para este libro individualmente o cambie a "Todas las novelas" para ajustar los requisitos predeterminados.
                   </div>
                 ) : null}
                 {previewState.previewMutation.isError ? <p role="alert" className="text-sm text-destructive">
-                  {previewState.previewMutation.error instanceof Error ? previewState.previewMutation.error.message : "预览失败，请重试。"}
+                  {previewState.previewMutation.error instanceof Error ? previewState.previewMutation.error.message : "La vista previa falló, inténtelo de nuevo."}
                 </p> : null}
                 {isAdvancedMode ? (
                   <AdvancedPromptTemplateEditor
@@ -416,11 +416,11 @@ function PromptCatalogWorkspace({ requestedPrompt }: { requestedPrompt?: { id: s
                 onTestLlmChange={setTestLlm}
                 resetDisabled={effectiveResetDisabled}
                 officialVersionDisabled={effectiveOfficialDisabled}
-                officialVersionLabel={isAdvancedMode ? "恢复官方模板" : "官方版本"}
-                saveLabel={isAdvancedMode ? (templateState.canPersist ? "保存本书模板" : "保存到小说") : "保存设置"}
+                officialVersionLabel={isAdvancedMode ? "Restaurar plantilla oficial" : "Versión oficial"}
+                saveLabel={isAdvancedMode ? (templateState.canPersist ? "Guardar plantilla de libro" : "Guardar en novela") : "Guardar configuración"}
                 scopeHint={isAdvancedMode
-                  ? (templateState.canPersist ? `应用到《${activeNovel?.title || "所选小说"}》` : "模板草稿 · 尚未应用到小说")
-                  : slotState.scope === "global" ? "所有小说的默认要求" : `仅应用到《${activeNovel?.title || "请选择小说"}》`}
+                  ? (templateState.canPersist ? `Aplicar a "${activeNovel?.title || "Novela seleccionada"}»` : "Borrador de plantilla · Aún no aplicado a la novela")
+                  : slotState.scope === "global" ? "Requisito predeterminado para todas las novelas" : `Sólo se aplica a${activeNovel?.title || "Por favor seleccione una novela"}»`}
                 usesSample={!slotState.activeNovelId}
                 onGeneratePreview={previewState.generatePreview}
                 onRunTest={handleRunTest}
@@ -445,33 +445,33 @@ function PromptCatalogWorkspace({ requestedPrompt }: { requestedPrompt?: { id: s
         ) : (
           <div className="flex h-full items-center justify-center p-8">
             <div className="rounded-md border border-dashed bg-background/80 p-6 text-sm text-muted-foreground">
-              请选择一个提示词。
+              Seleccione una palabra rápida.
             </div>
           </div>
         )}
       </main>
       <Dialog open={saveDialogOpen} onOpenChange={(open) => { if (!templateState.saveMutation.isPending) setSaveDialogOpen(open); }}>
-        <AppDialogContent title="将模板应用到小说" description="保存为所选小说的新版本，用于后续生成；已有章节正文保持原样。"
+        <AppDialogContent title="Aplicar plantilla a la novela" description="Guardar como una nueva versión de la novela seleccionada para la generación posterior; el texto de los capítulos existentes permanece intacto."
           footer={<>
-            <Button variant="ghost" disabled={templateState.saveMutation.isPending} onClick={() => setSaveDialogOpen(false)}>取消</Button>
+            <Button variant="ghost" disabled={templateState.saveMutation.isPending} onClick={() => setSaveDialogOpen(false)}>Cancelar</Button>
             <Button disabled={!saveTargetNovelId || templateState.saveMutation.isPending} onClick={() => {
               templateState.saveMutation.mutate(saveTargetNovelId, { onSuccess: () => {
                 setSaveDialogOpen(false);
                 slotState.setScope("novel");
                 slotState.setSelectedNovelId(saveTargetNovelId);
               } });
-            }}>{templateState.saveMutation.isPending ? "保存中…" : "保存并应用"}</Button>
+            }}>{templateState.saveMutation.isPending ? "Guardando…" : "Guardar y aplicar"}</Button>
           </>}>
           <SelectControl value={saveTargetNovelId} onChange={(event) => setSaveTargetNovelId(event.target.value)}
-            aria-label="保存模板的目标小说" disabled={templateState.saveMutation.isPending}
+            aria-label="Guarde la novela de destino de la plantilla." disabled={templateState.saveMutation.isPending}
             className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm">
-            <option value="">选择小说</option>
+            <option value="">Seleccionar novela</option>
             {slotState.novels.map((novel) => <option key={novel.id} value={novel.id}>{novel.title || novel.id}</option>)}
           </SelectControl>
-          {slotState.novelsQuery.isLoading ? <p className="mt-3 text-sm text-muted-foreground">正在读取小说列表…</p>
-            : slotState.novelsQuery.isError ? <p role="alert" className="mt-3 text-sm text-destructive">小说列表读取失败。
-              <Button variant="ghost" onClick={() => void slotState.novelsQuery.refetch()}>重试</Button></p>
-            : slotState.novels.length === 0 ? <p className="mt-3 text-sm text-muted-foreground">创建小说后即可应用模板，草稿可以继续编辑和预览。</p> : null}
+          {slotState.novelsQuery.isLoading ? <p className="mt-3 text-sm text-muted-foreground">Leyendo lista de novelas...</p>
+            : slotState.novelsQuery.isError ? <p role="alert" className="mt-3 text-sm text-destructive">No se pudo leer la lista de novelas.
+              <Button variant="ghost" onClick={() => void slotState.novelsQuery.refetch()}>Reintentar</Button></p>
+            : slotState.novels.length === 0 ? <p className="mt-3 text-sm text-muted-foreground">Las plantillas se pueden aplicar una vez creada la novela y los borradores se pueden seguir editando y obteniendo una vista previa.</p> : null}
           {templateSaveError ? <p role="alert" className="mt-3 text-sm text-destructive">{templateSaveError}</p> : null}
         </AppDialogContent>
       </Dialog>

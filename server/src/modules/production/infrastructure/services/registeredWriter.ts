@@ -46,7 +46,7 @@ export function createRegisteredChapterWriter(deps: RegisteredChapterWriterDepen
       const budget = checkContextBudget({ input: description.renderedInput, contextWindow: description.contextWindow,
         outputTokens: description.outputTokens, safetyTokens: 1024 });
       if (!budget.ok || description.outputTokens > (run.snapshots.profile.outputBudgets.draft ?? 0)) {
-        throw new InvalidProductionRequestError("完整章节上下文超出有效模型预算，请选择上下文更大的模型。");
+        throw new InvalidProductionRequestError("El contexto completo del capítulo excede el presupuesto del modelo válido; elija un modelo con un contexto más amplio.");
       }
       return { callsModel: true, outputTokens: description.outputTokens, inputFingerprint: identity(request, description),
         promptVersion: description.promptVersion, configVersion: run.snapshots.model.configVersion,

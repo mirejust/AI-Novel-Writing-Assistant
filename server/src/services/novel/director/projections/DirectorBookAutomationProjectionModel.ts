@@ -40,26 +40,26 @@ export function timestampOf(value: string | null | undefined): number {
 
 export function commandLabel(commandType: string): string {
   const labels: Record<string, string> = {
-    confirm_candidate: "确认开书方向",
-    continue: "继续自动导演",
-    resume_from_checkpoint: "从进度点恢复",
-    retry: "重试自动导演",
-    takeover: "接管这本书",
-    repair_chapter_titles: "修复章节标题",
-    cancel: "取消自动导演",
+    confirm_candidate: "Confirmar la dirección de apertura",
+    continue: "Continuar dirigiendo automáticamente",
+    resume_from_checkpoint: "Reanudar desde el punto de progreso",
+    retry: "Reintentar director automático",
+    takeover: "hacerse cargo de este libro",
+    repair_chapter_titles: "Arreglar el título del capítulo",
+    cancel: "Cancelar director automático",
   };
   return labels[commandType] ?? commandType;
 }
 
 export function commandStatusLabel(status: string): string {
   const labels: Record<string, string> = {
-    queued: "排队中",
-    leased: "准备执行",
-    running: "执行中",
-    succeeded: "完成",
-    failed: "失败",
-    cancelled: "已取消",
-    stale: "需要恢复",
+    queued: "En cola",
+    leased: "listo para ejecutar",
+    running: "Ejecutando",
+    succeeded: "Finalizar",
+    failed: "Error",
+    cancelled: "Cancelado",
+    stale: "Necesidad de restaurar",
   };
   return labels[status] ?? status;
 }
@@ -150,34 +150,34 @@ export function buildHeadline(input: {
   } | null;
 }): string {
   if (input.status === "waiting_recovery") {
-    return "等待恢复自动导演";
+    return "Esperando que se reanude el director automático";
   }
   if (input.status === "cancelled") {
-    return "自动导演已取消";
+    return "Director automático cancelado";
   }
   if (input.runtimeProjection?.headline?.trim()) {
     return input.runtimeProjection.headline.trim();
   }
   if (input.status === "queued") {
-    return "AI 自动导演已排队";
+    return "El director automático de IA está en cola";
   }
   if (input.status === "running") {
     const label = input.task?.currentItemLabel?.trim();
-    return label ? `AI 正在推进：${label}` : "AI 正在推进这本书";
+    return label ? `La IA avanza:${label}` : "La IA está avanzando en el libro";
   }
   if (input.status === "waiting_approval") {
-    return "等待你的确认";
+    return "esperando tu confirmación";
   }
   if (input.status === "blocked") {
-    return "自动导演已暂停";
+    return "Director automático está en pausa";
   }
   if (input.status === "failed") {
-    return "自动导演遇到问题";
+    return "Auto Director encontró un problema";
   }
   if (input.status === "completed") {
-    return "自动导演完成最近一次推进";
+    return "Director automático completa el último avance";
   }
-  return "这本书还没有自动导演记录";
+  return "Aún no existe un registro automático de director para este libro.";
 }
 
 function getTaskFailureReason(task: {
@@ -197,16 +197,16 @@ export function buildDetail(input: {
   } | null;
 }): string | null {
   if (input.status === "waiting_recovery") {
-    return input.task?.lastError?.trim() || "后台执行中断后保留了进度点，确认恢复后会从最近进展继续。";
+    return input.task?.lastError?.trim() || "Los puntos de progreso se conservan después de que se interrumpe la ejecución en segundo plano y continuarán desde el último progreso después de la confirmación de la recuperación.";
   }
   if (input.status === "cancelled") {
-    return "自动导演任务已取消。";
+    return "La tarea de director automático ha sido cancelada.";
   }
   if (input.status === "failed") {
     return getTaskFailureReason(input.task)
       || input.runtimeProjection?.blockedReason?.trim()
       || input.runtimeProjection?.detail?.trim()
-      || "查看执行详情后可选择恢复或重试。";
+      || "Después de ver los detalles de la ejecución, puede optar por reanudar o volver a intentarlo.";
   }
   if (input.runtimeProjection?.detail?.trim()) {
     return input.runtimeProjection.detail.trim();
@@ -215,7 +215,7 @@ export function buildDetail(input: {
     return input.task.checkpointSummary.trim();
   }
   if (input.status === "idle") {
-    return "可以从 AI 自动导演开始，让系统根据这本书的资产推荐下一步。";
+    return "Puede comenzar con un director automático de IA y dejar que el sistema recomiende los siguientes pasos según los activos del libro.";
   }
   return input.task?.currentItemLabel?.trim() ?? null;
 }
@@ -229,36 +229,36 @@ export function buildAutomationSummary(input: {
 }): string {
   const parts: string[] = [];
   if (input.activeCommandCount > 0) {
-    parts.push(`${input.activeCommandCount} 个动作执行中`);
+    parts.push(`${input.activeCommandCount} acción en progreso`);
   }
   if (input.pendingCommandCount > 0) {
-    parts.push(`${input.pendingCommandCount} 个动作排队中`);
+    parts.push(`${input.pendingCommandCount} acciones en cola`);
   }
   if (input.autoApprovalRecordCount > 0) {
-    parts.push(`${input.autoApprovalRecordCount} 个确认由 AI 自动处理`);
+    parts.push(`${input.autoApprovalRecordCount} Las confirmaciones son procesadas automáticamente por IA`);
   }
   if (input.artifactSummary.activeCount > 0) {
-    parts.push(`${input.artifactSummary.activeCount} 个可用产物`);
+    parts.push(`${input.artifactSummary.activeCount} productos disponibles`);
   }
   if (input.artifactSummary.staleCount > 0) {
-    parts.push(`${input.artifactSummary.staleCount} 个产物需复核`);
+    parts.push(`${input.artifactSummary.staleCount} Es necesario revisar los productos.`);
   }
   if (input.artifactSummary.repairTicketCount > 0) {
-    parts.push(`${input.artifactSummary.repairTicketCount} 个修复项`);
+    parts.push(`${input.artifactSummary.repairTicketCount} arreglos`);
   }
   if (input.artifactSummary.protectedUserContentCount > 0) {
-    parts.push(`${input.artifactSummary.protectedUserContentCount} 个用户内容受保护`);
+    parts.push(`${input.artifactSummary.protectedUserContentCount} El contenido personal está protegido.`);
   }
   if (input.usageSummary && input.usageSummary.llmCallCount > 0) {
-    parts.push(`${input.usageSummary.llmCallCount} 次 AI 调用`);
+    parts.push(`${input.usageSummary.llmCallCount} llamadas de IA`);
   }
   if (input.usageSummary && input.usageSummary.totalTokens > 0) {
     parts.push(`${input.usageSummary.totalTokens} Tokens`);
   }
   if ((input.artifactSummary.dependencyCount ?? 0) > 0) {
-    parts.push(`${input.artifactSummary.dependencyCount} 条产物依赖`);
+    parts.push(`${input.artifactSummary.dependencyCount} dependencia del producto`);
   }
-  return parts.length > 0 ? parts.join("，") : "暂无自动化动作";
+  return parts.length > 0 ? parts.join(",") : "Aún no hay acciones automatizadas";
 }
 
 function buildNovelHref(
@@ -286,7 +286,7 @@ function buildCandidateSelectionHref(taskId: string): string {
 }
 
 export function buildFocusNovel(input: { id: string; title?: string | null }): DirectorBookAutomationFocusNovel {
-  const title = input.title?.trim() || "未命名小说";
+  const title = input.title?.trim() || "Novela sin título";
   return {
     id: input.id,
     title,
@@ -321,28 +321,28 @@ export function buildUserHeadline(input: {
   } | null;
 }): string {
   if (input.status === "queued") {
-    return "AI 已接到这本书的推进任务";
+    return "A la IA se le ha encomendado la tarea de hacer avanzar este libro";
   }
   if (input.status === "running") {
     const label = input.task?.currentItemLabel?.trim();
-    return label ? `AI 正在处理：${label}` : "AI 正在推进这本书";
+    return label ? `La IA está procesando:${label}` : "La IA está avanzando en el libro";
   }
   if (input.status === "waiting_approval") {
-    return "等你确认后继续";
+    return "Espere su confirmación para continuar.";
   }
   if (input.status === "waiting_recovery" || input.status === "blocked") {
-    return "AI 已暂停在可处理的位置";
+    return "La IA se ha detenido donde se puede procesar";
   }
   if (input.status === "failed") {
-    return "AI 推进遇到问题";
+    return "El avance de la IA encuentra problemas";
   }
   if (input.status === "cancelled") {
-    return "这次自动推进已停止";
+    return "El avance automático se ha detenido esta vez.";
   }
   if (input.status === "completed") {
-    return "AI 完成了最近一次推进";
+    return "La IA completó su último impulso";
   }
-  return "这本书还没有开启 AI 自动推进";
+  return "Este libro no ha activado el avance automático de la IA.";
 }
 
 export function buildUserReason(input: {
@@ -377,27 +377,27 @@ export function buildUserReason(input: {
     return directReason;
   }
   if (input.status === "queued") {
-    return "任务已进入后台队列，你可以离开当前页面。";
+    return "La tarea se ha ingresado en la cola de fondo y puede salir de la página actual.";
   }
   if (input.status === "running") {
-    return input.task?.currentItemLabel?.trim() || "AI 正在按当前计划推进小说。";
+    return input.task?.currentItemLabel?.trim() || "La IA está avanzando en la novela según lo previsto actualmente.";
   }
   if (input.status === "waiting_approval") {
-    return "继续前需要你确认当前阶段的结果或影响范围。";
+    return "Debe confirmar los resultados o el alcance del impacto de la fase actual antes de continuar.";
   }
   if (input.status === "waiting_recovery") {
-    return "系统保留了最近进度，确认后可以从当前位置继续。";
+    return "El sistema conserva el progreso más reciente y puede continuar desde la ubicación actual después de la confirmación.";
   }
   if (input.status === "blocked") {
-    return "继续前需要先处理当前阻塞原因。";
+    return "Es necesario abordar la causa actual del bloqueo antes de continuar.";
   }
   if (input.status === "failed") {
-    return "查看原因后可以重试或回到小说页面处理。";
+    return "Después de verificar el motivo, puede intentarlo nuevamente o regresar a la página de la novela para procesar.";
   }
   if (input.status === "completed") {
-    return "可以进入小说页面查看成果或继续下一段写作。";
+    return "Puedes ingresar a la página de la novela para ver los resultados o continuar escribiendo el siguiente párrafo.";
   }
-  return "可以继续手动创作，也可以让 AI 接管后续推进。";
+  return "Puedes continuar creando manualmente o dejar que la IA se haga cargo del avance posterior.";
 }
 
 function action(input: DirectorBookAutomationAction): DirectorBookAutomationAction {
@@ -416,7 +416,7 @@ export function buildPrimaryAction(input: {
   if (!taskId) {
     return action({
       type: "open_novel",
-      label: "打开小说",
+      label: "novela abierta",
       target: { novelId: input.novelId, href: buildNovelHref(input.novelId) },
       emphasis: "primary",
     });
@@ -428,7 +428,7 @@ export function buildPrimaryAction(input: {
   ) {
     return action({
       type: "auto_execute_range",
-      label: "重规划后继续",
+      label: "Continuar después de volver a planificar",
       target: {
         novelId: input.novelId,
         taskId,
@@ -444,7 +444,7 @@ export function buildPrimaryAction(input: {
     if (input.task?.checkpointType === "candidate_selection_required") {
       return action({
         type: "confirm_candidate",
-        label: "确认书级方向",
+        label: "Confirmar dirección a nivel de libro",
         target: { novelId: input.novelId, taskId, href: buildCandidateSelectionHref(taskId) },
         emphasis: "primary",
       });
@@ -452,7 +452,7 @@ export function buildPrimaryAction(input: {
     if (input.task?.checkpointType === "production_experience_required") {
       return action({
         type: "open_novel",
-        label: "选择正文生产方式",
+        label: "Seleccionar método de producción de texto",
         target: {
           novelId: input.novelId,
           taskId,
@@ -464,7 +464,7 @@ export function buildPrimaryAction(input: {
     if (input.task?.checkpointType === "chapter_batch_ready") {
       return action({
         type: "auto_execute_range",
-        label: "继续自动执行章节",
+        label: "Continuar con los capítulos de ejecución automática",
         target: {
           novelId: input.novelId,
           taskId,
@@ -477,7 +477,7 @@ export function buildPrimaryAction(input: {
     }
     return action({
       type: "continue",
-      label: "确认并继续",
+      label: "Confirmar y continuar",
       target: { novelId: input.novelId, taskId, href: buildNovelHref(input.novelId) },
       commandPayload: { taskId, continuationMode: "resume" },
       emphasis: "primary",
@@ -487,7 +487,7 @@ export function buildPrimaryAction(input: {
   if (input.status === "waiting_recovery") {
     return action({
       type: "continue",
-      label: "从进度点继续",
+      label: "Continuar desde el punto de progreso",
       target: { novelId: input.novelId, taskId, href: buildNovelHref(input.novelId) },
       commandPayload: { taskId, continuationMode: "resume" },
       emphasis: "primary",
@@ -497,7 +497,7 @@ export function buildPrimaryAction(input: {
   if (input.status === "failed" || input.status === "blocked") {
     return action({
       type: "open_details",
-      label: input.status === "failed" ? "查看失败原因" : "查看暂停原因",
+      label: input.status === "failed" ? "Verifique el motivo del fallo" : "Consulta el motivo de la suspensión.",
       target: { novelId: input.novelId, taskId, href: buildNovelHref(input.novelId, { taskPanel: true }) },
       emphasis: "primary",
     });
@@ -506,7 +506,7 @@ export function buildPrimaryAction(input: {
   if (input.status === "queued" || input.status === "running") {
     return action({
       type: "open_novel",
-      label: "查看推进状态",
+      label: "Ver estado de avance",
       target: { novelId: input.novelId, taskId, href: buildNovelHref(input.novelId) },
       emphasis: "primary",
     });
@@ -515,7 +515,7 @@ export function buildPrimaryAction(input: {
   if (input.status === "completed") {
     return action({
       type: "open_chapter",
-      label: "进入章节执行",
+      label: "Ir a la ejecución del capítulo",
       target: {
         novelId: input.novelId,
         taskId,
@@ -528,7 +528,7 @@ export function buildPrimaryAction(input: {
 
   return action({
     type: "open_novel",
-    label: "打开小说",
+    label: "novela abierta",
     target: { novelId: input.novelId, taskId, href: buildNovelHref(input.novelId) },
     emphasis: "primary",
   });
@@ -545,7 +545,7 @@ export function buildSecondaryActions(input: {
   const actions: DirectorBookAutomationAction[] = [
     action({
       type: "open_details",
-      label: "执行详情",
+      label: "Detalles de ejecución",
       target: {
         novelId: input.novelId,
         taskId: input.taskId,
@@ -557,7 +557,7 @@ export function buildSecondaryActions(input: {
   if (input.status === "queued" || input.status === "running" || input.status === "waiting_approval") {
     actions.push(action({
       type: "cancel",
-      label: "暂停推进",
+      label: "Pausar avance",
       target: { novelId: input.novelId, taskId: input.taskId },
       emphasis: "secondary",
     }));
@@ -565,7 +565,7 @@ export function buildSecondaryActions(input: {
   if (input.status === "failed" || input.status === "cancelled") {
     actions.push(action({
       type: "retry",
-      label: "重试",
+      label: "Reintentar",
       target: { novelId: input.novelId, taskId: input.taskId },
       emphasis: "secondary",
     }));

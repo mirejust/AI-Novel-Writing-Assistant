@@ -9,7 +9,7 @@ export function buildChapterTitleDiversityTaskNotice(input: {
     summary: input.issue.trim(),
     action: {
       type: "open_structured_outline",
-      label: "快速修复章节标题",
+      label: "Arreglar rápidamente los títulos de los capítulos",
       volumeId: input.volumeId?.trim() || null,
     },
   };

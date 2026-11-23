@@ -86,7 +86,7 @@ export async function syncVolumeArc(tx: Prisma.TransactionClient, novelId: strin
     where: { novelId, level: "arc", externalRef },
     select: { id: true, rawPlanJson: true },
   });
-  const objective = volume.mainPromise ?? volume.summary ?? `推进第${volume.sortOrder}卷主线。`;
+  const objective = volume.mainPromise ?? volume.summary ?? `promocionar el primero${volume.sortOrder}Rollo de línea principal.`;
   if (existing && editedFields) {
     const raw = JSON.parse(existing.rawPlanJson ?? "{}");
     for (const field of editedFields) raw[field] = volume[field] ?? null;
@@ -125,7 +125,7 @@ export async function syncVolumeArc(tx: Prisma.TransactionClient, novelId: strin
       })),
     }),
     revealsJson: volume.openPayoffs.length > 0 ? JSON.stringify(volume.openPayoffs) : null,
-    mustAdvanceJson: JSON.stringify(volume.chapters.map((chapter) => `第${chapter.chapterOrder}章 ${chapter.title}`)),
+    mustAdvanceJson: JSON.stringify(volume.chapters.map((chapter) => `Cap.${chapter.chapterOrder}capítulo ${chapter.title}`)),
     status: "active",
     externalRef,
   };
@@ -390,13 +390,13 @@ function assertUniqueWorkspaceOrders(document: VolumePlanDocument): void {
   const volumeOrders = new Set<number>();
   for (const volume of document.volumes) {
     if (volumeOrders.has(volume.sortOrder)) {
-      throw new Error(`卷规划中存在重复的卷序号 ${volume.sortOrder}，请调整序号后重新保存。`);
+      throw new Error(`Existen números de serie de volumen duplicados en el plan de volumen ${volume.sortOrder}, ajuste el número de serie y guárdelo nuevamente.`);
     }
     volumeOrders.add(volume.sortOrder);
     const chapterOrders = new Set<number>();
     for (const chapter of volume.chapters) {
       if (chapterOrders.has(chapter.chapterOrder)) {
-        throw new Error(`《${volume.title}》中存在重复的章节序号 ${chapter.chapterOrder}，请调整本卷章节序号后重新保存。`);
+        throw new Error(`«${volume.title}"Hay números de capítulo duplicados en ${chapter.chapterOrder}, ajuste el número del capítulo en este volumen y guárdelo nuevamente.`);
       }
       chapterOrders.add(chapter.chapterOrder);
     }
@@ -629,8 +629,8 @@ export async function ensureVolumeWorkspaceDocument(params: {
     const count = await tx.$executeRaw`
       INSERT INTO "VolumePlanVersion" ("id", "novelId", "version", "status", "contentJson", "diffSummary", "updatedAt")
       VALUES (${versionId}, ${novelId}, ${versionNumber}, 'active', ${serializeVolumeWorkspaceDocument(document)},
-        '从旧版主线/大纲自动回填为卷级方案。', CURRENT_TIMESTAMP)
-      ON CONFLICT ("novelId", "version") DO NOTHING
+        'Rellenar automáticamente desde la línea principal/esquema heredado al esquema de nivel de volumen. ', CURRENT_TIMESTAMP)
+      EN CONFLICTO ("novelId", "version") NO HACER NADA
     `;
     if (count === 0) return false;
     await persistActiveVolumeWorkspace(tx, novelId, document, versionId);

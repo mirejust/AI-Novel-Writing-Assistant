@@ -94,10 +94,10 @@ export class RagContextualChunkService {
       && input.document.metadata?.chapterArtifactVersion === 1
       && (artifactKind === "summary" || artifactKind === "fact")) {
       const chapterOrder = input.document.metadata.chapterOrder;
-      const chapterLabel = typeof chapterOrder === "number" ? `第${chapterOrder}章` : "章节";
-      const titleLabel = input.document.title ? `《${input.document.title}》` : "";
+      const chapterLabel = typeof chapterOrder === "number" ? `Cap.${chapterOrder}cap.` : "Capítulos";
+      const titleLabel = input.document.title ? `«${input.document.title}»` : "";
       const contextPrefix = normalizeContextPrefix(
-        `${chapterLabel}${titleLabel}的${artifactKind === "summary" ? "已保存摘要" : "已保存事实"}`,
+        `${chapterLabel}${titleLabel}de${artifactKind === "summary" ? "Resumen guardado" : "Datos guardados"}`,
       );
       return {
         contextPrefix,

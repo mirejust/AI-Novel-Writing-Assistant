@@ -7,10 +7,10 @@ import { NovelWorkflowService } from "../../../workflow/NovelWorkflowService";
 import { directorIssueService, loadDirectorIssueTaskContext } from "../../issues";
 import { DirectorStateReader } from "../../state/DirectorStateReader";
 
-const STALE_COMMAND_AUTO_RECOVERY_MESSAGE = "后台执行中断，系统已自动从最近进度继续。";
-const STALE_COMMAND_MANUAL_RECOVERY_MESSAGE = "后台执行中断，任务已暂停。点击恢复后会从最近进度继续。";
-const STALE_COMMAND_INTERNAL_MESSAGE = "Director Worker 租约过期，任务等待恢复。";
-const CANCELLED_COMMAND_MESSAGE = "自动导演任务已取消。";
+const STALE_COMMAND_AUTO_RECOVERY_MESSAGE = "La ejecución en segundo plano se interrumpió y el sistema continuó automáticamente desde el último progreso.";
+const STALE_COMMAND_MANUAL_RECOVERY_MESSAGE = "Se interrumpió la ejecución en segundo plano y se suspendió la tarea. Al hacer clic en Restaurar, se continuará desde el progreso más reciente.";
+const STALE_COMMAND_INTERNAL_MESSAGE = "El contrato de arrendamiento de Director Worker ha caducado y la tarea está a la espera de ser restaurada.";
+const CANCELLED_COMMAND_MESSAGE = "La tarea de director automático ha sido cancelada.";
 
 interface DirectorLeaseRecoveryState {
   taskPendingManualRecovery: boolean;
@@ -68,7 +68,7 @@ export class DirectorCommandLeaseService {
           command.id,
           command.taskId,
           now,
-          "无法确认章节流水线的恢复状态，任务已暂停以避免重复调用。",
+          "Al no poder confirmar el estado de recuperación de la canalización del capítulo, la tarea se ha pausado para evitar llamadas repetidas.",
         );
         continue;
       }
@@ -387,7 +387,7 @@ export class DirectorCommandLeaseService {
         taskId,
         novelId: run.novelId,
         type: "run_cancelled",
-        summary: "自动导演已停止，后台运行状态已收束。",
+        summary: "El director automático se detuvo y el estado de ejecución en segundo plano finalizó.",
         severity: "low",
         occurredAt: now,
       },

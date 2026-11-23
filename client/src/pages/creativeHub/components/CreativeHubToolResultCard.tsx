@@ -32,7 +32,7 @@ function itemLabel(item: Record<string, unknown>): string {
   if (typeof item.id === "string" && item.id.trim()) {
     return item.id.trim();
   }
-  return "未命名条目";
+  return "Entrada sin nombre";
 }
 
 function compactText(value: string, max = 140): string {
@@ -46,15 +46,15 @@ function compactText(value: string, max = 140): string {
 function formatNovelProjectStatus(value: unknown): string | null {
   switch (value) {
     case "in_progress":
-      return "在写中";
+      return "por escrito";
     case "not_started":
-      return "未开始";
+      return "Sin empezar";
     case "completed":
-      return "已完成";
+      return "Completado";
     case "rework":
-      return "返工中";
+      return "Retrabajo en progreso";
     case "blocked":
-      return "已阻塞";
+      return "Bloqueado";
     default:
       return null;
   }
@@ -87,8 +87,8 @@ function renderNovelList(output: Record<string, unknown>, onQuickAction?: (promp
   return (
     <div className="space-y-2">
       <div className="text-xs text-muted-foreground">
-        已发现 {total ?? items.length} 本小说
-        {total != null && total > items.length ? `，当前展示前 ${items.length} 本` : ""}
+        Encontró {total ?? items.length} esta novela
+        {total != null && total > items.length ? `, antes de la visualización actual ${items.length} Libro` : ""}
       </div>
       <div className="space-y-2">
         {items.map((item) => {
@@ -97,9 +97,9 @@ function renderNovelList(output: Record<string, unknown>, onQuickAction?: (promp
           const projectStatus = formatNovelProjectStatus(item.projectStatus);
           return (
             <div key={`${item.id ?? title}`} className="rounded-md border border-border bg-muted/20 px-3 py-2">
-              <div className="text-sm font-medium text-foreground">《{title}》</div>
+              <div className="text-sm font-medium text-foreground">«{title}»</div>
               <div className="mt-1 text-xs text-muted-foreground">
-                {chapterCount != null ? `${chapterCount} 章` : "章节未知"}
+                {chapterCount != null ? `${chapterCount}` : "Capitulo desconocido"}
                 {projectStatus ? ` · ${projectStatus}` : ""}
               </div>
               {onQuickAction ? (
@@ -108,9 +108,9 @@ function renderNovelList(output: Record<string, unknown>, onQuickAction?: (promp
                     type="button"
                     size="sm"
                     variant="outline"
-                    onClick={() => onQuickAction(`把《${title}》设为当前工作区`)}
+                    onClick={() => onQuickAction(`Manojo"${title}»Establecer como espacio de trabajo actual`)}
                   >
-                    设为当前工作区
+                    Establecer como espacio de trabajo actual
                   </Button>
                 </div>
               ) : null}
@@ -127,25 +127,25 @@ function renderWorkspaceCard(
   variant: "created" | "selected",
   onQuickAction?: (prompt: string) => void,
 ) {
-  const title = typeof output.title === "string" && output.title.trim() ? output.title.trim() : "未命名小说";
+  const title = typeof output.title === "string" && output.title.trim() ? output.title.trim() : "Novela sin título";
   const chapterCount = typeof output.chapterCount === "number" ? output.chapterCount : 0;
   const actions = variant === "created"
     ? [
-      { label: "查看当前进度", prompt: "这本书当前写到哪一章" },
-      { label: "开始设计第一章", prompt: "为这本书规划第一章" },
+      { label: "Ver el progreso actual", prompt: "¿En qué capítulo se encuentra este libro actualmente?" },
+      { label: "Comienza a diseñar el primer capítulo.", prompt: "Planificando el primer capítulo del libro." },
     ]
     : [
-      { label: "查看当前进度", prompt: "这本书当前写到哪一章" },
-      { label: "查看前两章", prompt: "前两章都写了什么" },
+      { label: "Ver el progreso actual", prompt: "¿En qué capítulo se encuentra este libro actualmente?" },
+      { label: "Ver los dos primeros capítulos", prompt: "¿Qué se escribió en los dos primeros capítulos?" },
     ];
   return (
     <div className="space-y-2">
       <div className="rounded-md border border-success/30 bg-success/5 px-3 py-3">
-        <div className="text-sm font-medium text-foreground">《{title}》</div>
+        <div className="text-sm font-medium text-foreground">«{title}»</div>
         <div className="mt-1 text-xs text-muted-foreground">
-          {variant === "created" ? "新小说已创建并绑定到当前线程。" : "当前线程已切换到该小说工作区。"}
+          {variant === "created" ? "Se crea una nueva novela y se vincula al hilo actual." : "El hilo actual se ha cambiado al nuevo espacio de trabajo."}
         </div>
-        <div className="mt-2 text-xs text-muted-foreground">当前章节数：{chapterCount}</div>
+        <div className="mt-2 text-xs text-muted-foreground">Número actual de capítulos:{chapterCount}</div>
       </div>
       {renderActionButtons(actions, onQuickAction)}
     </div>
@@ -155,19 +155,19 @@ function renderWorkspaceCard(
 function renderWorldBindingCard(output: Record<string, unknown>, onQuickAction?: (prompt: string) => void) {
   const novelTitle = typeof output.novelTitle === "string" && output.novelTitle.trim()
     ? output.novelTitle.trim()
-    : "当前小说";
+    : "Novela actual";
   const worldName = typeof output.worldName === "string" && output.worldName.trim()
     ? output.worldName.trim()
-    : "未命名世界观";
+    : "Visión del mundo sin nombre";
   return (
     <div className="space-y-2">
       <div className="rounded-md border border-info/30 bg-info/5 px-3 py-3">
-        <div className="text-sm font-medium text-foreground">《{novelTitle}》</div>
-        <div className="mt-1 text-xs text-muted-foreground">已绑定世界观《{worldName}》。</div>
+        <div className="text-sm font-medium text-foreground">«{novelTitle}»</div>
+        <div className="mt-1 text-xs text-muted-foreground">Visión del mundo limitada«{worldName}».</div>
       </div>
       {renderActionButtons([
-        { label: "查看世界观约束", prompt: "查看当前小说的世界观规则" },
-        { label: "检查世界观冲突", prompt: "检查当前小说和世界观是否存在冲突" },
+        { label: "Ver limitaciones de la cosmovisión", prompt: "Ver las reglas de la cosmovisión de la novela actual." },
+        { label: "Compruebe si hay conflictos de cosmovisión", prompt: "Compruebe si hay algún conflicto entre la novela actual y la cosmovisión." },
       ], onQuickAction)}
     </div>
   );
@@ -191,33 +191,33 @@ function renderProductionAssetCard(
 }
 
 function renderProductionStatusCard(output: Record<string, unknown>, onQuickAction?: (prompt: string) => void) {
-  const title = typeof output.title === "string" && output.title.trim() ? output.title.trim() : "当前小说";
-  const currentStage = typeof output.currentStage === "string" ? output.currentStage.trim() : "未知阶段";
+  const title = typeof output.title === "string" && output.title.trim() ? output.title.trim() : "Novela actual";
+  const currentStage = typeof output.currentStage === "string" ? output.currentStage.trim() : "Etapa desconocida";
   const chapterCount = typeof output.chapterCount === "number" ? output.chapterCount : 0;
   const targetChapterCount = typeof output.targetChapterCount === "number" ? output.targetChapterCount : null;
   const pipelineStatus = typeof output.pipelineStatus === "string" && output.pipelineStatus.trim()
     ? output.pipelineStatus.trim()
-    : "未启动";
+    : "No iniciado";
   const assetStages = asRecordArray(output.assetStages);
   return (
     <div className="space-y-2">
       <div className="rounded-md border border-info/30 bg-info/5 px-3 py-3">
-        <div className="text-sm font-medium text-foreground">《{title}》</div>
-        <div className="mt-1 text-xs text-muted-foreground">当前阶段：{currentStage}</div>
+        <div className="text-sm font-medium text-foreground">«{title}»</div>
+        <div className="mt-1 text-xs text-muted-foreground">Etapa actual:{currentStage}</div>
         <div className="mt-1 text-xs text-muted-foreground">
-          章节目录：{targetChapterCount != null ? `${chapterCount}/${targetChapterCount}` : chapterCount} 章
+          Índice del capítulo:{targetChapterCount != null ? `${chapterCount}/${targetChapterCount}` : chapterCount} capítulo
         </div>
-        <div className="mt-1 text-xs text-muted-foreground">整本写作：{pipelineStatus}</div>
+        <div className="mt-1 text-xs text-muted-foreground">Escritura completa:{pipelineStatus}</div>
         {typeof output.failureSummary === "string" && output.failureSummary.trim() ? (
-          <div className="mt-2 text-xs leading-5 text-muted-foreground">失败摘要：{output.failureSummary.trim()}</div>
+          <div className="mt-2 text-xs leading-5 text-muted-foreground">Resumen de fallas:{output.failureSummary.trim()}</div>
         ) : null}
       </div>
       {assetStages.length > 0 ? (
         <div className="grid gap-2">
           {assetStages.slice(0, 8).map((stage) => (
             <div key={`${stage.key ?? stage.label}`} className="rounded-md border border-border bg-muted/20 px-3 py-2">
-              <div className="text-sm font-medium text-foreground">{String(stage.label ?? stage.key ?? "阶段")}</div>
-              <div className="mt-1 text-xs text-muted-foreground">状态：{String(stage.status ?? "unknown")}</div>
+              <div className="text-sm font-medium text-foreground">{String(stage.label ?? stage.key ?? "Escenario")}</div>
+              <div className="mt-1 text-xs text-muted-foreground">Estado:{String(stage.status ?? "unknown")}</div>
               {typeof stage.detail === "string" && stage.detail.trim() ? (
                 <div className="mt-1 text-xs text-muted-foreground">{stage.detail.trim()}</div>
               ) : null}
@@ -226,7 +226,7 @@ function renderProductionStatusCard(output: Record<string, unknown>, onQuickActi
         </div>
       ) : null}
       {renderActionButtons([
-        { label: "查看整本进度", prompt: "整本生成到哪一步了" },
+        { label: "Ver progreso del libro", prompt: "Estado de la generación del libro" },
       ], onQuickAction)}
     </div>
   );
@@ -242,21 +242,21 @@ function renderPipelineRunCard(
   const jobId = typeof output.jobId === "string" && output.jobId.trim() ? output.jobId.trim() : null;
   const scope = startOrder != null && endOrder != null
     ? startOrder === endOrder
-      ? `第 ${startOrder} 章`
-      : `第 ${startOrder} 到第 ${endOrder} 章`
-    : "当前章节范围";
-  const title = toolName === "preview_pipeline_run" ? "整本写作预览" : "整本写作任务";
+      ? `Cap. ${startOrder}`
+      : `Cap. ${startOrder} al tercero ${endOrder}`
+    : "Alcance del capítulo actual";
+  const title = toolName === "preview_pipeline_run" ? "Vista previa de escritura completa" : "Tarea de escritura completa";
   const description = toolName === "preview_pipeline_run"
-    ? `${scope} 的整本写作预览已完成，当前可进入审批或继续诊断。`
-    : `${scope} 的整本写作任务已启动${jobId ? `（任务 ${jobId}）` : ""}。`;
+    ? `${scope} Se completó toda la vista previa de la escritura y actualmente está lista para su aprobación o diagnóstico continuo.`
+    : `${scope} Se ha iniciado toda la tarea de escritura.${jobId ? `(Tarea ${jobId})` : ""}.`;
   const actions = toolName === "preview_pipeline_run"
     ? [
-      { label: "查看整本进度", prompt: "整本生成到哪一步了" },
-      { label: "查看阻塞", prompt: "为什么整本生成没有启动" },
+      { label: "Ver progreso del libro", prompt: "Estado de la generación del libro" },
+      { label: "Ver bloqueo", prompt: "¿Por qué no se inicia toda la compilación?" },
     ]
     : [
-      { label: "查看整本进度", prompt: "整本生成到哪一步了" },
-      { label: "查看任务状态", prompt: "列出当前系统任务状态" },
+      { label: "Ver progreso del libro", prompt: "Estado de la generación del libro" },
+      { label: "Ver el estado de la tarea", prompt: "Enumerar el estado actual de las tareas del sistema" },
     ];
   return renderProductionAssetCard(title, description, actions, onQuickAction);
 }
@@ -268,11 +268,11 @@ function renderDiagnosticCard(output: Record<string, unknown>, onQuickAction?: (
   return (
     <div className="space-y-2">
       {failureSummary ? <div className="text-sm font-medium text-foreground">{failureSummary}</div> : null}
-      {failureDetails ? <div className="text-xs leading-5 text-muted-foreground">详情：{failureDetails}</div> : null}
-      {recoveryHint ? <div className="text-xs leading-5 text-muted-foreground">建议：{recoveryHint}</div> : null}
+      {failureDetails ? <div className="text-xs leading-5 text-muted-foreground">Detalles:{failureDetails}</div> : null}
+      {recoveryHint ? <div className="text-xs leading-5 text-muted-foreground">Sugerencia:{recoveryHint}</div> : null}
       {renderActionButtons([
-        { label: "继续诊断", prompt: "继续解释失败原因和恢复建议" },
-        { label: "查看任务状态", prompt: "列出当前系统任务状态" },
+        { label: "Continuar diagnosticando", prompt: "Continúe explicando la causa del error y las recomendaciones de recuperación." },
+        { label: "Ver el estado de la tarea", prompt: "Enumerar el estado actual de las tareas del sistema" },
       ], onQuickAction)}
     </div>
   );
@@ -294,12 +294,12 @@ function renderListCard(
           <div key={`${item.id ?? itemLabel(item)}`} className="rounded-md border border-border bg-muted/20 px-3 py-2">
             <div className="text-sm font-medium text-foreground">{itemLabel(item)}</div>
             {"status" in item && typeof item.status === "string" ? (
-              <div className="mt-1 text-xs text-muted-foreground">状态：{item.status}</div>
+              <div className="mt-1 text-xs text-muted-foreground">Estado:{item.status}</div>
             ) : null}
           </div>
         ))}
       </div>
-      {renderActionButtons([{ label: "继续筛选", prompt: "继续细化这个列表结果" }], onQuickAction)}
+      {renderActionButtons([{ label: "Continuar filtrando", prompt: "Continúe refinando esta lista de resultados." }], onQuickAction)}
     </div>
   );
 }
@@ -315,15 +315,15 @@ function renderChapterCard(output: Record<string, unknown>, onQuickAction?: (pro
   return (
     <div className="space-y-2">
       <div className="text-sm font-medium text-foreground">
-        {order != null ? `第${order}章` : "章节内容"}
-        {title ? `《${title}》` : ""}
+        {order != null ? `Cap.${order}Cap.` : "Contenido del capítulo"}
+        {title ? `«${title}»` : ""}
       </div>
       <div className="rounded-md border border-border bg-muted/20 px-3 py-3 text-sm leading-6 text-muted-foreground">
-        {content || "当前没有可显示的章节内容。"}
+        {content || "Actualmente no hay contenido de capítulo para mostrar."}
       </div>
       {renderActionButtons([
-        { label: "继续总结", prompt: "总结这一段内容的关键剧情" },
-        { label: "检查冲突", prompt: "检查这一章是否和世界观或前文冲突" },
+        { label: "Continuar resumiendo", prompt: "Resume la trama clave de este párrafo." },
+        { label: "Compruebe si hay conflictos", prompt: "Compruebe si este capítulo entra en conflicto con la visión del mundo o el texto anterior." },
       ], onQuickAction)}
     </div>
   );
@@ -340,7 +340,7 @@ export default function CreativeHubToolResultCard({
   const [expanded, setExpanded] = useState(false);
   const detailsId = useId();
   const payload = asRecord(output);
-  const summaryText = compactText(summary, 160) || "工具已返回结果。";
+  const summaryText = compactText(summary, 160) || "La herramienta ha arrojado resultados.";
   const cardContent = (() => {
     if (toolName === "list_novels") {
       return renderNovelList(payload, onQuickAction);
@@ -355,12 +355,12 @@ export default function CreativeHubToolResultCard({
       return renderWorldBindingCard(payload, onQuickAction);
     }
     if (toolName === "generate_world_for_novel") {
-      const worldName = typeof payload.worldName === "string" && payload.worldName.trim() ? payload.worldName.trim() : "未命名世界观";
+      const worldName = typeof payload.worldName === "string" && payload.worldName.trim() ? payload.worldName.trim() : "Visión del mundo sin nombre";
       return renderProductionAssetCard(
-        "世界观已生成",
-        `已生成世界观《${worldName}》。`,
+        "Se ha generado una visión del mundo.",
+        `Se ha generado una cosmovisión${worldName}».`,
         [
-          { label: "查看生产进度", prompt: "整本生成到哪一步了" },
+          { label: "Verificar el progreso de la producción", prompt: "Estado de la generación del libro" },
         ],
         onQuickAction,
       );
@@ -368,34 +368,34 @@ export default function CreativeHubToolResultCard({
     if (toolName === "generate_novel_characters") {
       const characterCount = typeof payload.characterCount === "number" ? payload.characterCount : 0;
       return renderProductionAssetCard(
-        "核心角色已生成",
-        `已生成 ${characterCount} 个核心角色。`,
+        "Se han generado roles centrales.",
+        `Generado ${characterCount} un papel central.`,
         [
-          { label: "查看角色状态", prompt: "查看当前小说角色状态" },
+          { label: "Ver el estado del personaje", prompt: "Ver el estado actual del personaje de la novela" },
         ],
         onQuickAction,
       );
     }
     if (toolName === "generate_story_bible") {
       return renderProductionAssetCard(
-        "小说圣经已生成",
+        "Se ha generado una novela bíblica.",
         typeof payload.mainPromise === "string" && payload.mainPromise.trim()
           ? payload.mainPromise.trim()
-          : "当前小说圣经已生成。",
+          : "Se ha generado la novela actual de la Biblia.",
         [
-          { label: "查看整本进度", prompt: "整本生成到哪一步了" },
+          { label: "Ver progreso del libro", prompt: "Estado de la generación del libro" },
         ],
         onQuickAction,
       );
     }
     if (toolName === "generate_novel_outline") {
       return renderProductionAssetCard(
-        "发展走向已生成",
+        "La tendencia de desarrollo se ha generado",
         typeof payload.outline === "string" && payload.outline.trim()
           ? payload.outline.trim()
-          : "当前小说发展走向已生成。",
+          : "Se ha generado la tendencia actual de desarrollo de la novela.",
         [
-          { label: "查看整本进度", prompt: "整本生成到哪一步了" },
+          { label: "Ver progreso del libro", prompt: "Estado de la generación del libro" },
         ],
         onQuickAction,
       );
@@ -403,10 +403,10 @@ export default function CreativeHubToolResultCard({
     if (toolName === "generate_structured_outline") {
       const targetChapterCount = typeof payload.targetChapterCount === "number" ? payload.targetChapterCount : 0;
       return renderProductionAssetCard(
-        "结构化大纲已生成",
-        targetChapterCount > 0 ? `已生成 ${targetChapterCount} 章结构化大纲。` : "当前小说结构化大纲已生成。",
+        "Esquema estructurado generado",
+        targetChapterCount > 0 ? `Generado ${targetChapterCount} Esquema estructurado del capítulo.` : "Se ha generado el esquema estructurado de la novela actual.",
         [
-          { label: "查看整本进度", prompt: "整本生成到哪一步了" },
+          { label: "Ver progreso del libro", prompt: "Estado de la generación del libro" },
         ],
         onQuickAction,
       );
@@ -414,11 +414,11 @@ export default function CreativeHubToolResultCard({
     if (toolName === "sync_chapters_from_structured_outline") {
       const chapterCount = typeof payload.chapterCount === "number" ? payload.chapterCount : 0;
       return renderProductionAssetCard(
-        "章节目录已同步",
-        chapterCount > 0 ? `已同步 ${chapterCount} 个章节目录。` : "已同步章节目录。",
+        "La tabla de contenidos del capítulo ha sido sincronizada.",
+        chapterCount > 0 ? `Sincronizado ${chapterCount} Tabla de contenido.` : "La tabla de contenidos del capítulo se ha sincronizado.",
         [
-          { label: "查看整本进度", prompt: "整本生成到哪一步了" },
-          { label: "查看任务状态", prompt: "列出当前系统任务状态" },
+          { label: "Ver progreso del libro", prompt: "Estado de la generación del libro" },
+          { label: "Ver el estado de la tarea", prompt: "Enumerar el estado actual de las tareas del sistema" },
         ],
         onQuickAction,
       );
@@ -448,7 +448,7 @@ export default function CreativeHubToolResultCard({
       || toolName === "list_writing_formulas"
       || toolName === "list_base_characters"
     ) {
-      return renderListCard(payload, "当前没有可展示的结果。", onQuickAction);
+      return renderListCard(payload, "Actualmente no hay resultados para mostrar.", onQuickAction);
     }
     if (
       toolName === "get_chapter_content"
@@ -469,7 +469,7 @@ export default function CreativeHubToolResultCard({
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex flex-wrap items-center gap-2">
           <div className="text-sm font-medium text-foreground">{summaryText}</div>
-          <Badge variant={success ? "secondary" : "destructive"}>{success ? "已解析结果" : "执行失败"}</Badge>
+          <Badge variant={success ? "secondary" : "destructive"}>{success ? "Resultados analizados" : "La ejecución falló"}</Badge>
         </div>
         <Button
           type="button"
@@ -479,20 +479,20 @@ export default function CreativeHubToolResultCard({
           aria-expanded={expanded}
           aria-controls={detailsId}
         >
-          {expanded ? "收起详情" : "展开详情"}
+          {expanded ? "Contraer detalles" : "Ampliar detalles"}
         </Button>
       </div>
       {expanded ? (
         <div id={detailsId} className="mt-3 space-y-3">
           {!success && errorCode ? (
             <div className="rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2 text-xs text-muted-foreground">
-              错误代码：{errorCode}
+              Código de error:{errorCode}
             </div>
           ) : null}
           {cardContent}
         </div>
       ) : (
-        <div className="mt-2 text-xs text-muted-foreground">详细执行结果默认收起，可按需查看。</div>
+        <div className="mt-2 text-xs text-muted-foreground">Los resultados de ejecución detallados están ocultos de forma predeterminada y se pueden ver a pedido.</div>
       )}
     </div>
   );

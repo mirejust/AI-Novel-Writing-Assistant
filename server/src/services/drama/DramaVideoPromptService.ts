@@ -103,7 +103,7 @@ export class DramaVideoPromptService {
       include: { storyboard: { include: { episode: true } } },
     });
     if (!shot) {
-      throw new Error(`未找到短剧镜头：${shotId}`);
+      throw new Error(`Metraje corto de drama no encontrado:${shotId}`);
     }
     const context = await dramaContextAssembler.buildEpisodeContext(projectId, shot.storyboard.episode.order);
     const result = await runStructuredPrompt({
@@ -168,10 +168,10 @@ export class DramaVideoPromptService {
   async createProviderTask(videoPromptId: string, provider = "mock") {
     const videoPrompt = await prisma.dramaVideoPrompt.findUnique({ where: { id: videoPromptId } });
     if (!videoPrompt) {
-      throw new Error(`未找到视频提示词：${videoPromptId}`);
+      throw new Error(`Palabra de mensaje de vídeo no encontrada:${videoPromptId}`);
     }
     if (videoPrompt.status === "superseded") {
-      throw new Error("该视频提示词已有新版，请使用当前版本创建视频任务。");
+      throw new Error("Hay una nueva versión de esta palabra de aviso en video. Utilice la versión actual para crear la tarea de video.");
     }
     const adapter = videoProviderRegistry.resolve(provider);
     const refImages = adapter.supportsRefImages ? await collectShotReferenceImages(videoPrompt) : [];
@@ -201,7 +201,7 @@ export class DramaVideoPromptService {
   async refreshProviderTask(videoPromptId: string) {
     const videoPrompt = await prisma.dramaVideoPrompt.findUnique({ where: { id: videoPromptId } });
     if (!videoPrompt?.providerTaskId) {
-      throw new Error(`视频提示词尚未创建 provider 任务：${videoPromptId}`);
+      throw new Error(`La palabra del mensaje de vídeo aún no se ha creado. tarea del proveedor:${videoPromptId}`);
     }
     const adapter = videoProviderRegistry.resolve(videoPrompt.provider);
     const result = await adapter.getTask(videoPrompt.providerTaskId);

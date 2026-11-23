@@ -9,12 +9,12 @@ export class DramaRepairService {
   async repairEpisode(projectId: string, episodeOrder: number, instruction?: string, options: DramaLLMOptions = {}) {
     const context = await dramaContextAssembler.buildEpisodeContext(projectId, episodeOrder);
     if (!context.episode.content?.trim()) {
-      throw new Error(`第 ${episodeOrder} 集尚未生成台本，不能修复。`);
+      throw new Error(`Cap. ${episodeOrder} El script no se ha generado para el conjunto y no se puede reparar.`);
     }
     const quality = safeJsonParse<{ repairPlan?: { instruction?: string } }>(context.episode.qualityFlags, {});
     const repairInstruction = instruction?.trim()
       || quality.repairPlan?.instruction
-      || "修复台本中的钩子、卡点、时长、事实一致或角色一致问题，保留本集剧情目标。";
+      || "Corrija los ganchos, los puntos estancados, la duración, los hechos consistentes o los personajes consistentes en el guión y conserve los objetivos de la trama de este episodio.";
     const result = await runStructuredPrompt({
       asset: dramaRepairPrompt,
       promptInput: {

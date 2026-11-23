@@ -106,13 +106,13 @@ export function buildWriterStyleContractText(contract: StyleContract | null | un
   if (!contract) {
     return "";
   }
-  const pov = narrativePov === "first_person" ? "第一人称"
-    : narrativePov === "third_person" ? "第三人称"
-      : narrativePov === "mixed" ? "混合视角，切换须有清晰依据" : null;
+  const pov = narrativePov === "first_person" ? "Primera persona"
+    : narrativePov === "third_person" ? "Tercera persona"
+      : narrativePov === "mixed" ? "Perspectivas mixtas, el cambio debe tener una base clara" : null;
   return [
     ...(pov ? [
-      `【本书执行优先级】叙事视角采用${pov}（${narrativePov}）。本书设置、章节义务、事实与保密边界优先于参考写法。`,
-      "下列写法是参考技法；其中的人称、题材或节奏要求与本书合同冲突时，由你转化为适合本书的表达，不照搬参考书设定，不改变本书视角。限知范围和叙述人称分别核对，第三人称限知不能称为第一人称。",
+      `[Prioridad de ejecución de este libro] Perspectiva narrativa adoptada${pov}(${narrativePov}). La configuración del libro, las obligaciones del capítulo y los límites fácticos y de confidencialidad tienen prioridad sobre la redacción de referencias.`,
+      "Los siguientes métodos de escritura son técnicas de referencia; Si la persona, el tema o los requisitos de ritmo entran en conflicto con el contrato de este libro, lo transformará en una expresión adecuada para este libro. La configuración del libro de referencia no se copiará y la perspectiva de este libro no se cambiará. El alcance del conocimiento limitado y la persona del narrador se verifican por separado. El conocimiento limitado de la tercera persona no puede llamarse primera persona.",
     ] : []),
     buildFullStyleContractText(contract),
   ].join("\n\n");

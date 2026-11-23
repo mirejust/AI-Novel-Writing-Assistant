@@ -70,7 +70,7 @@ function readDialogueAudioItems(raw: string | null | undefined): DialogueAudioIt
 }
 
 function formatDialogueText(item: DialogueAudioItemLite): string {
-  return item.speaker?.trim() ? `${item.speaker.trim()}：${item.text}` : item.text;
+  return item.speaker?.trim() ? `${item.speaker.trim()}:${item.text}` : item.text;
 }
 
 function readKeyframeUrl(raw: string | null | undefined): string | null {
@@ -141,7 +141,7 @@ export class DramaExportService {
       },
     });
     if (!project) {
-      throw new Error(`未找到短剧项目：${projectId}`);
+      throw new Error(`Elementos dramáticos cortos no encontrados:${projectId}`);
     }
     if (format === "json") {
       return {
@@ -153,22 +153,22 @@ export class DramaExportService {
     const body = [
       `# ${project.title}`,
       "",
-      `来源：${project.source}`,
-      `赛道：${project.track ?? "未设置"}`,
-      `目标集数：${project.targetEpisodes}`,
+      `fuente:${project.source}`,
+      `Pista:${project.track ?? "Sin configurar"}`,
+      `Número de conjuntos de objetivos:${project.targetEpisodes}`,
       "",
-      "## 角色",
-      ...project.characters.map((character) => `- ${character.name}${character.persona ? `：${character.persona}` : ""}`),
+      "## Role",
+      ...project.characters.map((character) => `- ${character.name}${character.persona ? `:${character.persona}` : ""}`),
       "",
-      "## 分集台本",
+      "## Guión del episodio",
       ...project.episodes.flatMap((episode) => [
         "",
-        `### 第 ${episode.order} 集 ${episode.title}`,
+        `### No. ${episode.order} colocar ${episode.title}`,
         "",
-        `- 钩子：${episode.hookOpening ?? ""}`,
-        `- 卡点：${episode.cliffhanger ?? ""}`,
-        `- 付费卡点：${episode.isPaywall ? "是" : "否"}`,
-        `- 情绪净值：${episode.emotionNet ?? ""}`,
+        `- gancho:${episode.hookOpening ?? ""}`,
+        `- puntos atascados:${episode.cliffhanger ?? ""}`,
+        `- Puntos de tarjeta paga:${episode.isPaywall ? "Sí" : "No"}`,
+        `- Patrimonio neto emocional:${episode.emotionNet ?? ""}`,
         "",
         episode.content ?? "",
       ]),
@@ -183,7 +183,7 @@ export class DramaExportService {
 
   async exportEpisode(projectId: string, order: number, format: DramaEpisodeExportFormat = "srt") {
     if (!["srt", "timeline-json"].includes(format)) {
-      throw new Error(`暂不支持的短剧单集导出格式：${format}`);
+      throw new Error(`Formatos de exportación de un solo episodio de dramas cortos que no son compatibles actualmente:${format}`);
     }
     const episode = await prisma.dramaEpisode.findUnique({
       where: { projectId_order: { projectId, order } },
@@ -197,7 +197,7 @@ export class DramaExportService {
       },
     });
     if (!episode) {
-      throw new Error(`未找到短剧第 ${order} 集。`);
+      throw new Error(`Número de drama corto no encontrado ${order} colocar.`);
     }
     const storyboard = episode.storyboards[0];
     const entries: SubtitleEntry[] = [];
@@ -308,7 +308,7 @@ export class DramaExportService {
         shots: timelineShots,
         warnings: videoTrack
           .filter((clip) => clip.sourceUrl == null)
-          .map((clip) => `镜头 ${clip.shotOrder} 还没有可用视频结果。`),
+          .map((clip) => `lente ${clip.shotOrder} Aún no hay resultados de vídeo disponibles.`),
       };
       return {
         contentType: "application/json; charset=utf-8",

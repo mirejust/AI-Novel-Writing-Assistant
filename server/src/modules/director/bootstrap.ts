@@ -30,10 +30,10 @@ const defaultPlan: PlanDefinition = definePlan({
   version: "director-next-v1",
   externalArtifacts: ["novel_seed"],
   steps: [
-    { id: "story_macro", label: "故事宏观规划", requires: ["novel_seed"], produces: "story_macro", needs: ["structured_output"], gateable: true, overwrites: [] },
-    { id: "character_cast", label: "角色阵容", requires: ["story_macro"], produces: "character_cast", needs: ["structured_output"], gateable: true, overwrites: [] },
-    { id: "volume_strategy", label: "卷战略", requires: ["story_macro", "character_cast"], produces: "volume_strategy", needs: [], gateable: true, overwrites: [] },
-    { id: "chapter_list", label: "章节列表", requires: ["volume_strategy"], produces: "chapter_list", needs: [], gateable: true, overwrites: [] },
+    { id: "story_macro", label: "gran plan de historia", requires: ["novel_seed"], produces: "story_macro", needs: ["structured_output"], gateable: true, overwrites: [] },
+    { id: "character_cast", label: "Reparto de personajes", requires: ["story_macro"], produces: "character_cast", needs: ["structured_output"], gateable: true, overwrites: [] },
+    { id: "volume_strategy", label: "estrategia de volumen", requires: ["story_macro", "character_cast"], produces: "volume_strategy", needs: [], gateable: true, overwrites: [] },
+    { id: "chapter_list", label: "Lista de capítulos", requires: ["volume_strategy"], produces: "chapter_list", needs: [], gateable: true, overwrites: [] },
   ],
 });
 

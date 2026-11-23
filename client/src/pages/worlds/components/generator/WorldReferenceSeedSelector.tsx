@@ -15,23 +15,23 @@ const GROUP_META: Record<
   }
 > = {
   rules: {
-    title: "原作规则",
-    description: "这个世界默认怎么运转，后面自动生成会参考这些底层规则。",
+    title: "Reglas originales",
+    description: "Este mundo funciona de forma predeterminada y la generación automática posterior se referirá a estas reglas subyacentes.",
     selectionKey: "ruleIds",
   },
   factions: {
-    title: "阵营立场",
-    description: "谁站哪边、信什么、想推动什么。适合保留原作里的大方向。",
+    title: "Posición de campamento",
+    description: "Quién está de qué lado, en qué cree, qué quiere promover. Adecuado para conservar la dirección general de la obra original.",
     selectionKey: "factionIds",
   },
   forces: {
-    title: "组织与势力",
-    description: "具体公司、部门、帮派、人脉圈这类可直接上场的组织。",
+    title: "Organización y poder",
+    description: "Empresas, departamentos, pandillas y redes específicas son organizaciones que pueden participar directamente.",
     selectionKey: "forceIds",
   },
   locations: {
-    title: "地点与场景",
-    description: "城市、街区、公司、住处等可以直接拿来用的场景。",
+    title: "Lugares y escenas",
+    description: "Escenarios que se pueden utilizar directamente en ciudades, barrios, empresas, residencias, etc.",
     selectionKey: "locationIds",
   },
 };
@@ -61,7 +61,7 @@ export default function WorldReferenceSeedSelector(props: {
   if (visibleGroups.length === 0) {
     return (
       <div className="rounded-md border border-dashed p-4 text-sm text-muted-foreground">
-        这次没有从参考作品里稳定提取出可直接沿用的组织、地点或规则，后面会继续按你的改造方向生成。
+        Esta vez, no se han extraído de forma estable organizaciones, ubicaciones o reglas de las obras de referencia que puedan utilizarse directamente. Continuarán generándose de acuerdo con su dirección de transformación más adelante.
       </div>
     );
   }
@@ -69,9 +69,9 @@ export default function WorldReferenceSeedSelector(props: {
   return (
     <div className="rounded-md border p-3 text-sm space-y-4">
       <div className="space-y-1">
-        <div className="font-medium">直接沿用原作设定</div>
+        <div className="font-medium">Utilice directamente la configuración original</div>
         <div className="text-xs text-muted-foreground">
-          系统会从参考作品里提取一批可沿用设定，并默认勾选。保留它们可以明显减少后续手动填写。
+          El sistema extraerá un lote de configuraciones heredables de las obras de referencia y las verificará de forma predeterminada. Conservarlos puede reducir significativamente el llenado manual posterior.
         </div>
       </div>
 
@@ -93,7 +93,7 @@ export default function WorldReferenceSeedSelector(props: {
                 variant="outline"
                 onClick={() => onToggleAll(group, !allSelected)}
               >
-                {allSelected ? "全部取消" : "全部保留"}
+                {allSelected ? "Cancelar todo" : "Mantener todo"}
               </Button>
             </div>
 
@@ -114,7 +114,7 @@ export default function WorldReferenceSeedSelector(props: {
                       {summary ? (
                         <div className="text-xs text-muted-foreground">{summary}</div>
                       ) : (
-                        <div className="text-xs text-muted-foreground">已识别为可直接沿用的原作设定。</div>
+                        <div className="text-xs text-muted-foreground">Configuraciones identificadas del original que se pueden heredar directamente.</div>
                       )}
                     </div>
                   </label>

@@ -93,7 +93,7 @@ export const chapterWriterPrompt: PromptAsset<ChapterWriterPromptInput, string, 
       description: "调整正文语气、节奏和读感倾向。",
       riskLevel: "low",
       maxLength: 600,
-      defaultValue: "使用简体中文，语言自然流畅，适合网文阅读节奏。",
+      defaultValue: "使用西班牙语，语言自然流畅，适合网文阅读节奏。",
     },
   ],
   slots: [
@@ -103,7 +103,7 @@ export const chapterWriterPrompt: PromptAsset<ChapterWriterPromptInput, string, 
       key: "writer.tonePreference",
       label: "语气与节奏",
       description: "调整正文语气、节奏和读感倾向。",
-      default: "使用简体中文，语言自然流畅，适合网文阅读节奏。",
+      default: "使用西班牙语，语言自然流畅，适合网文阅读节奏。",
       maxLength: 600,
     },
     {
@@ -185,7 +185,7 @@ export const chapterWriterPrompt: PromptAsset<ChapterWriterPromptInput, string, 
 
     // Resolve slot values (fall back to defaults if no override)
     const tonePreference = slots?.text("writer.tonePreference")
-      ?? "使用简体中文，语言自然流畅，适合网文阅读节奏。";
+      ?? "使用西班牙语，语言自然流畅，适合网文阅读节奏。";
     const antiAiRules = slots?.text("writer.antiAiRules")
       ?? "控制无效修饰，避免长段空洞描写或「AI感」八股表达。";
     const endingHook = slots?.text("writer.endingHookPreference")
@@ -236,7 +236,7 @@ export const chapterWriterPrompt: PromptAsset<ChapterWriterPromptInput, string, 
 
     return [
       new SystemMessage([
-        "你是中文长篇网络小说写作助手。",
+        "你是西班牙语长篇网络小说写作助手。",
         "你的任务是根据当前章节任务，生成可直接阅读的正文，而不是提纲或解释。",
         "",
         "【叙事视角】",

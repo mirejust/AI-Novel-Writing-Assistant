@@ -24,19 +24,19 @@ export const worldToolDefinitions: Partial<
 > = {
   list_worlds: {
     name: "list_worlds",
-    title: "列出世界观",
-    description: "读取世界观列表、版本和概览状态。",
+    title: "lista de cosmovisión",
+    description: "Lea la lista de cosmovisiones, la versión y el estado general.",
     category: "read",
     riskLevel: "low",
     domainAgent: "WorldAgent",
     resourceScopes: ["world"],
     parserHints: {
       intent: "list_worlds",
-      aliases: ["世界观列表", "世界观库", "worlds"],
-      phrases: ["列出世界观列表", "当前有哪些世界观", "查看世界观列表"],
+      aliases: ["lista de visiones del mundo", "base de datos de cosmovisión", "worlds"],
+      phrases: ["Haz una lista de visiones del mundo", "¿Qué cosmovisiones existen actualmente?", "Ver lista de cosmovisiones"],
       requiresNovelContext: false,
-      whenToUse: "用户想查看全局世界观资源。",
-      whenNotToUse: "用户是在为当前小说绑定或检查某个具体世界观。",
+      whenToUse: "Los usuarios quieren ver recursos de cosmovisión global.",
+      whenNotToUse: "El usuario vincula o examina una visión del mundo específica para la novela actual.",
     },
     inputSchema: listWorldsInputSchema,
     outputSchema: listWorldsOutputSchema,
@@ -56,25 +56,25 @@ export const worldToolDefinitions: Partial<
           overviewSummary: row.overviewSummary ?? null,
           updatedAt: row.updatedAt.toISOString(),
         })),
-        summary: `已读取 ${rows.length} 个世界观。`,
+        summary: `Leer ${rows.length} una cosmovisión.`,
       });
     },
   },
   bind_world_to_novel: {
     name: "bind_world_to_novel",
-    title: "绑定小说世界观",
-    description: "将指定世界观绑定为当前小说的世界观。",
+    title: "Vincular la visión del mundo de la novela.",
+    description: "Vincula la cosmovisión especificada a la cosmovisión de la novela actual.",
     category: "mutate",
     riskLevel: "medium",
     domainAgent: "WorldAgent",
     resourceScopes: ["world", "novel"],
     parserHints: {
       intent: "bind_world_to_novel",
-      aliases: ["绑定世界观", "设置小说世界观"],
-      phrases: ["将某个世界观设为当前小说的世界观", "把世界观绑定为当前小说世界观"],
+      aliases: ["Vincular la visión del mundo", "Configurar la visión del mundo de la novela."],
+      phrases: ["Establecer una determinada visión del mundo como la visión del mundo de la novela actual.", "Vincular la cosmovisión a la cosmovisión de la novela actual."],
       requiresNovelContext: true,
-      whenToUse: "用户要把某个世界观绑定到当前小说。",
-      whenNotToUse: "用户只是想查看世界观列表或详情。",
+      whenToUse: "El usuario debe vincular una determinada visión del mundo a la novela actual.",
+      whenNotToUse: "El usuario sólo quiere ver la lista de vistas del mundo o los detalles.",
     },
     inputSchema: bindWorldToNovelInputSchema,
     outputSchema: bindWorldToNovelOutputSchema,
@@ -88,7 +88,7 @@ export const worldToolDefinitions: Partial<
         },
       });
       if (!novel) {
-        throw new AgentToolError("NOT_FOUND", "未找到当前小说。");
+        throw new AgentToolError("NOT_FOUND", "Novela actual no encontrada.");
       }
 
       const resolvedWorld = input.worldId
@@ -116,7 +116,7 @@ export const worldToolDefinitions: Partial<
       }
 
       if (!world) {
-        throw new AgentToolError("NOT_FOUND", "未找到要绑定的世界观。");
+        throw new AgentToolError("NOT_FOUND", "No se ha encontrado ninguna cosmovisión que esté ligada.");
       }
 
       await prisma.novel.update({
@@ -131,25 +131,25 @@ export const worldToolDefinitions: Partial<
         novelTitle: novel.title,
         worldId: world.id,
         worldName: world.name,
-        summary: `已将世界观《${world.name}》绑定到小说《${novel.title}》。`,
+        summary: `La visión del mundo ha sido${world.name}"Unido a la novela"${novel.title}».`,
       });
     },
   },
   unbind_world_from_novel: {
     name: "unbind_world_from_novel",
-    title: "解除小说世界观绑定",
-    description: "解除当前小说与已绑定世界观之间的关联。",
+    title: "Desvincular la cosmovisión de la novela.",
+    description: "Desvincular la novela actual de la cosmovisión encuadernada.",
     category: "mutate",
     riskLevel: "medium",
     domainAgent: "WorldAgent",
     resourceScopes: ["world", "novel"],
     parserHints: {
       intent: "unbind_world_from_novel",
-      aliases: ["解绑世界观", "取消世界观绑定", "不使用当前世界观", "remove world binding"],
-      phrases: ["不要这个世界观了", "先不用这个世界观", "把当前小说的世界观解绑", "取消当前世界观"],
+      aliases: ["Desvincular la cosmovisión", "Cancelar la vinculación de la cosmovisión", "No utilices la visión del mundo actual.", "remove world binding"],
+      phrases: ["Ya no quiero esta visión del mundo", "No uses esta visión del mundo por ahora.", "Desvincular la cosmovisión de la novela actual.", "Cancelar la visión del mundo actual"],
       requiresNovelContext: true,
-      whenToUse: "用户要取消当前小说已绑定的世界观，或明确表示先不用某个世界观。",
-      whenNotToUse: "用户是在为当前小说指定一个新的世界观，或只是想查看世界观详情。",
+      whenToUse: "El usuario quiere cancelar la visión del mundo vinculada a la novela actual, o dejar claro que no quiere utilizar una visión del mundo determinada todavía.",
+      whenNotToUse: "El usuario especifica una nueva visión del mundo para la novela actual o simplemente quiere ver los detalles de la visión del mundo.",
     },
     inputSchema: unbindWorldFromNovelInputSchema,
     outputSchema: unbindWorldFromNovelOutputSchema,
@@ -169,7 +169,7 @@ export const worldToolDefinitions: Partial<
         },
       });
       if (!novel) {
-        throw new AgentToolError("NOT_FOUND", "未找到当前小说。");
+        throw new AgentToolError("NOT_FOUND", "Novela actual no encontrada.");
       }
 
       const previousWorld = novel.world ?? null;
@@ -190,15 +190,15 @@ export const worldToolDefinitions: Partial<
         worldId: null,
         worldName: null,
         summary: previousWorld
-          ? `已将世界观《${previousWorld.name}》从小说《${novel.title}》解绑。`
-          : `当前小说《${novel.title}》还没有绑定世界观。`,
+          ? `La visión del mundo ha sido${previousWorld.name}"De la novela"${novel.title}"Desatar.`
+          : `Novela actual "${novel.title}»No ha estado ligado a la visión del mundo.`,
       });
     },
   },
   get_world_detail: {
     name: "get_world_detail",
-    title: "读取世界观详情",
-    description: "读取世界观详情、概览摘要和未解决冲突数。",
+    title: "Leer detalles de la cosmovisión",
+    description: "Lea los detalles de la visión del mundo, el resumen general y la cantidad de conflictos no resueltos.",
     category: "read",
     riskLevel: "low",
     domainAgent: "WorldAgent",
@@ -232,14 +232,14 @@ export const worldToolDefinitions: Partial<
         consistencyReport: row.consistencyReport ?? null,
         novelCount: row.novels.length,
         openIssueCount: row.consistencyIssues.length,
-        summary: `世界观《${row.name}》当前有 ${row.consistencyIssues.length} 个未解决冲突。`,
+        summary: `Cosmovisión "${row.name}»Actualmente hay ${row.consistencyIssues.length} conflictos no resueltos.`,
       });
     },
   },
   explain_world_conflict: {
     name: "explain_world_conflict",
-    title: "解释世界观冲突",
-    description: "读取世界观一致性冲突，并给出恢复建议。",
+    title: "Explicar el conflicto de cosmovisión",
+    description: "Lea los conflictos de coherencia de la visión del mundo y brinde sugerencias de recuperación.",
     category: "inspect",
     riskLevel: "low",
     domainAgent: "WorldAgent",
@@ -262,8 +262,8 @@ export const worldToolDefinitions: Partial<
       }
       const issue = world.consistencyIssues[0] ?? null;
       const failureSummary = issue
-        ? `${issue.message}${issue.targetField ? `（字段: ${issue.targetField}）` : ""}`
-        : "当前世界观没有未解决的一致性冲突。";
+        ? `${issue.message}${issue.targetField ? `(Campo: ${issue.targetField})` : ""}`
+        : "En la visión del mundo actual no hay conflictos de coherencia no resueltos.";
       return explainWorldConflictOutputSchema.parse({
         worldId: world.id,
         issueId: issue?.id ?? null,
@@ -272,33 +272,33 @@ export const worldToolDefinitions: Partial<
         failureSummary,
         failureDetails: issue?.detail ?? world.consistencyReport ?? null,
         recoveryHint: issue
-          ? "建议先确认冲突字段是否应以世界观为准，再更新对应层内容或相关小说设定。"
-          : "当前无需处理冲突。",
+          ? "Se recomienda confirmar primero si el campo de conflicto debe basarse en la visión del mundo y luego actualizar el contenido de la capa correspondiente o la configuración novedosa relacionada."
+          : "Actualmente no hay conflictos que tratar.",
         summary: failureSummary,
       });
     },
   },
   rebuild_story_world_slice: {
     name: "rebuild_story_world_slice",
-    title: "重建本书世界切片",
-    description: "强制重新生成当前小说的本书世界切片，修复世界设定来源与小说故事背景不匹配（如历史世界绑定到现代故事）导致的旧世界词汇污染问题。",
+    title: "Reconstruya la porción mundial de este libro.",
+    description: "Regenerar a la fuerza la parte mundial de este libro para la novela actual y reparar el problema de contaminación del vocabulario del viejo mundo causado por la falta de coincidencia entre la fuente del entorno mundial y el trasfondo de la historia de la novela (como que el mundo histórico esté vinculado a la historia moderna).",
     category: "mutate",
     riskLevel: "medium",
     domainAgent: "WorldAgent",
     resourceScopes: ["world", "novel"],
     parserHints: {
       intent: "inspect_world",
-      aliases: ["重建世界切片", "修复世界切片", "刷新世界切片", "rebuild world slice"],
+      aliases: ["Reconstruir la porción del mundo", "Arreglar la porción del mundo", "Actualizar porción del mundo", "rebuild world slice"],
       phrases: [
-        "世界设定和故事不匹配",
-        "世界切片有旧名词污染",
-        "世界绑定来源不对",
-        "重新生成本书世界设定",
-        "切片过时了",
+        "El escenario mundial no coincide con la historia.",
+        "Partes del mundo están contaminadas por viejos términos",
+        "La fuente vinculante mundial está equivocada",
+        "Regenerar el escenario mundial de este libro.",
+        "El corte está desactualizado",
       ],
       requiresNovelContext: true,
-      whenToUse: "用户反映世界设定词汇与当前故事不匹配，或世界切片 isStale=true，或需要强制刷新切片内容。",
-      whenNotToUse: "用户只是查看世界观详情或绑定状态。",
+      whenToUse: "Los usuarios informan que el vocabulario de configuración del mundo no coincide con la historia actual, o que el segmento del mundo es Stale=true, o que el contenido del segmento debe actualizarse a la fuerza.",
+      whenNotToUse: "Los usuarios solo ven los detalles de la visión del mundo o el estado vinculante.",
     },
     inputSchema: rebuildStoryWorldSliceInputSchema,
     outputSchema: rebuildStoryWorldSliceOutputSchema,
@@ -306,7 +306,7 @@ export const worldToolDefinitions: Partial<
       const input = rebuildStoryWorldSliceInputSchema.parse(rawInput);
       const novelId = input.novelId?.trim() || context.novelId;
       if (!novelId) {
-        throw new AgentToolError("INVALID_INPUT", "没有当前小说上下文，无法重建世界切片。");
+        throw new AgentToolError("INVALID_INPUT", "Las porciones del mundo no se pueden reconstruir sin el contexto de la novela actual.");
       }
       const view = await novelWorldSliceService.refreshWorldSlice(novelId, {
         storyInput: input.storyInput,
@@ -322,8 +322,8 @@ export const worldToolDefinitions: Partial<
         coreWorldFrame: view.slice?.coreWorldFrame ?? null,
         isStale: view.isStale,
         summary: view.worldId
-          ? `已重建本书世界切片：${view.worldName ?? view.worldId}。${view.slice?.coreWorldFrame ? `核心舞台：${view.slice.coreWorldFrame.slice(0, 60)}` : ""}`
-          : "当前小说未绑定世界，无法重建切片。请先绑定世界观，再执行本操作。",
+          ? `La porción del mundo de este libro ha sido reconstruida:${view.worldName ?? view.worldId}.${view.slice?.coreWorldFrame ? `Etapa central:${view.slice.coreWorldFrame.slice(0, 60)}` : ""}`
+          : "La novela actual no está ligada al mundo y la parte no se puede reconstruir. Primero vincule la visión del mundo antes de realizar esta operación.",
       });
     },
   },

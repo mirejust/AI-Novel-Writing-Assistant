@@ -38,7 +38,7 @@ export async function prepareExecutionContract(novelId: string, chapterId: strin
       },
     });
     if (!chapter) {
-      throw new Error("章节不存在。");
+      throw new Error("El capítulo no existe.");
     }
 
     const workspace = await (ports ? ports.readWorkspace(novelId) : deps.ensureVolumeWorkspace(novelId));
@@ -61,7 +61,7 @@ export async function prepareExecutionContract(novelId: string, chapterId: strin
   const previous = readiness?.canReuse && currentRequirement && !chapter.content?.trim() && chapter.order > 1
     ? await db.chapter.findFirst({ where: { novelId, order: chapter.order - 1 }, select: { order: true, title: true, content: true } }) : null;
   const preparedStyleContract = ports ? await ports.resolveStyleContract(novelId, chapterId, options.taskStyleProfileId) : null;
-  if (ports && workspaceFingerprint !== await readWorkspaceFingerprint(db, novelId)) throw new Error("卷规划在准备期间发生变化，请重新准备本章。");
+  if (ports && workspaceFingerprint !== await readWorkspaceFingerprint(db, novelId)) throw new Error("El plan de volumen cambió durante la preparación; prepare este capítulo nuevamente.");
   return { novelId, chapterId, chapter, workspace, matched, currentRequirement: currentRequirement ?? null,
     readiness, previous, workspaceFingerprint, preparedStyleContract };
 }

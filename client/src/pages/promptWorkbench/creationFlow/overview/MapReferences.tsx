@@ -18,12 +18,12 @@ const linkedPrompts = new Set(stepPromptRelations.map(link => link.promptId));
 export const MapReferences = memo(function MapReferences({ data }: NodeProps<ReferenceNode>) {
   const { section, read, selected, highlighted, preview, openScope } = data;
   const tools = section.scope.id === "tools";
-  const title = tools ? section.scope.title : section.scope.title + "提示词";
+  const title = tools ? section.scope.title : section.scope.title + "Palabra rápida";
   const Icon = tools ? LibraryBig : BookMarked;
   return <section className={`map-references ${tools ? "tool-references" : ""}`} data-stage={section.scope.skin}
     aria-label={title} style={{ "--reference-row": referenceRowHeight + "px", "--topic-heading": topicHeadingHeight + "px" } as CSSProperties}>
     <h3><button type="button" className="nodrag nopan" data-ref-scope={section.scope.id} onClick={() => openScope(section.scope.id)}
-      title={`打开${section.scope.title}的提示词分图`}>
+      title={`Abierto${section.scope.title}Mapa de palabras rápido de`}>
       <Icon size={19} /><strong>{title}</strong><ArrowUpRight aria-hidden size={14} />
     </button></h3>
     {section.topics.map(({ topic, x, y, width, height }) => <div className="map-reference-topic" key={topic.id}

@@ -128,11 +128,11 @@ export default function ChapterManagementTab(props: ChapterTabViewProps) {
 
   const queueFilters = useMemo(
     () => ([
-      { key: "all", label: "全部" },
-      { key: "setup", label: "待准备" },
-      { key: "draft", label: "待写作" },
-      { key: "review", label: "待修整" },
-      { key: "completed", label: "已完成" },
+      { key: "all", label: "Todo" },
+      { key: "setup", label: "Estar preparado" },
+      { key: "draft", label: "por escribir" },
+      { key: "review", label: "para ser reparado" },
+      { key: "completed", label: "Completado" },
     ] as const).map((item) => ({
       ...item,
       count: chapters.filter((chapter) => chapterMatchesQueueFilter(chapter, item.key)).length,
@@ -143,21 +143,21 @@ export default function ChapterManagementTab(props: ChapterTabViewProps) {
   return (
     <div className="space-y-4">
       <DirectorTakeoverEntryPanel
-        title="从章节执行接管"
-        description="AI 会先判断当前是否有活动批次、检查点或可执行章节范围，再决定恢复当前批次还是按你的选择新开批次。"
+        title="Asumir el control de la ejecución del capítulo"
+        description="La IA primero determinará si hay lotes, puntos de control o rangos de capítulos ejecutables actualmente activos y luego decidirá si restaurar el lote actual o abrir un nuevo lote según su elección."
         entry={directorTakeoverEntry}
       />
       <Card className="overflow-visible border-0 bg-transparent shadow-none">
       <CardHeader className="gap-3 rounded-2xl bg-muted/20 px-5 py-4">
         <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
           <div className="space-y-1">
-            <CardTitle>章节执行</CardTitle>
+            <CardTitle>Ejecución del capítulo</CardTitle>
             <div className="text-sm leading-6 text-muted-foreground">
-              把这里收成真正的主工作台：左侧只管切章，中间完整承接正文，右侧专心放 AI 动作和策略。
+              Convierta este lugar en el verdadero banco de trabajo principal: el lado izquierdo es solo para cortar capítulos, el medio es el texto completo y el lado derecho está dedicado a las acciones y estrategias de la IA.
             </div>
           </div>
           <Button onClick={onCreateChapter} disabled={isCreatingChapter}>
-            {isCreatingChapter ? "创建中..." : "新建章节"}
+            {isCreatingChapter ? "Creando..." : "Crear nuevo capítulo"}
           </Button>
         </div>
       </CardHeader>
@@ -173,14 +173,14 @@ export default function ChapterManagementTab(props: ChapterTabViewProps) {
 
         {!hasCharacters ? (
           <div className="flex flex-col gap-3 rounded-2xl bg-amber-50 p-4 text-sm text-amber-900 md:flex-row md:items-center md:justify-between">
-            <span>请先添加至少 1 个角色，再生成章节内容。这样 AI 更容易识别出场者、关系变化和情节承接。</span>
-            <Button size="sm" variant="outline" onClick={onGoToCharacterTab}>去角色管理</Button>
+            <span>Agregue al menos 1 carácter antes de generar el contenido del capítulo. Esto facilita que la IA identifique jugadores, cambios en las relaciones y la continuación de la trama.</span>
+            <Button size="sm" variant="outline" onClick={onGoToCharacterTab}>Ir a gestión de roles</Button>
           </div>
         ) : null}
 
         <WorkspaceColumns layoutId="chapter-execution" className="flex flex-col gap-4 xl:h-[calc(100dvh-8rem)] xl:items-stretch xl:workspace-split"
-          left={{ label: "调整章节队列宽度", initial: "300px", min: 176 }}
-          right={{ label: "调整章节资料与执行台宽度", initial: "332px", min: 248 }}>
+          left={{ label: "Ajustar el ancho de la cola de capítulos", initial: "300px", min: 176 }}
+          right={{ label: "Ajustar los datos del capítulo y el ancho de la tabla de ejecución", initial: "332px", min: 248 }}>
           <div className="h-full min-h-0">
             <ChapterExecutionQueueCard
               chapters={filteredChapters}
@@ -232,9 +232,9 @@ export default function ChapterManagementTab(props: ChapterTabViewProps) {
               className="flex h-full min-h-0 flex-col"
             >
               <TabsList className="grid h-auto w-full shrink-0 grid-cols-3 rounded-xl bg-muted/50 p-1.5">
-                <TabsTrigger value="insights" className="rounded-lg px-3 py-2 text-sm">动态栏</TabsTrigger>
-                <TabsTrigger value="reference" className="rounded-lg px-3 py-2 text-sm">资料诊断</TabsTrigger>
-                <TabsTrigger value="agent" className="rounded-lg px-3 py-2 text-sm">AI 执行台</TabsTrigger>
+                <TabsTrigger value="insights" className="rounded-lg px-3 py-2 text-sm">Barra dinámica</TabsTrigger>
+                <TabsTrigger value="reference" className="rounded-lg px-3 py-2 text-sm">Diagnóstico de datos</TabsTrigger>
+                <TabsTrigger value="agent" className="rounded-lg px-3 py-2 text-sm">Mesa de ejecución de IA</TabsTrigger>
               </TabsList>
               <TabsContent value="insights" className="mt-3 min-h-0 flex-1">
                 <ChapterExecutionInsightsSidebar

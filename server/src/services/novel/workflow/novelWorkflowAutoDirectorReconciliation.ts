@@ -231,8 +231,8 @@ export function reconcileAutoDirectorChapterBatchState(input: {
       return {
         autoExecution,
         checkpointType: "chapter_batch_ready",
-        checkpointSummary: `《${input.title.trim() || "当前项目"}》已完成${buildDirectorAutoExecutionScopeLabelFromState(autoExecution, range.totalChapterCount)}正文。继续后会补齐下一段章节规划并进入后续写作。`,
-        itemLabel: `${buildDirectorAutoExecutionScopeLabelFromState(autoExecution, range.totalChapterCount)}正文已完成，等待续拆下一段`,
+        checkpointSummary: `«${input.title.trim() || "Proyecto actual"}"Terminado${buildDirectorAutoExecutionScopeLabelFromState(autoExecution, range.totalChapterCount)}texto. Después de continuar, completaré la planificación del próximo capítulo y escribiré la escritura posterior.`,
+        itemLabel: `${buildDirectorAutoExecutionScopeLabelFromState(autoExecution, range.totalChapterCount)}El texto principal ha sido completado, esperando el siguiente párrafo.`,
         chapterId: autoExecution.firstChapterId ?? range.firstChapterId,
         progress: 0.98,
       };
@@ -253,7 +253,7 @@ export function reconcileAutoDirectorChapterBatchState(input: {
   }
 
   const failureMessage = input.failureMessage?.trim()
-    || `${buildDirectorAutoExecutionScopeLabelFromState(autoExecution, range.totalChapterCount)}自动执行未能全部通过质量要求。`;
+    || `${buildDirectorAutoExecutionScopeLabelFromState(autoExecution, range.totalChapterCount)}La ejecución automatizada no cumplió con todos los requisitos de calidad.`;
   return {
     autoExecution,
     checkpointType: "chapter_batch_ready",

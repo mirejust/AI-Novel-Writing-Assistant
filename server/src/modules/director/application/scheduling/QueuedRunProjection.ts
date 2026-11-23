@@ -13,11 +13,11 @@ export function projectQueuedRun(view: DashboardView, state: NonNullable<Awaited
   const canRetry = !liveLease && !busy && (unavailable || health.state === "retrying" || now.getTime() - state.createdAt.getTime() > 60_000);
   const status = liveLease ? "starting" : busy ? "busy" : unavailable ? "unavailable" : health.state === "retrying" ? "retrying" : "waiting";
   return {...view, workerStatus: {state: status, canRetry},
-    headline: liveLease ? "正在启动本次创作" : busy ? "等待其他作品完成当前阶段" : canRetry ? "本次创作尚未启动" : "等待开始创作",
-    nextActionGuidance: canRetry ? "可点击“重新启动创作”重试排队，已有内容与创作范围会保留。"
-      : busy ? "后台正在处理其他作品，本书会在当前阶段结束后开始。" : "请等待后台启动本次创作。",
-    detail: unavailable ? "后台执行暂不可用。重新启动创作可再次请求执行。"
-      : health.state === "retrying" ? "后台执行遇到异常，系统会自动重试。" : view.detail,
-    availableActions: canRetry ? [{id: "retry_start", label: "重新启动创作", kind: "command", primary: true, command: "retry_start"},
+    headline: liveLease ? "Comenzando esta creación" : busy ? "A la espera de otras obras para completar la etapa actual" : canRetry ? "Esta creación aún no ha comenzado." : "Esperando para empezar a crear",
+    nextActionGuidance: canRetry ? "Puede hacer clic en \"Reiniciar creación\" para volver a intentar hacer cola y se conservarán el contenido existente y el rango de creación."
+      : busy ? "Otros trabajos se están procesando en segundo plano y este libro comenzará una vez que finalice la fase actual." : "Espere a que esta creación comience en segundo plano.",
+    detail: unavailable ? "La ejecución en segundo plano no está disponible temporalmente. Reinicie la creación para solicitar la ejecución nuevamente."
+      : health.state === "retrying" ? "Si se encuentra una excepción durante la ejecución en segundo plano, el sistema lo volverá a intentar automáticamente." : view.detail,
+    availableActions: canRetry ? [{id: "retry_start", label: "Reiniciar la creación", kind: "command", primary: true, command: "retry_start"},
       ...view.availableActions] : view.availableActions};
 }

@@ -72,7 +72,7 @@ export async function generateWorldSkeleton(
   const bindingSupport = normalizeWorldBindingSupport(output.bindingSupport, {
     ...generatedBindingSupport,
     recommendedEntryPoints: [
-      ...output.storyEntrySuggestions.map((item) => `${item.title}：${item.description}`),
+      ...output.storyEntrySuggestions.map((item) => `${item.title}:${item.description}`),
       ...generatedBindingSupport.recommendedEntryPoints,
     ].slice(0, 6),
   });

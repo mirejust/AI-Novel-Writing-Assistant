@@ -39,16 +39,16 @@ export class ReplanWindowDecisionService {
     const requestedWindowSize = Math.max(1, Math.min(input.requestedWindowSize ?? 3, 5));
     const state = buildReplanStateContext(input.snapshot);
     const contextBlocks = [
-      { id: "canonical_baseline", label: "书级状态基线", content: state.stableJson, reuseScope: "book" as const },
-      { id: "canonical_state", label: "canonical state（动态状态）", content: state.dynamicJson },
-      { id: "audit", label: "审校报告", content: compactJson(buildReplanAuditContext(input.auditReports)) },
-      { id: "payoff_ledger", label: "伏笔账本摘要", content: compactJson(input.ledgerSummary) },
-      { id: "chapter_goal", label: "章节目标", content: compactJson(input.chapterStateGoal) },
-      { id: "protected_secrets", label: "受保护秘密", content: compactJson(input.protectedSecrets) },
+      { id: "canonical_baseline", label: "Línea base de estado a nivel de libro", content: state.stableJson, reuseScope: "book" as const },
+      { id: "canonical_state", label: "estado canónico (estado dinámico)", content: state.dynamicJson },
+      { id: "audit", label: "Informe de revisión", content: compactJson(buildReplanAuditContext(input.auditReports)) },
+      { id: "payoff_ledger", label: "Resumen del libro mayor de presagios", content: compactJson(input.ledgerSummary) },
+      { id: "chapter_goal", label: "Objetivo del capítulo", content: compactJson(input.chapterStateGoal) },
+      { id: "protected_secrets", label: "secreto protegido", content: compactJson(input.protectedSecrets) },
     ].map((block, index) => createContextBlock({
       id: block.id, group: block.id, priority: 100 - index,
       required: true, allowSummary: false, reuseScope: block.reuseScope,
-      content: `【${block.label}】\n${block.content}`,
+      content: `[${block.label}]\\n${block.content}`,
     }));
     const result = await runStructuredPrompt({
       asset: replanWindowDecisionPrompt,

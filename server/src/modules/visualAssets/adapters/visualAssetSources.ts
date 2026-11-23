@@ -146,7 +146,7 @@ function readImageArray(base: SourceItemBase, raw: string | null | undefined): V
     return parsed.flatMap((item, index) => {
       if (!item || typeof item !== "object" || Array.isArray(item)) return [];
       const state = item as ImageState & { view?: unknown };
-      const label = asText(state.view) || `版本 ${index + 1}`;
+      const label = asText(state.view) || `Versión ${index + 1}`;
       const entry = fromState({ ...base, sourceLabel: `${base.sourceLabel} · ${label}` }, state, `item:${label}:${asPositiveInteger(state.version) ?? index + 1}`);
       return entry ? [entry] : [];
     });
@@ -179,12 +179,12 @@ async function readImageAssetSources(): Promise<VisualAssetSourceItem[]> {
     const isBookCharacter = asset.sceneType === "book_analysis_character";
     const scopeKind: VisualAssetScopeKind = isNovelCover ? "novel" : isBookCharacter ? "book_analysis" : "global";
     const scopeId = isNovelCover ? asset.novelId : isBookCharacter ? asset.bookAnalysisCharacter?.analysis.id ?? null : null;
-    const scopeLabel = isNovelCover ? asset.novel?.title ?? "小说" : isBookCharacter ? "拆书分析" : "基础角色库";
+    const scopeLabel = isNovelCover ? asset.novel?.title ?? "Novela" : isBookCharacter ? "Análisis de división de libros" : "Biblioteca de personajes básicos";
     const sourceLabel = isNovelCover
-      ? `${asset.novel?.title ?? "小说"} · 封面`
+      ? `${asset.novel?.title ?? "Novela"} · Cubrir`
       : isBookCharacter
-        ? `${asset.bookAnalysisCharacter?.name ?? "拆书角色"} · 角色形象`
-        : `${asset.baseCharacter?.name ?? "基础角色"} · 角色形象`;
+        ? `${asset.bookAnalysisCharacter?.name ?? "personaje de libro dividido"} ·Imagen del personaje`
+        : `${asset.baseCharacter?.name ?? "Rol básico"} ·Imagen del personaje`;
     return {
       sourceDomain: "image_asset" as const,
       sourceType: "image_asset",
@@ -222,7 +222,7 @@ async function readComicSources(): Promise<VisualAssetSourceItem[]> {
   for (const character of characters) {
     const base: SourceItemBase = {
       sourceDomain: "comic", sourceType: "character_sheet", sourceId: character.id,
-      sourceLabel: `${character.name} · 角色设计稿`, scopeKind: "comic_project", scopeId: character.project.id,
+      sourceLabel: `${character.name} ·Borrador de diseño de personajes.`, scopeKind: "comic_project", scopeId: character.project.id,
       scopeLabel: character.project.title, kind: "comic_character_sheet", fallbackCreatedAt: character.createdAt,
     };
     output.push(...readVersionedState(base, character.sheetData));
@@ -230,7 +230,7 @@ async function readComicSources(): Promise<VisualAssetSourceItem[]> {
     const expression = sheet?.assets && typeof sheet.assets === "object" && !Array.isArray(sheet.assets)
       ? (sheet.assets as { expression?: ImageState }).expression
       : undefined;
-    const expressionEntry = expression ? fromState({ ...base, sourceType: "character_expression", sourceLabel: `${character.name} · 表情稿` }, expression, "current:expression") : null;
+    const expressionEntry = expression ? fromState({ ...base, sourceType: "character_expression", sourceLabel: `${character.name} · Expresiones` }, expression, "current:expression") : null;
     if (expressionEntry) output.push(expressionEntry);
   }
   for (const asset of characterAssets) {
@@ -244,7 +244,7 @@ async function readComicSources(): Promise<VisualAssetSourceItem[]> {
   for (const scene of scenes) {
     output.push(...readVersionedState({
       sourceDomain: "comic", sourceType: "scene_sheet", sourceId: scene.id,
-      sourceLabel: `场景 · ${scene.name}`, scopeKind: "comic_project", scopeId: scene.project.id,
+      sourceLabel: `Escena · ${scene.name}`, scopeKind: "comic_project", scopeId: scene.project.id,
       scopeLabel: scene.project.title, kind: "comic_scene", fallbackCreatedAt: scene.createdAt,
     }, scene.sheetData));
   }
@@ -252,11 +252,11 @@ async function readComicSources(): Promise<VisualAssetSourceItem[]> {
     const scope = panel.episode.project;
     const base: SourceItemBase = {
       sourceDomain: "comic", sourceType: "panel", sourceId: panel.id,
-      sourceLabel: `第 ${panel.episode.order} 话 · 第 ${panel.order} 格`, scopeKind: "comic_project", scopeId: scope.id,
+      sourceLabel: `Cap. ${panel.episode.order} Palabras·No. ${panel.order} red`, scopeKind: "comic_project", scopeId: scope.id,
       scopeLabel: scope.title, kind: "comic_panel", fallbackCreatedAt: panel.createdAt,
     };
     output.push(...readVersionedState(base, panel.imageData));
-    output.push(...readVersionedState({ ...base, sourceType: "panel_lettered", sourceLabel: `${base.sourceLabel} · 成品` }, panel.letteredData));
+    output.push(...readVersionedState({ ...base, sourceType: "panel_lettered", sourceLabel: `${base.sourceLabel} · Productos terminados` }, panel.letteredData));
   }
   return output;
 }
@@ -270,17 +270,17 @@ async function readDramaSources(): Promise<VisualAssetSourceItem[]> {
   for (const character of characters) {
     const base: SourceItemBase = {
       sourceDomain: "drama", sourceType: "character_sheet", sourceId: character.id,
-      sourceLabel: `${character.name} · 角色设计稿`, scopeKind: "drama_project", scopeId: character.project.id,
+      sourceLabel: `${character.name} ·Borrador de diseño de personajes.`, scopeKind: "drama_project", scopeId: character.project.id,
       scopeLabel: character.project.title, kind: "drama_character_sheet", fallbackCreatedAt: character.createdAt,
     };
     output.push(...readVersionedState(base, character.portraitData));
-    output.push(...readImageArray({ ...base, sourceType: "character_view", sourceLabel: `${character.name} · 角色视图` }, character.threeViewData));
+    output.push(...readImageArray({ ...base, sourceType: "character_view", sourceLabel: `${character.name} · Vista de roles` }, character.threeViewData));
   }
   for (const shot of shots) {
     const project = shot.storyboard.project;
     output.push(...readVersionedState({
       sourceDomain: "drama", sourceType: "shot_keyframe", sourceId: shot.id,
-      sourceLabel: `第 ${shot.storyboard.episode.order} 集 · 镜头 ${shot.order}`, scopeKind: "drama_project", scopeId: project.id,
+      sourceLabel: `Cap. ${shot.storyboard.episode.order} Escenografía · Disparo ${shot.order}`, scopeKind: "drama_project", scopeId: project.id,
       scopeLabel: project.title, kind: "drama_shot_keyframe", fallbackCreatedAt: shot.createdAt,
     }, shot.keyframeData));
   }

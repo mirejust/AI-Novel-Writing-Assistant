@@ -72,32 +72,32 @@ export default function GenreManagementPage() {
   const statusItems = useMemo<AssetLibraryStatusItem[]>(() => [
     {
       key: "genres",
-      label: "题材基底",
+      label: "Base temática",
       value: statusUnavailable ? "—" : totalGenres,
-      detail: "可供小说选择的分类节点",
+      detail: "Nodos de categoría para selección de novelas",
       icon: Tags,
       tone: statusUnavailable ? "neutral" : "info",
     },
     {
       key: "roots",
-      label: "根分类",
+      label: "Categoría raíz",
       value: statusUnavailable ? "—" : genreTree.length,
-      detail: "用于划分主要创作方向",
+      detail: "Se utiliza para dividir las principales direcciones creativas.",
       icon: Layers3,
     },
     {
       key: "novels",
-      label: "关联小说",
+      label: "Novelas relevantes",
       value: statusUnavailable ? "—" : linkedNovelCount,
-      detail: "正在使用这些题材的作品",
+      detail: "Funciona usando estos temas.",
       icon: BookOpen,
       tone: statusUnavailable ? "neutral" : linkedNovelCount > 0 ? "success" : "neutral",
     },
     {
       key: "descriptions",
-      label: "说明完整",
+      label: "Instrucciones completas",
       value: statusUnavailable ? "—" : `${describedGenreCount}/${totalGenres}`,
-      detail: "有明确定位说明的题材",
+      detail: "Tema con una descripción clara del posicionamiento.",
       icon: FileText,
       tone: statusUnavailable
         ? "neutral"
@@ -115,7 +115,7 @@ export default function GenreManagementPage() {
     mutationFn: (genreId: string) => deleteGenre(genreId),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: queryKeys.genres.all });
-      toast.success("题材基底已删除。");
+      toast.success("La base del tema ha sido eliminada.");
     },
   });
 
@@ -132,8 +132,8 @@ export default function GenreManagementPage() {
   const handleDelete = (genre: GenreTreeNode) => {
     const descendantCount = collectDescendantIds(genre).length;
     const message = descendantCount > 0
-      ? `确认删除题材基底「${genre.name}」？这会同时删除其下 ${descendantCount} 个子分类，此操作不可恢复。`
-      : `确认删除题材基底「${genre.name}」？此操作不可恢复。`;
+      ? `Confirmar la eliminación de la base del tema "${genre.name}”? Esto también eliminará el ${descendantCount} subcategoría, esta operación es irreversible.`
+      : `Confirmar la eliminación de la base del tema "${genre.name}”? Esta operación es irreversible.`;
     const confirmed = window.confirm(message);
     if (!confirmed) {
       return;
@@ -144,39 +144,39 @@ export default function GenreManagementPage() {
   const recommendation = genreTreeQuery.isError ? (
     <AssetLibraryRecommendation
       icon={CircleAlert}
-      title="重新加载题材基底"
-      description="暂时无法读取题材结构。重新加载后，可以继续查看、编辑和维护题材。"
+      title="Recargar la base del tema"
+      description="La estructura del tema no se puede leer en este momento. Después de recargar, puede continuar viendo, editando y manteniendo temas."
       tone="danger"
       action={(
         <Button type="button" variant="outline" onClick={() => void genreTreeQuery.refetch()}>
-          重新加载
+          recargar
         </Button>
       )}
     />
   ) : genreTreeQuery.isLoading ? (
     <AssetLibraryRecommendation
       icon={LoaderCircle}
-      title="正在确认题材基底状态"
-      description="加载完成后，会根据题材覆盖和说明完整度给出下一步建议。"
+      title="Confirmar el estado base del tema"
+      description="Una vez completada la carga, se darán sugerencias del siguiente paso según la cobertura del tema y la integridad de las instrucciones."
       tone="neutral"
     />
   ) : totalGenres === 0 ? (
     <AssetLibraryRecommendation
       icon={Sparkles}
-      title="先建立第一棵题材基底树"
-      description="描述你想覆盖的创作方向，可以手动搭建层级，也可以让 AI 生成草稿后再调整。"
+      title="Primero crea el primer árbol base del tema."
+      description="Describe la dirección creativa que deseas cubrir. Puede crear la jerarquía manualmente o puede dejar que la IA genere un borrador y luego lo ajuste."
       action={(
         <Button type="button" onClick={handleCreateRoot}>
           <Plus className="h-4 w-4" aria-hidden="true" />
-          创建题材基底
+          Crear una base temática
         </Button>
       )}
     />
   ) : firstGenreWithoutDescription ? (
     <AssetLibraryRecommendation
       icon={FileText}
-      title={`补充「${firstGenreWithoutDescription.name}」的题材说明`}
-      description="明确作品定位、读者期待和核心冲突，能帮助 AI 在开书和规划时更准确地理解这个题材。"
+      title={`Reponer"${firstGenreWithoutDescription.name}"Descripción del tema de`}
+      description="Aclarar el posicionamiento del trabajo, las expectativas de los lectores y los conflictos centrales puede ayudar a la IA a comprender el tema con mayor precisión al abrir y planificar el libro."
       tone="warning"
       action={(
         <Button
@@ -184,20 +184,20 @@ export default function GenreManagementPage() {
           variant="outline"
           onClick={() => setEditingGenreId(firstGenreWithoutDescription.id)}
         >
-          补充说明
+          Información adicional
         </Button>
       )}
     />
   ) : (
     <AssetLibraryRecommendation
       icon={Sparkles}
-      title="题材基底可以支持开书选择"
-      description="现有题材都有明确说明。需要覆盖新的创作方向时，再新增根题材或细分子类。"
+      title="La base temática puede admitir la selección de apertura de libros."
+      description="Los temas existentes están claramente expuestos. Cuando necesite cubrir una nueva dirección creativa, agregue un nuevo tema raíz o subcategoría."
       tone="success"
       action={(
         <Button type="button" variant="outline" onClick={handleCreateRoot}>
           <Plus className="h-4 w-4" aria-hidden="true" />
-          扩充题材
+          Ampliar el tema
         </Button>
       )}
     />
@@ -226,13 +226,13 @@ export default function GenreManagementPage() {
 
       <AssetLibraryHeader
         icon={Tags}
-        context="创作资产 / 小说定位"
-        title="题材基底库"
-        description="维护小说可复用的题材定位与分类层级。开书时选择合适的题材基底，AI 会据此理解作品类型、读者期待和主要创作方向。"
+        context="Activos creativos/posicionamiento novedoso"
+        title="Biblioteca base de temas"
+        description="Mantener la jerarquía de clasificación y posicionamiento de temas reutilizables de las novelas. Al abrir un libro, elija una base temática adecuada y la IA comprenderá el tipo de trabajo, las expectativas de los lectores y la dirección creativa principal en consecuencia."
         actions={(
           <Button type="button" onClick={handleCreateRoot}>
             <Plus className="h-4 w-4" aria-hidden="true" />
-            新建题材基底树
+            Crear un nuevo árbol base de temas
           </Button>
         )}
       />
@@ -242,8 +242,8 @@ export default function GenreManagementPage() {
       {recommendation}
 
       <AssetLibrarySection
-        title="题材结构"
-        description="从左侧目录展开细分方向，在右侧查看定位和维护节点。正在被小说使用的分类，需要先调整关联作品后才能删除。"
+        title="Estructura del tema"
+        description="Expanda la dirección de subdivisión desde el directorio de la izquierda y vea los nodos de posicionamiento y mantenimiento a la derecha. Las categorías que utilizan las novelas deben ajustarse primero antes de poder eliminarlas."
       >
         {genreTreeQuery.isLoading ? (
           <div
@@ -251,19 +251,19 @@ export default function GenreManagementPage() {
             role="status"
           >
             <LoaderCircle className="h-6 w-6 animate-spin text-muted-foreground" aria-hidden="true" />
-            <div className="mt-3 text-sm font-semibold text-foreground">正在加载题材结构</div>
-            <div className="mt-1 text-sm text-muted-foreground">请稍候，题材与小说关联正在同步。</div>
+            <div className="mt-3 text-sm font-semibold text-foreground">Cargando estructura del tema</div>
+            <div className="mt-1 text-sm text-muted-foreground">Espere un momento, el tema y la relación novedosa se están sincronizando.</div>
           </div>
         ) : null}
 
         {genreTreeQuery.isError ? (
           <AssetLibraryEmptyState
             icon={CircleAlert}
-            title="题材基底暂时无法加载"
-            description="请检查服务连接后重新加载。已有题材不会受到影响。"
+            title="La base del tema no se puede cargar temporalmente."
+            description="Verifique la conexión del servicio y vuelva a cargar. Los temas existentes no se verán afectados."
             action={(
               <Button type="button" variant="outline" onClick={() => void genreTreeQuery.refetch()}>
-                重新加载
+                recargar
               </Button>
             )}
           />
@@ -272,12 +272,12 @@ export default function GenreManagementPage() {
         {!genreTreeQuery.isLoading && !genreTreeQuery.isError && genreTree.length === 0 ? (
           <AssetLibraryEmptyState
             icon={Tags}
-            title="还没有可供开书选择的题材基底"
-            description="先创建一个主要题材。你可以手动填写，也可以描述创作方向，让 AI 生成包含子类的题材树草稿。"
+            title="No hay una base temática para elegir para abrir un libro."
+            description="Comience creando un tema principal. Puede completarlo manualmente o puede describir la dirección creativa y dejar que AI genere un borrador de árbol temático que contenga subcategorías."
             action={(
               <Button type="button" onClick={handleCreateRoot}>
                 <Plus className="h-4 w-4" aria-hidden="true" />
-                创建第一棵题材树
+                Crea el primer árbol temático.
               </Button>
             )}
           />

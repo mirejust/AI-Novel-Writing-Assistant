@@ -119,7 +119,7 @@ async function generateStrategy(params: {
     novelId: document.novelId,
     scope: "strategy",
     phase: "prompt",
-    label: "正在生成卷战略",
+    label: "Estrategia de generación de volumen",
     options,
   });
   const generated = await runStructuredPrompt({
@@ -170,13 +170,13 @@ async function generateStrategyCritique(params: {
 }): Promise<VolumePlanDocument> {
   const { document, novel, workspace, storyMacroPlan, options } = params;
   if (!document.strategyPlan) {
-    throw new Error("请先生成卷战略建议。");
+    throw new Error("Por favor dame algún consejo estratégico sobre cómo hacer un volumen.");
   }
   await notifyVolumeGenerationPhase({
     novelId: document.novelId,
     scope: "strategy_critique",
     phase: "prompt",
-    label: "正在评估卷战略",
+    label: "Evaluación de la estrategia de volumen",
     options,
   });
   const generated = await runStructuredPrompt({
@@ -220,10 +220,10 @@ async function generateSkeleton(params: {
 }): Promise<VolumePlanDocument> {
   const { document, novel, workspace, storyMacroPlan, options } = params;
   if (!document.strategyPlan) {
-    throw new Error("请先生成卷战略建议。");
+    throw new Error("Por favor dame algún consejo estratégico sobre cómo hacer un volumen.");
   }
   if (document.critiqueReport?.overallRisk === "high") {
-    throw new Error("当前卷战略审查为高风险，请先重新生成或修订卷战略，再生成卷骨架。");
+    throw new Error("La revisión actual de la estrategia de volumen es de alto riesgo. Regenere o revise la estrategia de volumen antes de generar el esqueleto de volumen.");
   }
   const chapterBudget = deriveChapterBudget({ novel, workspace, options });
   const placeholderWorkspace = isInitializationPlaceholderVolumeWorkspace(workspace.volumes);
@@ -241,7 +241,7 @@ async function generateSkeleton(params: {
     novelId: document.novelId,
     scope: "skeleton",
     phase: "prompt",
-    label: "正在生成卷骨架",
+    label: "Generando esqueleto de volumen",
     options,
   });
   const generated = await runStructuredPrompt({
@@ -299,7 +299,7 @@ async function generateRebalance(params: {
     novelId: document.novelId,
     scope: "rebalance",
     phase: "prompt",
-    label: `正在校准第 ${anchorVolume.sortOrder} 卷与相邻卷衔接`,
+    label: `Calibrando el ${anchorVolume.sortOrder} Los volúmenes están conectados a volúmenes adyacentes.`,
     options,
   });
   const generated = await runStructuredPrompt({
@@ -417,7 +417,7 @@ async function generateChapterDetail(params: {
   const targetChapter = getTargetChapter(targetVolume, options.targetChapterId);
   const detailMode = options.detailMode;
   if (!detailMode) {
-    throw new Error("生成章节细化时必须指定 detailMode。");
+    throw new Error("Se debe especificar el modo de detalle al generar refinamientos de capítulos.");
   }
 
   const promptInput=await prepareChapterDetailPrompt({document,novel,workspace,storyMacroPlan,options,targetVolume,targetChapter,detailMode,db:prisma});
@@ -426,7 +426,7 @@ async function generateChapterDetail(params: {
     novelId: document.novelId,
     scope: "chapter_detail",
     phase: "prompt",
-    label: `正在细化第 ${targetVolume.sortOrder} 卷第 ${targetChapter.chapterOrder} 章 ${formatChapterDetailModeLabel(detailMode)}`,
+    label: `Refinando el ${targetVolume.sortOrder} Volumen ${targetChapter.chapterOrder} capítulo ${formatChapterDetailModeLabel(detailMode)}`,
     options,
   });
   const generated = detailMode === "purpose"
@@ -517,16 +517,16 @@ export async function generateVolumePlanDocument(params: {
     scope,
     phase: "load_context",
     label: scope === "chapter_list"
-      ? "正在整理拆章上下文"
+      ? "Recopilación del contexto de la división de capítulos"
       : scope === "beat_sheet"
-        ? "正在整理节奏板上下文"
+        ? "Organizar el contexto del tablero de ritmo"
         : scope === "skeleton"
-          ? "正在整理卷骨架上下文"
+          ? "Organizar el contexto del esqueleto de volumen"
           : scope === "strategy"
-            ? "正在整理卷战略上下文"
+            ? "Contexto de la estrategia de volumen de recopilación"
             : scope === "rebalance"
-              ? "正在整理相邻卷衔接上下文"
-              : "正在整理卷规划上下文",
+              ? "Cotejando el contexto de conexión de volumen adyacente"
+              : "Contexto de planificación del volumen de clasificación",
     options,
   });
   const { novel, storyMacroPlan } = await loadGenerationContext({

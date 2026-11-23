@@ -84,9 +84,9 @@ function formatCurrentRuleForPrompt(rule: AntiAiRuleDraftFields): string {
     `type: ${rule.type}`,
     `severity: ${rule.severity}`,
     `description: ${rule.description}`,
-    `detectPatterns: ${rule.detectPatterns.join(" / ") || "无"}`,
-    `promptInstruction: ${rule.promptInstruction ?? "无"}`,
-    `rewriteSuggestion: ${rule.rewriteSuggestion ?? "无"}`,
+    `detectPatterns: ${rule.detectPatterns.join(" / ") || "Ninguno"}`,
+    `promptInstruction: ${rule.promptInstruction ?? "Ninguno"}`,
+    `rewriteSuggestion: ${rule.rewriteSuggestion ?? "Ninguno"}`,
   ].join("\n");
 }
 
@@ -167,10 +167,10 @@ export class AntiAiRuleService {
         instruction: input.instruction,
         currentRule: input.currentRule,
       }),
-      name: rawDraft.name?.trim() || input.currentRule?.name || "反 AI 规则草稿",
+      name: rawDraft.name?.trim() || input.currentRule?.name || "Proyecto de reglas anti-IA",
       type: rawDraft.type ?? input.currentRule?.type ?? "risk",
       severity: rawDraft.severity ?? input.currentRule?.severity ?? "medium",
-      description: rawDraft.description?.trim() || input.currentRule?.description || "根据用户需求生成的反 AI 规则。",
+      description: rawDraft.description?.trim() || input.currentRule?.description || "Reglas anti-IA generadas en función de las necesidades del usuario.",
       detectPatterns: normalizePatterns(rawDraft.detectPatterns),
       promptInstruction: normalizeOptionalText(rawDraft.promptInstruction) ?? input.currentRule?.promptInstruction ?? null,
       rewriteSuggestion: normalizeOptionalText(rawDraft.rewriteSuggestion) ?? input.currentRule?.rewriteSuggestion ?? null,
@@ -181,7 +181,7 @@ export class AntiAiRuleService {
 
     return {
       draft,
-      rationale: output.rationale?.trim() || "已根据用户需求整理为可编辑的规则草稿。",
+      rationale: output.rationale?.trim() || "Se ha organizado en borradores de reglas editables según las necesidades del usuario.",
       safetyNotes: normalizePatterns(output.safetyNotes),
     };
   }

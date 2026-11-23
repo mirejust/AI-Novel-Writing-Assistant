@@ -5,44 +5,44 @@ import { listAgentToolDefinitions } from "./toolRegistry";
 const DOMAIN_AGENTS: AgentCatalogAgent[] = [
   {
     name: "Coordinator",
-    title: "创作总控",
-    description: "负责跨模块规划、状态汇总、任务诊断和动作编排。",
+    title: "control creativo",
+    description: "Responsable de la planificación entre módulos, resumen de estado, diagnóstico de tareas y orquestación de acciones.",
     resourceScopes: ["global", "task", "agent_run", "generation_job"],
   },
   {
     name: "NovelAgent",
-    title: "小说中枢",
-    description: "负责小说、章节、快照、创作决策和章节生成链路。",
+    title: "centro novedoso",
+    description: "Responsable de novelas, capítulos, instantáneas, decisiones creativas y enlaces de generación de capítulos.",
     resourceScopes: ["novel", "chapter", "creative_decision", "snapshot", "generation_job"],
   },
   {
     name: "BookAnalysisAgent",
-    title: "拆书分析官",
-    description: "负责拆书任务、分析结果和知识沉淀。",
+    title: "Analista de última hora",
+    description: "Responsable de las tareas de apertura de libros, resultados de análisis y acumulación de conocimientos.",
     resourceScopes: ["book_analysis", "knowledge_document", "task"],
   },
   {
     name: "KnowledgeAgent",
-    title: "知识档案官",
-    description: "负责知识文档、索引状态、召回诊断和绑定关系。",
+    title: "Archivero del conocimiento",
+    description: "Responsable de los documentos de conocimiento, el estado del índice, los diagnósticos de recuperación y las relaciones vinculantes.",
     resourceScopes: ["knowledge_document", "task"],
   },
   {
     name: "WorldAgent",
-    title: "世界观编务",
-    description: "负责世界观状态、冲突诊断、快照和小说绑定。",
+    title: "editor de cosmovisión",
+    description: "Responsable del estado de la cosmovisión, diagnóstico de conflictos, instantáneas y encuadernación de novelas.",
     resourceScopes: ["world", "snapshot", "novel"],
   },
   {
     name: "FormulaAgent",
-    title: "公式编修师",
-    description: "负责写作公式的管理、适配解释和风格沉淀。",
+    title: "editor de fórmulas",
+    description: "Responsable del manejo, adaptación e interpretación de fórmulas de escritura y precipitación de estilo.",
     resourceScopes: ["writing_formula", "novel", "chapter"],
   },
   {
     name: "CharacterAgent",
-    title: "角色档案官",
-    description: "负责基础角色库、模板复用和角色上下文。",
+    title: "Archivista de funciones",
+    description: "Responsable de la biblioteca de roles básicos, la reutilización de plantillas y el contexto de roles.",
     resourceScopes: ["base_character", "novel", "chapter"],
   },
 ];
@@ -71,33 +71,33 @@ function inferUiKind(toolName: string): string {
 
 function inferFollowupActions(toolName: string): string[] {
   if (toolName === "create_novel") {
-    return ["继续完善设定", "绑定当前工作区", "开始创建章节"];
+    return ["Continuar mejorando la configuración", "Vincular el espacio de trabajo actual", "Comience a crear un capítulo"];
   }
   if (toolName === "generate_world_for_novel") {
-    return ["继续生成角色", "查看世界观", "检查世界观冲突"];
+    return ["Continuar generando personajes", "Ver visión del mundo", "Compruebe si hay conflictos de cosmovisión"];
   }
   if (toolName === "generate_novel_characters") {
-    return ["继续生成圣经", "查看角色状态", "继续整本生成"];
+    return ["Continuar generando la Biblia", "Ver el estado del personaje", "Continuar generando el libro completo."];
   }
   if (toolName === "generate_story_bible" || toolName === "generate_novel_outline" || toolName === "generate_structured_outline") {
-    return ["继续整本生成", "查看整本生产状态", "检查当前资产准备情况"];
+    return ["Continuar generando el libro completo.", "Consulta todo el estado de producción.", "Verifique la preparación actual de los activos"];
   }
   if (toolName === "get_novel_production_status") {
-    return ["继续生成当前小说", "为什么整本生成没有启动", "查看当前章节目录"];
+    return ["Continuar generando la novela actual.", "¿Por qué no se inicia toda la compilación?", "Ver la tabla de contenidos del capítulo actual"];
   }
   if (toolName === "select_novel_workspace") {
-    return ["继续围绕该小说操作", "查看章节", "发起写作"];
+    return ["Continuar trabajando en torno a la novela.", "Ver capítulo", "iniciar la escritura"];
   }
   if (toolName.includes("failure") || toolName.includes("blocker")) {
-    return ["查看相关任务", "继续追问失败原因", "尝试重试"];
+    return ["Ver tareas relacionadas", "Continúe preguntando por qué ocurrió la falla.", "Intentar otra vez"];
   }
   if (toolName.startsWith("list_")) {
-    return ["筛选结果", "在创作中枢继续", "打开对应模块"];
+    return ["Filtrar resultados", "Continuar en el centro creativo", "Abra el módulo correspondiente"];
   }
   if (toolName.includes("chapter")) {
-    return ["继续总结", "发起重写", "检查冲突"];
+    return ["Continuar resumiendo", "Iniciar reescritura", "Compruebe si hay conflictos"];
   }
-  return ["继续追问", "打开对应模块"];
+  return ["sigue preguntando", "Abra el módulo correspondiente"];
 }
 
 export function buildAgentCatalog(): AgentCatalog {

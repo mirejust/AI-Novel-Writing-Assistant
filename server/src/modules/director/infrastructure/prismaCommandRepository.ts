@@ -153,7 +153,7 @@ export class PrismaCommandRepository implements CommandRepository {
       const current = controlFromRow(row);
       if (input.event.type === "retry_start") {
         if (!input.retryAt || (row.leaseOwner && (!row.leaseExpiresAt || row.leaseExpiresAt >= input.retryAt))) {
-          throw Object.assign(new Error("本次创作仍由后台执行，请等待当前执行结束后重试。"), {statusCode: 409});
+          throw Object.assign(new Error("Esta creación todavía se ejecuta en segundo plano. Espere a que finalice la ejecución actual y vuelva a intentarlo."), {statusCode: 409});
         }
         const run = await tx.directorNextRun.findUniqueOrThrow({where: {id: input.runId}, select: {contractJson: true}});
         await this.options.beforeRetry?.(JSON.parse(run.contractJson) as RunContract, tx);
@@ -163,7 +163,7 @@ export class PrismaCommandRepository implements CommandRepository {
         const successor = input.successor.contract;
         if (input.event.type !== "resolve_gate" || !input.gateResolution?.proseReview?.nextRange || successor.novelId !== row.novelId ||
           !this.options.beforeOpen || await this.options.beforeOpen(row.novelId,tx) !== successor.executionEpoch) {
-          throw new InvalidDirectorCommandError("续写授权有变化，请重新核对下一批。");
+          throw new InvalidDirectorCommandError("Hay cambios en la autorización de renovación, verifique nuevamente para el siguiente lote.");
         }
         const other = await tx.directorNextRunControl.findFirst({where:{novelId:row.novelId,runId:{not:input.runId},
           status:{in:["queued","running","waiting_gate","paused"]}}});
@@ -177,7 +177,7 @@ export class PrismaCommandRepository implements CommandRepository {
       if (input.event.type === "resume" || input.event.type === "recover_failed_step") {
         if (input.event.type === "recover_failed_step") {
           await assertFailedGenerationRecovery(tx, input.runId, current);
-          if (!this.options.resumeBusiness) throw new InvalidDirectorCommandError("本次失败没有可恢复的生成步骤。");
+          if (!this.options.resumeBusiness) throw new InvalidDirectorCommandError("No hay pasos de compilación recuperables para este error.");
         }
         const run = await tx.directorNextRun.findUniqueOrThrow({where: {id: input.runId}, select: {contractJson: true}});
         await commitExplicitResume(tx, JSON.parse(run.contractJson) as RunContract, input.id, this.options.resumeBusiness, input.chapterBudget, input.resolveUnknownClaims);
@@ -227,12 +227,12 @@ export class PrismaCommandRepository implements CommandRepository {
       const oldRow = await tx.directorNextRunControl.findUnique({ where: { runId: input.oldRunId } });
       if (!oldRow) throw new Error(`director next run control not found: ${input.oldRunId}`);
       const oldControl = controlFromRow(oldRow);
-      if (oldControl.cursorStepId) throw new Error("当前阶段尚未保存，不能切换方式。");
+      if (oldControl.cursorStepId) throw new Error("La etapa actual no se ha guardado y el modo no se puede cambiar.");
       const batch = await tx.directorNextEvent.findFirst({where: {runId: input.oldRunId, type: "chapter_batch_job"}, orderBy: {seq: "desc"}});
       if (batch) {
         const binding = JSON.parse(batch.payloadJson) as {jobId?: string};
         const job = binding.jobId ? await tx.generationJob.findUnique({where: {id: binding.jobId}, select: {status: true, pendingManualRecovery: true}}) : null;
-        if (!job || job.status !== "succeeded" || job.pendingManualRecovery) throw new Error("请先处理并保存当前正文批次，再切换创作方式。");
+        if (!job || job.status !== "succeeded" || job.pendingManualRecovery) throw new Error("Primero procese y guarde el lote de texto actual y luego cambie el modo de creación.");
       }
       const cancelled = applyEvent(oldControl, { type: "cancel" }, input.oldExpectedVersion);
       const updated = await tx.directorNextRunControl.updateMany({

@@ -31,7 +31,7 @@ const interpretSchema = z.object({
   writingPlatformPreference: writingPlatformPreferenceSchema.optional(),
 }).superRefine((value, context) => {
   if (!value.idea && !value.reference) {
-    context.addIssue({ code: "custom", path: ["idea"], message: "请先写下你想创作的内容。" });
+    context.addIssue({ code: "custom", path: ["idea"], message: "Comience escribiendo lo que desea crear." });
   }
 });
 const regenerateSchema = z.object({

@@ -13,7 +13,7 @@ export async function consumeVolumeGenerationStream(
   onProgress: (progress: VolumeChapterListProgress) => void,
 ): Promise<ApiResponse<VolumeGenerationResponse>> {
   if (!response.ok || !response.body) {
-    throw new Error(`请求失败，状态码 ${response.status}`);
+    throw new Error(`Solicitud fallida, código de estado ${response.status}`);
   }
   const reader = response.body.getReader();
   const decoder = new TextDecoder();
@@ -34,7 +34,7 @@ export async function consumeVolumeGenerationStream(
         if (frame.type === "done") return frame.response;
       }
     }
-    throw new Error("拆章连接中断，请检查卷工作区后重试。");
+    throw new Error("La conexión de descompresión fue interrumpida. Verifique el espacio de trabajo del volumen e inténtelo nuevamente.");
   } finally {
     reader.releaseLock();
   }

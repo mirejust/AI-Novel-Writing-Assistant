@@ -25,7 +25,7 @@ export class CharacterLocationService {
         select: { id: true, order: true, novel: { select: { directorVersion: true } } },
       });
       if (!chapter) throw new ChapterArtifactContentVersionError();
-      if (chapter.novel.directorVersion !== "v2") throw new Error("角色位置回填仅适用于导演 V2。");
+      if (chapter.novel.directorVersion !== "v2") throw new Error("El reemplazo de posiciones de personajes solo está disponible en Director V2.");
       const characters = await tx.character.findMany({
         where: { novelId: input.novelId }, select: { id: true, name: true },
       });
@@ -79,13 +79,13 @@ export class CharacterLocationService {
         const projection = characterLocationProjectionSchema.parse(JSON.parse(row.metadataJson || "null"));
         if (projection.novelId !== row.novelId || projection.chapterId !== row.chapterId
           || projection.chapterOrder !== row.chapter.order || projection.contentHash !== row.contentHash) {
-          throw new Error("角色位置记录与正文来源不一致，请检查后继续。");
+          throw new Error("El registro de ubicación del personaje no coincide con la fuente del texto; verifíquelo antes de continuar.");
         }
         for (const record of projection.records) {
           const previous = result.get(record.characterId);
           if (!previous || resolved.has(record.characterId)) continue;
           if (record.concern || projection.contentProvenance === "debt") {
-            if (!previous.concern) previous.concern = `第 ${row.chapter.order} 章：${record.concern || "位置变化来源的章节质量待核对。"}`;
+            if (!previous.concern) previous.concern = `Cap. ${row.chapter.order} capítulo:${record.concern || "Es necesario comprobar la calidad de los capítulos de donde provienen los cambios de ubicación."}`;
             continue;
           }
           if (!record.locationName || !record.evidence
@@ -113,10 +113,10 @@ export function formatCharacterLocationContext(
     const state = states.get(character.id);
     if (!state) return "";
     return [
-      `${character.id} | ${character.name} | 最后确认位置=${state.currentLocation || "未知"}`,
-      state.sourceChapterOrder !== null ? `来源=第${state.sourceChapterOrder}章` : "来源=基础设定，尚无正文位置记录",
-      state.evidence ? `证据=${state.evidence}` : "",
-      state.concern ? `待核对=${state.concern}` : "",
+      `${character.id} | ${character.name} | Última ubicación confirmada=${state.currentLocation || "Desconocido"}`,
+      state.sourceChapterOrder !== null ? `Fuente = No.${state.sourceChapterOrder}cap.` : "Fuente = configuración básica, aún no hay registro de ubicación de texto",
+      state.evidence ? `evidencia =${state.evidence}` : "",
+      state.concern ? `Por verificar =${state.concern}` : "",
     ].filter(Boolean).join(" | ");
   }).filter(Boolean).join("\n");
 }

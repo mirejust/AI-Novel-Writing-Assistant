@@ -20,9 +20,9 @@ export async function readOutlinePlanningState(db: BindingDb, novelId: string, r
   const b = await db.outlineBookBinding.findUnique({where: {novelId}});
   if (!b) return null;
   const r = await db.outlineRevision.findFirst({where: {id: b.revisionId, projectId: b.projectId}});
-  if (!r) throw new OutlineOpenBookError("OUTLINE_BINDING_INTEGRITY", "找不到采用的大纲修订。");
+  if (!r) throw new OutlineOpenBookError("OUTLINE_BINDING_INTEGRITY", "No se encontró ninguna revisión del plan de estudios adoptada.");
   const document: OutlineDocument = JSON.parse(r.documentJson);
-  if (outlineHash(document) !== b.sourceDocumentHash) throw new OutlineOpenBookError("OUTLINE_BINDING_INTEGRITY", "采用的大纲来源校验不一致。");
+  if (outlineHash(document) !== b.sourceDocumentHash) throw new OutlineOpenBookError("OUTLINE_BINDING_INTEGRITY", "La verificación de las fuentes del programa de estudios adoptada es inconsistente.");
   const previous = range.from > 1 ? await db.chapter.findFirst({where: {novelId, order: range.from-1}, select: {id: true, order: true, content: true, updatedAt: true}}) : null;
   const version = await db.volumePlanVersion.findFirst({where: {novelId, status: "active"}, orderBy: {version: "desc"}});
   return {...(previous?.content?.trim() ? {previousActualResult: {chapterId: previous.id, order: previous.order, content: previous.content, updatedAt: previous.updatedAt.toISOString()}} : {}), novelId, ref: {bindingId: b.id, revisionId: b.revisionId, sourceDocumentHash: b.sourceDocumentHash, policyVersion: b.policyVersion},
@@ -31,7 +31,7 @@ export async function readOutlinePlanningState(db: BindingDb, novelId: string, r
 export async function assertOutlineReference(db: Pick<BindingDb, "outlineBookBinding">, novelId: string, ref: OutlineBindingRef) {
   const b = await db.outlineBookBinding.findUnique({where: {novelId}});
   if (!b || b.id !== ref.bindingId || b.revisionId !== ref.revisionId || b.sourceDocumentHash !== ref.sourceDocumentHash || b.policyVersion !== ref.policyVersion)
-    throw new OutlineOpenBookError("OUTLINE_POLICY_CONFLICT", "大纲保留策略已变化，请重新准备本章。");
+    throw new OutlineOpenBookError("OUTLINE_POLICY_CONFLICT", "La política de retención general ha cambiado; prepare este capítulo nuevamente.");
 }
 export function buildOutlinePlanningPayload(state: OutlinePlanningState) {
   const {document: d, mapping: m, range} = state;

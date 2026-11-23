@@ -41,23 +41,23 @@ function buildGeneratedOpeningWorldSlice(input: {
       coreWorldFrame: input.structure.profile.summary || input.structure.profile.identity,
       appliedRules: input.structure.rules.axioms.slice(0, 4).map((item) => ({
         id: item.id,
-        whyItMatters: "这是开篇人物行动必须遵守的世界规则。",
+        whyItMatters: "Estas son las reglas del mundo que los personajes del capítulo inicial deben respetar en sus acciones.",
       })),
       activeForces: input.structure.forces.slice(0, 4).map((item) => ({
         id: item.id,
-        roleInStory: "这是开篇会直接施加行动压力的势力。",
+        roleInStory: "Ésta es la fuerza que ejercerá presión directa para que se actúe al principio.",
         pressure: item.pressure,
       })),
       activeLocations: input.structure.locations.slice(0, 4).map((item, index) => ({
         id: item.id,
-        storyUse: index === 0 ? "开篇主要故事舞台。" : "开篇可进入或产生冲突的地点。",
+        storyUse: index === 0 ? "La etapa de la historia principal al principio." : "Una ubicación accesible o conflictiva al comienzo del capítulo.",
         risk: item.risk,
       })),
       conflictCandidates: input.bindingSupport.compatibleConflicts.slice(0, 4),
       pressureSources: input.bindingSupport.highPressureForces.slice(0, 4),
       recommendedEntryPoints: input.bindingSupport.recommendedEntryPoints.slice(0, 4),
       forbiddenCombinations: input.bindingSupport.forbiddenCombinations,
-      storyScopeBoundary: "开篇只使用当前切片中的规则、势力和地点；远期世界细节按正文需要再补齐。",
+      storyScopeBoundary: "Al principio, sólo se utilizan las reglas, fuerzas y ubicaciones del segmento actual; Los detalles del mundo futuro se completarán según sea necesario en el texto principal.",
     },
     storyId: input.novelId,
     worldId: input.worldId,
@@ -271,7 +271,7 @@ export class NovelWorldInstanceService {
     `;
     const source = rows[0];
     if (!source) {
-      throw new Error("小说不存在。");
+      throw new Error("La novela no existe.");
     }
     if (!source.worldId && !source.storyWorldSliceJson && !source.storyWorldSliceOverridesJson) {
       return null;
@@ -364,14 +364,14 @@ export class NovelWorldInstanceService {
       },
     });
     if (!world) {
-      throw new Error("世界不存在。");
+      throw new Error("El mundo no existe.");
     }
     const novel = await prisma.novel.findUnique({
       where: { id: input.novelId },
       select: { id: true },
     });
     if (!novel) {
-      throw new Error("小说不存在。");
+      throw new Error("La novela no existe.");
     }
 
     const novelWorldId = `novel_world_${input.novelId}`;
@@ -478,7 +478,7 @@ export class NovelWorldInstanceService {
       },
     });
     if (!novel) {
-      throw new Error("小说不存在。");
+      throw new Error("La novela no existe.");
     }
 
     const timeoutMs = await getWorldGenerationTimeoutMs();
@@ -515,7 +515,7 @@ export class NovelWorldInstanceService {
       lastGeneratedAt: new Date().toISOString(),
     };
     const bindingSupport = buildWorldBindingSupport(structuredData);
-    const title = result.output.title.trim() || `${novel.title}世界`;
+    const title = result.output.title.trim() || `${novel.title}mundo`;
     const coverSummary = result.output.coverSummary.trim() || structuredData.profile.summary || null;
     const worldType = result.output.worldType.trim() || structuredData.profile.identity || "custom";
     const structuredFields = applyStructuredWorldToLegacyFields(structuredData, {

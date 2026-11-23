@@ -60,7 +60,7 @@ export default function MobileNovelEditView(props: NovelEditViewProps) {
 
   const normalizedActiveTab = normalizeNovelWorkspaceTab(activeTab);
   const normalizedWorkflowTab = normalizeNovelWorkspaceTab(workflowCurrentTab ?? normalizedActiveTab);
-  const novelTitle = basicTab.basicForm.title.trim() || "未命名小说";
+  const novelTitle = basicTab.basicForm.title.trim() || "Novela sin título";
   const statusText = getMobileNovelWorkspaceStatusText({
     activeLabel: getNovelWorkspaceTabLabel(normalizedActiveTab),
     workflowLabel: getNovelWorkspaceTabLabel(normalizedWorkflowTab),
@@ -75,21 +75,21 @@ export default function MobileNovelEditView(props: NovelEditViewProps) {
   ).length;
   const taskAttentionLabel = (() => {
     if (pendingResourceProposalCount > 0) {
-      return `${pendingResourceProposalCount} 条资源`;
+      return `${pendingResourceProposalCount} recursos`;
     }
     if (!taskDrawer?.task) {
       return null;
     }
     if (taskDrawer.task.status === "failed") {
-      return "异常";
+      return "Incidencia";
     }
     if (taskDrawer.task.status === "running" || taskDrawer.task.status === "queued") {
-      return "进行中";
+      return "En curso";
     }
     if (isLiveWorkflowTask(taskDrawer.task)) {
-      return "待确认";
+      return "Pendiente de confirmación";
     }
-    return "最近任务";
+    return "Tareas recientes";
   })();
 
   const selectTab = (tab: NovelWorkspaceTab) => {
@@ -132,28 +132,28 @@ export default function MobileNovelEditView(props: NovelEditViewProps) {
           </div>
           <Dialog open={isToolsOpen} onOpenChange={setIsToolsOpen}>
             <DialogTrigger asChild>
-              <Button type="button" size="icon" variant="outline" className="shrink-0" aria-label="打开创作工具">
+              <Button type="button" size="icon" variant="outline" className="shrink-0" aria-label="Herramientas de creación abiertas">
                 <MoreHorizontal className="h-4 w-4" />
               </Button>
             </DialogTrigger>
             <DialogContent className="max-h-[88vh] w-[calc(100vw-1.5rem)] overflow-y-auto rounded-2xl">
               <DialogHeader>
-                <DialogTitle>创作工具</DialogTitle>
-                <DialogDescription>查看任务进度，导出当前步骤或整本书内容。</DialogDescription>
+                <DialogTitle>Herramientas de creación</DialogTitle>
+                <DialogDescription>Vea el progreso de la tarea y exporte el paso actual o el libro completo.</DialogDescription>
               </DialogHeader>
               <div className="space-y-3 text-sm">
                 <div className="grid grid-cols-3 gap-2">
                   <div className="rounded-xl border border-border/70 bg-muted/20 p-3">
-                    <div className="text-xs text-muted-foreground">章节</div>
+                    <div className="text-xs text-muted-foreground">Capítulos</div>
                     <div className="mt-1 font-semibold">{generatedChapters}/{Math.max(totalChapters, 1)}</div>
                   </div>
                   <div className="rounded-xl border border-border/70 bg-muted/20 p-3">
-                    <div className="text-xs text-muted-foreground">待修复</div>
+                    <div className="text-xs text-muted-foreground">Para ser arreglado</div>
                     <div className="mt-1 font-semibold">{pendingRepairs}</div>
                   </div>
                   <div className="rounded-xl border border-border/70 bg-muted/20 p-3">
-                    <div className="text-xs text-muted-foreground">任务</div>
-                    <div className="mt-1 truncate font-semibold">{taskAttentionLabel ?? "无"}</div>
+                    <div className="text-xs text-muted-foreground">Tarea</div>
+                    <div className="mt-1 truncate font-semibold">{taskAttentionLabel ?? "Ninguno"}</div>
                   </div>
                 </div>
 
@@ -167,7 +167,7 @@ export default function MobileNovelEditView(props: NovelEditViewProps) {
                       setIsToolsOpen(false);
                     }}
                   >
-                    <span>查看任务进度</span>
+                    <span>Ver el progreso de la tarea</span>
                     {taskAttentionLabel ? <Badge variant="secondary">{taskAttentionLabel}</Badge> : null}
                   </Button>
                 ) : null}
@@ -177,7 +177,7 @@ export default function MobileNovelEditView(props: NovelEditViewProps) {
                 ) : null}
 
                 <div className="rounded-xl border border-border/70 p-3">
-                  <div className="text-sm font-medium">导出当前步骤</div>
+                  <div className="text-sm font-medium">Exportar paso actual</div>
                   <div className="mt-3 grid grid-cols-2 gap-2">
                     <Button
                       type="button"
@@ -185,7 +185,7 @@ export default function MobileNovelEditView(props: NovelEditViewProps) {
                       onClick={() => exportControls.onExportCurrent("markdown")}
                       disabled={!exportControls.canExportCurrentStep || exportControls.isExportingCurrentMarkdown}
                     >
-                      {exportControls.isExportingCurrentMarkdown ? "导出中..." : "Markdown"}
+                      {exportControls.isExportingCurrentMarkdown ? "Exportando..." : "Markdown"}
                     </Button>
                     <Button
                       type="button"
@@ -193,20 +193,20 @@ export default function MobileNovelEditView(props: NovelEditViewProps) {
                       onClick={() => exportControls.onExportCurrent("json")}
                       disabled={!exportControls.canExportCurrentStep || exportControls.isExportingCurrentJson}
                     >
-                      {exportControls.isExportingCurrentJson ? "导出中..." : "JSON"}
+                      {exportControls.isExportingCurrentJson ? "Exportando..." : "JSON"}
                     </Button>
                   </div>
                 </div>
 
                 <div className="rounded-xl border border-border/70 p-3">
-                  <div className="text-sm font-medium">导出整本书</div>
+                  <div className="text-sm font-medium">Exportar libro completo</div>
                   <div className="mt-3 grid grid-cols-3 gap-2">
                     <Button
                       type="button"
                       onClick={() => exportControls.onExportFull("txt")}
                       disabled={exportControls.isExportingFullTxt}
                     >
-                      {exportControls.isExportingFullTxt ? "导出中..." : "TXT 正文"}
+                      {exportControls.isExportingFullTxt ? "Exportando..." : "Texto textual"}
                     </Button>
                     <Button
                       type="button"
@@ -214,7 +214,7 @@ export default function MobileNovelEditView(props: NovelEditViewProps) {
                       onClick={() => exportControls.onExportFull("markdown")}
                       disabled={exportControls.isExportingFullMarkdown}
                     >
-                      {exportControls.isExportingFullMarkdown ? "导出中..." : "Markdown"}
+                      {exportControls.isExportingFullMarkdown ? "Exportando..." : "Markdown"}
                     </Button>
                     <Button
                       type="button"
@@ -222,7 +222,7 @@ export default function MobileNovelEditView(props: NovelEditViewProps) {
                       onClick={() => exportControls.onExportFull("json")}
                       disabled={exportControls.isExportingFullJson}
                     >
-                      {exportControls.isExportingFullJson ? "导出中..." : "JSON"}
+                      {exportControls.isExportingFullJson ? "Exportando..." : "JSON"}
                     </Button>
                   </div>
                 </div>
@@ -246,7 +246,7 @@ export default function MobileNovelEditView(props: NovelEditViewProps) {
             {isTakeoverLoading ? (
               <Button type="button" size="sm" disabled className="w-full">
                 <Loader2 className="h-4 w-4 animate-spin" />
-                AI 自动导演接管
+                El director automático de IA asume el control
               </Button>
             ) : activeStepTakeoverEntry}
           </div>

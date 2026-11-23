@@ -18,11 +18,11 @@ interface StoryEngineStudioProps {
 }
 
 const readinessItems = [
-  { key: "storyInput", label: "故事意图", icon: <FileText className="h-3.5 w-3.5" /> },
-  { key: "sellingPoint", label: "卖点", icon: <Sparkles className="h-3.5 w-3.5" /> },
-  { key: "conflict", label: "长期对立", icon: <Flame className="h-3.5 w-3.5" /> },
-  { key: "hook", label: "主线钩子", icon: <Target className="h-3.5 w-3.5" /> },
-  { key: "loop", label: "推进回路", icon: <GitBranch className="h-3.5 w-3.5" /> },
+  { key: "storyInput", label: "Intención de la historia", icon: <FileText className="h-3.5 w-3.5" /> },
+  { key: "sellingPoint", label: "Punto de venta", icon: <Sparkles className="h-3.5 w-3.5" /> },
+  { key: "conflict", label: "Antagonismo a largo plazo", icon: <Flame className="h-3.5 w-3.5" /> },
+  { key: "hook", label: "Gancho de línea principal", icon: <Target className="h-3.5 w-3.5" /> },
+  { key: "loop", label: "Circuito de propulsión", icon: <GitBranch className="h-3.5 w-3.5" /> },
 ] as const;
 
 function hasText(value: unknown): boolean {
@@ -44,28 +44,28 @@ function resolveNextAction(tab: StoryMacroTabProps): {
 } {
   if (!tab.storyInput.trim()) {
     return {
-      title: "先写下故事想法",
-      description: "不用写专业大纲，先说明主角处境、长期压力、想要的读者感受和想避免的方向。",
+      title: "Escriba primero las ideas para la historia",
+      description: "No es necesario escribir un esquema profesional. Primero describe la situación del protagonista, el estrés a largo plazo, cómo quieres que se sienta el lector y las direcciones que quieres evitar.",
       tone: "warning",
     };
   }
   if (!tab.hasPlan) {
     return {
-      title: "生成故事引擎",
-      description: "让 AI 把想法拆成卖点、长期对立、主线钩子、推进回路和关键兑现点。",
+      title: "Generar motor de historia",
+      description: "Dejemos que la IA descomponga la idea en puntos de venta, antagonismos a largo plazo, ganchos principales, bucles de propulsión y puntos clave de cumplimiento.",
       tone: "info",
     };
   }
   if (!tab.constraintEngine) {
     return {
-      title: "构建约束引擎",
-      description: "把已确认的故事骨架整理成后续角色、卷规划和章节生成都能遵守的硬边界。",
+      title: "Construir un motor de restricciones",
+      description: "Organice el esqueleto de la historia confirmada en límites estrictos que puedan cumplir los personajes posteriores, la planificación del volumen y la generación de capítulos.",
       tone: "info",
     };
   }
   return {
-    title: "进入下游规划前先保存",
-    description: "当前故事骨架已经具备可消费的约束，保存后可以继续推进角色、卷战略和拆章。",
+    title: "Ahorre antes de entrar en la planificación posterior",
+    description: "El esqueleto de la historia actual ya tiene limitaciones de consumibles. Después de guardar, puedes continuar avanzando en los personajes, la estrategia de volumen y los capítulos.",
     tone: "success",
   };
 }
@@ -87,8 +87,8 @@ function StoryReadinessPanel({ tab }: { tab: StoryMacroTabProps }) {
     <aside className="space-y-4 rounded-lg border border-border/70 bg-muted/10 p-4">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <div className="text-sm font-semibold text-foreground">宏观规划就绪度</div>
-          <div className="mt-1 text-xs text-muted-foreground">{readyCount} / {readinessItems.length} 个核心条件已具备</div>
+          <div className="text-sm font-semibold text-foreground">Preparación para la planificación macro</div>
+          <div className="mt-1 text-xs text-muted-foreground">{readyCount} / {readinessItems.length} Se cumplen las condiciones básicas</div>
         </div>
         <div className="text-2xl font-semibold text-foreground">{percent}%</div>
       </div>
@@ -110,7 +110,7 @@ function StoryReadinessPanel({ tab }: { tab: StoryMacroTabProps }) {
             {readiness[item.key] ? (
               <CheckCircle2 className="h-4 w-4 text-emerald-600" />
             ) : (
-              <span className="text-xs text-muted-foreground">待补</span>
+              <span className="text-xs text-muted-foreground">Para ser reabastecido</span>
             )}
           </div>
         ))}
@@ -133,11 +133,11 @@ function StoryReadinessPanel({ tab }: { tab: StoryMacroTabProps }) {
       <div className="grid gap-2 text-xs text-muted-foreground">
         <div className="flex items-start gap-2 rounded-md bg-background/70 p-2">
           <Lock className="mt-0.5 h-3.5 w-3.5 text-primary" />
-          <span>{lockedCount > 0 ? `${lockedCount} 个字段已锁定，重生成时会被保护。` : "确认满意的字段后可以锁定，再让 AI 只重生成其他部分。"}</span>
+          <span>{lockedCount > 0 ? `${lockedCount} Los campos están bloqueados y estarán protegidos durante la regeneración.` : "Después de confirmar los campos con los que está satisfecho, puede bloquearlos y dejar que la IA regenere solo las otras partes."}</span>
         </div>
         <div className="flex items-start gap-2 rounded-md bg-background/70 p-2">
           <AlertTriangle className="mt-0.5 h-3.5 w-3.5 text-amber-600" />
-          <span>{tab.issues.length > 0 ? `${tab.issues.length} 条冲突或缺口需要处理。` : "当前没有显式冲突提醒。"}</span>
+          <span>{tab.issues.length > 0 ? `${tab.issues.length} Es necesario abordar los conflictos o brechas en las franjas.` : "Actualmente no hay recordatorios explícitos de conflictos."}</span>
         </div>
       </div>
     </aside>
@@ -183,38 +183,38 @@ export default function StoryEngineStudio({ tab }: StoryEngineStudioProps) {
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
                 <Badge variant="outline" className="border-primary/25 bg-primary/5 text-primary">
-                  故事引擎
+                  motor de historia
                 </Badge>
-                <span className="text-xs font-medium text-muted-foreground">把书级承诺拆成后续规划可以执行的骨架</span>
+                <span className="text-xs font-medium text-muted-foreground">Divida los compromisos a nivel de libro en esqueletos ejecutables para la planificación de seguimiento</span>
               </div>
-              <h2 className="mt-3 text-lg font-semibold leading-7 text-foreground">控制主线如何持续推进</h2>
+              <h2 className="mt-3 text-lg font-semibold leading-7 text-foreground">Controlar cómo sigue avanzando la línea principal</h2>
               <p className="mt-1 max-w-3xl text-sm leading-6 text-muted-foreground">
-                这里不急着写章节，而是先定义读者为什么追、长期对立如何升级、主角怎样变化，以及前中后期必须兑现哪些节点。
+                No hay prisa por escribir capítulos aquí, sino por definir primero por qué los lectores siguen la historia, cómo se intensifica la confrontación a largo plazo, cómo cambia el protagonista y qué nodos deben cumplirse en las etapas inicial, media y tardía.
               </p>
             </div>
             <div className="flex shrink-0 flex-wrap gap-2">
               <AiButton onClick={tab.onDecompose} disabled={tab.isDecomposing || !tab.storyInput.trim()}>
-                {tab.isDecomposing ? "生成中..." : tab.hasPlan ? "重新生成故事引擎" : "生成故事引擎"}
+                {tab.isDecomposing ? "Generando..." : tab.hasPlan ? "Regenerar el motor de la historia." : "Generar motor de historia"}
               </AiButton>
               <AiButton
                 variant="secondary"
                 onClick={tab.onBuildConstraintEngine}
                 disabled={tab.isBuilding || !tab.decomposition.selling_point.trim()}
               >
-                {tab.isBuilding ? "构建中..." : "构建约束引擎"}
+                {tab.isBuilding ? "En construcción..." : "Construir un motor de restricciones"}
               </AiButton>
               <Button variant="outline" onClick={tab.onSaveEdits} disabled={tab.isSaving}>
-                {tab.isSaving ? "保存中..." : "保存修改"}
+                {tab.isSaving ? "Guardando..." : "Guardar cambios"}
               </Button>
             </div>
           </div>
 
           <div className="space-y-2 rounded-lg border border-border/60 bg-muted/10 p-3">
-            <div className="text-sm font-medium text-foreground">故事想法输入</div>
+            <div className="text-sm font-medium text-foreground">Entrada de ideas para la historia</div>
             <textarea
               value={tab.storyInput}
               onChange={(event) => tab.onStoryInputChange(event.target.value)}
-              placeholder="用自然语言描述故事想法、想要的压迫感、想避免的风格和结局倾向。"
+              placeholder="Utilice lenguaje natural para describir ideas de historias, presiones deseadas, estilos y tendencias finales que desea evitar."
               className={textareaClassName("min-h-36")}
             />
             {tab.message ? (
@@ -226,21 +226,21 @@ export default function StoryEngineStudio({ tab }: StoryEngineStudioProps) {
 
           <div className="grid gap-3 lg:grid-cols-3">
             <div className="rounded-lg border border-border/60 bg-muted/10 p-3">
-              <div className="text-xs font-medium text-muted-foreground">读者追更理由</div>
+              <div className="text-xs font-medium text-muted-foreground">Razones para que los lectores sigan las actualizaciones</div>
               <div className="mt-2 text-sm font-semibold leading-6 text-foreground">
-                {previewText(tab.decomposition.selling_point, "等待生成一句话卖点")}
+                {previewText(tab.decomposition.selling_point, "Esperando generar un punto de venta de oración")}
               </div>
             </div>
             <div className="rounded-lg border border-border/60 bg-muted/10 p-3">
-              <div className="text-xs font-medium text-muted-foreground">长期压力源</div>
+              <div className="text-xs font-medium text-muted-foreground">Factores estresantes crónicos</div>
               <div className="mt-2 text-sm font-semibold leading-6 text-foreground">
-                {previewText(tab.decomposition.core_conflict, "等待生成长期对立")}
+                {previewText(tab.decomposition.core_conflict, "A la espera de generar una confrontación de largo plazo")}
               </div>
             </div>
             <div className="rounded-lg border border-border/60 bg-muted/10 p-3">
-              <div className="text-xs font-medium text-muted-foreground">关键兑现点</div>
+              <div className="text-xs font-medium text-muted-foreground">Puntos de canje clave</div>
               <div className="mt-2 text-sm font-semibold leading-6 text-foreground">
-                {payoffs.length > 0 ? `${payoffs.length} 个节点` : "等待拆出兑现节点"}
+                {payoffs.length > 0 ? `${payoffs.length} nodos` : "Esperando dividir el nodo de redención"}
               </div>
             </div>
           </div>
@@ -254,15 +254,15 @@ export default function StoryEngineStudio({ tab }: StoryEngineStudioProps) {
       <div className="border-t border-border/70 bg-muted/5 p-4 lg:p-5">
         <div className="mb-4 flex flex-col gap-2 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <h3 className="text-base font-semibold text-foreground">主线骨架</h3>
+            <h3 className="text-base font-semibold text-foreground">Esqueleto de la línea principal</h3>
             <p className="mt-1 text-sm leading-6 text-muted-foreground">
-              这些内容会指导角色、卷规划和章节写作。点击正文或铅笔图标可编辑，修改后点击“保存”。
+              Estos guían a los personajes, la planificación de volúmenes y la redacción de capítulos. Haga clic en el ícono de texto o lápiz para editar y haga clic en "Guardar" después de la modificación.
             </p>
           </div>
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <span>满意的字段先锁定</span>
+            <span>Los campos con los que está satisfecho se bloquean primero.</span>
             <ArrowRight className="h-3.5 w-3.5" />
-            <span>再局部重生成</span>
+            <span>Regenerar localmente</span>
           </div>
         </div>
 
@@ -274,13 +274,13 @@ export default function StoryEngineStudio({ tab }: StoryEngineStudioProps) {
           <SummaryFieldCard tab={tab} field="progression_loop" />
           <SummaryFieldCard tab={tab} field="growth_path" />
           <StoryMacroEditableField
-            label="关键兑现点"
+            label="Puntos de canje clave"
             value={listToText(tab.decomposition.major_payoffs)}
             onChange={(value) => tab.onFieldChange(
               "major_payoffs",
               value.split(/\r?\n/).map((line) => line.trim()).filter(Boolean),
             )}
-            placeholder="每行一个关键兑现点。"
+            placeholder="Un punto de canje clave por fila."
             list
             className="bg-background p-3 xl:col-span-2"
             actions={

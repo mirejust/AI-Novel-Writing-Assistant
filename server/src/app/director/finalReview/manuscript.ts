@@ -59,7 +59,7 @@ async function header(db: Db, novelId: string) {
   const current = run && readRunExecutionEpoch(run.contractJson) === epoch ? run : null;
   // Match the completion banner, including books delivered before V2 began recording runs.
   if (!book.estimatedChapterCount || readBookCompletionActivity(current?.control?.status))
-    throw new AppError("请先完成导演台中的写作与阶段确认，再开始全书检查。", 409);
+    throw new AppError("Complete la escritura y la confirmación escénica del director Taichung antes de comenzar la reseña completa del libro.", 409);
   const target = Math.max(book.estimatedChapterCount, book._count.chapters);
   // Sample the whole arc without rereading every saved summary for every chapter.
   const count = Math.min(target, 24);
@@ -75,7 +75,7 @@ async function header(db: Db, novelId: string) {
       select: { summary: true, chapter: { select: { order: true } } },
     }),
   ]);
-  const milestones = summaries.map((row) => `第 ${row.chapter.order} 章 · ${row.summary.slice(0, 200)}`);
+  const milestones = summaries.map((row) => `Cap. ${row.chapter.order} capítulo · ${row.summary.slice(0, 200)}`);
   const opening = ends.find((row) => row.order === 1)?.content?.slice(0, 900) ?? null;
   const ending = ends.find((row) => row.order === target)?.content?.slice(-900) ?? null;
   return {
@@ -132,7 +132,7 @@ function inspectable(book: Header, row: Chapter, previous?: string | null, next?
 export async function readFinalChapter(db: Db, novelId: string, id: string, sourceHash: string) {
   const book = await header(db, novelId);
   const row = await db.chapter.findFirst({ where: { id, novelId }, select: chapterSelect });
-  if (!row) throw new AppError("找不到本书的这一章。", 404);
+  if (!row) throw new AppError("Este capítulo del libro no se puede encontrar.", 404);
   const neighbors = await db.chapter.findMany({
     where: { novelId, order: { in: [row.order - 1, row.order + 1] } },
     select: { order: true, content: true },
@@ -140,7 +140,7 @@ export async function readFinalChapter(db: Db, novelId: string, id: string, sour
   const at = (order: number) => neighbors.find((other) => other.order === order)?.content;
   const data = inspectable(book, row, at(row.order - 1), at(row.order + 1));
   if (!row.content?.trim() || data.sourceHash !== sourceHash)
-    throw new AppError("本章或相邻章节有更新，请重新打开完稿检查。", 409);
+    throw new AppError("Este capítulo o los capítulos adyacentes se han actualizado; vuelva a abrir el manuscrito para comprobarlo.", 409);
   return { book, row, ...data };
 }
 export async function readFinalManuscript(db: Db, novelId: string) {
@@ -148,7 +148,7 @@ export async function readFinalManuscript(db: Db, novelId: string) {
   const rows = await db.chapter.findMany({ where: { novelId }, orderBy: { order: "asc" }, select: chapterSelect });
   const completion = projectBookCompletion({ target: book.target, chapters: rows, activity: null });
   if (completion?.status !== "completed" || rows.some((row, i) => row.order !== i + 1))
-    throw new AppError("全书章节尚未写完，请回到导演台完成写作。", 409);
+    throw new AppError("Los capítulos del libro aún no se han escrito, regrese al escritorio del director para completar la escritura.", 409);
   const chapters = rows.map((row, i) => {
     const { sourceHash, findings } = inspectable(book, row, rows[i - 1]?.content, rows[i + 1]?.content);
     return { id: row.id, order: row.order, title: row.title, content: row.content!, sourceHash, findings };

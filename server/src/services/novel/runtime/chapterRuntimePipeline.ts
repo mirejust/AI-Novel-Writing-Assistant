@@ -325,7 +325,7 @@ export async function runPipelineChapterWithRuntime(
         && (facts.status === "preserved" || facts.status === "authorized_correction")
         && !latestResult.acceptanceResult?.assessment.riskTags.includes("acceptance_gate_unavailable");
       rewriteGuard = { ...rewriteGuard, checks: rewriteGuard.checks.map(check => check.code === "semantic_facts"
-        ? { ...check, status: valid ? "passed" : "blocked", reason: valid ? facts!.reason : "候选未通过事实复验，保留原稿。" } : check) };
+        ? { ...check, status: valid ? "passed" : "blocked", reason: valid ? facts!.reason : "Si el candidato no pasa la nueva inspección de hechos, se conservará el manuscrito original." } : check) };
       latestResult.runtimePackage.styleReview = { ...latestResult.runtimePackage.styleReview!, rewriteGuard };
     }
     const styleLeakageIssues = detectStyleReferenceLeakageIssues(content, latestResult.runtimePackage);
@@ -415,7 +415,7 @@ export async function runPipelineChapterWithRuntime(
     if (shouldDeferNonPatchableReviewRisk(latestResult.runtimePackage)) {
       recoverableRepairFailure = {
         chapterId,
-        message: "本章部分检查未完成，正文已保留，请从章节页面重新审校。",
+        message: "Parte de la revisión de este capítulo no se ha completado y se ha conservado el texto principal. Revíselo nuevamente desde la página del capítulo.",
         repairMode,
         failureTypes: ["review_gate_unavailable"],
         occurredAt: new Date().toISOString(),
@@ -461,7 +461,7 @@ export async function runPipelineChapterWithRuntime(
     if (newProseFindings.length > 0) {
       recoverableRepairFailure = {
         chapterId,
-        message: `修文新增严重表达问题，保留原稿：${[...new Set(newProseFindings.map(finding => finding.message))].join("；")}`,
+        message: `El texto ha sido revisado para agregar serios problemas de expresión y se conserva el manuscrito original:${[...new Set(newProseFindings.map(finding => finding.message))].join(";")}`,
         repairMode,
         failureTypes: ["prose_quality_regression"],
         occurredAt: new Date().toISOString(),
@@ -612,7 +612,7 @@ async function syncFinalRetainedChapterArtifacts(
       status: "failed",
       contentHash: "",
       completedArtifacts: [],
-      reason: "章节正文为空，无法提交连续性资产。",
+      reason: "El cuerpo del capítulo está vacío y no se pueden enviar activos de continuidad.",
     };
   }
   return deps.syncFinalChapterArtifacts(novelId, chapterId, content, {

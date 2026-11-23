@@ -47,7 +47,7 @@ export function registerNovelChapterEditorRoutes(input: RegisterNovelChapterEdit
         if (forwardBusinessError(error, next)) {
           return;
         }
-        if (error instanceof Error && ["小说不存在。", "章节不存在。"].includes(error.message)) {
+        if (error instanceof Error && ["La novela no existe.", "El capítulo no existe."].includes(error.message)) {
           next(new AppError(error.message, 400));
           return;
         }
@@ -75,11 +75,11 @@ export function registerNovelChapterEditorRoutes(input: RegisterNovelChapterEdit
         if (
           error instanceof Error
           && [
-            "小说不存在。",
-            "章节不存在。",
-            "当前章节正文为空，无法发起 AI 续写。请先写下至少一段正文。",
-            "正文光标位置已变化，请重新定位光标后再试。",
-            "AI 未返回足够的续写候选版本，请重试。",
+            "La novela no existe.",
+            "El capítulo no existe.",
+            "El texto del capítulo actual está vacío y no se puede iniciar la continuación de la IA. Primero escriba al menos un párrafo de texto.",
+            "La posición del cursor de texto ha cambiado. Vuelva a colocar el cursor e inténtelo de nuevo.",
+            "AI no devolvió suficientes candidatos de continuación. Inténtelo de nuevo.",
           ].includes(error.message)
         ) {
           next(new AppError(error.message, 400));
@@ -109,17 +109,17 @@ export function registerNovelChapterEditorRoutes(input: RegisterNovelChapterEdit
         if (
           error instanceof Error
           && [
-            "小说不存在。",
-            "章节不存在。",
-            "当前章节正文为空，无法发起 AI 修正。",
-            "片段修正需要先选中正文内容。",
-            "选区范围无效，请重新选择后再试。",
-            "选中文本不能为空。",
-            "选中文本已发生变化，请重新选择后再试。",
-            "请先写下你希望 AI 如何修改。",
-            "AI 未返回足够的候选版本，请重试。",
+            "La novela no existe.",
+            "El capítulo no existe.",
+            "El texto del capítulo actual está vacío y no se puede iniciar la corrección de IA.",
+            "La corrección de fragmentos requiere seleccionar primero el contenido del texto.",
+            "El rango de selección no es válido, seleccione nuevamente e inténtelo nuevamente.",
+            "El texto seleccionado no puede estar vacío.",
+            "El texto seleccionado ha cambiado, selecciónelo nuevamente e inténtelo nuevamente.",
+            "Empiece por escribir cómo desea que se modifique la IA.",
+            "AI no devolvió suficientes versiones candidatas. Inténtelo de nuevo.",
           ].includes(error.message)
-            || (error instanceof Error && error.message.includes("整章修正当前限制为"))
+            || (error instanceof Error && error.message.includes("Las revisiones de capítulos completos están actualmente limitadas a"))
         ) {
           next(new AppError(error.message, 400));
           return;
@@ -148,13 +148,13 @@ export function registerNovelChapterEditorRoutes(input: RegisterNovelChapterEdit
         if (
           error instanceof Error
           && [
-            "小说不存在。",
-            "章节不存在。",
-            "当前章节正文为空，无法发起局部改写。",
-            "选区范围无效，请重新选择后再试。",
-            "选中文本不能为空。",
-            "选中文本已发生变化，请重新选择后再试。",
-            "AI 未返回足够的候选版本，请重试。",
+            "La novela no existe.",
+            "El capítulo no existe.",
+            "El texto del capítulo actual está vacío y no se puede iniciar una reescritura parcial.",
+            "El rango de selección no es válido, seleccione nuevamente e inténtelo nuevamente.",
+            "El texto seleccionado no puede estar vacío.",
+            "El texto seleccionado ha cambiado, selecciónelo nuevamente e inténtelo nuevamente.",
+            "AI no devolvió suficientes versiones candidatas. Inténtelo de nuevo.",
           ].includes(error.message)
         ) {
           next(new AppError(error.message, 400));

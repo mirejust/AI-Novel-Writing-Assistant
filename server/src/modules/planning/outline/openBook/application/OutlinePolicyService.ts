@@ -13,14 +13,14 @@ export class OutlinePolicyService {
     const patch = outlinePolicyPatchSchema.parse(raw);
     return withSqliteRetry(() => this.db.$transaction(async tx => {
       const b = await tx.outlineBookBinding.findUnique({where: {projectId}});
-      if (!b) throw new OutlineOpenBookError("OUTLINE_BINDING_NOT_FOUND", "这份大纲尚未开书。", 404);
-      if (b.policyVersion !== patch.expectedPolicyVersion) throw new OutlineOpenBookError("OUTLINE_POLICY_CONFLICT", "保留策略已变化，请刷新后重试。");
+      if (!b) throw new OutlineOpenBookError("OUTLINE_BINDING_NOT_FOUND", "Este esquema aún no ha sido publicado.", 404);
+      if (b.policyVersion !== patch.expectedPolicyVersion) throw new OutlineOpenBookError("OUTLINE_POLICY_CONFLICT", "La política de retención ha cambiado; actualice e inténtelo nuevamente.");
       const state = await readOutlinePlanningState(tx, b.novelId);
-      if (!state) throw new OutlineOpenBookError("OUTLINE_BINDING_INTEGRITY", "找不到采用的大纲。");
+      if (!state) throw new OutlineOpenBookError("OUTLINE_BINDING_INTEGRITY", "No se encontró ningún esquema adoptado.");
       const policy = patchOutlinePolicy(state.policy, patch);
       const effective = applyOutlinePolicy(state.document, policy);
       const changed = await tx.outlineBookBinding.updateMany({where: {id: b.id, policyVersion: patch.expectedPolicyVersion}, data: {policyJson: JSON.stringify(policy), policyVersion: {increment: 1}}});
-      if (changed.count !== 1) throw new OutlineOpenBookError("OUTLINE_POLICY_CONFLICT", "保留策略已变化，请刷新后重试。");
+      if (changed.count !== 1) throw new OutlineOpenBookError("OUTLINE_POLICY_CONFLICT", "La política de retención ha cambiado; actualice e inténtelo nuevamente.");
       const volumeFields: Record<string,string> = {title: "title", summary: "summary", promise: "mainPromise", pressure: "primaryPressureSource", protagonistChange: "protagonistChange", climax: "climax", endingHook: "nextVolumeHook"};
       const chapterFields: Record<string,string> = {title: "title", summary: "summary", purpose: "purpose"};
       let workspace = state.baseline ? structuredClone(state.baseline) : null;
@@ -57,7 +57,7 @@ export class OutlinePolicyService {
         }
         const reconcile = (existing: string[], nodeIds: string[]) => [
           ...existing.filter(ref => !state.mapping.payoffs.some(p => ref.includes(`[${p.ledgerKey}]`))),
-          ...nodeIds.map(id => `计划：${effective.payoffs.find(p => p.nodeId === id)!.title} [${state.mapping.payoffs.find(p => p.nodeId === id)!.ledgerKey}]`),
+          ...nodeIds.map(id => `plan:${effective.payoffs.find(p => p.nodeId === id)!.title} [${state.mapping.payoffs.find(p => p.nodeId === id)!.ledgerKey}]`),
         ];
         for (const volume of workspace.volumes) {
           const sourceChapterIds = state.mapping.chapters.filter(c => c.volumeId === volume.id).map(c => c.nodeId);

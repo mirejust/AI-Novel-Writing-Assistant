@@ -90,8 +90,8 @@ export default function WorldHandbookEditor(props: {
       <section className="flex min-h-56 flex-col items-center justify-center rounded-3xl bg-muted/20 px-6 text-center">
           {actionError ? <p role="alert" className="text-sm text-destructive">{actionError}</p> : null}
           <BookOpen className="h-6 w-6 text-muted-foreground/60" aria-hidden="true" />
-          <div className="mt-3 font-medium">正在读取世界手册</div>
-          <div className="mt-1 text-sm leading-6 text-muted-foreground">需要时可以让 AI 把已有设定整理成完整手册。</div>
+          <div className="mt-3 font-medium">Leyendo el manual mundial</div>
+          <div className="mt-1 text-sm leading-6 text-muted-foreground">Si es necesario, puedes dejar que AI organice las configuraciones existentes en un manual completo.</div>
           <Button
             className="mt-4 rounded-full"
             variant="outline"
@@ -101,12 +101,12 @@ export default function WorldHandbookEditor(props: {
                 const result = await onBackfill();
                 if (result) setDraft(result);
               } catch {
-                setActionError("整理失败，请重试。");
+                setActionError("El acuerdo falló, inténtelo de nuevo.");
               }
             }}
             disabled={backfillPending}
           >
-            {backfillPending ? "整理中..." : "让 AI 整理世界手册"}
+            {backfillPending ? "Organizando..." : "Deje que la IA resuelva el manual mundial"}
           </Button>
       </section>
     );
@@ -117,7 +117,7 @@ export default function WorldHandbookEditor(props: {
     try {
       await onSave(draftStructure, draftBindingSupport);
     } catch {
-      setActionError("手册保存失败，修改已保留，可以重新保存。");
+      setActionError("El manual no se pudo guardar. Las modificaciones se han conservado y se pueden guardar de nuevo.");
     }
   };
 
@@ -127,35 +127,35 @@ export default function WorldHandbookEditor(props: {
       const result = await onGenerate(activeAiSection, draftStructure, draftBindingSupport);
       if (result) setDraft(result);
     } catch {
-      setActionError("生成失败，手册内容已保留，请重试。");
+      setActionError("Error de generación, el contenido del manual se ha conservado. Vuelva a intentarlo.");
     }
   };
 
   return (
     <fieldset disabled={savePending || generatePending} className="min-w-0 space-y-6">
         {actionError ? <p role="alert" className="text-sm text-destructive">{actionError}</p> : null}
-        {draft ? <p role="status" className="text-sm text-muted-foreground">手册有未保存的修改。切换标签后可以回来继续编辑。</p> : null}
+        {draft ? <p role="status" className="text-sm text-muted-foreground">El manual tiene cambios sin guardar. Después de cambiar de etiqueta, puede regresar y continuar editando.</p> : null}
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h2 className="text-xl font-semibold tracking-tight">整理世界手册</h2>
+            <h2 className="text-xl font-semibold tracking-tight">Manual de organización del mundo</h2>
             <p className="mt-1 max-w-3xl text-sm leading-6 text-muted-foreground">
-              先确认世界给读者的印象与核心矛盾，再按需整理规则、势力、地点和冲突张力。
+              Primero confirme la impresión y las contradicciones centrales del mundo en los lectores, y luego organice las reglas, fuerzas, ubicaciones y tensiones del conflicto según sea necesario.
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
             <Button type="button" size="sm" variant="ghost" className="rounded-full" onClick={onOpenOverview}>
               <BookOpen className="mr-2 h-4 w-4" aria-hidden="true" />
-              查看手册
+              ver manual
             </Button>
             <Button type="button" size="sm" className="rounded-full" onClick={saveDraft} disabled={savePending}>
               <Save className="mr-2 h-4 w-4" aria-hidden="true" />
-              {savePending ? "保存中..." : "保存手册"}
+              {savePending ? "Guardando..." : "Guardar manual"}
             </Button>
           </div>
         </div>
         <div className="rounded-3xl bg-muted/20 p-5 sm:p-6">
           <div className="flex flex-wrap gap-2">
-            <Badge variant="secondary" className="border-0 bg-primary/[0.07] font-normal text-primary">世界印象</Badge>
+            <Badge variant="secondary" className="border-0 bg-primary/[0.07] font-normal text-primary">Impresión mundial</Badge>
             {draftStructure.profile.tone ? <Badge variant="secondary" className="border-0 bg-muted/60 font-normal">{draftStructure.profile.tone}</Badge> : null}
             {draftStructure.profile.themes.slice(0, 4).map((theme) => (
               <Badge key={theme} variant="secondary" className="border-0 bg-muted/60 font-normal">
@@ -165,36 +165,36 @@ export default function WorldHandbookEditor(props: {
           </div>
           <div className="mt-4 grid gap-3 lg:grid-cols-[0.75fr_1.25fr]">
             <HandbookPreviewLine
-              label="一句话世界印象"
+              label="Impresión del mundo en una frase."
               value={draftStructure.profile.identity}
-              fallback="补充一句话世界印象，让作者一眼知道题材、时代感和核心奇观。"
+              fallback="Agregue una oración de impresión mundial para que el autor conozca el tema, el sentido de la época y las maravillas centrales de un vistazo."
             />
             <HandbookPreviewLine
-              label="读者第一眼"
+              label="La primera mirada del lector"
               value={draftStructure.profile.summary}
-              fallback="补充这个世界的第一眼画面、秩序、危险或奇观。"
+              fallback="Complementa el primer vistazo, orden, peligro o maravilla del mundo."
             />
             <HandbookPreviewLine
-              label="阅读气质"
-              value={draftStructure.profile.tone || draftStructure.profile.themes.join("、")}
-              fallback="补充阅读气质，例如热血升级、黑暗史诗、轻喜冒险或权谋争霸。"
+              label="Temperamento de lectura"
+              value={draftStructure.profile.tone || draftStructure.profile.themes.join(",")}
+              fallback="Complemente el temperamento de lectura, como actualizaciones apasionadas, epopeyas oscuras, aventuras alegres o luchas de poder."
             />
             <HandbookPreviewLine
-              label="持续推动剧情的矛盾"
+              label="Conflictos que siguen impulsando la trama"
               value={draftStructure.profile.coreConflict}
-              fallback="补充一个会反复制造角色选择、势力冲突和章节事件的问题。"
+              fallback="Se agregó un problema que crea repetidamente selección de personajes, conflicto de facciones y eventos de capítulo."
             />
           </div>
           <div className="mt-3 flex flex-wrap gap-2">
             <Button type="button" size="sm" variant="ghost" className="rounded-full" onClick={() => setEditingSection("profile")}>
               <Pencil className="mr-2 h-4 w-4" aria-hidden="true" />
-              整理世界概要
+              Organizar el resumen mundial
             </Button>
           </div>
           {editingSection === "profile" ? (
             <div className="mt-4 grid gap-3 lg:grid-cols-[0.8fr_1.4fr]">
             <div className="space-y-3">
-              <HandbookField title="一句话世界印象" hint="让作者和 AI 一眼知道这个世界的类型、时代感和核心奇观。">
+              <HandbookField title="Impresión del mundo en una frase." hint="Permita que el autor y la IA conozcan el género, la era y las maravillas principales del mundo de un vistazo.">
                 <Input
                   value={draftStructure.profile.identity}
                   onChange={(event) =>
@@ -202,10 +202,10 @@ export default function WorldHandbookEditor(props: {
                       prev ? { ...prev, profile: { ...prev.profile, identity: event.target.value } } : prev,
                     )
                   }
-                  placeholder="例如：星核枯竭的仙侠王朝"
+                  placeholder="Por ejemplo: la dinastía Xianxia con núcleos estelares agotados"
                 />
               </HandbookField>
-              <HandbookField title="阅读气质" hint="决定故事是黑暗、热血、轻喜、权谋，还是冒险探索。">
+              <HandbookField title="Temperamento de lectura" hint="Decide si la historia será oscura, apasionada, alegre, maquiavélica o aventurera.">
                 <Input
                   value={draftStructure.profile.tone}
                   onChange={(event) =>
@@ -213,12 +213,12 @@ export default function WorldHandbookEditor(props: {
                       prev ? { ...prev, profile: { ...prev.profile, tone: event.target.value } } : prev,
                     )
                   }
-                  placeholder="黑暗史诗、轻喜冒险、权谋争霸..."
+                  placeholder="Epopeya oscura, aventura ligera, lucha por el poder..."
                 />
               </HandbookField>
-              <HandbookField title="主题关键词" hint="用顿号分隔，帮助后续角色、地点和冲突保持同一种题材方向。">
+              <HandbookField title="Palabras clave del tema" hint="Sepárelos con puntos para ayudar a mantener la misma dirección temática para personajes, ubicaciones y conflictos posteriores.">
                 <Input
-                  value={draftStructure.profile.themes.join("、")}
+                  value={draftStructure.profile.themes.join(",")}
                   onChange={(event) =>
                     setDraftStructure((prev) =>
                       prev
@@ -232,21 +232,21 @@ export default function WorldHandbookEditor(props: {
                         : prev,
                     )
                   }
-                  placeholder="复仇、王朝更替、异能觉醒"
+                  placeholder="Venganza, cambio de dinastía, despertar del poder."
                 />
               </HandbookField>
             </div>
             <div className="space-y-3">
-              <HandbookField title="世界给读者的第一眼" hint="写成作者能直接复述的短段落，不需要拆成地理、文化、历史字段。">
+              <HandbookField title="El mundo ofrece a los lectores el primer vistazo" hint="Escríbalo en párrafos cortos que el autor pueda volver a contar directamente. No es necesario dividirlo en campos geográficos, culturales e históricos.">
                 <HandbookTextarea
                   value={draftStructure.profile.summary}
                   onChange={(value) =>
                     setDraftStructure((prev) => (prev ? { ...prev, profile: { ...prev.profile, summary: value } } : prev))
                   }
-                  placeholder="用一段话让作者知道这个世界长什么样、故事会从哪里开始。"
+                  placeholder="Utilice un párrafo para que el autor sepa cómo es el mundo y dónde comenzará la historia."
                 />
               </HandbookField>
-              <HandbookField title="能持续推动剧情的矛盾" hint="这不是背景介绍，而是角色行动、势力冲突和章节事件反复围绕的问题。">
+              <HandbookField title="Conflictos que pueden seguir impulsando la trama" hint="Esta no es una introducción a los antecedentes, sino una pregunta recurrente sobre las acciones de los personajes, los conflictos de poder y los eventos del capítulo.">
                 <HandbookTextarea
                   value={draftStructure.profile.coreConflict}
                   onChange={(value) =>
@@ -254,7 +254,7 @@ export default function WorldHandbookEditor(props: {
                       prev ? { ...prev, profile: { ...prev.profile, coreConflict: value } } : prev,
                     )
                   }
-                  placeholder="例如：星核枯竭让修行者争夺寿命，朝廷想封锁真相，边境异魔趁机入侵。"
+                  placeholder="Por ejemplo: el agotamiento del núcleo estelar hace que los practicantes compitan por la duración de la vida, la corte quiere sellar la verdad y los monstruos alienígenas de la frontera aprovechan la oportunidad para invadir."
                   minRows={3}
                 />
               </HandbookField>
@@ -266,18 +266,18 @@ export default function WorldHandbookEditor(props: {
         <div className="rounded-2xl border border-border/35 bg-card/70 p-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <div className="text-sm font-medium">AI 辅助整理</div>
+              <div className="text-sm font-medium">Organización asistida por IA</div>
               <div className="mt-1 text-sm leading-6 text-muted-foreground">
-                让 AI 根据已有内容补齐一个手册区块；你可以继续改写后再保存。
+                Deje que la IA complete un bloque manual basado en el contenido existente; puede continuar reescribiendo y luego guardando.
               </div>
             </div>
             <div className="flex flex-wrap gap-2">
               {[
-                { key: "profile", label: "世界概要" },
-                { key: "rules", label: "规则" },
-                { key: "factions", label: "势力" },
-                { key: "locations", label: "地点" },
-                { key: "relations", label: "张力" },
+                { key: "profile", label: "Resumen del mundo" },
+                { key: "rules", label: "Reglas" },
+                { key: "factions", label: "Poder" },
+                { key: "locations", label: "Ubicación" },
+                { key: "relations", label: "Tensión" },
               ].map((item) => (
                 <Button
                   key={item.key}
@@ -292,7 +292,7 @@ export default function WorldHandbookEditor(props: {
               ))}
               <Button type="button" size="sm" variant="secondary" className="rounded-full" onClick={generateSection} disabled={generatePending}>
                 <WandSparkles className="mr-2 h-4 w-4" aria-hidden="true" />
-                {generatePending ? "补齐中..." : "补齐选中区块"}
+                {generatePending ? "Completando..." : "Completa el bloque seleccionado"}
               </Button>
             </div>
           </div>
@@ -301,121 +301,121 @@ export default function WorldHandbookEditor(props: {
         <div className="grid gap-4 xl:grid-cols-2">
           <HandbookPreviewCard
             icon={ScrollText}
-            title="核心规则"
-            description={`${draftStructure.rules.axioms.length} 条规则会限制力量、资源、禁忌和代价。`}
+            title="Reglas esenciales"
+            description={`${draftStructure.rules.axioms.length} Las reglas limitan el poder, los recursos, los tabúes y los costos.`}
             action={
               <Button type="button" size="sm" variant="outline" onClick={() => setEditingSection("rules")}>
-                整理规则
+                organizar reglas
               </Button>
             }
           >
             <div className="space-y-3">
               <HandbookPreviewLine
-                label="规则总纲"
+                label="Reglas generales"
                 value={draftStructure.rules.summary}
-                fallback="补充世界运转的硬规则，避免角色能力和剧情解决方式失控。"
+                fallback="Complementa las reglas estrictas sobre cómo funciona el mundo para evitar que las habilidades de los personajes y las soluciones de la trama se salgan de control."
               />
               <HandbookPreviewLine
-                label="代表性规则"
+                label="Regla representativa"
                 value={joinPreview(
-                  draftStructure.rules.axioms.map((rule) => [rule.name, rule.summary].filter(Boolean).join("：")),
-                  "补充 2-3 条必须遵守的核心规则。",
+                  draftStructure.rules.axioms.map((rule) => [rule.name, rule.summary].filter(Boolean).join(":")),
+                  "Agregue 2 o 3 reglas básicas adicionales que deben seguirse.",
                 )}
-                fallback="补充 2-3 条必须遵守的核心规则。"
+                fallback="Agregue 2 o 3 reglas básicas adicionales que deben seguirse."
               />
             </div>
           </HandbookPreviewCard>
 
           <HandbookPreviewCard
             icon={Castle}
-            title="主要势力"
-            description={`${draftStructure.forces.length} 个势力决定角色归属、阵营压力和资源争夺。`}
+            title="Facciones principales"
+            description={`${draftStructure.forces.length} Cada fuerza determina la afiliación de los personajes, la presión del campamento y la competencia por los recursos.`}
             action={
               <Button type="button" size="sm" variant="outline" onClick={() => setEditingSection("forces")}>
-                整理势力
+                organizar fuerzas
               </Button>
             }
           >
             <div className="space-y-3">
               <HandbookPreviewLine
-                label="活跃势力"
+                label="Fuerzas activas"
                 value={joinPreview(
-                  draftStructure.forces.map((force) => [force.name, force.currentObjective].filter(Boolean).join("：")),
-                  "补充主要势力后，角色身份和阵营冲突会更清楚。",
+                  draftStructure.forces.map((force) => [force.name, force.currentObjective].filter(Boolean).join(":")),
+                  "Una vez que se complementen las fuerzas principales, las identidades de los personajes y los conflictos de los campos se volverán más claros.",
                 )}
-                fallback="补充主要势力后，角色身份和阵营冲突会更清楚。"
+                fallback="Una vez que se complementen las fuerzas principales, las identidades de los personajes y los conflictos de los campos se volverán más claros."
               />
               <HandbookPreviewLine
-                label="故事压力"
+                label="Presión de la historia"
                 value={joinPreview(
                   draftStructure.forces.map((force) => force.pressure),
-                  "补充势力给主角和世界秩序造成的压力。",
+                  "La presión que fuerzas suplementarias ejercen sobre el protagonista y el orden mundial.",
                 )}
-                fallback="补充势力给主角和世界秩序造成的压力。"
+                fallback="La presión que fuerzas suplementarias ejercen sobre el protagonista y el orden mundial."
               />
             </div>
           </HandbookPreviewCard>
 
           <HandbookPreviewCard
             icon={MapPinned}
-            title="故事舞台"
-            description={`${draftStructure.locations.length} 个地点承载开局、升级、转折、决战和地图资产。`}
+            title="Escenario de la historia"
+            description={`${draftStructure.locations.length} Cada ubicación alberga aperturas, mejoras, transiciones, batallas finales y recursos de mapas.`}
             action={
               <Button type="button" size="sm" variant="outline" onClick={() => setEditingSection("locations")}>
-                整理地点
+                organizar el lugar
               </Button>
             }
           >
             <div className="space-y-3">
               <HandbookPreviewLine
-                label="可用地点"
+                label="Ubicaciones disponibles"
                 value={joinPreview(
                   draftStructure.locations.map((location) =>
-                    [location.name, location.narrativeFunction || location.terrain].filter(Boolean).join("："),
+                    [location.name, location.narrativeFunction || location.terrain].filter(Boolean).join(":"),
                   ),
-                  "补充开局地点、试炼地点、冲突地点或真相地点。",
+                  "Lugar de inicio complementario, lugar de juicio, lugar de conflicto o lugar de verdad.",
                 )}
-                fallback="补充开局地点、试炼地点、冲突地点或真相地点。"
+                fallback="Lugar de inicio complementario, lugar de juicio, lugar de conflicto o lugar de verdad."
               />
               <HandbookPreviewLine
-                label="进入风险"
+                label="Riesgo de entrada"
                 value={joinPreview(
                   draftStructure.locations.map((location) => location.risk),
-                  "补充进入地点会遇到的阻力、代价或身份风险。",
+                  "Complemente la resistencia, los costos o los riesgos de identidad asociados con el ingreso a una ubicación.",
                 )}
-                fallback="补充进入地点会遇到的阻力、代价或身份风险。"
+                fallback="Complemente la resistencia, los costos o los riesgos de identidad asociados con el ingreso a una ubicación."
               />
             </div>
           </HandbookPreviewCard>
 
           <HandbookPreviewCard
             icon={GitBranch}
-            title="冲突张力"
-            description="记录势力关系、地点控制、共同后果和禁忌组合，帮助世界保持可写性。"
+            title="Tensión del conflicto"
+            description="Documentar las relaciones de poder, los controles de ubicación, las consecuencias compartidas y las combinaciones de tabúes ayuda a que el mundo siga siendo escribible."
             action={
               <Button type="button" size="sm" variant="outline" onClick={() => setEditingSection("relations")}>
-                整理张力
+                tensión de acabado
               </Button>
             }
           >
             <div className="space-y-3">
               <HandbookPreviewLine
-                label="势力关系"
+                label="Relaciones de poder"
                 value={joinPreview(
                   draftStructure.relations.forceRelations.map((relation) =>
-                    [relation.relation, relation.tension || relation.detail].filter(Boolean).join("："),
+                    [relation.relation, relation.tension || relation.detail].filter(Boolean).join(":"),
                   ),
-                  "补充谁与谁结盟、敌对、竞争或互相利用。",
+                  "Complementar a quién es aliado, hostil, competidor o explotador de quién.",
                 )}
-                fallback="补充谁与谁结盟、敌对、竞争或互相利用。"
+                fallback="Complementar a quién es aliado, hostil, competidor o explotador de quién."
               />
               <HandbookPreviewLine
-                label="共同后果"
+                label="Consecuencias comunes"
                 value={joinPreview(
                   draftStructure.rules.sharedConsequences,
-                  "补充违反规则或冲突升级后会影响全局的后果。",
+                  "Complemente las consecuencias de romper las reglas o intensificar los conflictos que afectarán la situación general.",
                 )}
-                fallback="补充违反规则或冲突升级后会影响全局的后果。"
+                fallback="Complemente las consecuencias de romper las reglas o intensificar los conflictos que afectarán la situación general."
               />
             </div>
           </HandbookPreviewCard>
@@ -426,10 +426,10 @@ export default function WorldHandbookEditor(props: {
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-2 text-sm font-medium">
                 <AlertTriangle className="h-4 w-4 text-primary" aria-hidden="true" />
-                正在整理选中区块，保存后会更新上方手册概览。
+                Los bloques seleccionados se están ordenando y la descripción general del manual anterior se actualizará después de guardarlos.
               </div>
               <Button type="button" size="sm" variant="ghost" className="rounded-full" onClick={() => setEditingSection(null)}>
-                收起编辑
+                Colapso
               </Button>
             </div>
           </div>

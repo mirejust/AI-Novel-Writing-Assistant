@@ -73,15 +73,15 @@ export function detectRulePartition(text: string): ManuscriptPartitionUnit[] {
     const end = lineStarts[index + 1] ?? text.length;
     return { start, line: text.slice(start, end).replace(/[\r\n]+$/u, "").trim() };
   }).find(item => /^(?:目录|目\s*次|contents)$/iu.test(item.line));
-  if (tocLine && !headings.some(item => item.start === tocLine.start)) headings.push({ start: tocLine.start, title: "目录候选（请核对）" });
+  if (tocLine && !headings.some(item => item.start === tocLine.start)) headings.push({ start: tocLine.start, title: "Candidatos del catálogo (consultar)" });
   headings.sort((a, b) => a.start - b.start);
-  const boundaries = headings.length ? headings : [{ start: 0, title: "全文（章节边界待确认）" }];
+  const boundaries = headings.length ? headings : [{ start: 0, title: "Texto completo (límites de capítulos por confirmar)" }];
   const units: ManuscriptPartitionUnit[] = [];
   const frontEnd = boundaries[0]!.start;
   if (frontEnd > 0) {
     const prefix = text.slice(0, frontEnd);
     const toc = /(?:目录|目\s*次|contents)/iu.test(prefix) && /(?:第[零〇一二三四五六七八九十百千万\d]+章|chapter\s+[0-9ivxlcdm]+)/iu.test(prefix);
-    units.push({ draftId: randomUUID(), range: { start: 0, end: frontEnd }, role: toc ? "toc" : "front_matter", title: toc ? "目录候选（请核对）" : "前言及未分类内容", needsReview: true });
+    units.push({ draftId: randomUUID(), range: { start: 0, end: frontEnd }, role: toc ? "toc" : "front_matter", title: toc ? "Candidatos del catálogo (consultar)" : "Prefacio y contenido sin categoría", needsReview: true });
   }
   for (let i = 0; i < boundaries.length; i++) {
     const current = boundaries[i]!;
@@ -89,10 +89,10 @@ export function detectRulePartition(text: string): ManuscriptPartitionUnit[] {
     if (end <= current.start) continue;
     const backMatter = /^(后记)/u.test(current.title);
     let role: ManuscriptPartitionUnit["role"] = backMatter ? "back_matter" : "body";
-    if (current.title === "目录候选（请核对）") role = "toc";
+    if (current.title === "Candidatos del catálogo (consultar)") role = "toc";
     units.push({ draftId: randomUUID(), range: { start: current.start, end }, role, title: current.title, confidence: headings.length ? 0.7 : 0.1, needsReview: true });
   }
-  if (!units.length && text.length) units.push({ draftId: randomUUID(), range: { start: 0, end: text.length }, role: "body", title: "全文（章节边界待确认）", needsReview: true });
+  if (!units.length && text.length) units.push({ draftId: randomUUID(), range: { start: 0, end: text.length }, role: "body", title: "Texto completo (límites de capítulos por confirmar)", needsReview: true });
   return units;
 }
 
@@ -104,10 +104,10 @@ export function detectShortStoryPartition(text: string): ManuscriptPartitionUnit
     const start = (match.index ?? 0) + match[0].length;
     if (start < text.length && start > starts.at(-1)!) starts.push(start);
   }
-  if (starts.length === 1) return [{draftId: randomUUID(), range: {start: 0, end: text.length}, role: "body", title: "全文（短篇分节待确认）", confidence: 0.2, needsReview: true}];
+  if (starts.length === 1) return [{draftId: randomUUID(), range: {start: 0, end: text.length}, role: "body", title: "Texto completo (secciones breves por confirmar)", confidence: 0.2, needsReview: true}];
   return starts.map((start, index) => ({
     draftId: randomUUID(), range: {start, end: starts[index + 1] ?? text.length}, role: "body" as const,
-    title: `分节候选 ${index + 1}`, confidence: 0.2, needsReview: true,
+    title: `Candidatos de sección ${index + 1}`, confidence: 0.2, needsReview: true,
   }));
 }
 

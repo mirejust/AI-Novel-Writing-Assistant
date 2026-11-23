@@ -681,7 +681,7 @@ router.get("/shot-images/:shotId/keyframe", validate({ params: shotImageParamsSc
     const { shotId } = req.params as z.infer<typeof shotImageParamsSchema>;
     const resolved = await dramaShotKeyframeService.resolveExistingKeyframePath(shotId);
     if (!resolved) {
-      res.status(404).json({ success: false, message: "镜头首帧图尚未生成。" });
+      res.status(404).json({ success: false, message: "Aún no se ha generado el primer fotograma de la toma." });
       return;
     }
     res.setHeader("Content-Type", resolved.mimeType);
@@ -699,7 +699,7 @@ router.get("/shot-images/:shotId/keyframe/:version", validate({ params: shotImag
     const numericVersion = Number(version.replace(/^v/i, ""));
     const resolved = await dramaShotKeyframeService.resolveArchivedKeyframePath(shotId, numericVersion);
     if (!resolved) {
-      res.status(404).json({ success: false, message: "镜头首帧历史版本尚未生成。" });
+      res.status(404).json({ success: false, message: "Aún no se ha generado la versión histórica del primer fotograma de la toma." });
       return;
     }
     res.setHeader("Content-Type", resolved.mimeType);
@@ -719,7 +719,7 @@ router.get("/character-images/:characterId/character-sheet", async (req, res, ne
       "character-sheet",
     );
     if (!resolved) {
-      res.status(404).json({ success: false, message: "角色设计稿尚未生成。" });
+      res.status(404).json({ success: false, message: "El borrador del diseño de personajes aún no se ha generado." });
       return;
     }
     res.setHeader("Content-Type", resolved.mimeType);
@@ -741,7 +741,7 @@ router.get("/character-images/:characterId/character-sheet/:version", validate({
       numericVersion,
     );
     if (!resolved) {
-      res.status(404).json({ success: false, message: "角色设计稿历史版本尚未生成。" });
+      res.status(404).json({ success: false, message: "Aún no se ha generado la versión histórica del borrador del diseño de personajes." });
       return;
     }
     res.setHeader("Content-Type", resolved.mimeType);
@@ -761,7 +761,7 @@ router.get("/character-images/:characterId/portrait", async (req, res, next) => 
       "portrait",
     );
     if (!resolved) {
-      res.status(404).json({ success: false, message: "角色设计稿尚未生成。" });
+      res.status(404).json({ success: false, message: "El borrador del diseño de personajes aún no se ha generado." });
       return;
     }
     res.setHeader("Content-Type", resolved.mimeType);
@@ -784,7 +784,7 @@ router.get(
         `three-view-${view}`,
       );
       if (!resolved) {
-        res.status(404).json({ success: false, message: `${view} 三视图尚未生成。` });
+        res.status(404).json({ success: false, message: `${view} Aún no se han generado tres vistas.` });
         return;
       }
       res.setHeader("Content-Type", resolved.mimeType);

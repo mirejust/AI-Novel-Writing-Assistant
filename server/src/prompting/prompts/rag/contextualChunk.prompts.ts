@@ -36,7 +36,7 @@ export const ragContextualChunkPrompt: PromptAsset<
     example: {
       contextPrefix: "这段内容来自《示例小说》的角色设定，说明主角程秩持有后门铜钥匙，并限制它只能解释后门通行。",
     },
-    note: "只返回一个 JSON 对象。contextPrefix 用 1-3 句中文概括该 chunk 在小说、章节、角色或知识文档中的定位。",
+    note: "只返回一个 JSON 对象。contextPrefix 用 1-3 句西班牙语概括该 chunk 在小说、章节、角色或知识文档中的定位。",
   },
   outputSchema: ragContextualChunkOutputSchema,
   render: (input) => [
@@ -46,7 +46,7 @@ export const ragContextualChunkPrompt: PromptAsset<
       "",
       "硬性要求：",
       "1. 只输出一个合法 JSON 对象，不要输出 Markdown、解释或代码块。",
-      "2. contextPrefix 必须是 1-3 句简体中文，最多 260 字。",
+      "2. contextPrefix 必须是 1-3 句西班牙语，最多 260 字。",
       "3. 只能基于输入的标题、owner、metadata 和 chunk 正文归纳，不得添加输入中没有的剧情事实。",
       "4. 优先写出对检索有帮助的定位信息：小说/世界/章节/角色/知识文档标题、事实类型、时间或章节锚点。",
       "5. 不要复述整段正文；只补足分块脱离上下文后会缺失的检索线索。",

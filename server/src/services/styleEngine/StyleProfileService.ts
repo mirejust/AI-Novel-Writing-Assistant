@@ -302,7 +302,7 @@ export class StyleProfileService {
 
     const updated = await this.getProfileById(id);
     if (!updated) {
-      throw new Error("写法资产不存在。");
+      throw new Error("El activo de escritura no existe.");
     }
     return updated;
   }
@@ -323,7 +323,7 @@ export class StyleProfileService {
     await ensureStyleEngineSeedData();
     const template = await prisma.styleTemplate.findUnique({ where: { id: input.templateId } });
     if (!template) {
-      throw new Error("写法模板不存在。");
+      throw new Error("La plantilla de escritura no existe.");
     }
     const antiRules = await prisma.antiAiRule.findMany({
       where: {
@@ -408,7 +408,7 @@ export class StyleProfileService {
     return this.createManualProfile({
       name: input.name.trim() || normalizedDraft.name,
       description: normalizedDraft.description
-        ?? `${sourceType === "from_knowledge_document" ? "基于知识库原文提取生成" : "基于文本提取生成"}，保留 ${input.decisions.filter((item) => item.decision === "keep").length} 项特征，弱化 ${input.decisions.filter((item) => item.decision === "weaken").length} 项特征。`,
+        ?? `${sourceType === "from_knowledge_document" ? "Extraer y generar basándose en el texto original de la base de conocimientos." : "Generar basado en extracción de texto."},reservar ${input.decisions.filter((item) => item.decision === "keep").length} Características, debilitamiento. ${input.decisions.filter((item) => item.decision === "weaken").length} características del artículo.`,
       category: input.category?.trim() || normalizedDraft.category || undefined,
       tags: normalizedDraft.tags,
       applicableGenres: normalizedDraft.applicableGenres,
@@ -444,11 +444,11 @@ export class StyleProfileService {
       },
     });
     if (!section) {
-      throw new Error("未找到可用于生成写法的拆书文风与技法小节。");
+      throw new Error("No se encontró ninguna sección sobre estilos y técnicas de escritura dividida que puedan usarse para generar métodos de escritura.");
     }
     const sourceText = section.editedContent?.trim() || section.aiContent?.trim();
     if (!sourceText) {
-      throw new Error("拆书文风与技法小节为空，无法生成写法资产。");
+      throw new Error("La sección \"Técnicas y estilos de caligrafía dividida\" está vacía y no se pueden generar recursos de escritura.");
     }
     const generatedCore = await this.generateStructuredStyle(
       {
@@ -493,10 +493,10 @@ export class StyleProfileService {
       preferredCategory: input.category?.trim() || null,
       llmInput: input,
       core: generatedCore,
-      fallbackName: input.name?.trim() || generatedCore.name?.trim() || "AI 生成写法",
+      fallbackName: input.name?.trim() || generatedCore.name?.trim() || "Método de escritura generado por IA",
     });
     return this.persistGeneratedProfile({
-      inputName: input.name?.trim() || generated.name?.trim() || "AI 生成写法",
+      inputName: input.name?.trim() || generated.name?.trim() || "Método de escritura generado por IA",
       sourceType: "manual",
       sourceRefId: `${AI_STYLE_BRIEF_SOURCE_PREFIX}${Date.now()}`,
       sourceContent: input.brief,
@@ -547,7 +547,7 @@ export class StyleProfileService {
     });
     return this.normalizeGeneratedStyleCorePayload(
       result.output,
-      promptInput.name?.trim() || "AI 生成写法",
+      promptInput.name?.trim() || "Método de escritura generado por IA",
     );
   }
 

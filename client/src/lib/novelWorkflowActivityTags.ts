@@ -1,11 +1,11 @@
 const WORKFLOW_ACTIVITY_TAGS = [
-  "资产回灌中",
-  "角色成长中",
-  "状态同步中",
-  "资源账本同步中",
-  "伏笔账本同步中",
-  "账本校准中",
-  "伏笔回填中",
+  "Se están reintroduciendo activos",
+  "Desarrollo del personaje",
+  "Sincronización de estado",
+  "Sincronización del libro mayor de recursos en curso",
+  "El libro mayor de presagios se está sincronizando.",
+  "Calibración del libro mayor en progreso",
+  "El presagio se está rellenando",
 ] as const;
 
 export function extractWorkflowActivityTags(value: string | null | undefined): string[] {

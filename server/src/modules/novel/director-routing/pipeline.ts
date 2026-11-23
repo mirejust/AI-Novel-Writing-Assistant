@@ -16,14 +16,14 @@ export function sameDirectorPipelineOwner(left: DirectorPipelineOwner, right: Di
 }
 
 export async function assertDirectorPipelineOwner(novelId: string, payload: DirectorPipelineOwner): Promise<void> {
-  if (payload.directorNext && payload.workflowTaskId) throw new AppError("正文作业不能同时属于两个导演流程。", 409);
+  if (payload.directorNext && payload.workflowTaskId) throw new AppError("Las asignaciones de texto no pueden pertenecer a dos flujos de director al mismo tiempo.", 409);
   if (payload.directorNext) {
     const run = await prisma.directorNextRun.findUnique({where: {id: payload.directorNext.runId}, select: {novelId: true}});
-    if (run?.novelId !== novelId) throw new AppError("正文作业与导演 V2 小说归属不一致。", 409);
+    if (run?.novelId !== novelId) throw new AppError("La asignación del texto es inconsistente con la atribución de la novela V2 del director.", 409);
     await assertV2RunExecution(payload.directorNext.runId);
   } else if (payload.workflowTaskId) {
     const task = await prisma.novelWorkflowTask.findUnique({where: {id: payload.workflowTaskId}, select: {novelId: true, lane: true}});
-    if (!task || task.novelId !== novelId) throw new AppError("正文作业与创作任务归属不一致。", 409);
+    if (!task || task.novelId !== novelId) throw new AppError("La propiedad de las tareas de texto y las tareas creativas es inconsistente.", 409);
     if (task.lane === "auto_director") await assertLegacyTaskExecution(payload.workflowTaskId);
   }
 }

@@ -109,7 +109,7 @@ export function useNovelAutoDirectorCandidateMutations({
     },
     onSuccess: ({ batch, workflowTaskId: nextWorkflowTaskId }) => {
       if (!batch) {
-        toast.error("自动导演没有返回可用方案。");
+        toast.error("Auto Director no devolvió opciones disponibles.");
         return;
       }
       if (nextWorkflowTaskId && nextWorkflowTaskId !== workflowTaskId) {
@@ -123,12 +123,12 @@ export function useNovelAutoDirectorCandidateMutations({
       setCandidateDialogOpen(true);
       setExecutionRequested(false);
       setExecutionError("");
-      toast.success(`${batch.roundLabel} 已生成 ${batch.candidates.length} 套方案。`);
+      toast.success(`${batch.roundLabel} Generado ${batch.candidates.length} conjunto de planos.`);
     },
     onError: (error) => {
       if (error.name === "AbortError") return;
       setDialogMode("execution_failed");
-      setExecutionError(error instanceof Error ? error.message : "导演候选方案生成失败。");
+      setExecutionError(error instanceof Error ? error.message : "La generación de candidatos a director fracasó.");
     },
   });
 
@@ -159,19 +159,19 @@ export function useNovelAutoDirectorCandidateMutations({
     },
     onSuccess: ({ batch, workflowTaskId: nextWorkflowTaskId, candidateId }) => {
       if (!batch) {
-        toast.error("标题组修正失败，未返回更新后的书名组。");
+        toast.error("La modificación del grupo de títulos falló y no se devolvió el grupo de títulos actualizado.");
         return;
       }
       applyUpdatedBatch(batch, nextWorkflowTaskId);
       setTitlePatchFeedbacks((prev) => ({ ...prev, [candidateId]: "" }));
       setDialogMode("candidate_selection");
       setCandidateDialogOpen(true);
-      toast.success("已重做这套方案的标题组。");
+      toast.success("Se ha rehecho el grupo de títulos de este esquema.");
     },
     onError: (error) => {
       if (error.name === "AbortError") return;
       setDialogMode("execution_failed");
-      setExecutionError(error instanceof Error ? error.message : "标题组修正失败。");
+      setExecutionError(error instanceof Error ? error.message : "Error en la corrección del grupo de títulos.");
     },
   });
 

@@ -13,8 +13,8 @@ export default function DesktopUpdateCard() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>桌面版更新</CardTitle>
-        <CardDescription>查看详细版本状态，也可以直接点击工作区顶部的版本号快速打开更新面板。</CardDescription>
+        <CardTitle>Actualizaciones de la versión de escritorio</CardTitle>
+        <CardDescription>Para ver el estado detallado de la versión, también puede hacer clic directamente en el número de versión en la parte superior del espacio de trabajo para abrir rápidamente el panel de actualización.</CardDescription>
       </CardHeader>
       <CardContent>
         <DesktopUpdatePanel updater={updater} />

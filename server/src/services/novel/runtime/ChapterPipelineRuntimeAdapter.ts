@@ -47,7 +47,7 @@ export class ChapterPipelineRuntimeAdapter {
   ): Promise<PipelineRuntimeResult> {
     const scope = options.finalizedResultScope;
     if (options.artifactSyncPolicy === "director_v2") {
-      if (!scope) throw new ChapterArtifactSyncBoundaryError({status: "failed", contentHash: "", completedArtifacts: [], reason: "缺少本次创作的资源回填恢复位置。"});
+      if (!scope) throw new ChapterArtifactSyncBoundaryError({status: "failed", contentHash: "", completedArtifacts: [], reason: "Falta la ubicación de recuperación de reabastecimiento de recursos para esta creación."});
       await hooks.onCheckCancelled?.();
       const saved = await this.finalizationStore.load(novelId, chapterId, scope);
       if (saved) return resumeFinalizedPipelineChapter({

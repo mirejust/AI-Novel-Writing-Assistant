@@ -43,11 +43,11 @@ export function buildPlannerStateGoalText(input: {
   recentTimeline: string[];
 }): string {
   return [
-    `章节状态目标：${compactPlannerText(input.summary, "无")}`,
-    `应推进冲突：${takeUniquePlannerItems(input.targetConflicts, 4).join("；") || "无"}`,
-    `应推进关系：${takeUniquePlannerItems(input.targetRelationships, 4).join("；") || "无"}`,
-    `应触碰 payoff：${takeUniquePlannerItems(input.targetPayoffs, 4).join("；") || "无"}`,
-    `禁止提前泄露：${takeUniquePlannerItems(input.protectedSecrets, 4).join("；") || "无"}`,
-    `最近关键事件：${takeUniquePlannerItems(input.recentTimeline, 3).join("；") || "无"}`,
+    `Objetivos del estado del capítulo:${compactPlannerText(input.summary, "Ninguno")}`,
+    `Los conflictos deben avanzarse:${takeUniquePlannerItems(input.targetConflicts, 4).join(";") || "Ninguno"}`,
+    `Se deben promover las relaciones:${takeUniquePlannerItems(input.targetRelationships, 4).join(";") || "Ninguno"}`,
+    `Se debe tocar el pago:${takeUniquePlannerItems(input.targetPayoffs, 4).join(";") || "Ninguno"}`,
+    `Está prohibido revelar por adelantado:${takeUniquePlannerItems(input.protectedSecrets, 4).join(";") || "Ninguno"}`,
+    `Eventos clave recientes:${takeUniquePlannerItems(input.recentTimeline, 3).join(";") || "Ninguno"}`,
   ].join("\n");
 }

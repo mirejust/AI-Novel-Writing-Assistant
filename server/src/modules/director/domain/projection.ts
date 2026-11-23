@@ -114,7 +114,7 @@ export interface ProjectionInput {
 
 const CANCEL_ACTION: ActionDescriptor = {
   id: "cancel",
-  label: "取消本次创作",
+  label: "Cancelar esta creación",
   kind: "command",
   primary: false,
   command: "cancel",
@@ -137,46 +137,46 @@ export function project(input: ProjectionInput): DashboardView {
   let headline: string;
   let detail: string | null = null;
   let availableActions: ActionDescriptor[];
-  let nextActionGuidance = "请等待 AI 推进；阶段结果保存后，会提示你查看和确认。";
+  let nextActionGuidance = "Espere a que avance la IA; Después de guardar los resultados de la etapa, se le pedirá que los vea y confirme.";
   const chapterProgress = input.production?.chapterProgress ?? null;
   const nextLaunchRange = input.production?.nextLaunchRange ?? null;
 
   switch (control.status) {
     case "queued":
-      headline = "等待开始创作";
+      headline = "Esperando para empezar a crear";
       availableActions = [CANCEL_ACTION];
       break;
     case "running": {
       const cursor = plan.steps.find((step) => step.id === control.cursorStepId);
-      headline = cursor ? `正在生成「${cursor.label}」` : "正在推进创作";
+      headline = cursor ? `Generando "${cursor.label}»` : "Creación en curso";
       if (control.cursorStepId === "chapter_batch" && chapterProgress) {
         const current = chapterProgress.current;
-        const verbs = {generating_chapters:"写作", reviewing:"检查", repairing:"完善", finalizing:"保存"};
+        const verbs = {generating_chapters:"escribiendo", reviewing:"examinar", repairing:"Completo", finalizing:"Guardar"};
         headline = current
-          ? `正在${verbs[current.phase]}第 ${current.order} 章${current.title ? `《${current.title}》` : ""}`
-          : `正在准备或收尾第 ${chapterProgress.from}—${chapterProgress.to} 章`;
-        nextActionGuidance = "请等待本批次写作、检查和保存完成；需要你确认或处理问题时，会在这里提示。";
+          ? `son${verbs[current.phase]}Cap. ${current.order}${current.title ? `«${current.title}»` : ""}`
+          : `Preparando o terminando el capítulo ${chapterProgress.from}—${chapterProgress.to}`;
+        nextActionGuidance = "Espere hasta que se complete la escritura, verificación y guardado de este lote; Se le solicitará aquí cuando necesite confirmar o solucionar problemas.";
       }
       availableActions = [CANCEL_ACTION];
       break;
     }
     case "waiting_gate": {
       const types = control.gate?.artifactTypes ?? [];
-      headline = `请确认「${types.map((type) => infoOf(type).label).join("、")}」后继续`;
+      headline = `Por favor confirme "${types.map((type) => infoOf(type).label).join(",")}Continuar después`;
       nextActionGuidance = types.includes("chapter_batch_closed")
-        ? "打开本批正文，选一章阅读或与 AI 讨论，核对采纳的段落后确认本批。"
-        : "打开本阶段结果，核对后点击“确认结果并继续”。AI 会继续推进本次授权范围。";
+        ? "Abra el texto de este lote, seleccione un capítulo para leer o discutir con AI, verifique los párrafos adoptados y luego confirme este lote."
+        : "Abra los resultados de esta etapa, verifíquelos y haga clic en \"Confirmar resultados y continuar\". AI seguirá ampliando el alcance de esta autorización.";
       if (types.some(type => {
         const artifact = latestArtifact(facts, type, contract.scope);
         return artifact?.status === "stale" && artifact.protectedUserContent;
       })) {
-        nextActionGuidance = "本阶段包含需保留的修改，请核对已保存结果并确认；AI 将继续使用这些内容。";
+        nextActionGuidance = "Esta etapa contiene modificaciones que deben conservarse; verifique los resultados guardados y confirme; La IA seguirá utilizando estos contenidos.";
       }
       availableActions = [
         ...types.map(
           (type, index): ActionDescriptor => ({
             id: `review:${type}`,
-            label: `去确认「${infoOf(type).label}」`,
+            label: `Ir a confirmar "${infoOf(type).label}»`,
             kind: "navigate",
             primary: index === 0,
             target: infoOf(type).reviewRoute,
@@ -192,38 +192,38 @@ export function project(input: ProjectionInput): DashboardView {
       const retryEmptyDraft = detail === "generation_output_unusable";
       if (detail === "execution_retry_budget_exhausted") {
         detail = input.executionFailure?.trim()
-          ? `本阶段生成失败：${input.executionFailure.trim()} 自动重试已结束。`
-          : "本阶段生成中断，自动重试已结束。";
+          ? `La generación fracasó en esta etapa:${input.executionFailure.trim()} Los reintentos automáticos han finalizado.`
+          : "En esta etapa se genera una interrupción y el reintento automático ha finalizado.";
       }
-      if (detail === "generation_output_unusable") detail = "本章未生成可用正文。请重试当前写作步骤，前期准备和已完成章节会保留。";
+      if (detail === "generation_output_unusable") detail = "No se generó ningún texto utilizable para este capítulo. Vuelva a intentar el paso de escritura actual. Se conservarán los preparativos preliminares y los capítulos completados.";
       if (detail === "rejection_budget_exhausted" || detail === "protected_content") {
         const rejection = input.actionRejection;
         const step = plan.steps.find(row => row.id === rejection?.stepId);
-        const stage = step ? `「${step.label}」` : "当前阶段";
+        const stage = step ? `«${step.label}»` : "etapa actual";
         const reasons: Record<string, string> = {
-          protected_content: `${stage}涉及需要保留的修改，不能自动覆盖。请核对本书已保存的结果后继续。`,
-          requires_unmet: `${stage}缺少已保存或已确认的前置结果，请核对前面的创作阶段后继续。`,
-          step_out_of_scope: `${stage}超出本次授权范围，请核对创作范围后重新提交。`,
-          unknown_step: "本次创作步骤与保存的计划不一致，请保留运行记录以便排查。",
-          budget_exceeded: "本次创作达到授权用量上限，请核对用量后继续。",
+          protected_content: `${stage}Las modificaciones que deben conservarse no se pueden sobrescribir automáticamente. Verifique los resultados guardados de este libro antes de continuar.`,
+          requires_unmet: `${stage}Faltan resultados previos guardados o confirmados. Por favor verifique las etapas de creación anteriores antes de continuar.`,
+          step_out_of_scope: `${stage}Si excede el alcance de esta autorización, verifique el alcance de la creación y vuelva a enviarlo.`,
+          unknown_step: "Este paso de creación es inconsistente con el plan guardado. Conserve los registros de ejecución para solucionar problemas.",
+          budget_exceeded: "Esta creación ha alcanzado el límite de uso autorizado. Verifique el uso antes de continuar.",
         };
         detail = reasons[rejection?.code ?? (detail === "protected_content" ? "protected_content" : "")]
-          ?? "本次推进未通过创作保护检查，请核对已保存结果与运行记录中的拒绝原因后继续。";
+          ?? "Esta promoción no pasó la verificación de protección de creación. Verifique los motivos del rechazo en los resultados guardados y en los registros de ejecución antes de continuar.";
       }
-      nextActionGuidance = "请先查看下方暂停原因，处理后点击“从保存进度继续”；已有正文会保留。";
+      nextActionGuidance = "Primero verifique el motivo de la suspensión a continuación y luego haga clic en \"Continuar desde el progreso del guardado\" después del procesamiento; se mantendrá el texto existente.";
       if (pauseKind === "replan") {
-        headline = "需要重新规划后继续";
-        nextActionGuidance = "请查看下方暂停原因，再点击“重新规划后继续”，让 AI 调整后续计划。";
+        headline = "Necesita volver a planificar antes de continuar";
+        nextActionGuidance = "Verifique el motivo de la suspensión a continuación y luego haga clic en \"Continuar después de volver a planificar\" para permitir que AI ajuste los planes posteriores.";
       } else if (pauseKind === "safety") {
-        headline = "检测到风险，暂停中，等待你处理";
+        headline = "Riesgo detectado, pausado, esperando su procesamiento";
       } else {
-        headline = retryEmptyDraft ? "本章生成失败，可重试当前步骤" : "暂停中，等待你从保存进度继续";
+        headline = retryEmptyDraft ? "La generación de este capítulo fracasó. Puede volver a intentar el paso actual." : "En pausa, esperando a que continúes después de guardar el progreso.";
       }
-      if (retryEmptyDraft) nextActionGuidance = "点击“重试当前写作步骤”，AI 会保留前期准备和已完成章节，继续本次创作。";
+      if (retryEmptyDraft) nextActionGuidance = "Haga clic en \"Reintentar el paso de escritura actual\" y AI conservará los preparativos anteriores y los capítulos completados y continuará con esta creación.";
       availableActions = [
         {
           id: "resume",
-          label: pauseKind === "replan" ? "重新规划后继续" : retryEmptyDraft ? "重试当前写作步骤" : "从保存进度继续",
+          label: pauseKind === "replan" ? "Continuar después de volver a planificar" : retryEmptyDraft ? "Reintentar el paso de escritura actual" : "Continuar desde el progreso de guardado",
           kind: "command",
           primary: true,
           command: "resume",
@@ -231,43 +231,43 @@ export function project(input: ProjectionInput): DashboardView {
         CANCEL_ACTION,
       ];
       if (input.production?.unknownClaims && pauseKind === "manual_recovery") {
-        headline = `第 ${input.production.unknownClaims.chapterOrder} 章有一步结果待确认`;
-        nextActionGuidance = "从左侧目录打开本章检查正文，确认无误后在下方重新执行待确认的步骤；已有正文会保留。";
-        availableActions = [{id: "unknown_claims", label: "查看待确认步骤", kind: "navigate", primary: true,
+        headline = `Cap. ${input.production.unknownClaims.chapterOrder} Los resultados de un paso del capítulo aún no se han confirmado.`;
+        nextActionGuidance = "Abra este capítulo desde el directorio de la izquierda y consulte el texto. Luego de confirmar que es correcto, vuelva a ejecutar los pasos que se confirmarán a continuación; se mantendrá el texto existente.";
+        availableActions = [{id: "unknown_claims", label: "Ver pasos por confirmar", kind: "navigate", primary: true,
           target: `${sourceRoute}#director-unknown-claims`}, CANCEL_ACTION];
       }
       if (input.production?.chapterBudget && pauseKind === "manual_recovery") {
-        headline = `第 ${input.production.chapterBudget.chapterOrder} 章需要追加额度后继续`;
-        nextActionGuidance = "查看下方用量，选择是否增加预算后继续；可仅调整本章，或同时应用于本任务后续章节。";
-        availableActions = [{id: "chapter_budget", label: "调整本章额度", kind: "navigate", primary: true,
+        headline = `Cap. ${input.production.chapterBudget.chapterOrder} El capítulo requiere cuota adicional para continuar.`;
+        nextActionGuidance = "Verifique el uso a continuación y elija si desea aumentar el presupuesto antes de continuar; puede ajustar solo este capítulo o aplicarlo también a los capítulos posteriores de esta tarea.";
+        availableActions = [{id: "chapter_budget", label: "Ajustar el importe de este capítulo", kind: "navigate", primary: true,
           target: `${sourceRoute}#director-chapter-budget`}, CANCEL_ACTION];
       }
       break;
     }
     case "completed":
       headline = chapterProgress && chapterProgress.done === chapterProgress.total
-        ? `第 ${chapterProgress.from}—${chapterProgress.to} 章已完成`
-        : chapterProgress ? `本次第 ${chapterProgress.from}—${chapterProgress.to} 章创作已结束` : "本次创作规划已完成";
+        ? `Cap. ${chapterProgress.from}—${chapterProgress.to} Capítulo completado`
+        : chapterProgress ? `Esta vez ${chapterProgress.from}—${chapterProgress.to} La creación del capítulo ha finalizado.` : "Esta planificación creativa se ha completado.";
       nextActionGuidance = nextLaunchRange
-        ? `下一步可写第 ${nextLaunchRange.from}—${nextLaunchRange.to} 章。核对下方章节范围，点击提交后，AI 才会开始本次创作。`
-        : input.production ? "目标章节均有保存正文，请从左侧目录阅读并检查全书。" : "请从本书内容选择下一步创作范围。";
-      availableActions = nextLaunchRange ? [{id:"open_run",label:`选择并继续写第 ${nextLaunchRange.from}—${nextLaunchRange.to} 章`,kind:"command",primary:true,command:"open_run"}] : [];
+        ? `El siguiente paso puede ser escribir el ${nextLaunchRange.from}—${nextLaunchRange.to} capítulo. Verifique el alcance del capítulo a continuación y haga clic en enviar antes de que AI comience esta creación.`
+        : input.production ? "Todos los capítulos de destino tienen textos guardados. Lea y consulte el libro completo en la tabla de contenido de la izquierda." : "Elija el siguiente alcance creativo del contenido de este libro.";
+      availableActions = nextLaunchRange ? [{id:"open_run",label:`Selecciona y continúa escribiendo ${nextLaunchRange.from}—${nextLaunchRange.to}`,kind:"command",primary:true,command:"open_run"}] : [];
       break;
     case "failed":
       if (canRecoverFailedGeneration(control, facts.stopSignal)) {
-        headline = "本章生成失败，可重试当前步骤";
+        headline = "La generación de este capítulo fracasó. Puede volver a intentar el paso actual.";
         detail = control.failureReason;
-        nextActionGuidance = "点击“重试当前写作步骤”，AI 会保留前期准备和已完成章节，继续本次创作。";
-        availableActions = [{id: "resume", label: "重试当前写作步骤", kind: "command", primary: true, command: "resume"}];
+        nextActionGuidance = "Haga clic en \"Reintentar el paso de escritura actual\" y AI conservará los preparativos anteriores y los capítulos completados y continuará con esta creación.";
+        availableActions = [{id: "resume", label: "Reintentar el paso de escritura actual", kind: "command", primary: true, command: "resume"}];
         break;
       }
-      headline = "创作中断，可从现有内容继续";
+      headline = "La creación se interrumpe y se puede reanudar desde el contenido existente.";
       detail = control.failureReason;
-      nextActionGuidance = "请查看下方中断原因。可以核对新的授权范围并提交，已有正文会保留。";
+      nextActionGuidance = "Consulte el motivo de la interrupción a continuación. Puede verificar el nuevo alcance de la autorización y enviarlo; el texto existente se conservará.";
       availableActions = [
         {
           id: "open_run",
-          label: "从现有内容继续创作",
+          label: "Continuar creando a partir de contenido existente",
           kind: "command",
           primary: true,
           command: "open_run",
@@ -275,12 +275,12 @@ export function project(input: ProjectionInput): DashboardView {
       ];
       break;
     case "cancelled":
-      headline = "本次创作已取消";
-      nextActionGuidance = "已有内容会保留。需要继续时，请核对下方章节范围并提交新的创作。";
+      headline = "Esta creación ha sido cancelada.";
+      nextActionGuidance = "Se conservará el contenido existente. Cuando necesite continuar, verifique el rango de capítulos a continuación y envíe una nueva creación.";
       availableActions = [
         {
           id: "open_run",
-          label: "从现有内容继续创作",
+          label: "Continuar creando a partir de contenido existente",
           kind: "command",
           primary: true,
           command: "open_run",
@@ -296,7 +296,7 @@ export function project(input: ProjectionInput): DashboardView {
   if (["queued", "running", "waiting_gate"].includes(control.status) && !control.cursorStepId && !facts.stopSignal) {
     const toDriver = contract.driver === "auto" ? "assisted" : "auto";
     availableActions.push({id: "handoff", kind: "command", primary: false, command: "handoff", toDriver,
-      label: toDriver === "auto" ? "按原范围切换为全自动推进" : "按原范围切换为阶段确认"});
+      label: toDriver === "auto" ? "Cambiar a propulsión totalmente automática según la autonomía original" : "Cambiar a confirmación de etapa según el rango original"});
   }
 
   return {

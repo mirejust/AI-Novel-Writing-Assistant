@@ -46,7 +46,7 @@ export const chapterSummaryPrompt: PromptAsset<
   outputSchema: chapterSummaryOutputSchema,
   render: (input) => [
     new SystemMessage([
-      "你是中文网络小说章节摘要助手。",
+      "你是西班牙语网络小说章节摘要助手。",
       "你的任务不是评价章节，也不是改写正文，而是基于当前章节内容提炼一个可用于记录、检索与回顾的章节摘要。",
       "",
       "【任务边界】",
@@ -55,7 +55,7 @@ export const chapterSummaryPrompt: PromptAsset<
       "不要输出 Markdown、解释、注释、代码块或任何额外文本。",
       "",
       "【摘要要求】",
-      "1. summary 必须使用简体中文，长度控制在 80-180 字。",
+      "1. summary 必须使用西班牙语，长度控制在 80-180 字。",
       "2. 摘要必须覆盖本章最关键的事件推进，而不是泛泛概述氛围。",
       "3. 摘要应尽量同时体现以下信息中的主要部分：关键事件、冲突推进、人物状态变化、本章结果或留下的悬念。",
       "4. 摘要必须基于正文实际内容提炼，不得臆造正文中不存在的发展。",

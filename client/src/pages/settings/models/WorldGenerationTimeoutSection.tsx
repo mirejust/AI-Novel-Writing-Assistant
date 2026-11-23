@@ -44,25 +44,25 @@ export function WorldGenerationTimeoutSection() {
       timeoutMs: nextMinutes * MS_PER_MINUTE,
     }),
     onSuccess: async (response) => {
-      setFeedback(response.message ?? "世界观生成等待时间保存成功。");
+      setFeedback(response.message ?? "El tiempo de espera para la generación de la visión del mundo se guarda con éxito.");
       await queryClient.invalidateQueries({ queryKey: queryKeys.settings.worldGenerationTimeout });
     },
     onError: (error) => {
-      setFeedback(error instanceof Error ? error.message : "世界观生成等待时间保存失败。");
+      setFeedback(error instanceof Error ? error.message : "No se pudo guardar el tiempo de espera de generación de la visión del mundo.");
     },
   });
 
   return (
     <section className="space-y-3" aria-labelledby="world-generation-timeout-title">
       <div className="space-y-1">
-        <h2 id="world-generation-timeout-title" className="text-base font-medium">单次生成最长等待</h2>
+        <h2 id="world-generation-timeout-title" className="text-base font-medium">La espera más larga para una sola generación</h2>
         <p className="text-sm text-muted-foreground">
-          本地模型较慢时，可以调高世界观生成的单次等待。云端模型保持 2 分钟即可。保存后，下一次世界观生成按这个时间等待。失败后系统可能再自动试一次。
+          Cuando el modelo local es lento, puede aumentar la espera única para la generación de la visión mundial. El modelo en la nube se puede mantener durante 2 minutos. Después de guardar, espere este momento para la próxima generación de visión del mundo. El sistema puede volver a intentarlo automáticamente después de una falla.
         </p>
       </div>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
         <label className="space-y-1 text-sm">
-          <span>等待时间（分钟）</span>
+          <span>Tiempo de espera (minutos)</span>
           <Input
             type="number"
             min={minMinutes}
@@ -81,13 +81,13 @@ export function WorldGenerationTimeoutSection() {
           onClick={() => saveMutation.mutate(parsedMinutes)}
           disabled={settingsQuery.isLoading || saveMutation.isPending || !isValidTimeout}
         >
-          {saveMutation.isPending ? "保存中..." : "保存"}
+          {saveMutation.isPending ? "Guardando..." : "Guardar"}
         </Button>
       </div>
       {!isValidTimeout ? (
-        <p className="text-sm text-amber-700">请输入 {minMinutes} 到 {maxMinutes} 分钟之间的整数。</p>
+        <p className="text-sm text-amber-700">Por favor ingresa {minMinutes} llegar {maxMinutes} Un número entero entre minutos.</p>
       ) : (
-        <p className="text-sm text-muted-foreground">可设置 {minMinutes} 到 {maxMinutes} 分钟。</p>
+        <p className="text-sm text-muted-foreground">Se puede configurar {minMinutes} llegar {maxMinutes} minuto.</p>
       )}
       {feedback ? <p className="text-sm text-muted-foreground">{feedback}</p> : null}
     </section>

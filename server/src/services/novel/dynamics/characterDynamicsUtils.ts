@@ -210,14 +210,14 @@ export function buildOverviewSummary(input: {
   relationStageCount: number;
 }): string {
   const segments = [
-    input.volumeTitle ? `当前卷：${input.volumeTitle}` : "当前卷：未定位",
-    `核心角色 ${input.coreCount} 个`,
-    input.highCount > 0 ? `${input.highCount} 个角色已高风险缺席` : "",
-    input.warnCount > 0 ? `${input.warnCount} 个角色接近缺席阈值` : "",
-    input.pendingCandidateCount > 0 ? `待确认新角色 ${input.pendingCandidateCount} 个` : "",
-    input.relationStageCount > 0 ? `当前关系阶段 ${input.relationStageCount} 条` : "",
+    input.volumeTitle ? `Volumen actual:${input.volumeTitle}` : "Volumen actual: no localizado",
+    `rol central ${input.coreCount} individual`,
+    input.highCount > 0 ? `${input.highCount} Los personajes corren un alto riesgo de estar ausentes.` : "",
+    input.warnCount > 0 ? `${input.warnCount} Los personajes se acercan al umbral de ausencia.` : "",
+    input.pendingCandidateCount > 0 ? `Nuevos roles por confirmar ${input.pendingCandidateCount} individual` : "",
+    input.relationStageCount > 0 ? `etapa actual de la relación ${input.relationStageCount} banda` : "",
   ];
-  return segments.filter(Boolean).join("，");
+  return segments.filter(Boolean).join(",");
 }
 
 export function toCharacterCandidate(row: {

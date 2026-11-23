@@ -46,7 +46,7 @@ export class ActiveRunConflictError extends Error {
   readonly statusCode = 409;
 
   constructor(readonly activeRunId: string) {
-    super("这本书已有进行中的创作，请先继续或取消当前创作。");
+    super("Este libro ya se está creando. Continúe o cancele primero la creación actual.");
     this.name = "ActiveRunConflictError";
   }
 }
@@ -55,7 +55,7 @@ export class CommandVersionConflictError extends Error {
   readonly statusCode = 409;
 
   constructor(readonly cause: VersionConflictError) {
-    super("状态已变化，请刷新后再操作");
+    super("El estado ha cambiado, actualice antes de volver a operar.");
     this.name = "CommandVersionConflictError";
   }
 }
@@ -99,7 +99,7 @@ export function assertCommandReplay(savedPayload: unknown, inputPayload: unknown
     if (input?.type !== "resume" || saved?.type !== "resume" || saved.runId !== input.runId
       || saved.expectedVersion !== input.expectedVersion || !resolution || !previousResolution
       || resolution.chapterId !== previousResolution.chapterId) {
-      throw new InvalidDirectorCommandError("同一未决步骤确认不能修改章节，请刷新后重试。");
+      throw new InvalidDirectorCommandError("El mismo paso pendiente confirma que el capítulo no se puede modificar, actualice e intente nuevamente.");
     }
   }
   const newGate = inputPayload as Extract<DirectorCommand,{type:"resolve_gate"}> | null;
@@ -107,7 +107,7 @@ export function assertCommandReplay(savedPayload: unknown, inputPayload: unknown
   if ((newGate?.proseReview || oldGate?.proseReview) && (newGate?.type !== "resolve_gate" || oldGate?.type !== "resolve_gate" ||
     newGate.runId !== oldGate.runId || newGate.expectedVersion !== oldGate.expectedVersion || newGate.decision !== oldGate.decision ||
     JSON.stringify(newGate.proseReview) !== JSON.stringify(oldGate.proseReview))) {
-    throw new InvalidDirectorCommandError("这次确认的正文或续写范围有变化，请重新提交。");
+    throw new InvalidDirectorCommandError("Hay cambios en el texto principal o en el alcance de la continuación de esta confirmación, vuelva a enviarla.");
   }
   const grant = input?.chapterBudget, previous = saved?.chapterBudget;
   if (!grant && !previous) return;
@@ -117,7 +117,7 @@ export function assertCommandReplay(savedPayload: unknown, inputPayload: unknown
     || grant.metric !== previous.metric || grant.tokenLimit !== previous.tokenLimit
     || !directorChapterBudgetGrantSchema.safeParse(grant).success
     || Boolean(grant.applyToRemaining) !== Boolean(previous.applyToRemaining)) {
-    throw new InvalidDirectorCommandError("同一预算授权不能修改章节、额度或适用范围，请刷新后重试。");
+    throw new InvalidDirectorCommandError("No se podrá modificar el capítulo, cuota o ámbito de aplicación para una misma autorización presupuestaria. Actualice e inténtelo de nuevo.");
   }
 }
 
@@ -126,7 +126,7 @@ export class CommandService {
 
   async execute(input: unknown): Promise<DirectorCommandResult> {
     if (!isDirectorCommand(input)) {
-      throw new InvalidDirectorCommandError("命令格式不正确。");
+      throw new InvalidDirectorCommandError("El formato del comando es incorrecto.");
     }
     const existing = await this.deps.commandRepository.find(input.idempotencyKey);
     if (existing) {
@@ -160,7 +160,7 @@ export class CommandService {
         return this.transition(command, { type: "pause", pause: { kind: "manual_recovery", reason: "user_requested_pause" } });
       case "retry_start":
         if ((await this.requireControl(command.runId)).status !== "queued") {
-          throw new InvalidDirectorCommandError("只有尚未启动的创作可以重新排队。");
+          throw new InvalidDirectorCommandError("Sólo se pueden volver a poner en cola las creaciones que aún no se han iniciado.");
         }
         return this.transition(command, {type: "retry_start"});
       case "cancel":
@@ -168,7 +168,7 @@ export class CommandService {
       case "handoff":
         return this.handoff(command);
       default:
-        throw new InvalidDirectorCommandError("不支持的导演命令。");
+        throw new InvalidDirectorCommandError("Comando director no compatible.");
     }
   }
 
@@ -194,13 +194,13 @@ export class CommandService {
   private async resume(command: Extract<DirectorCommand, { type: "resume" }>): Promise<DirectorCommandResult> {
     const control = await this.requireControl(command.runId);
     if (control.status !== "paused" && control.status !== "failed") {
-      throw new InvalidDirectorCommandError("只有暂停或生成失败的创作可以继续。");
+      throw new InvalidDirectorCommandError("Solo pueden continuar las creaciones que estén en pausa o que no se hayan generado.");
     }
     if (command.chapterBudget && (!directorChapterBudgetGrantSchema.safeParse(command.chapterBudget).success || control.pause?.kind !== "manual_recovery")) {
-      throw new InvalidDirectorCommandError("只能为预算暂停中的章节追加有效额度。");
+      throw new InvalidDirectorCommandError("La cuota efectiva sólo se puede agregar a los capítulos cuyo presupuesto esté en espera.");
     }
     if (command.resolveUnknownClaims && (!directorUnknownClaimResolutionSchema.safeParse(command.resolveUnknownClaims).success || control.pause?.kind !== "manual_recovery")) {
-      throw new InvalidDirectorCommandError("只能为人工恢复暂停中的章节确认未决步骤。");
+      throw new InvalidDirectorCommandError("Los pasos pendientes solo se pueden reconocer para los capítulos que están en pausa de reanudación manual.");
     }
     return this.transition(command, { type: control.status === "failed" ? "recover_failed_step" : "resume" });
   }
@@ -208,18 +208,18 @@ export class CommandService {
   private async resolveGate(command: Extract<DirectorCommand, { type: "resolve_gate" }>): Promise<DirectorCommandResult> {
     const control = await this.requireControl(command.runId);
     if (control.status !== "waiting_gate") {
-      throw new InvalidDirectorCommandError("只有等待确认的创作可以处理门控。");
+      throw new InvalidDirectorCommandError("Sólo las creaciones en espera de confirmación pueden manejar la puerta.");
     }
     const resolution = this.deps.gateService ? await this.deps.gateService.prepare(command.runId, command.decision, command.expectedVersion, {expectedVolumePlanVersionId: command.expectedVolumePlanVersionId, guidance: command.guidance, proseReview:command.proseReview, chapterPlanEdit: command.chapterPlanEdit, assetEdit: command.assetEdit}) : undefined;
     let successor: CommandTransitionInput["successor"];
-    if (command.proseReview && (!resolution || !this.deps.prepareGate)) throw new InvalidDirectorCommandError("正文确认服务未就绪。");
+    if (command.proseReview && (!resolution || !this.deps.prepareGate)) throw new InvalidDirectorCommandError("El texto confirma que el servicio no está listo.");
     if (resolution && this.deps.prepareGate) {
       const contract = await this.deps.runRepository.getContract(command.runId);
-      if (!contract) throw new InvalidDirectorCommandError("找不到要确认的创作。");
+      if (!contract) throw new InvalidDirectorCommandError("No se puede encontrar la creación que desea confirmar.");
       await this.deps.prepareGate(contract, resolution, command.expectedVersion);
       const range = resolution.proseReview?.nextRange;
       if (range) {
-        if (!contract.launchInput || !this.deps.prepareOpen) throw new InvalidDirectorCommandError("缺少下一批的创作设置。");
+        if (!contract.launchInput || !this.deps.prepareOpen) throw new InvalidDirectorCommandError("Faltan configuraciones de creación para el próximo lote.");
         const next = this.deps.contractFactory({runId:this.deps.runtime.nextId(),novelId:contract.novelId,driver:contract.driver,stepIdsInScope:null,
           launchInput:{...contract.launchInput,targetMode:"opening",targetVolumeId:undefined,executionRange:range}});
         const initialArtifacts = await this.deps.prepareOpen(next);
@@ -264,12 +264,12 @@ export class CommandService {
       this.requireControl(command.runId),
       this.deps.runRepository.getContract(command.runId),
     ]);
-    if (!contract) throw new InvalidDirectorCommandError("找不到要切换的创作。");
+    if (!contract) throw new InvalidDirectorCommandError("No se puede encontrar la creación para cambiar.");
     if (control.cursorStepId) {
-      throw new InvalidDirectorCommandError("请等待当前阶段保存后再切换创作方式。");
+      throw new InvalidDirectorCommandError("Espere hasta que se guarde la etapa actual antes de cambiar el modo de creación.");
     }
     if (control.status === "cancelled" || control.status === "completed" || control.status === "failed") {
-      throw new InvalidDirectorCommandError("只有未结束的创作可以切换方式。");
+      throw new InvalidDirectorCommandError("Sólo las creaciones inacabadas pueden cambiar de modo.");
     }
     const runId = this.deps.runtime.nextId();
     const commandId = this.deps.runtime.nextId();
@@ -288,7 +288,7 @@ export class CommandService {
 
   private async requireControl(runId: string): Promise<RunControl> {
     const control = await this.deps.runRepository.getControl(runId);
-    if (!control) throw new InvalidDirectorCommandError("找不到要操作的创作。");
+    if (!control) throw new InvalidDirectorCommandError("No se puede encontrar la creación sobre la que operar.");
     return control;
   }
 }

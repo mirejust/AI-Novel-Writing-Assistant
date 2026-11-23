@@ -54,27 +54,27 @@ import { toast } from "@/components/ui/toast";
 type DramaTab = "source" | "strategy" | "episodes" | "quality" | "characters" | "visual" | "export";
 
 const TABS: Array<{ key: DramaTab; label: string }> = [
-  { key: "source", label: "来源素材" },
-  { key: "strategy", label: "短剧策略" },
-  { key: "episodes", label: "分集台本" },
-  { key: "quality", label: "质量问题" },
-  { key: "characters", label: "角色" },
-  { key: "visual", label: "分镜视频" },
-  { key: "export", label: "导出" },
+  { key: "source", label: "Material de origen" },
+  { key: "strategy", label: "Estrategia de sketch" },
+  { key: "episodes", label: "Guión del episodio" },
+  { key: "quality", label: "Problemas de calidad" },
+  { key: "characters", label: "Personaje" },
+  { key: "visual", label: "Vídeo del guión gráfico" },
+  { key: "export", label: "Exportar" },
 ];
 
 function statusLabel(status: string): string {
   const labels: Record<string, string> = {
-    draft: "素材准备",
-    strategized: "策略已生成",
-    outlined: "分集已生成",
-    scripting: "台本生成中",
-    completed: "已完成",
-    planned: "待生成台本",
-    scripted: "台本已生成",
-    reviewed: "已检查",
-    needs_repair: "需要修复",
-    approved: "已通过",
+    draft: "Preparación de materiales",
+    strategized: "Se ha generado la política",
+    outlined: "El episodio ha sido generado.",
+    scripting: "Se está generando el guión",
+    completed: "Completado",
+    planned: "Guión a generar",
+    scripted: "Se ha generado el script",
+    reviewed: "Comprobado",
+    needs_repair: "Necesita reparación",
+    approved: "Aprobado",
   };
   return labels[status] ?? status;
 }
@@ -101,22 +101,22 @@ function compactText(input: unknown): string {
 }
 
 const STRATEGY_LABELS: Record<string, string> = {
-  positioning: "受众定位",
-  mainPleasureLine: "主爽点线",
-  paywallNote: "付费卡点规划",
-  paywallPlan: "付费卡点计划",
-  emotionCurveNote: "情绪曲线",
-  deviationDeclaration: "改编边界",
+  positioning: "Posicionamiento de la audiencia",
+  mainPleasureLine: "Línea de punto principal",
+  paywallNote: "Planificación de puntos de tarjeta de pago",
+  paywallPlan: "Plan de puntos de tarjeta paga",
+  emotionCurveNote: "Curva de sentimiento",
+  deviationDeclaration: "Límite de adaptación",
 };
 
 const SCORE_LABELS: Record<string, string> = {
-  hook: "开场钩子",
-  density: "信息密度",
-  paywall: "付费卡点",
-  emotion: "情绪曲线",
-  duration: "时长",
-  consistency: "一致性",
-  overall: "综合",
+  hook: "Gancho de apertura",
+  density: "Densidad de información",
+  paywall: "Pagar puntos de tarjeta",
+  emotion: "Curva de sentimiento",
+  duration: "Duración",
+  consistency: "Consistencia",
+  overall: "Integral",
 };
 
 function downloadBlob(blob: Blob, filename: string) {
@@ -164,11 +164,11 @@ function ProjectProgress(props: { project: DramaProjectDetail }) {
     ["reviewed", "needs_repair", "approved"].includes(episode.status)
   ).length ?? 0;
   const steps = [
-    { label: "素材包", done: hasBundle },
-    { label: "策略", done: hasStrategy },
-    { label: "分集", done: episodeCount > 0 },
-    { label: "台本", done: scriptedCount > 0 },
-    { label: "质量", done: reviewedCount > 0 },
+    { label: "Paquete de materiales", done: hasBundle },
+    { label: "Estrategia", done: hasStrategy },
+    { label: "Diversidad", done: episodeCount > 0 },
+    { label: "Guion", done: scriptedCount > 0 },
+    { label: "Calidad", done: reviewedCount > 0 },
   ];
 
   return (
@@ -187,7 +187,7 @@ function StrategyPanel({ project }: { project: DramaProjectDetail }) {
   const strategy = safeJson<Record<string, unknown>>(project.strategy, {});
   const entries = Object.entries(strategy);
   if (!project.strategy) {
-    return <div className="rounded-md border border-dashed p-6 text-sm text-muted-foreground">还没有生成短剧策略。</div>;
+    return <div className="rounded-md border border-dashed p-6 text-sm text-muted-foreground">Aún no se ha generado ninguna estrategia de sketch.</div>;
   }
   return (
     <div className="grid gap-3 lg:grid-cols-2">
@@ -223,12 +223,12 @@ function EpisodeCard(props: {
       onClick={props.onSelect}
     >
       <div className="flex flex-wrap items-center gap-2">
-        <span className="font-medium">第 {props.episode.order} 集</span>
-        <Badge variant={props.episode.isPaywall ? "default" : "secondary"}>{props.episode.isPaywall ? "付费卡点" : "普通集"}</Badge>
+        <span className="font-medium">Cap. {props.episode.order} Colocar</span>
+        <Badge variant={props.episode.isPaywall ? "default" : "secondary"}>{props.episode.isPaywall ? "Pagar puntos de tarjeta" : "Conjunto ordinario"}</Badge>
         <Badge variant="outline">{statusLabel(props.episode.status)}</Badge>
       </div>
       <div className="mt-2 font-medium">{props.episode.title}</div>
-      <div className="mt-1 line-clamp-2 text-muted-foreground">{props.episode.hookOpening || props.episode.cliffhanger || "暂无钩子信息"}</div>
+      <div className="mt-1 line-clamp-2 text-muted-foreground">{props.episode.hookOpening || props.episode.cliffhanger || "Aún no hay información sobre el gancho"}</div>
     </button>
   );
 }
@@ -241,13 +241,13 @@ function QualityFlags({ episode }: { episode: DramaEpisode }) {
     repairPlan?: { mode?: string; instruction?: string };
   }>(episode.qualityFlags, {});
   if (!episode.qualityFlags) {
-    return <div className="rounded-md border border-dashed p-4 text-sm text-muted-foreground">还没有质量检查结果。</div>;
+    return <div className="rounded-md border border-dashed p-4 text-sm text-muted-foreground">Aún no hay resultados de control de calidad.</div>;
   }
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-2">
-        <Badge variant={quality.status === "approved" ? "default" : "secondary"}>{quality.status || "已检查"}</Badge>
-        {quality.score?.overall != null ? <span className="text-sm text-muted-foreground">综合 {quality.score.overall}</span> : null}
+        <Badge variant={quality.status === "approved" ? "default" : "secondary"}>{quality.status || "Comprobado"}</Badge>
+        {quality.score?.overall != null ? <span className="text-sm text-muted-foreground">integral {quality.score.overall}</span> : null}
       </div>
       {quality.score ? (
         <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
@@ -265,7 +265,7 @@ function QualityFlags({ episode }: { episode: DramaEpisode }) {
             <div key={`${flag.code ?? "flag"}-${index}`} className="rounded-md border p-3 text-sm">
               <div className="flex flex-wrap items-center gap-2">
                 <Badge variant="outline">{flag.severity || "notice"}</Badge>
-                <span className="font-medium">{flag.code || "质量提示"}</span>
+                <span className="font-medium">{flag.code || "Consejos de calidad"}</span>
               </div>
               <p className="mt-2 text-muted-foreground">{flag.evidence}</p>
               <p className="mt-1">{flag.suggestion}</p>
@@ -275,7 +275,7 @@ function QualityFlags({ episode }: { episode: DramaEpisode }) {
       ) : null}
       {quality.repairPlan?.instruction ? (
         <div className="rounded-md border border-dashed p-3 text-sm">
-          <div className="font-medium">建议修复</div>
+          <div className="font-medium">Solución sugerida</div>
           <p className="mt-1 text-muted-foreground">{quality.repairPlan.instruction}</p>
         </div>
       ) : null}
@@ -317,7 +317,7 @@ function EpisodesPanel(props: {
   };
 
   if (episodes.length === 0) {
-    return <div className="rounded-md border border-dashed p-6 text-sm text-muted-foreground">还没有分集大纲。先生成前 12 集分集。</div>;
+    return <div className="rounded-md border border-dashed p-6 text-sm text-muted-foreground">Aún no hay un resumen del episodio. Primero genera los primeros 12 episodios.</div>;
   }
 
   return (
@@ -336,67 +336,67 @@ function EpisodesPanel(props: {
         <Card className="rounded-lg">
           <CardHeader className="gap-3 lg:flex-row lg:items-start lg:justify-between">
             <div className="space-y-2">
-              <CardTitle className="text-lg">第 {selectedEpisode.order} 集：{selectedEpisode.title}</CardTitle>
-              {unsaved ? <p role="status" className="text-sm text-warning">本集有未保存的修改。切换分集或标签后可以回来继续编辑。</p> : null}
-              <CardDescription>{selectedEpisode.hookOpening || "本集尚未写入开场钩子。"}</CardDescription>
+              <CardTitle className="text-lg">Cap. {selectedEpisode.order} Colocar:{selectedEpisode.title}</CardTitle>
+              {unsaved ? <p role="status" className="text-sm text-warning">Este episodio tiene cambios no guardados. Puede regresar y continuar editando después de cambiar de episodio o etiqueta.</p> : null}
+              <CardDescription>{selectedEpisode.hookOpening || "Aún no se ha escrito el gancho inicial para este episodio."}</CardDescription>
             </div>
             <div className="flex flex-wrap gap-2">
               <Button size="sm" type="button" disabled={props.busy} onClick={() => props.onGenerateScript(selectedEpisode.order)}>
                 <Wand2 className="h-4 w-4" />
-                生成台本
+                Generar guión
               </Button>
               <Button size="sm" type="button" variant="outline" disabled={props.busy || !selectedEpisode.content?.trim()} onClick={() => props.onReview(selectedEpisode.order)}>
                 <CheckCircle2 className="h-4 w-4" />
-                质量检查
+                control de calidad
               </Button>
               <Button size="sm" type="button" variant="outline" disabled={props.busy || !selectedEpisode.content?.trim()} onClick={() => props.onRepair(selectedEpisode.order)}>
                 <RefreshCw className="h-4 w-4" />
-                修复
+                reparar
               </Button>
               <Button size="sm" type="button" variant="outline" disabled={props.busy} onClick={() => props.onSave(selectedEpisode.order, draft)}>
                 <Save className="h-4 w-4" />
-                保存编辑
+                Guardar ediciones
               </Button>
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid gap-3 md:grid-cols-3">
-              <div className="rounded-md border p-3 text-sm">时长：{selectedEpisode.durationSec ?? "待生成"} 秒</div>
-              <div className="rounded-md border p-3 text-sm">情绪净值：{selectedEpisode.emotionNet ?? "待生成"}</div>
-              <div className="rounded-md border p-3 text-sm">状态：{statusLabel(selectedEpisode.status)}</div>
+              <div className="rounded-md border p-3 text-sm">Duración:{selectedEpisode.durationSec ?? "Pendiente de generar"} Segundo</div>
+              <div className="rounded-md border p-3 text-sm">Patrimonio neto emocional:{selectedEpisode.emotionNet ?? "Pendiente de generar"}</div>
+              <div className="rounded-md border p-3 text-sm">Estado:{statusLabel(selectedEpisode.status)}</div>
             </div>
             <section className="space-y-2">
-              <h3 className="text-sm font-medium">本集信息</h3>
+              <h3 className="text-sm font-medium">Información sobre este episodio</h3>
               <div className="grid gap-3 lg:grid-cols-2">
                 <label className="block space-y-1.5 text-sm">
-                  <span className="font-medium">标题</span>
+                  <span className="font-medium">Título</span>
                   <input className="h-10 w-full rounded-md border bg-background px-3 text-sm" value={draft.title} onChange={(event) => setDraft((current) => ({ ...current, title: event.target.value }))} />
                 </label>
                 <label className="block space-y-1.5 text-sm">
-                  <span className="font-medium">预计时长（秒）</span>
+                  <span className="font-medium">Duración estimada (segundos)</span>
                   <input className="h-10 w-full rounded-md border bg-background px-3 text-sm" value={draft.durationSec} onChange={(event) => setDraft((current) => ({ ...current, durationSec: event.target.value }))} />
                 </label>
                 <label className="block space-y-1.5 text-sm lg:col-span-2">
-                  <span className="font-medium">开场钩子</span>
+                  <span className="font-medium">Gancho de apertura</span>
                   <textarea className="min-h-20 w-full rounded-md border bg-background px-3 py-2 text-sm" value={draft.hookOpening} onChange={(event) => setDraft((current) => ({ ...current, hookOpening: event.target.value }))} />
                 </label>
                 <label className="block space-y-1.5 text-sm lg:col-span-2">
-                  <span className="font-medium">结尾卡点</span>
+                  <span className="font-medium">Punto atascado al final</span>
                   <textarea className="min-h-20 w-full rounded-md border bg-background px-3 py-2 text-sm" value={draft.cliffhanger} onChange={(event) => setDraft((current) => ({ ...current, cliffhanger: event.target.value }))} />
                 </label>
               </div>
             </section>
             <section className="space-y-2">
-              <h3 className="text-sm font-medium">台本</h3>
+              <h3 className="text-sm font-medium">Guion</h3>
               <textarea
                 className="min-h-[420px] w-full rounded-md border bg-background px-3 py-2 text-sm leading-6"
                 value={draft.content}
-                placeholder="还没有生成台本。可以先生成，也可以手动写入。"
+                placeholder="El guión aún no se ha generado. Puede generarse primero o escribirse manualmente."
                 onChange={(event) => setDraft((current) => ({ ...current, content: event.target.value }))}
               />
             </section>
             <section className="space-y-2">
-              <h3 className="text-sm font-medium">质量结果</h3>
+              <h3 className="text-sm font-medium">Resultados de calidad</h3>
               <QualityFlags episode={selectedEpisode} />
             </section>
             <DramaEpisodeAudioPanel
@@ -506,7 +506,7 @@ function DramaProjectWorkspace({ id }: { id?: string }) {
     }
     const durationSec = input.durationSec.trim() ? Number(input.durationSec) : undefined;
     if (!input.title.trim()) {
-      toast.error("请填写本集标题。");
+      toast.error("Por favor complete el título de este episodio.");
       return;
     }
     const episode = project.episodes?.find(item => item.order === order);
@@ -519,7 +519,7 @@ function DramaProjectWorkspace({ id }: { id?: string }) {
         content: input.content,
         durationSec: durationSec !== undefined && Number.isFinite(durationSec) ? durationSec : null,
       }),
-      `第 ${order} 集已保存。`,
+      `Cap. ${order} Conjunto guardado.`,
     ).then(() => {
       setDrafts(current => {
         if (current[episode.id] !== input) return current;
@@ -536,25 +536,25 @@ function DramaProjectWorkspace({ id }: { id?: string }) {
     if (drafts[episode.id]) {
       setSelectedOrder(order);
       setActiveTab("episodes");
-      toast.info("请先保存本集手改，再让 AI 修改台本。");
+      toast.info("Primero guarde la modificación manual de este episodio y luego deje que AI modifique el guión.");
       return;
     }
     return repair
-      ? runAction(() => repairDramaEpisode(project.id, order), `第 ${order} 集已按质量建议修复。`)
-      : runAction(() => generateDramaEpisodeScript(project.id, order), `第 ${order} 集台本已生成。`);
+      ? runAction(() => repairDramaEpisode(project.id, order), `Cap. ${order} El conjunto se ha arreglado según las recomendaciones de calidad.`)
+      : runAction(() => generateDramaEpisodeScript(project.id, order), `Cap. ${order} Se ha generado el script establecido.`);
   };
 
   if (projectQuery.isLoading) {
-    return <div className="rounded-md border p-4 text-sm text-muted-foreground">正在加载短剧项目...</div>;
+    return <div className="rounded-md border p-4 text-sm text-muted-foreground">Cargando proyectos de sketches...</div>;
   }
 
   if (!project) {
     return (
       <div className="space-y-4">
         <Button asChild variant="outline" size="sm">
-          <Link to="/drama"><ArrowLeft className="h-4 w-4" />返回短剧工作台</Link>
+          <Link to="/drama"><ArrowLeft className="h-4 w-4" />Volver al banco de trabajo de drama corto</Link>
         </Button>
-        <div className="rounded-md border border-dashed p-6 text-sm text-muted-foreground">没有找到这个短剧项目。</div>
+        <div className="rounded-md border border-dashed p-6 text-sm text-muted-foreground">Este elemento de juego corto no fue encontrado.</div>
       </div>
     );
   }
@@ -564,26 +564,26 @@ function DramaProjectWorkspace({ id }: { id?: string }) {
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="space-y-2">
           <Button asChild variant="ghost" size="sm" className="px-0">
-            <Link to="/drama"><ArrowLeft className="h-4 w-4" />短剧工作台</Link>
+            <Link to="/drama"><ArrowLeft className="h-4 w-4" />Banco de trabajo de drama corto</Link>
           </Button>
           <div className="flex flex-wrap items-center gap-2">
             <h1 className="text-2xl font-semibold tracking-normal">{project.title}</h1>
             <Badge variant="secondary">{statusLabel(project.status)}</Badge>
             <Badge variant="outline">{dramaTrackLabel(project.track)}</Badge>
-            <Badge variant="outline">{project.targetEpisodes} 集</Badge>
+            <Badge variant="outline">{project.targetEpisodes} Colocar</Badge>
             {batchCostSummary ? (
               <Badge variant="outline">
-                生产费用：已用 {formatBatchCost(batchCostSummary, batchCostSummary.actual)} / 预计 {formatBatchCost(batchCostSummary, batchCostSummary.estimated)}
+                Gastos de producción: usado {formatBatchCost(batchCostSummary, batchCostSummary.actual)} / esperado {formatBatchCost(batchCostSummary, batchCostSummary.estimated)}
               </Badge>
             ) : null}
           </div>
           <p className="text-sm text-muted-foreground">
-            按“素材 → 策略 → 分集 → 台本 → 质量 → 分镜视频”的顺序推进这部短剧。
+            Avance este breve drama en el orden de "Material → Estrategia → Episodio → Guión → Calidad → Video del guión gráfico".
           </p>
         </div>
         <Button type="button" variant="outline" disabled={projectQuery.isFetching} onClick={() => void projectQuery.refetch()}>
           <RefreshCw className="h-4 w-4" />
-          刷新
+          refrescar
         </Button>
       </div>
 
@@ -594,24 +594,24 @@ function DramaProjectWorkspace({ id }: { id?: string }) {
         busy={actionMutation.isPending}
         onSetTab={setActiveTab}
         onSelectEpisode={setSelectedOrder}
-        onAssembleSource={() => runAction(() => assembleDramaSourceBundle(project.id), "短剧素材已整理。")}
-        onGenerateStrategy={() => runAction(() => generateDramaStrategy(project.id), "短剧策略已生成。")}
+        onAssembleSource={() => runAction(() => assembleDramaSourceBundle(project.id), "Se han recopilado los materiales de juego breve.")}
+        onGenerateStrategy={() => runAction(() => generateDramaStrategy(project.id), "Estrategia de sketch generada.")}
         onGenerateOutline={() => {
           const unsaved = project.episodes?.find(episode => episode.order <= 12 && drafts[episode.id]);
           if (unsaved) {
             setSelectedOrder(unsaved.order);
             setActiveTab("episodes");
-            toast.info(`请先保存第 ${unsaved.order} 集的修改，再生成前 12 集分集。`);
+            toast.info(`Por favor guarda el primero ${unsaved.order} Modificaciones a los episodios y regeneración de los primeros 12 episodios.`);
             return;
           }
-          return runAction(() => generateDramaOutline(project.id, { startOrder: 1, count: 12 }), "前 12 集分集已生成。");
+          return runAction(() => generateDramaOutline(project.id, { startOrder: 1, count: 12 }), "Se han producido los primeros 12 episodios.");
         }}
         onGenerateScript={order => changeEpisodeScript(order, false)}
-        onReviewEpisode={(order) => runAction(() => reviewDramaEpisode(project.id, order), `第 ${order} 集质量检查完成。`)}
+        onReviewEpisode={(order) => runAction(() => reviewDramaEpisode(project.id, order), `Cap. ${order} Inspección de calidad del conjunto completada.`)}
         onRepairEpisode={order => changeEpisodeScript(order, true)}
-        onGenerateStoryboard={(order) => runAction(() => generateDramaStoryboard(project.id, order), `第 ${order} 集分镜已生成。`)}
-        onGenerateVideoPrompt={(shot) => runAction(() => generateDramaVideoPrompt(project.id, shot.id), `镜头 ${shot.order} 的视频提示词已生成。`)}
-        onCreateProviderTask={(prompt) => runAction(() => createDramaVideoProviderTask(prompt.id, activeVideoProvider), "视频任务已创建。")}
+        onGenerateStoryboard={(order) => runAction(() => generateDramaStoryboard(project.id, order), `Cap. ${order} Se ha generado el guión gráfico del episodio.`)}
+        onGenerateVideoPrompt={(shot) => runAction(() => generateDramaVideoPrompt(project.id, shot.id), `lente ${shot.order} Se ha generado la palabra de aviso del vídeo.`)}
+        onCreateProviderTask={(prompt) => runAction(() => createDramaVideoProviderTask(prompt.id, activeVideoProvider), "Se ha creado la tarea de vídeo.")}
         onExportMarkdown={() => void handleExport("markdown")}
       />
 
@@ -644,10 +644,10 @@ function DramaProjectWorkspace({ id }: { id?: string }) {
           selectedOrder={selectedOrderValue}
           onSelectOrder={setSelectedOrder}
           ttsProviders={ttsProviders}
-          onBatchJob={(order, input) => runAction(() => createDramaEpisodeBatchJob(project.id, order, input), "配音任务已创建。")}
+          onBatchJob={(order, input) => runAction(() => createDramaEpisodeBatchJob(project.id, order, input), "Tarea de locución creada.")}
           busy={actionMutation.isPending}
           onGenerateScript={order => changeEpisodeScript(order, false)}
-          onReview={(order) => runAction(() => reviewDramaEpisode(project.id, order), `第 ${order} 集质量检查完成。`)}
+          onReview={(order) => runAction(() => reviewDramaEpisode(project.id, order), `Cap. ${order} Inspección de calidad del conjunto completada.`)}
           onRepair={order => changeEpisodeScript(order, true)}
           onSave={handleSaveEpisode}
         />
@@ -658,8 +658,8 @@ function DramaProjectWorkspace({ id }: { id?: string }) {
           busy={actionMutation.isPending}
           onSelectEpisode={setSelectedOrder}
           onOpenEpisodes={() => setActiveTab("episodes")}
-          onReview={(order) => runAction(() => reviewDramaEpisode(project.id, order), `第 ${order} 集质量检查完成。`)}
-          onComplianceAll={() => runAction(() => checkDramaProjectCompliance(project.id), "合规预检完成。")}
+          onReview={(order) => runAction(() => reviewDramaEpisode(project.id, order), `Cap. ${order} Inspección de calidad del conjunto completada.`)}
+          onComplianceAll={() => runAction(() => checkDramaProjectCompliance(project.id), "Verificación previa de cumplimiento completada.")}
           onRepair={order => changeEpisodeScript(order, true)}
         />
       ) : null}
@@ -670,7 +670,7 @@ function DramaProjectWorkspace({ id }: { id?: string }) {
           busy={actionMutation.isPending}
           onSave={(character, input) => {
             if (!input.name.trim()) {
-              toast.error("请填写角色名。");
+              toast.error("Por favor completa el nombre del personaje.");
               return;
             }
             runAction(
@@ -683,16 +683,16 @@ function DramaProjectWorkspace({ id }: { id?: string }) {
                 voiceProfile: input.voiceAnchor.trim() || undefined,
                 relations: input.relationMap.trim() || undefined,
               }),
-              `${input.name || character.name} 已保存。`,
+              `${input.name || character.name} Guardado.`,
             );
           }}
           onSaveToLibrary={(character) => runAction(
             () => saveDramaCharacterToLibrary(project.id, character.id),
-            `${character.name} 已保存到角色库。`,
+            `${character.name} Guardado en la biblioteca de personajes.`,
           )}
           onImportFromLibrary={(libraryId) => runAction(
             () => importDramaCharacterFromLibrary(project.id, libraryId),
-            "角色已导入当前项目。",
+            "El rol se ha importado al proyecto actual.",
           )}
           onRefreshProject={() => void projectQuery.refetch()}
         />
@@ -703,41 +703,41 @@ function DramaProjectWorkspace({ id }: { id?: string }) {
           selectedOrder={selectedOrderValue}
           onSelectOrder={setSelectedOrder}
           busy={actionMutation.isPending}
-          onStoryboard={(order) => runAction(() => generateDramaStoryboard(project.id, order), `第 ${order} 集分镜已生成。`)}
-          onBatchJob={(order, input) => runAction(() => createDramaEpisodeBatchJob(project.id, order, input), "批量任务已创建。")}
-          onKeyframe={(shot, provider, useCharacterRefImages, overrides) => runAction(() => generateDramaShotKeyframe(project.id, shot.id, provider, useCharacterRefImages, overrides), `镜头 ${shot.order} 的首帧图已生成。`)}
-          onVideoPrompt={(shot) => runAction(() => generateDramaVideoPrompt(project.id, shot.id), `镜头 ${shot.order} 的视频提示词已生成。`)}
+          onStoryboard={(order) => runAction(() => generateDramaStoryboard(project.id, order), `Cap. ${order} Se ha generado el guión gráfico del episodio.`)}
+          onBatchJob={(order, input) => runAction(() => createDramaEpisodeBatchJob(project.id, order, input), "Se ha creado la tarea por lotes.")}
+          onKeyframe={(shot, provider, useCharacterRefImages, overrides) => runAction(() => generateDramaShotKeyframe(project.id, shot.id, provider, useCharacterRefImages, overrides), `lente ${shot.order} Se ha generado el primer fotograma de la imagen.`)}
+          onVideoPrompt={(shot) => runAction(() => generateDramaVideoPrompt(project.id, shot.id), `lente ${shot.order} Se ha generado la palabra de aviso del vídeo.`)}
           videoProviders={videoProviders}
           selectedProvider={activeVideoProvider}
           onSelectProvider={setSelectedVideoProvider}
-          onProviderTask={(prompt, provider) => runAction(() => createDramaVideoProviderTask(prompt.id, provider), "视频任务已创建。")}
-          onRefreshProviderTask={(prompt) => runAction(() => refreshDramaVideoProviderTask(prompt.id), "视频任务状态已刷新。")}
+          onProviderTask={(prompt, provider) => runAction(() => createDramaVideoProviderTask(prompt.id, provider), "Se ha creado la tarea de vídeo.")}
+          onRefreshProviderTask={(prompt) => runAction(() => refreshDramaVideoProviderTask(prompt.id), "Se actualizó el estado de la tarea de video.")}
         />
       ) : null}
       {activeTab === "export" ? (
         <Card className="rounded-lg">
           <CardHeader>
-            <CardTitle className="text-lg">导出短剧资料</CardTitle>
-            <CardDescription>导出当前项目的角色、分集和已生成台本。</CardDescription>
+            <CardTitle className="text-lg">Exportar datos de sketches</CardTitle>
+            <CardDescription>Exporta los personajes, episodios y guiones generados del proyecto actual.</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-wrap gap-2">
             <Button type="button" onClick={() => void handleExport("markdown")}>
               <Download className="h-4 w-4" />
-              导出 Markdown
+              Rebaja de exportación
             </Button>
             <Button type="button" variant="outline" onClick={() => void handleExport("json")}>
               <Download className="h-4 w-4" />
-              导出 JSON
+              Exportar JSON
             </Button>
             {selectedOrderValue ? (
               <>
                 <Button type="button" variant="outline" onClick={() => void handleEpisodeExport(selectedOrderValue, "srt")}>
                   <Download className="h-4 w-4" />
-                  导出本集 SRT
+                  Exportar este episodio SRT
                 </Button>
                 <Button type="button" variant="outline" onClick={() => void handleEpisodeExport(selectedOrderValue, "timeline-json")}>
                   <Download className="h-4 w-4" />
-                  导出剪辑草稿
+                  Exportar borrador de clip
                 </Button>
               </>
             ) : null}

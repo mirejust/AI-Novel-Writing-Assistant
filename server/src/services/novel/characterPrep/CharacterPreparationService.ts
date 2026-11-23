@@ -89,7 +89,7 @@ function openingMemberInput(member: CharacterCastOptionMember) {
     moralLine: member.moralLine ?? undefined,
     firstImpression: member.firstImpression ?? undefined,
     currentGoal: member.outerGoal ?? undefined,
-    currentState: "等待进入正文",
+    currentState: "Esperando ingresar el texto",
   };
 }
 
@@ -349,7 +349,7 @@ export class CharacterPreparationService {
     const contextBlocks = buildCharacterCastContextBlocks({
       projectTitle: novel.title,
       estimatedChapterCount: novel.estimatedChapterCount,
-      storyInput: storyInput || "暂无直接故事输入，请结合书级约束补齐真实可入戏角色。",
+      storyInput: storyInput || "Aún no hay información directa sobre la historia; combine las limitaciones del nivel del libro para completar los personajes jugables reales.",
       genreName: novel.genre?.name ?? null,
       storyModeBlock,
       styleTone: novel.styleTone ?? null,
@@ -392,7 +392,7 @@ export class CharacterPreparationService {
         sourceType: "cast_option_projection",
       });
     } catch (error) {
-      console.warn("[character-cast-apply] 角色动态投影后台补齐失败", {
+      console.warn("[character-cast-apply] Error al completar la proyección dinámica del fondo del personaje", {
         ...logContext,
         stage: "character_dynamics",
         error,
@@ -406,7 +406,7 @@ export class CharacterPreparationService {
         input.visibleProfileGeneration,
       );
     } catch (error) {
-      console.warn("[character-cast-apply] 外显资料后台补齐失败", {
+      console.warn("[character-cast-apply] No se pudieron completar datos explícitos en segundo plano", {
         ...logContext,
         stage: "visible_profile",
         error,
@@ -420,7 +420,7 @@ export class CharacterPreparationService {
         input.visibleProfileGeneration,
       );
     } catch (error) {
-      console.warn("[character-cast-apply] 角色思路线补齐失败", {
+      console.warn("[character-cast-apply] No se pudo completar la línea del personaje.", {
         ...logContext,
         stage: "character_mind",
         error,
@@ -704,7 +704,7 @@ export class CharacterPreparationService {
     });
 
     if (options.requireEmptyCast && existingCharacters.length > 0) {
-      throw new Error("本书已有角色，请保留角色资料后重新准备阵容。");
+      throw new Error("Ya hay personajes en este libro, conserve la información de los personajes y prepare la alineación nuevamente.");
     }
     const characterIdByName = new Map<string, string>();
     const involvedCharacterIds: string[] = [];
@@ -750,7 +750,7 @@ export class CharacterPreparationService {
         })
         .filter((item): item is NonNullable<typeof item> => Boolean(item));
 
-      if (!replace && relationRows.length !== option.relations.length) throw new Error("阵容包含无效的人物关系，请重新核对角色名单。");
+      if (!replace && relationRows.length !== option.relations.length) throw new Error("La alineación contiene relaciones de personajes no válidas; vuelva a verificar la lista de personajes.");
       if (relationRows.length > 0) {
         await db.characterRelation.createMany({ data: relationRows });
       }
@@ -838,7 +838,7 @@ export class CharacterPreparationService {
       // 快速开篇把增强资料延后到首章正文完成后，由持久化副作用任务补齐。
     } else if (options.postApplyMode === "background") {
       void this.runPostApplyEnhancements(postApplyInput).catch((error) => {
-        console.warn("[character-cast-apply] 阵容应用后台补齐任务失败", {
+        console.warn("[character-cast-apply] Error en la tarea de finalización en segundo plano de la aplicación de alineación", {
           novelId,
           optionId: option.id,
           characterIds: uniqueCharacterIds,

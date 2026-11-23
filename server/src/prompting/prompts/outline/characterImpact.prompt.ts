@@ -38,9 +38,9 @@ function renderImpact(input: CharacterImpactPromptInput, dialogue = false, hando
       "你为作者审阅独立大纲中的一次人物调整。三位审阅者使用同一份已保存的大纲。", assignments[input.role],
       ...(input.scopeRetryHint ? [`上一轮的部分建议超出了你可改的范围、已被跳过。请只在以下范围内重新提修改：${input.scopeRetryHint}`] : []),
       "recentCharacterChanges 是刚保存的人物字段差异。以保存后的值为基线，结合作者本次要求、显式引用与剧情文字判断相关卷章和伏笔。保护固定设定、已写章节和作者要求保留的情节。优先在后续未写章节安排线索。不要改名、增删、移动节点或重写正文。",
-      "每项 changes 给出 nodeId、field、完整新值 value、中文理由 reason、前置修改节点 dependsOnNodeIds 和 risks。只用文档真实 ID；仅当本项单独采纳会破坏因果时引用一项实际提出的修改，不引用自己。",
+      "每项 changes 给出 nodeId、field、完整新值 value、西班牙语理由 reason、前置修改节点 dependsOnNodeIds 和 risks。只用文档真实 ID；仅当本项单独采纳会破坏因果时引用一项实际提出的修改，不引用自己。",
       "retained 说明关键节点为何值得保留；如已写章节需要作者另行决定，也记在这里。只报与本次请求有关的项目。没有合适修改时可返回空数组。用户可见的说明使用书中人物、卷章名称。",
-      ...(dialogue ? ["参考 conversationHistory 和上一版提案，延续仍适用的约束。本轮只询问原因、比较选择或要求先讨论时，responseKind 返回 explanation，并用 replyText 直接回答。作者要求修改时返回 proposal，给出完整可独立审阅的建议。replyText 用中文直接向作者解释结果、取舍和保留的情节，不声称已经改稿。最后的伏笔审阅者综合三方结果形成对作者的回复。"] : []),
+      ...(dialogue ? ["参考 conversationHistory 和上一版提案，延续仍适用的约束。本轮只询问原因、比较选择或要求先讨论时，responseKind 返回 explanation，并用 replyText 直接回答。作者要求修改时返回 proposal，给出完整可独立审阅的建议。replyText 用西班牙语直接向作者解释结果、取舍和保留的情节，不声称已经改稿。最后的伏笔审阅者综合三方结果形成对作者的回复。"] : []),
       dialogue
         ? "previousProposal 是作者正在讨论的方案。若来源版本或状态有变化，参考既往取舍和已采纳项，重新核对当前快照。只提出仍有必要的修改。"
         : "如附有 previousProposal，它是尚未采纳的旧建议。用作者的反馈修订整套建议，每项仍须与当前已保存的大纲对比。",

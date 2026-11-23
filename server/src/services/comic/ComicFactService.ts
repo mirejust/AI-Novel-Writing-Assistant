@@ -31,14 +31,14 @@ export class ComicFactService {
       // 构建本话分格摘要（action + 首条对白），控制在 2000 字内
       const panelSummary = episode.panels
         .map((p) => {
-          let line = `格${p.order}[${p.panelType}]: ${p.action}`;
+          let line = `red${p.order}[${p.panelType}]: ${p.action}`;
           if (p.characterRefs) {
             try {
               const refs = JSON.parse(p.characterRefs) as Array<{ name?: string; costume?: string; expression?: string } | string>;
               const names = refs
                 .map((r) => (typeof r === "string" ? r : r.name))
                 .filter(Boolean)
-                .join("、");
+                .join(",");
               if (names) line += ` (${names})`;
             } catch { /* ignore */ }
           }
@@ -56,7 +56,7 @@ export class ComicFactService {
         promptInput: {
           projectTitle: episode.project.title,
           episodeOrder: episode.order,
-          episodeTitle: episode.title ?? `第 ${episode.order} 话`,
+          episodeTitle: episode.title ?? `Cap. ${episode.order} hablar`,
           panelSummary,
           existingFacts,
         },

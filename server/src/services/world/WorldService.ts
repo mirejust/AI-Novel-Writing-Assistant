@@ -350,10 +350,10 @@ export class WorldService {
       asset: worldAxiomSuggestionPrompt,
       promptInput: {
         worldName: world.name,
-        worldType: world.worldType ?? "未知",
+        worldType: world.worldType ?? "Desconocido",
         templateName: template.name,
         templateDescription: template.description,
-        description: world.description ?? "无",
+        description: world.description ?? "Ninguno",
         blueprintPromptBlock,
       },
       options: {
@@ -366,11 +366,11 @@ export class WorldService {
     return axioms.length > 0
       ? axioms
       : [
-        "力量必须支付可衡量的代价。",
-        "任何规则突破都必须留下可追溯机制。",
-        "政治秩序受资源流动约束。",
-        "核心冲突必须源于世界规则而非偶然。",
-        "任何角色都不能直接违背基础公理。",
+        "La energía debe pagar un precio mensurable.",
+        "Cualquier incumplimiento de las reglas debe dejar un mecanismo de trazabilidad.",
+        "El orden político se rige por el flujo de recursos.",
+        "El conflicto central debe surgir de las reglas del mundo, no del azar.",
+        "Ningún personaje puede violar directamente un axioma fundamental.",
       ];
   }
 
@@ -736,7 +736,7 @@ export class WorldService {
               currentObjective: "",
               pressure: "",
               leader: null,
-              narrativeRole: "素材库注入",
+              narrativeRole: "Inyección de biblioteca",
             },
           ]
           : baseStructure.forces,
@@ -748,7 +748,7 @@ export class WorldService {
               name: item.name,
               terrain: item.category,
               summary: item.description ?? "",
-              narrativeFunction: "素材库注入",
+              narrativeFunction: "Inyección de biblioteca",
               risk: "",
               entryConstraint: "",
               exitCost: "",

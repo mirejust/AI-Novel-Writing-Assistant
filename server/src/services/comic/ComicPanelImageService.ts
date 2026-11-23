@@ -117,43 +117,43 @@ function extractVisualAnchorDesc(visualAnchor: string): string {
 
 // 中文形态关键词映射（与前端 COMIC_FORMATS.value 对应）
 const FORMAT_ZH_KEYWORDS: Record<string, string> = {
-  webtoon:         "竖版条漫单格，韩漫竖屏格子，手机阅读条漫画格",
-  "4koma":         "四格漫画，竖版四格，起承转合四格排版",
-  single_page:     "单页漫画，日漫分格页面，大小格混排单页",
-  cinematic:       "电影分镜画格，横版宽幅，电影感构图",
-  chat_comic:      "聊天漫画格，对话气泡式版式，轻松日常漫画",
-  chibi_comic:     "Q版萌漫，SD人物，可爱夸张比例漫画格",
-  ink_comic:       "水墨国风漫画格，毛笔线条，古典意境留白",
-  drama_screenshot:"竖版短剧截图风，字幕条，剧情画面感",
+  webtoon:         "Cuadrícula única de cómic vertical, cuadrícula de pantalla vertical de cómic coreano, cuadrícula de tira cómica de lectura móvil",
+  "4koma":         "Cómics de cuatro fotogramas, formato vertical de cuatro fotogramas, diseño de cuatro fotogramas de principio a fin",
+  single_page:     "Cómics de una sola página, páginas cuadriculadas para cómics japoneses, páginas individuales con cuadrículas mixtas grandes y pequeñas",
+  cinematic:       "Guión gráfico de película, amplio formato horizontal, composición cinematográfica",
+  chat_comic:      "Cuadrícula de cómics de chat, formato de burbuja de diálogo, cómics diarios fáciles",
+  chibi_comic:     "Versión Q de cómics lindos, personajes SD, formato de cómic lindo y exagerado.",
+  ink_comic:       "Tinta estilo cómico chino, líneas de pincel, concepción artística clásica y espacio en blanco",
+  drama_screenshot:"Estilo de captura de pantalla de reproducción corta vertical, tiras de subtítulos, trama y sensación de pantalla",
 };
 
 const STYLE_ZH_KEYWORDS: Record<string, string> = {
-  webtoon_color:   "彩色韩漫风格，干净线条，鲜艳配色",
-  bl_manga:        "彩色少女漫风格，柔和色调，精致五官",
-  shounen_bw:      "黑白少年漫风格，粗犷线条，动感构图",
-  ink_traditional: "水墨国风，传统毛笔笔触，淡彩晕染",
-  chibi:           "Q版萌漫风格，圆润可爱，夸张表情",
-  realistic:       "写实漫画风格，细腻光影，真实感",
+  webtoon_color:   "Colorido estilo cómico coreano, líneas limpias, colores brillantes.",
+  bl_manga:        "Estilo manga femenino colorido, tonos suaves, rasgos faciales delicados.",
+  shounen_bw:      "Estilo cómico shonen en blanco y negro, líneas ásperas, composición dinámica",
+  ink_traditional: "Estilo chino de tinta y lavado, pinceladas tradicionales, manchas de colores claros",
+  chibi:           "Versión Q de lindo estilo de dibujos animados, expresiones redondas y lindas, exageradas.",
+  realistic:       "Estilo cómico realista, luces y sombras delicadas, realismo.",
 };
 
 // 九宫格方向 → 图像模型理解的位置描述
 const ANCHOR_HINT_ZH: Record<string, string> = {
-  "top-left":      "左上角",
-  "top-center":    "上方居中",
-  "top-right":     "右上角",
-  "left-center":   "左侧",
-  "center":        "居中",
-  "right-center":  "右侧",
-  "bottom-left":   "左下角",
-  "bottom-center": "下方居中",
-  "bottom-right":  "右下角",
+  "top-left":      "esquina superior izquierda",
+  "top-center":    "Centrado arriba",
+  "top-right":     "esquina superior derecha",
+  "left-center":   "lado izquierdo",
+  "center":        "centro",
+  "right-center":  "lado derecho",
+  "bottom-left":   "esquina inferior izquierda",
+  "bottom-center": "centro abajo",
+  "bottom-right":  "esquina inferior derecha",
 };
 
 const BUBBLE_TYPE_ZH: Record<string, string> = {
-  round:   "圆形对话气泡",
-  spike:   "尖角爆炸气泡（激动喊叫）",
-  cloud:   "云朵思维气泡（内心独白）",
-  caption: "矩形旁白框（叙述）",
+  round:   "bocadillo redondo",
+  spike:   "Burbujas explosivas con esquinas afiladas (gritos emocionados)",
+  cloud:   "Burbuja de pensamiento en la nube (monólogo interior)",
+  caption: "Cuadro de narración rectangular (narración)",
 };
 
 /** 剥离 LLM 偶尔塞进 text 的说话人前缀（如"路远说：xxx"/"路远：xxx"/"「xxx」"），兼容历史数据 */
@@ -162,7 +162,7 @@ function stripSpeakerPrefix(text: string, speaker?: string): string {
   // 1. 显式 "XX说：" / "XX道：" / "XX 说，"
   if (speaker) {
     const safeName = speaker.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    cleaned = cleaned.replace(new RegExp(`^${safeName}\\s*[说道讲喊问]?\\s*[：:，,]\\s*`), "");
+    cleaned = cleaned.replace(new RegExp(`^${safeName}\\\\s*[hablar hablar gritar preguntar]?\\\\s*[::,,]\\\\s*`), "");
   }
   // 2. 任意中英文姓名 + 说/道/： （兜底，2-6 字汉字 + 标点）
   cleaned = cleaned.replace(/^[一-龥A-Za-z]{1,6}\s*[说道讲喊问]\s*[：:，,]?\s*/, "");
@@ -175,22 +175,22 @@ function stripSpeakerPrefix(text: string, speaker?: string): string {
 function buildDialoguePrompt(dialogues: DialogueEntry[]): string {
   if (dialogues.length === 0) return "";
   const lines = dialogues.map((d, i) => {
-    const bubbleDesc = BUBBLE_TYPE_ZH[d.bubbleType ?? "round"] ?? "圆形对话气泡";
-    const placement = d.anchorHint ? `位于${ANCHOR_HINT_ZH[d.anchorHint] ?? d.anchorHint}` : "";
+    const bubbleDesc = BUBBLE_TYPE_ZH[d.bubbleType ?? "round"] ?? "bocadillo redondo";
+    const placement = d.anchorHint ? `quedarse en cama${ANCHOR_HINT_ZH[d.anchorHint] ?? d.anchorHint}` : "";
     // 说话人只用于决定气泡尾巴指向，不进气泡文字
-    const speakerHint = d.speaker ? `（气泡尾巴指向${d.speaker}）` : "";
+    const speakerHint = d.speaker ? `(La cola de la burbuja apunta a${d.speaker})` : "";
     const cleanText = stripSpeakerPrefix(d.text, d.speaker);
-    return `${i + 1}.${bubbleDesc}${placement ? "，" + placement : ""}${speakerHint}，气泡内文字仅为「${cleanText}」`;
+    return `${i + 1}.${bubbleDesc}${placement ? "," + placement : ""}${speakerHint}, el texto en la burbuja es solo "${cleanText}»`;
   });
-  return `对白气泡（气泡内只渲染台词正文，绝对不要出现"说"、"道"、说话人姓名、冒号、引号或任何旁白前缀，文字必须清晰可读且不遮挡角色脸部）：${lines.join("；")}`;
+  return `Burbujas de diálogo (solo el texto de las líneas se representa en las burbujas, y "shuo", "dao", el nombre del hablante, dos puntos, comillas o cualquier prefijo de narración no deben aparecer en las burbujas. El texto debe ser claro y legible y no bloquear la cara del personaje):${lines.join(";")}`;
 }
 
 const CROWD_DIVERSITY_PROMPT = [
-  "群众/路人/背景人物约束：如果本格出现非命名群众、围观者、路人、弟子群、士兵群或其他背景人物，他们必须是非主角、非同脸模板",
-  "每个群众人物在年龄、脸型、发型、服饰颜色、体型和站姿上要有清晰差异",
-  "命名角色参考图只用于对应命名角色，不要把命名角色的脸、发型或服装复制到群众人物身上",
+  "Restricciones sobre multitudes/transeúntes/personajes de fondo: si hay multitudes, espectadores, transeúntes, discípulos, soldados u otros personajes de fondo sin nombre en esta cuadrícula, deben ser no protagonistas y plantillas que no tengan la misma cara.",
+  "Cada figura pública debe tener diferencias claras en edad, forma de la cara, peinado, color de ropa, forma del cuerpo y postura de pie.",
+  "La imagen de referencia del personaje nombrado solo se utiliza para corresponder al personaje nombrado. No copie la cara, el peinado o la ropa del personaje nombrado a los personajes públicos.",
   "avoid repeated identical faces, cloned faces, same hairstyle, same outfit template, duplicated crowd members",
-].join("；");
+].join(";");
 
 interface StylePresetData {
   style?: string;
@@ -213,12 +213,12 @@ function buildPanelPrompt(
 
   // 2. 画风声明
   const styleEn = presetData.style ?? "webtoon style, vibrant colors, clean lines";
-  const styleZh = STYLE_ZH_KEYWORDS[presetData.style ?? ""] ?? "彩色韩漫风格，干净线条，鲜艳配色";
+  const styleZh = STYLE_ZH_KEYWORDS[presetData.style ?? ""] ?? "Colorido estilo cómico coreano, líneas limpias, colores brillantes.";
 
   // 3. 角色外貌锚定（有设计稿时作为次要文字补充，没有时是主要一致性保障）
   //    角色描述里已携带【男性】/【女性】/【中性气质】标签，模型据此画对性别
   const charPart = characterDescs.length > 0
-    ? `角色外貌设定（请严格按方括号性别标签画对性别，男性不要画成女性，女性不要画成男性）：${characterDescs.join("；")}`
+    ? `Configuración de apariencia del personaje (dibuja el género correcto estrictamente de acuerdo con las etiquetas de género entre corchetes, los hombres no deben dibujarse como mujeres y las mujeres no deben dibujarse como hombres):${characterDescs.join(";")}`
     : "";
 
   // 4. 对话/气泡
@@ -227,18 +227,18 @@ function buildPanelPrompt(
   // 顺序：形态 → 画风 → 角色外貌 → 场景锚定 → 对白气泡 → 场景内容 → 质量词
   // 对白在画面内容之前，确保图像模型赋予更高权重
   const parts = [
-    `${formatZh}，${formatEn}`,
-    `${styleZh}，${styleEn}`,
+    `${formatZh},${formatEn}`,
+    `${styleZh},${styleEn}`,
   ];
   if (charPart) parts.push(charPart);
   if (sceneDesc) parts.push(sceneDesc);
   // 场景参考图防机位僵死：只锁定空间身份，镜头按本格自由运镜
   if (hasSceneRefImage) {
-    parts.push("场景参考图仅用于锁定色调、布局与材质身份，镜头角度、景别与构图必须严格按本格画面内容自由运镜，不要照搬参考图的机位");
+    parts.push("La imagen de referencia de la escena solo se utiliza para bloquear el tono del color, el diseño y la identidad del material. El ángulo de la cámara, la escena y la composición deben moverse libremente según el contenido del encuadre. No copie la posición de la cámara de la imagen de referencia.");
   }
   parts.push(CROWD_DIVERSITY_PROMPT);
   if (dialoguePart) parts.push(dialoguePart);
-  parts.push(`画面内容：${visualPrompt}`);
+  parts.push(`Contenido de la pantalla:${visualPrompt}`);
   parts.push("high quality manga panel, professional illustration");
   return parts.join(". ");
 }
@@ -270,8 +270,8 @@ export class ComicPanelImageService {
         },
       },
     });
-    if (!panel) throw new AppError(`未找到漫画格子：${panelId}`, 404);
-    if (!panel.visualPrompt) throw new AppError("该格子缺少 visualPrompt，无法生成图像。", 400);
+    if (!panel) throw new AppError(`Cuadrícula de cómics no encontrada:${panelId}`, 404);
+    if (!panel.visualPrompt) throw new AppError("La cuadrícula carece de visualPrompt y no puede generar imágenes.", 400);
 
     const project = panel.episode.project;
     const presetData = safeJsonParse<StylePresetData>(project.stylePreset, {});
@@ -294,19 +294,19 @@ export class ComicPanelImageService {
         // ── 文字描述锚定 ──────────────────────────────────────
         const desc = character.visualAnchor?.trim()
           ? extractVisualAnchorDesc(character.visualAnchor)
-          : "以角色参考图保持外貌一致";
-        const genderTag = character.gender === "male" ? "【男性】"
-          : character.gender === "female" ? "【女性】"
-          : character.gender === "other" ? "【中性气质】"
+          : "Utilice imágenes de referencia de personajes para mantener la apariencia consistente.";
+        const genderTag = character.gender === "male" ? "[masculino]"
+          : character.gender === "female" ? "[femenino]"
+          : character.gender === "other" ? "[Temperamento neutro]"
           : "";
         const refParts = [
-          `${genderTag}【${character.name}】${desc}`,
-          `服装:${ref.costume ?? "default"}`,
-          `表情:${describeCharacterExpression(ref.expression ?? "neutral")}`,
+          `${genderTag}[${character.name}]${desc}`,
+          `ropa:${ref.costume ?? "default"}`,
+          `expresión:${describeCharacterExpression(ref.expression ?? "neutral")}`,
         ];
-        if (ref.lighting) refParts.push(`光照:${ref.lighting}`);
-        if (ref.props?.length) refParts.push(`持有:${ref.props.join("、")}`);
-        characterVisualDescs.push(refParts.join("，"));
+        if (ref.lighting) refParts.push(`iluminación:${ref.lighting}`);
+        if (ref.props?.length) refParts.push(`sostener:${ref.props.join(",")}`);
+        characterVisualDescs.push(refParts.join(","));
 
         // ── 雪碧图参考图合成 ──────────────────────────────────
         const sheetData = safeJsonParse<{ status?: string }>(character.sheetData, {});
@@ -351,14 +351,14 @@ export class ComicPanelImageService {
           if (sheetRef) {
             referenceMetas.push({
               kind: "character_sheet",
-              label: `${character.name} · 三视图`,
+              label: `${character.name} ·Tres vistas`,
               url: `/api/comic/character-images/${character.id}/sheet`,
             });
           }
           for (const a of usedCostume) {
             referenceMetas.push({
               kind: "asset",
-              label: `${character.name} · 服装:${a.name}`,
+              label: `${character.name} · ropa:${a.name}`,
               url: `/api/comic/character-assets/${a.id}/image`,
             });
           }
@@ -382,7 +382,7 @@ export class ComicPanelImageService {
             finalRefImagePaths.push(expressionRef.filePath);
             referenceMetas.push({
               kind: "character_expression",
-              label: `${character.name} · 表情:${describeCharacterExpression(ref.expression ?? "neutral")}`,
+              label: `${character.name} · expresión:${describeCharacterExpression(ref.expression ?? "neutral")}`,
               url: `/api/comic/character-images/${character.id}/expressions`,
             });
           }
@@ -398,13 +398,13 @@ export class ComicPanelImageService {
       if (scene) {
         const bible = safeJsonParse<SceneBible>(scene.bible, {});
         const bibleParts: string[] = [];
-        if (bible.palette) bibleParts.push(`色调${bible.palette}`);
-        if (bible.keyElements) bibleParts.push(`标志元素${bible.keyElements}`);
-        if (bible.materials) bibleParts.push(`材质${bible.materials}`);
-        if (bible.ambiance) bibleParts.push(`氛围${bible.ambiance}`);
-        if (bible.layout) bibleParts.push(`空间${bible.layout}`);
+        if (bible.palette) bibleParts.push(`tono${bible.palette}`);
+        if (bible.keyElements) bibleParts.push(`Elemento de logotipo${bible.keyElements}`);
+        if (bible.materials) bibleParts.push(`Material${bible.materials}`);
+        if (bible.ambiance) bibleParts.push(`atmósfera${bible.ambiance}`);
+        if (bible.layout) bibleParts.push(`espacio${bible.layout}`);
         if (bibleParts.length > 0) {
-          sceneDesc = `场景设定【${scene.name}】：${bibleParts.join("，")}`;
+          sceneDesc = `Configuración de escena [${scene.name}】：${bibleParts.join(",")}`;
         }
         // L1：设定图作为参考图（仅当已生成）
         const sceneSheet = safeJsonParse<{ status?: string }>(scene.sheetData, {});
@@ -415,7 +415,7 @@ export class ComicPanelImageService {
             hasSceneRefImage = true;
             referenceMetas.push({
               kind: "scene",
-              label: `场景:${scene.name}`,
+              label: `Escena:${scene.name}`,
               url: `/api/comic/scenes/${scene.id}/image`,
             });
           }
@@ -448,7 +448,7 @@ export class ComicPanelImageService {
       size: imageSize,
       refImagePaths: uniqueRefImagePaths,
       referenceImages: referenceMetas,
-      title: `生成第 ${panel.order} 格图像`,
+      title: `Generar el ${panel.order} Imagen de cuadrícula`,
       cleanup: async () => {
         await Promise.allSettled(spriteCleanups.map((fn) => fn()));
       },
@@ -502,7 +502,7 @@ export class ComicPanelImageService {
     return prisma.comicPanel
       .findUnique({ where: { id: panelId }, select: { imageData: true } })
       .then((p) => {
-        if (!p) throw new AppError(`未找到漫画格子：${panelId}`, 404);
+        if (!p) throw new AppError(`Cuadrícula de cómics no encontrada:${panelId}`, 404);
         return safeJsonParse<PanelImageData>(p.imageData, { status: "idle" });
       });
   }

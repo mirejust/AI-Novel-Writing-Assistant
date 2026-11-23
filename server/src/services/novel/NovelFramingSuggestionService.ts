@@ -8,14 +8,14 @@ import { novelReferenceService } from "./NovelReferenceService";
 
 function buildInputSummary(input: BookFramingSuggestionInput): string {
   return [
-    input.title?.trim() ? `书名：${input.title.trim()}` : "",
-    input.description?.trim() ? `一句话概述：${input.description.trim()}` : "",
-    input.genreLabel?.trim() ? `作品类型：${input.genreLabel.trim()}` : "",
-    input.styleTone?.trim() ? `当前文风关键词：${input.styleTone.trim()}` : "",
+    input.title?.trim() ? `Título del libro:${input.title.trim()}` : "",
+    input.description?.trim() ? `Resumen de una frase:${input.description.trim()}` : "",
+    input.genreLabel?.trim() ? `Tipo de trabajo:${input.genreLabel.trim()}` : "",
+    input.styleTone?.trim() ? `Palabras clave del estilo de escritura actual:${input.styleTone.trim()}` : "",
     input.referenceIntent === "continuation"
-      ? "创作意图：续写原作，读者与卖点必须承接原作未完线索与终局人物状态。"
+      ? "Intención creativa: para continuar con el trabajo original, los lectores y los puntos de venta deben heredar las pistas inacabadas del trabajo original y el estado final del personaje."
       : input.referenceIntent === "adaptation"
-        ? "创作意图：参考创作新书，只继承结构、节奏与阅读体验，必须形成独立故事。"
+        ? "Intención creativa: Crear un nuevo libro basado en el libro, heredando solo la estructura, el ritmo y la experiencia de lectura, y debe formar una historia independiente."
         : "",
   ].filter(Boolean).join("\n");
 }
@@ -23,7 +23,7 @@ function buildInputSummary(input: BookFramingSuggestionInput): string {
 export class NovelFramingSuggestionService {
   async suggest(input: BookFramingSuggestionInput): Promise<BookFramingSuggestion> {
     if (!input.title?.trim() && !input.description?.trim() && !input.bookAnalysisId?.trim()) {
-      throw new Error("请至少填写书名或一句话概述后再让 AI 帮你填写。");
+      throw new Error("Complete al menos el título del libro o un resumen de una oración y luego deje que AI lo complete por usted.");
     }
 
     const referenceIntent = input.referenceIntent
@@ -37,7 +37,7 @@ export class NovelFramingSuggestionService {
       : "";
 
     if (input.bookAnalysisId?.trim() && !analysisContext.trim()) {
-      throw new Error("绑定的拆书结论暂时读不到，请先确认拆书已完成并含有可读结论。");
+      throw new Error("La conclusión encuadernada que abre el libro no se puede leer por el momento. Confirme que la apertura del libro se haya completado y contenga una conclusión legible.");
     }
 
     const inputSummary = buildInputSummary(input);

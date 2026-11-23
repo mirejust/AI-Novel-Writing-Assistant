@@ -1,7 +1,7 @@
 import { NovelWorkflowService } from "./NovelWorkflowService";
 import {canExecuteLegacyTask} from "../../../modules/novel/director-routing";
 
-const STALE_RUNNING_RECOVERY_MESSAGE = "自动导演任务长时间没有心跳，可能已因服务重启或内存不足中断。请检查后继续或重试。";
+const STALE_RUNNING_RECOVERY_MESSAGE = "La tarea del director automático no tiene latidos durante mucho tiempo, lo que puede haberse interrumpido debido a un reinicio del servicio o memoria insuficiente. Por favor verifique y continúe o inténtelo nuevamente.";
 
 interface WorkflowRecoveryPort {
   listRecoverableAutoDirectorTasks(options?: { includeStaleRunningFlag?: boolean }): Promise<Array<{
@@ -38,7 +38,7 @@ export class NovelWorkflowRuntimeService {
         await this.workflowService.markTaskFailed(row.id, STALE_RUNNING_RECOVERY_MESSAGE);
         continue;
       }
-      await this.workflowService.requeueTaskForRecovery(row.id, "服务重启后任务已暂停，等待手动恢复。");
+      await this.workflowService.requeueTaskForRecovery(row.id, "Una vez reiniciado el servicio, la tarea se suspendió y está esperando la recuperación manual.");
     }
   }
 }

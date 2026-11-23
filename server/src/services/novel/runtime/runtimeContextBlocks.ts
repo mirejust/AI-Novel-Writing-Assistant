@@ -5,7 +5,7 @@ export function buildPreviousChaptersSummary(
   if (requestSummary?.length) {
     return requestSummary;
   }
-  return summaries.map((item) => `第${item.chapter.order}章《${item.chapter.title}》 ${item.summary}`);
+  return summaries.map((item) => `Cap.${item.chapter.order}capítulo"${item.chapter.title}》 ${item.summary}`);
 }
 
 export function parseJsonStringArraySafe(value: string | null | undefined): string[] {

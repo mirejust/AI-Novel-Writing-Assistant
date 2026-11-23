@@ -69,9 +69,9 @@ function buildSourceRangeLabel(input: {
   endTitle: string;
 }): string {
   if (input.startChapterIndex === input.endChapterIndex) {
-    return `第 ${input.startChapterIndex + 1} 章：${input.startTitle}`;
+    return `Cap. ${input.startChapterIndex + 1} capítulo:${input.startTitle}`;
   }
-  return `第 ${input.startChapterIndex + 1}-${input.endChapterIndex + 1} 章：${input.startTitle} 至 ${input.endTitle}`;
+  return `Cap. ${input.startChapterIndex + 1}-${input.endChapterIndex + 1} capítulo:${input.startTitle} a ${input.endTitle}`;
 }
 
 export class BookAnalysisCommandService {
@@ -199,7 +199,7 @@ export class BookAnalysisCommandService {
       ? selectedSource.content.slice(sourceRange.startOffset, sourceRange.endOffset)
       : selectedSource.content;
     if (buildSourceSegments(content).length === 0) {
-      throw new AppError("所选范围没有可分析的原文。", 400);
+      throw new AppError("No hay ningún texto fuente analizable para el rango seleccionado.", 400);
     }
 
     const analysisId = await prisma.$transaction(async (tx) => {
@@ -207,7 +207,7 @@ export class BookAnalysisCommandService {
         data: {
           documentId: document.id,
           documentVersionId: version.id,
-          title: sourceRange ? `${document.title} v${version.versionNumber}（${sourceRange.label}）` : `${document.title} v${version.versionNumber}`,
+          title: sourceRange ? `${document.title} v${version.versionNumber}(${sourceRange.label})` : `${document.title} v${version.versionNumber}`,
           status: "queued",
           provider: input.provider ?? "deepseek",
           model: input.model?.trim() || null,
@@ -342,7 +342,7 @@ export class BookAnalysisCommandService {
       throw new AppError("Archived book analysis cannot be rebuilt.", 400);
     }
     if (analysis.status === "queued" || analysis.status === "running") {
-      throw new AppError("分析正在运行。请等本次任务结束后再重新生成小节。", 409);
+      throw new AppError("El análisis está en marcha. Espere hasta que se complete esta tarea antes de regenerar la sección.", 409);
     }
     const emptySucceededSectionIds = analysis.sections
       .filter(isEmptySucceededBookAnalysisSection)
@@ -366,7 +366,7 @@ export class BookAnalysisCommandService {
         },
       });
       if (queued.count !== 1) {
-        throw new AppError("分析状态已变化。请刷新后查看当前进度。", 409);
+        throw new AppError("El estado del análisis ha cambiado. Actualice para ver el progreso actual.", 409);
       }
       await tx.bookAnalysisSection.updateMany({
         where: {

@@ -38,13 +38,13 @@ export function projectChapterPlan(prepared: PreparedChapterPlan, output:Planner
     objective: output.objective
       || compactText(chapterStateGoal?.summary)
       || chapter.expectation?.trim()
-      || `推进第${chapter.order}章主线。`,
+      || `promocionar el primero${chapter.order}Línea principal del capítulo.`,
     targetWordCount: chapter.targetWordCount,
     participants: resolvedParticipants,
     reveals: output.reveals ?? [],
     riskNotes: takeUnique([
       ...(output.riskNotes ?? []),
-      ...resolvedStateDrivenContext.protectedSecrets.map((item) => `禁止提前泄露：${item}`),
+      ...resolvedStateDrivenContext.protectedSecrets.map((item) => `Está prohibido revelar por adelantado:${item}`),
     ], 8),
     hookTarget: output.hookTarget || chapter.hook?.trim() || null,
     baseExecutionContract: {

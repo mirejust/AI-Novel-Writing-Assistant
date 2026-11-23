@@ -23,7 +23,7 @@ export {readDirectorLedgers} from "./workspace/index";
 /** Saved book display never reads task seeds or repairs compatibility records. */
 export async function readDirectorWorkspace(novelId: string) {
   const novel = await prisma.novel.findUnique({where:{id:novelId},include:{storyMacroPlan:{select:{storyInput:true}},world:true,novelWorld:true,bookContract:true,manuscriptProject:{select:{id:true}},characters:{orderBy:{createdAt:"asc"}},chapters:{orderBy:{order:"asc"}},volumePlans:{where:directorVolumeChapterPlanFilter(novelId),orderBy:{sortOrder:"asc"},include:{chapters:true}}}});
-  if (!novel) throw new AppError("小说不存在。",404);
+  if (!novel) throw new AppError("La novela no existe.",404);
   const [activeChapters, bookDirector, characterForwardPlanNotices] = await Promise.all([
     novel.manuscriptProject ? readActiveManuscriptChapters(prisma, novelId) : null,
     novel.estimatedChapterCount ? readNovelBookDirector(novel) : null,

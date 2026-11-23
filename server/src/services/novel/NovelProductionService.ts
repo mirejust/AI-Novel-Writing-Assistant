@@ -36,7 +36,7 @@ export class NovelProductionService {
       },
     });
     if (!novel) {
-      throw new Error("未找到当前小说。");
+      throw new Error("Novela actual no encontrada.");
     }
     if (novel.world) {
       return {
@@ -44,15 +44,15 @@ export class NovelProductionService {
         worldId: novel.world.id,
         worldName: novel.world.name,
         reused: true,
-        summary: `已复用当前小说绑定的世界观《${novel.world.name}》。`,
+        summary: `Se ha reutilizado la cosmovisión ligada a la novela actual"${novel.world.name}».`,
       };
     }
 
-    const worldName = `${novel.title}世界观`;
+    const worldName = `${novel.title}visión del mundo`;
     const generatedAt = new Date();
     const { stream, onDone } = await this.worldService.createWorldGenerateStream({
       name: worldName,
-      description: input.description?.trim() || novel.description?.trim() || `为小说《${novel.title}》生成世界观设定`,
+      description: input.description?.trim() || novel.description?.trim() || `Para la novela "${novel.title}»Generar configuración de visión mundial`,
       worldType: input.worldType?.trim() || "custom",
       complexity: "standard",
       dimensions: {
@@ -82,14 +82,14 @@ export class NovelProductionService {
       },
     });
     if (!world) {
-      throw new Error("世界观生成已完成，但未能定位生成结果。");
+      throw new Error("La generación de la cosmovisión se completó, pero no se pudo localizar el resultado de la generación.");
     }
     return {
       novelId: novel.id,
       worldId: world.id,
       worldName: world.name,
       reused: false,
-      summary: `已为《${novel.title}》生成世界观《${world.name}》。`,
+      summary: `Ya por "${novel.title}»Generando una cosmovisión»${world.name}».`,
     };
   }
 
@@ -125,7 +125,7 @@ export class NovelProductionService {
       },
     });
     if (!novel) {
-      throw new Error("未找到当前小说。");
+      throw new Error("Novela actual no encontrada.");
     }
     if (novel.characters.length > 0) {
       return {
@@ -133,7 +133,7 @@ export class NovelProductionService {
         reused: true,
         characterCount: novel.characters.length,
         items: novel.characters,
-        summary: `已复用《${novel.title}》现有的 ${novel.characters.length} 个角色。`,
+        summary: `ha sido reutilizado${novel.title}"Existente ${novel.characters.length} un papel.`,
       };
     }
 
@@ -143,13 +143,13 @@ export class NovelProductionService {
         desiredCount: input.count,
         estimatedChapterCount: novel.estimatedChapterCount,
         title: novel.title,
-        description: input.description?.trim() || novel.description?.trim() || "暂无",
-        genre: input.genre?.trim() || "未指定",
-        narrativePov: input.narrativePov ?? "未指定",
-        styleTone: input.styleTone?.trim() || "未指定",
+        description: input.description?.trim() || novel.description?.trim() || "Sin datos",
+        genre: input.genre?.trim() || "No especificado",
+        narrativePov: input.narrativePov ?? "No especificado",
+        styleTone: input.styleTone?.trim() || "No especificado",
         worldContext: novel.world
           ? `${novel.world.name}\n${novel.world.description ?? novel.world.background ?? ""}\n${novel.world.conflicts ?? ""}\n${novel.world.magicSystem ?? ""}`
-          : "暂无已绑定世界观",
+          : "Aún no se ha consolidado ninguna visión del mundo.",
       },
       options: {
         provider: input.provider ?? "deepseek",
@@ -162,7 +162,7 @@ export class NovelProductionService {
     if (!reused) await this.novelService.rebuildCharacterDynamics(novel.id, {sourceType: "rebuild_projection"}).catch(() => null);
     return {
       novelId: novel.id, reused, characterCount: characters.length, items: characters,
-      summary: reused ? `已复用《${novel.title}》现有的 ${characters.length} 个角色。` : `已为《${novel.title}》生成 ${characters.length} 个核心角色。`,
+      summary: reused ? `ha sido reutilizado${novel.title}"Existente ${characters.length} un papel.` : `Ya por "${novel.title}"generar ${characters.length} un papel central.`,
     };
   }
 
@@ -183,14 +183,14 @@ export class NovelProductionService {
       },
     });
     if (!novel) {
-      throw new Error("未找到当前小说。");
+      throw new Error("Novela actual no encontrada.");
     }
     return {
       novelId: novel.id,
       exists: Boolean(novel.bible),
       coreSetting: novel.bible?.coreSetting ?? null,
       mainPromise: novel.bible?.mainPromise ?? null,
-      summary: `已生成《${novel.title}》的小说圣经。`,
+      summary: `ha sido generado${novel.title}"Nueva Biblia.`,
     };
   }
 
@@ -210,7 +210,7 @@ export class NovelProductionService {
       novelId: input.novelId,
       outline,
       outlineLength: outline.length,
-      summary: "已生成小说发展走向。",
+      summary: "La tendencia de desarrollo de las novelas generadas.",
     };
   }
 
@@ -239,7 +239,7 @@ export class NovelProductionService {
       chapterCount,
       targetChapterCount,
       structuredOutline: novel?.structuredOutline ?? structuredOutline,
-      summary: `已生成 ${targetChapterCount} 章结构化大纲。`,
+      summary: `Generado ${targetChapterCount} Esquema estructurado del capítulo.`,
     };
   }
 
@@ -252,14 +252,14 @@ export class NovelProductionService {
       },
     });
     if (!novel) {
-      throw new Error("未找到当前小说。");
+      throw new Error("Novela actual no encontrada.");
     }
     if (!novel.structuredOutline?.trim()) {
-      throw new Error("当前小说还没有结构化大纲。");
+      throw new Error("Actualmente no existe un esquema estructurado para la novela.");
     }
     const chapters = parseStructuredOutline(novel.structuredOutline);
     if (chapters.length === 0) {
-      throw new Error("结构化大纲中没有可同步的章节。");
+      throw new Error("No hay capítulos sincronizables en un esquema estructurado.");
     }
 
     const existing = await prisma.chapter.findMany({
@@ -301,7 +301,7 @@ export class NovelProductionService {
       chapterCount: chapters.length,
       createdCount,
       updatedCount,
-      summary: `已同步 ${chapters.length} 个章节目录。`,
+      summary: `Sincronizado ${chapters.length} Tabla de contenido.`,
     };
   }
 
@@ -316,7 +316,7 @@ export class NovelProductionService {
       where: { novelId: input.novelId },
     });
     if (chapterCount === 0) {
-      throw new Error("当前小说还没有章节目录，无法启动整本写作。");
+      throw new Error("La novela actualmente no tiene una lista de capítulos, por lo que es imposible empezar a escribir el libro completo.");
     }
     const startOrder = input.startOrder ?? 1;
     const endOrder = input.endOrder ?? Math.max(chapterCount, input.targetChapterCount ?? chapterCount);
@@ -334,7 +334,7 @@ export class NovelProductionService {
       status: job.status,
       startOrder: job.startOrder,
       endOrder: job.endOrder,
-      summary: `已启动第${job.startOrder}到第${job.endOrder}章的整本写作任务。`,
+      summary: `Comenzó${job.startOrder}al tercero${job.endOrder}Tarea de redacción de capítulos para todo el libro.`,
     };
   }
 

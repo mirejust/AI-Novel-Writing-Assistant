@@ -9,7 +9,7 @@ export type StorageReader = Pick<Prisma.TransactionClient, "$queryRawUnsafe">;
 const columns = ["id", "ownerKey", "novelId", "chapterId", "profileSnapshotJson", "policySnapshotJson", "modelSnapshotJson",
   "progressJson", "stageArtifactsJson", "activeStage", "activeRequestKey", "version", "createdAt", "updatedAt"];
 const unavailable = (): KernelReadiness => ({ready: false, issues: [{code: "production_storage_not_ready",
-  message: "正文运行存储尚未就绪，请先检查数据库结构、索引和外键。"}]});
+  message: "El almacenamiento de ejecución de texto aún no está listo; primero verifique la estructura de la base de datos, los índices y las claves externas."}]});
 
 /** Metadata only. Does not migrate, create missing objects, baseline history or read manuscripts. */
 export async function inspectProductionStorage(db: StorageReader, provider: "sqlite" | "postgresql"): Promise<KernelReadiness> {

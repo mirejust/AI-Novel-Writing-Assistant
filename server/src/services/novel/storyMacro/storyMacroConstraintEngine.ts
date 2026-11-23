@@ -48,18 +48,18 @@ export function toGrowthSteps(value: string): string[] {
 
 function buildPressureRoles(expansion: StoryExpansion): string[] {
   return mergeUnique([
-    `主角位：${summarizeText(expansion.protagonist_core, "主角被困在无法轻易退出的处境中。")}`,
-    `对立位：${summarizeText(expansion.conflict_layers.external, "外部力量持续压迫主角。")}`,
-    `关系压力位：${summarizeText(expansion.conflict_layers.relational, "关键关系不断施压并制造选择代价。")}`,
+    `Posición de protagonista:${summarizeText(expansion.protagonist_core, "El protagonista se encuentra atrapado en una situación de la que no puede salir fácilmente.")}`,
+    `Posición opuesta:${summarizeText(expansion.conflict_layers.external, "Las fuerzas externas continúan oprimiendo al protagonista.")}`,
+    `Nivel de estrés de la relación:${summarizeText(expansion.conflict_layers.relational, "Las relaciones clave ejercen una presión constante y crean costos de elección.")}`,
   ], 4);
 }
 
 const DEFAULT_PHASE_NAMES = [
-  "困局锁死",
-  "误判行动",
-  "代价升级",
-  "认知翻转",
-  "终局兑现",
+  "Dilema bloqueado",
+  "Acción mal juzgada",
+  "Actualización de precio",
+  "giro cognitivo",
+  "Redención final",
 ] as const;
 
 function buildPhaseModel(plan: StoryMacroEditablePlan): StoryMacroPhase[] {
@@ -67,43 +67,43 @@ function buildPhaseModel(plan: StoryMacroEditablePlan): StoryMacroPhase[] {
   return [
     {
       name: DEFAULT_PHASE_NAMES[0],
-      goal: `先把主角困进「${summarizeText(expansion.protagonist_core, decomposition.core_conflict)}」，并抛出核心未知：${expansion.mystery_box || decomposition.main_hook}`,
+      goal: `Primero atrapa al protagonista en "${summarizeText(expansion.protagonist_core, decomposition.core_conflict)}”, y arroja el núcleo desconocido:${expansion.mystery_box || decomposition.main_hook}`,
     },
     {
       name: DEFAULT_PHASE_NAMES[1],
-      goal: `围绕「${decomposition.progression_loop}」推进第一次行动，让主角在误判下付出代价。`,
+      goal: `alrededor"${decomposition.progression_loop}"Promueve la primera acción y haz que el protagonista pague el precio del error de juicio.`,
     },
     {
       name: DEFAULT_PHASE_NAMES[2],
-      goal: `同步拉高外部、内部、关系三条压力线，兑现冲突引擎：${summarizeText(expansion.conflict_engine, decomposition.core_conflict)}`,
+      goal: `Simultáneamente elevar las tres líneas de presión externa, interna y de relación para hacer realidad el motor del conflicto:${summarizeText(expansion.conflict_engine, decomposition.core_conflict)}`,
     },
     {
       name: DEFAULT_PHASE_NAMES[3],
-      goal: `逼近并改写核心未知「${expansion.mystery_box || decomposition.main_hook}」，让主角的认知发生翻转。`,
+      goal: `Acércate y reescribe el núcleo desconocido"${expansion.mystery_box || decomposition.main_hook}”, provocando que la percepción del protagonista cambie.`,
     },
     {
       name: DEFAULT_PHASE_NAMES[4],
-      goal: `以「${decomposition.ending_flavor}」完成收束，并兑现关键爆点与情绪后劲。`,
+      goal: `por"${decomposition.ending_flavor}"Completa el final y descubre los puntos explosivos clave y la resistencia emocional.`,
     },
   ];
 }
 
 function buildTurningPoints(payoffs: string[]): StoryMacroTurningPoint[] {
   return payoffs.map((item, index) => ({
-    title: `兑现节点 ${index + 1}`,
+    title: `Canjear nodo ${index + 1}`,
     summary: item,
     phase: DEFAULT_PHASE_NAMES[Math.min(index, DEFAULT_PHASE_NAMES.length - 1)] ?? DEFAULT_PHASE_NAMES[DEFAULT_PHASE_NAMES.length - 1],
   }));
 }
 
 function buildHardConstraints(plan: StoryMacroEditablePlan): string[] {
-  const growthSteps = toGrowthSteps(plan.decomposition.growth_path).map((item) => `主角认知推进必须经过：${item}`);
+  const growthSteps = toGrowthSteps(plan.decomposition.growth_path).map((item) => `El avance cognitivo del protagonista debe pasar por:${item}`);
   return mergeUnique([
     ...plan.constraints,
-    "角色创建前禁止生成具体角色姓名、固定角色阵容或完整人物小传。",
-    `每轮推进都必须持续回应核心未知：${plan.expansion.mystery_box || plan.decomposition.main_hook}`,
-    `剧情升级必须由冲突引擎驱动：${summarizeText(plan.expansion.conflict_engine, plan.decomposition.core_conflict)}`,
-    `高张力场面必须服务于主线，而不是单独炫技：${plan.expansion.setpiece_seeds.join(" / ")}`,
+    "Está prohibido generar nombres de personajes específicos, alineaciones fijas de personajes o biografías completas de personajes antes de la creación de personajes.",
+    `Cada ronda de avance debe continuar respondiendo a la incógnita central:${plan.expansion.mystery_box || plan.decomposition.main_hook}`,
+    `La escalada de la trama debe ser impulsada por el motor del conflicto:${summarizeText(plan.expansion.conflict_engine, plan.decomposition.core_conflict)}`,
+    `Las escenas de alta tensión deben servir a la trama principal, en lugar de mostrar únicamente habilidades:${plan.expansion.setpiece_seeds.join(" / ")}`,
     ...growthSteps,
   ], 10);
 }
@@ -113,11 +113,11 @@ export function buildConstraintEngine(plan: StoryMacroEditablePlan): StoryConstr
   const hardConstraints = buildHardConstraints(plan);
   const mustNotHave = mergeUnique([
     ...negativeConstraintsOnly(plan.constraints),
-    "用具体人物设定替代故事发动机",
-    "让世界观说明压过冲突推进",
+    "Reemplazar el motor de la historia con personajes concretos.",
+    "Dejemos que la explicación de la cosmovisión prevalezca sobre el conflicto para avanzar",
   ], 6);
   return {
-    premise: plan.expansion.expanded_premise || `${plan.decomposition.selling_point} 主线围绕「${plan.decomposition.core_conflict}」展开。`,
+    premise: plan.expansion.expanded_premise || `${plan.decomposition.selling_point} La línea principal gira en torno a "${plan.decomposition.core_conflict}"Expandir.`,
     conflict_axis: plan.decomposition.core_conflict,
     mystery_box: plan.expansion.mystery_box || plan.decomposition.main_hook,
     pressure_roles: buildPressureRoles(plan.expansion),
@@ -127,8 +127,8 @@ export function buildConstraintEngine(plan: StoryMacroEditablePlan): StoryConstr
     turning_points: buildTurningPoints(plan.decomposition.major_payoffs),
     ending_constraints: {
       must_have: mergeUnique([
-        `回应主线问题：${plan.decomposition.main_hook}`,
-        `保留结局味道：${plan.decomposition.ending_flavor}`,
+        `En respuesta a la pregunta principal:${plan.decomposition.main_hook}`,
+        `Mantén el sabor del final:${plan.decomposition.ending_flavor}`,
         plan.decomposition.major_payoffs[plan.decomposition.major_payoffs.length - 1] ?? "",
       ], 4),
       must_not_have: mustNotHave,

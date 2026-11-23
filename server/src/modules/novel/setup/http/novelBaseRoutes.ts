@@ -66,7 +66,7 @@ const createNovelSchema = z.object({
   manualWorkflowTaskId: z.string().trim().min(1).max(128).optional(),
   directorVersion: z.enum(["v1", "v2"]).optional(),
   narrativeForm: z.enum(["long_novel", "short_story"]).optional(),
-  title: z.string().trim().min(1, "标题不能为空。"),
+  title: z.string().trim().min(1, "El título no puede estar vacío."),
   penName: z.string().trim().max(40).optional(),
   description: z.string().trim().optional(),
   targetAudience: z.string().trim().optional(),
@@ -175,7 +175,7 @@ const createResourceRecommendationSchema = z.object({
     value.styleTone,
     ...(value.commercialTags ?? []),
   ].some((item) => typeof item === "string" && item.trim().length > 0),
-  { message: "至少提供一句话概述、卖点、读者定位或类似开书信息，系统才能推荐资源组合。" },
+  { message: "Proporcione al menos un resumen de oración, punto de venta, posicionamiento del lector o información similar sobre la apertura de un libro antes de que el sistema pueda recomendar una combinación de recursos." },
 );
 
 interface RegisterNovelBaseRoutesInput {
@@ -213,7 +213,7 @@ export function registerNovelBaseRoutes(input: RegisterNovelBaseRoutesInput): vo
       const response: ApiResponse<typeof data> = {
         success: true,
         data,
-        message: "获取小说列表成功。",
+        message: "Lista de novelas obtenida con éxito.",
       };
       res.status(200).json(response);
     } catch (error) {
@@ -226,7 +226,7 @@ export function registerNovelBaseRoutes(input: RegisterNovelBaseRoutesInput): vo
       const {manualWorkflowTaskId, ...createInput} = createNovelSchema.parse(req.body);
       const directorVersion = createInput.narrativeForm === "short_story" ? undefined
         : createInput.directorVersion ?? (directorV2Available() ? "v2" : "v1");
-      if (directorVersion === "v2" && !directorV2Available()) throw new AppError("导演 V2 未启用，请选择导演 V1。", 409);
+      if (directorVersion === "v2" && !directorV2Available()) throw new AppError("Director V2 no está habilitado, seleccione Director V1.", 409);
       const resolveInput = async () => {
         const foundation = await novelCreateResourceRecommendationService.resolveRequired(createInput);
         return {...createInput, directorVersion, genreId: foundation.genreId,
@@ -239,7 +239,7 @@ export function registerNovelBaseRoutes(input: RegisterNovelBaseRoutesInput): vo
       const response: ApiResponse<typeof data> = {
         success: true,
         data,
-        message: "创建小说成功。",
+        message: "Crea novela con éxito.",
       };
       res.status(201).json(response);
     } catch (error) {
@@ -255,7 +255,7 @@ export function registerNovelBaseRoutes(input: RegisterNovelBaseRoutesInput): vo
       res.status(200).json({
         success: true,
         data,
-        message: "AI 已生成开书资源推荐。",
+        message: "La IA ha generado recomendaciones de recursos para la apertura de libros.",
       } satisfies ApiResponse<typeof data>);
     } catch (error) {
       next(error);
@@ -269,7 +269,7 @@ export function registerNovelBaseRoutes(input: RegisterNovelBaseRoutesInput): vo
       if (!book) {
         res.status(404).json({
           success: false,
-          error: "小说不存在。",
+          error: "La novela no existe.",
         } satisfies ApiResponse<null>);
         return;
       }
@@ -277,7 +277,7 @@ export function registerNovelBaseRoutes(input: RegisterNovelBaseRoutesInput): vo
       res.status(200).json({
         success: true,
         data,
-        message: "获取小说详情成功。",
+        message: "Obtuve detalles novedosos con éxito.",
       } satisfies ApiResponse<typeof data>);
     } catch (error) {
       next(error);
@@ -363,7 +363,7 @@ export function registerNovelBaseRoutes(input: RegisterNovelBaseRoutesInput): vo
         },
       });
       if (!novel) {
-        res.status(404).json({ success: false, error: "小说不存在。" } satisfies ApiResponse<null>);
+        res.status(404).json({ success: false, error: "La novela no existe." } satisfies ApiResponse<null>);
         return;
       }
       const currentTask = await resolveCurrentDirectorTask(id);
@@ -479,7 +479,7 @@ export function registerNovelBaseRoutes(input: RegisterNovelBaseRoutesInput): vo
           percent: task ? Math.max(0, Math.min(100, Math.round(task.progress))) : 0,
           completedChapters,
           totalChapters,
-          currentAction: task?.currentItemLabel ?? (progressStatus === "completed" ? "本次创作已完成" : "等待 AI 开始处理"),
+          currentAction: task?.currentItemLabel ?? (progressStatus === "completed" ? "Esta creación ha sido completada." : "Espere a que la IA comience a procesar"),
           status: progressStatus,
           canRetry: progressStatus === "failed" || progressStatus === "paused",
           recoveryAction: task?.checkpointType === "replan_required" ? "replan_and_continue" : "continue",
@@ -517,7 +517,7 @@ export function registerNovelBaseRoutes(input: RegisterNovelBaseRoutesInput): vo
           })),
         },
       };
-      res.status(200).json({ success: true, data, message: "章节书架已更新。" } satisfies ApiResponse<typeof data>);
+      res.status(200).json({ success: true, data, message: "La estantería de capítulos ha sido actualizada." } satisfies ApiResponse<typeof data>);
     } catch (error) {
       next(error);
     }
@@ -566,7 +566,7 @@ export function registerNovelBaseRoutes(input: RegisterNovelBaseRoutesInput): vo
         res.status(200).json({
           success: true,
           data,
-          message: "更新小说成功。",
+          message: "Actualice la novela con éxito.",
         } satisfies ApiResponse<typeof data>);
       } catch (error) {
         next(error);
@@ -584,7 +584,7 @@ export function registerNovelBaseRoutes(input: RegisterNovelBaseRoutesInput): vo
         if (!current) {
           res.status(404).json({
             success: false,
-            error: "小说不存在。",
+            error: "La novela no existe.",
           } satisfies ApiResponse<null>);
           return;
         }
@@ -595,8 +595,8 @@ export function registerNovelBaseRoutes(input: RegisterNovelBaseRoutesInput): vo
           success: true,
           data,
         message: experience === "simple"
-            ? "已切换到简易模式，将优先展示章节进度与成稿。"
-            : "已切换到专业模式，将展示完整创作工作台。",
+            ? "Se ha cambiado al modo simple y se dará prioridad a mostrar el progreso del capítulo y los manuscritos terminados."
+            : "Al cambiar al modo profesional, se mostrará el banco de trabajo creativo completo.",
         } satisfies ApiResponse<typeof data>);
       } catch (error) {
         next(error);
@@ -610,7 +610,7 @@ export function registerNovelBaseRoutes(input: RegisterNovelBaseRoutesInput): vo
       await novelService.deleteNovel(id);
       res.status(200).json({
         success: true,
-        message: "删除小说成功。",
+        message: "La novela fue eliminada con éxito.",
       } satisfies ApiResponse<null>);
     } catch (error) {
       next(error);

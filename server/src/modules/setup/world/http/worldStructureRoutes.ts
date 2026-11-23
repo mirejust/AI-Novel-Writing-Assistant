@@ -221,7 +221,7 @@ export function registerStructureWorldRoutes(router: Router): void {
       res.status(200).json({
         success: true,
         data,
-        message: "回答已整合到世界手册。",
+        message: "Las respuestas se han integrado en el Manual Mundial.",
       } satisfies ApiResponse<typeof data>);
     } catch (error) {
       next(error);

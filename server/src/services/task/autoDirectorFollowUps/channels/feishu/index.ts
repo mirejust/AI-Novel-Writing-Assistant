@@ -38,7 +38,7 @@ export function buildFeishuCard(payload: AutoDirectorChannelNotificationPayload)
 }
 
 function processedCard(message: string, success: boolean) {
-  return {schema: "2.0", header: {title: {tag: "plain_text", content: success ? "操作已处理" : "操作未完成"}, template: success ? "green" : "orange"},
+  return {schema: "2.0", header: {title: {tag: "plain_text", content: success ? "Operación procesada" : "Operación no completada"}, template: success ? "green" : "orange"},
     body: {elements: [{tag: "markdown", content: message}]}};
 }
 
@@ -72,19 +72,19 @@ export class FeishuChannel {
     const dispatcher = new this.sdk.EventDispatcher({}).register({
       "card.action.trigger": (event: CardActionEvent) => {
         const parsed = actionSchema.safeParse(event.action.value);
-        if (!parsed.success) return {toast: {type: "error", content: "操作参数无效，请打开小说工作台。"}};
+        if (!parsed.success) return {toast: {type: "error", content: "El parámetro de operación no es válido; abra el nuevo banco de trabajo."}};
         let mapping: Record<string, unknown>;
         try {
           mapping = JSON.parse(this.config!.operatorMapJson || "{}");
         } catch {
-          return {toast: {type: "error", content: "用户映射格式无效，请检查渠道设置中的 JSON。"}};
+          return {toast: {type: "error", content: "El formato de mapeo de usuarios no es válido; verifique el JSON en la configuración del canal."}};
         }
         const operatorId = mapping?.[event.operator.open_id] || (event.operator.user_id ? mapping?.[event.operator.user_id] : undefined);
-        if (typeof operatorId !== "string" || !operatorId.trim()) return {toast: {type: "error", content: "请在渠道设置中配置此用户的映射。"}};
+        if (typeof operatorId !== "string" || !operatorId.trim()) return {toast: {type: "error", content: "Configure la asignación para este usuario en la configuración del canal."}};
         void this.handleAction(event, operatorId.trim(), client).catch(() => {
           console.warn("[feishu] card action or card update failed; inspect the task on its source page.");
         });
-        return {toast: {type: "info", content: "正在处理，请等待卡片更新。"}};
+        return {toast: {type: "info", content: "Procesando, espere la actualización de la tarjeta."}};
       },
     });
     this.ws = new this.sdk.WSClient(credentials);
@@ -101,7 +101,7 @@ export class FeishuChannel {
         idempotencyKey: `feishu:${value.eventId}:${value.taskId}:${value.actionCode}`,
         metadata: {eventId: value.eventId, channelUserId: event.operator.open_id}});
     } catch {
-      result = {code: "failed", message: "操作未完成，请打开小说工作台查看任务状态。"};
+      result = {code: "failed", message: "La operación no se completa, abra el nuevo banco de trabajo para verificar el estado de la tarea."};
     }
     const response = await client.im.message.patch({path: {message_id: event.context.open_message_id}, data: {
       content: JSON.stringify(processedCard(result.message, result.code === "executed" || result.code === "already_processed")),

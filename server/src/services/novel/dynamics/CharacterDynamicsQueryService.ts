@@ -54,7 +54,7 @@ export class CharacterDynamicsQueryService {
       },
     });
     if (!novel) {
-      throw new Error("小说不存在。");
+      throw new Error("La novela no existe.");
     }
 
     const currentChapterOrder = typeof options.chapterOrder === "number"
@@ -219,18 +219,18 @@ export class CharacterDynamicsQueryService {
     const characterLines = overview.characters.slice(0, 8).map((item) => (
       [
         `${item.name}(${item.role})`,
-        item.isCoreInVolume ? "核心卷级角色" : "非核心卷级角色",
-        item.volumeRoleLabel ? `卷级身份=${item.volumeRoleLabel}` : "",
-        item.volumeResponsibility ? `职责=${item.volumeResponsibility}` : "",
-        item.currentGoal ? `当前目标=${item.currentGoal}` : "",
-        item.currentState ? `当前状态=${item.currentState}` : "",
-        item.factionLabel ? `阵营=${item.factionLabel}` : "",
-        item.stanceLabel ? `立场=${item.stanceLabel}` : "",
-        item.absenceRisk !== "none" ? `缺席风险=${item.absenceRisk}(跨度=${item.absenceSpan})` : "",
+        item.isCoreInVolume ? "Roles principales a nivel de volumen" : "Personajes de nivel de tirada no básicos",
+        item.volumeRoleLabel ? `Identidad del nivel de volumen =${item.volumeRoleLabel}` : "",
+        item.volumeResponsibility ? `Responsabilidades =${item.volumeResponsibility}` : "",
+        item.currentGoal ? `objetivo actual =${item.currentGoal}` : "",
+        item.currentState ? `estado actual =${item.currentState}` : "",
+        item.factionLabel ? `campamento =${item.factionLabel}` : "",
+        item.stanceLabel ? `posición =${item.stanceLabel}` : "",
+        item.absenceRisk !== "none" ? `Riesgo de ausencia =${item.absenceRisk}(lapso =${item.absenceSpan})` : "",
       ].filter(Boolean).join(" | ")
     ));
     const relationLines = overview.relations.slice(0, 8).map((item) => (
-      `${item.sourceCharacterName} -> ${item.targetCharacterName}: ${item.stageLabel} | ${item.stageSummary}${item.nextTurnPoint ? ` | 下一步=${item.nextTurnPoint}` : ""}`
+      `${item.sourceCharacterName} -> ${item.targetCharacterName}: ${item.stageLabel} | ${item.stageSummary}${item.nextTurnPoint ? ` |Siguiente=${item.nextTurnPoint}` : ""}`
     ));
     return [
       `Dynamic character system summary: ${overview.summary}`,

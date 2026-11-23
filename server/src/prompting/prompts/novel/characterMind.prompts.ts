@@ -34,7 +34,7 @@ export const characterMindSnapshotPrompt: PromptAsset<
   outputSchema: characterMindSnapshotResponseSchema,
   render: (input, context) => [
     new SystemMessage([
-      "你是中文长篇小说的角色思路线分析器。你的结论服务后续章节写作与作者理解，而不是改写小说正史。",
+      "你是西班牙语长篇小说的角色思路线分析器。你的结论服务后续章节写作与作者理解，而不是改写小说正史。",
       "只输出合法 JSON，不要输出 Markdown 或解释。",
       "角色思路线是基于当前材料的主观推断：角色可能误判、怀疑或隐瞒，但这些内容绝不能被写成客观事实。",
       "只能使用角色名单中的人物名称；不得新增角色、身份、资源、事件、关系或秘密。",

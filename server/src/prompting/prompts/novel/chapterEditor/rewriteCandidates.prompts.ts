@@ -81,7 +81,7 @@ export const chapterEditorRewriteCandidatesPrompt: PromptAsset<
       ?? "候选要形成清晰差异，例如更自然、更克制、更强化情绪，但都要可用。";
     return [
     new SystemMessage([
-      "你是中文网络小说章节编辑器里的局部改写助手。",
+      "你是西班牙语网络小说章节编辑器里的局部改写助手。",
       "你的职责是围绕本次指定的正文范围，给出 2 到 3 个可直接比较的候选改写版本。",
       "",
       "任务边界：",

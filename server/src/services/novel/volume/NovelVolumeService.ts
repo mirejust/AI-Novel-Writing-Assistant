@@ -334,7 +334,7 @@ export class NovelVolumeService {
         };
       }
     }
-    throw new Error("当前章节未映射到卷规划章节，无法生成执行合同。");
+    throw new Error("El capítulo actual no está asignado al capítulo de planificación de volumen y no se puede generar el contrato de ejecución.");
   }
 
   private async ensureActiveVersionRecord(
@@ -370,7 +370,7 @@ export class NovelVolumeService {
         version: (latestVersion?.version ?? 0) + 1,
         status: "active",
         contentJson: "{}",
-        diffSummary: diffSummary ?? "同步当前卷工作区。",
+        diffSummary: diffSummary ?? "Sincronice el espacio de trabajo del volumen actual.",
       },
     });
     const persistedDocument = {
@@ -414,7 +414,7 @@ export class NovelVolumeService {
       if (version) {
         const claimed = await tx.volumePlanVersion.updateMany({where: {id: version.id, updatedAt: version.updatedAt, contentJson: version.contentJson},
           data: {updatedAt: new Date()}});
-        if (claimed.count !== 1) throw new Error("分卷规划在补齐路线期间有新修改，请从保存进度重试。");
+        if (claimed.count !== 1) throw new Error("Se producen nuevas modificaciones al plan de volúmenes durante el proceso de finalización de ruta. Inténtelo nuevamente para guardar el progreso.");
       }
       const volumes = await listActiveVolumeRows(novelId, tx);
       const current = version ? normalizeVolumeWorkspaceDocument(novelId, version.contentJson, {activeVersionId: version.id})
@@ -422,10 +422,10 @@ export class NovelVolumeService {
       const next = appendMissingRoutePlans(mergeSavedRouteRows(current, volumes), generated);
       const savedChapters = await tx.chapter.findMany({where: {novelId}, orderBy: {order: "asc"}});
       const byOrder = new Map(savedChapters.map(chapter => [chapter.order, chapter]));
-      if (byOrder.size !== savedChapters.length) throw new Error("小说存在重复章序，请先核对已保存正文。");
+      if (byOrder.size !== savedChapters.length) throw new Error("Hay secuencias de capítulos duplicadas en la novela, verifique primero el texto guardado.");
       for (const volume of next.volumes) for (const plan of volume.chapters) {
         let chapter = byOrder.get(plan.chapterOrder);
-        if (plan.chapterId && (!chapter || plan.chapterId !== chapter.id)) throw new Error("已保存章节与规划链接不一致，不能自动覆盖。");
+        if (plan.chapterId && (!chapter || plan.chapterId !== chapter.id)) throw new Error("Los capítulos guardados no coinciden con los enlaces planificados y no se pueden sobrescribir automáticamente.");
         if (!chapter) {
           chapter = await tx.chapter.create({data: {novelId, order: plan.chapterOrder, title: plan.title, content: "",
             expectation: plan.summary, targetWordCount: plan.targetWordCount}});
@@ -473,8 +473,8 @@ export class NovelVolumeService {
         });
         return this.ensureVolumeWorkspace(novelId);
       } catch (error) {
-        const message = error instanceof Error ? error.message : "未知错误";
-        throw new Error(`当前卷工作区已保存，但章节执行连接失败：${message}`);
+        const message = error instanceof Error ? error.message : "error desconocido";
+        throw new Error(`El espacio de trabajo del volumen actual se guardó, pero falló la conexión de ejecución del capítulo:${message}`);
       }
     }
     return persistedDocument;
@@ -513,7 +513,7 @@ export class NovelVolumeService {
       where: { id: versionId, novelId },
     });
     if (!row) {
-      throw new Error("卷级版本不存在。");
+      throw new Error("La versión del nivel de volumen no existe.");
     }
     return mapVersionRow(row);
   }
@@ -559,11 +559,11 @@ export class NovelVolumeService {
       where: { id: versionId, novelId },
     });
     if (!target) {
-      throw new Error("卷级版本不存在。");
+      throw new Error("La versión del nivel de volumen no existe.");
     }
     const document = this.parseVersionDocument(novelId, target.contentJson);
     if (document.volumes.length === 0) {
-      throw new Error("卷级版本内容为空。");
+      throw new Error("El contenido de la versión del nivel de volumen está vacío.");
     }
     await runVolumeWorkspaceTransaction(async (tx) => {
       await tx.volumePlanVersion.updateMany({
@@ -586,7 +586,7 @@ export class NovelVolumeService {
     });
     const refreshed = await prisma.volumePlanVersion.findUnique({ where: { id: target.id } });
     if (!refreshed) {
-      throw new Error("卷级版本激活失败。");
+      throw new Error("Error en la activación de la versión a nivel de volumen.");
     }
     const shouldSyncPayoffLedger = hasPayoffLedgerRelevantPlanChanges(currentDocument.volumes, document.volumes);
     this.emitVolumeUpdated(novelId, "version_activated");
@@ -602,7 +602,7 @@ export class NovelVolumeService {
       select: { id: true },
     });
     if (!target) {
-      throw new Error("卷级版本不存在。");
+      throw new Error("La versión del nivel de volumen no existe.");
     }
     const row = await prisma.volumePlanVersion.update({
       where: { id: target.id },
@@ -617,7 +617,7 @@ export class NovelVolumeService {
       where: { id: versionId, novelId },
     });
     if (!target) {
-      throw new Error("卷级版本不存在。");
+      throw new Error("La versión del nivel de volumen no existe.");
     }
     let baseline: VolumePlan[] = [];
     if (typeof compareVersion === "number") {
@@ -654,7 +654,7 @@ export class NovelVolumeService {
         where: { id: input.versionId, novelId },
       });
       if (!version) {
-        throw new Error("卷级版本不存在。");
+        throw new Error("La versión del nivel de volumen no existe.");
       }
       candidateVolumes = this.parseVersionContent(novelId, version.contentJson);
       sourceVersion = version.version;

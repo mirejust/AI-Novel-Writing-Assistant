@@ -80,7 +80,7 @@ function buildOptionAssessment(
   optionIndex: number,
 ): CharacterCastOptionAssessment {
   const issues: CharacterCastQualityIssue[] = [];
-  const optionTitle = option.title.trim() || `方案 ${optionIndex + 1}`;
+  const optionTitle = option.title.trim() || `plan ${optionIndex + 1}`;
 
   option.members.forEach((member) => {
     if (!member.gender) {
@@ -89,7 +89,7 @@ function buildOptionAssessment(
         optionIndex,
         optionTitle,
         memberName: member.name,
-        message: `角色“${member.name}”缺少 gender。`,
+        message: `Role"${member.name}"Falta el género.`,
       });
     }
   });
@@ -100,7 +100,7 @@ function buildOptionAssessment(
       code: "missing_protagonist",
       optionIndex,
       optionTitle,
-      message: "这套阵容没有稳定主角锚点。",
+      message: "Esta alineación no tiene un ancla protagonista estable.",
     });
   }
 
@@ -138,12 +138,12 @@ export function assessCharacterCastBatch(
 export function buildCharacterCastRepairReasons(assessment: CharacterCastBatchAssessment): string[] {
   return assessment.blockingReasons.length > 0
     ? assessment.blockingReasons
-    : ["当前阵容存在可读性或落库质量问题，请按真实角色资产标准修复。"];
+    : ["Hay problemas de legibilidad o calidad de almacenamiento con la línea actual. Corríjalos de acuerdo con los estándares de activos de personajes reales."];
 }
 
 export function buildCharacterCastBlockedMessage(assessment: CharacterCastBatchAssessment): string {
   return [
-    "这套角色阵容还需要你确认后再应用到正式角色库。",
+    "Aún debes confirmar esta alineación de personajes antes de que pueda aplicarse a la biblioteca oficial de personajes.",
     ...assessment.blockingReasons.slice(0, 5).map((reason, index) => `${index + 1}. ${reason}`),
   ].join("\n");
 }

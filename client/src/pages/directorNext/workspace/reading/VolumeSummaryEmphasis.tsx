@@ -19,8 +19,8 @@ export function VolumeEmphasisProvider({ book, children }: { book: WorkspaceBook
   const failed = queries.filter(query => query.isError);
   return <EmphasisContext.Provider value={marks}>
     <div className="flex h-full min-h-0 flex-col">
-      {queries.some(query => query.isFetching && !query.data) ? <p role="status" className="px-2 py-1 text-xs text-muted-foreground sm:px-6">正在标注卷纲中的冲突与转折…</p> : null}
-      {failed.length > 0 ? <p role="status" className="px-2 py-1 text-xs text-muted-foreground sm:px-6">部分卷纲重点未能标注。 <button type="button" className="text-primary underline" onClick={() => failed.forEach(query => { void query.refetch(); })}>重试标注</button></p> : null}
+      {queries.some(query => query.isFetching && !query.data) ? <p role="status" className="px-2 py-1 text-xs text-muted-foreground sm:px-6">Conflictos y giros en la anotación del temario...</p> : null}
+      {failed.length > 0 ? <p role="status" className="px-2 py-1 text-xs text-muted-foreground sm:px-6">Algunos puntos clave del programa de estudios no fueron marcados. <button type="button" className="text-primary underline" onClick={() => failed.forEach(query => { void query.refetch(); })}>Reintentar llamada</button></p> : null}
       {children}
     </div>
   </EmphasisContext.Provider>;

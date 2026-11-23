@@ -71,20 +71,20 @@ export default function DirectorNovelPage({ previewOnly = false }: { previewOnly
     <div className="flex h-full min-h-0 w-full min-w-0 flex-col gap-3">
       <header className="flex min-w-0 shrink-0 flex-wrap items-center justify-between gap-x-4 gap-y-1 border-b border-border/60 pb-2">
         <div className="flex min-w-0 flex-1 basis-full flex-wrap items-center gap-x-4 gap-y-2 lg:basis-auto">
-          <h1 title={book?.novel.title} className="min-w-0 truncate text-lg font-semibold">{book?.novel.title ?? "小说创作"}</h1>
-          {!preview ? <DirectorVersionControl novelId={novelId} version="v2"/> : <span className="text-sm">导演 V2</span>}
+          <h1 title={book?.novel.title} className="min-w-0 truncate text-lg font-semibold">{book?.novel.title ?? "Creación novedosa"}</h1>
+          {!preview ? <DirectorVersionControl novelId={novelId} version="v2"/> : <span className="text-sm">Director V2</span>}
           {!error && view ? <DirectorBadge view={view} novelId={novelId} modeOnly/> : null}
-          <label className="flex shrink-0 cursor-pointer items-center gap-2 rounded-md bg-muted/40 px-3 py-2 text-sm" title="自动打开正在生成的资料或章节，正文支持实时预览">
+          <label className="flex shrink-0 cursor-pointer items-center gap-2 rounded-md bg-muted/40 px-3 py-2 text-sm" title="Abra automáticamente el material o capítulo que se está generando y admita una vista previa en tiempo real del texto.">
             <input type="checkbox" checked={follow.enabled} disabled={preview || !!editingChapterId || adjustingCharacter} onChange={event => follow.setEnabled(event.target.checked)} className="h-4 w-4 accent-primary"/>
-            跟随生成
+            seguir la generación
           </label>
         </div>
         <div className="flex shrink-0 flex-wrap gap-1 [&_button]:h-8 [&_a]:h-8">
-          {!previewOnly ? <Button asChild variant="ghost"><Link to="/novels">返回书架</Link></Button> : null}
-          <Button variant="ghost" aria-expanded={directorOpen} onClick={() => setDirectorOpen(open => !open)}>{directorOpen ? "收起导演台" : "显示导演台"}</Button>
-          {params.has("review") ? <Button asChild variant="ghost"><Link to={`/lab/director/${encodeURIComponent(novelId)}`}>返回本书</Link></Button> : null}
-          {!previewOnly ? <Button asChild variant="ghost"><Link to="/lab/director">运行记录</Link></Button> : null}
-          {!preview ? <Button asChild variant="ghost"><Link to={`/novels/${encodeURIComponent(novelId)}/ai-usage`}>AI 用量</Link></Button> : null}
+          {!previewOnly ? <Button asChild variant="ghost"><Link to="/novels">Volver a la estantería</Link></Button> : null}
+          <Button variant="ghost" aria-expanded={directorOpen} onClick={() => setDirectorOpen(open => !open)}>{directorOpen ? "Cierra el escritorio del director." : "Mostrar escritorio del director"}</Button>
+          {params.has("review") ? <Button asChild variant="ghost"><Link to={`/lab/director/${encodeURIComponent(novelId)}`}>Volver al libro</Link></Button> : null}
+          {!previewOnly ? <Button asChild variant="ghost"><Link to="/lab/director">Registro de operación</Link></Button> : null}
+          {!preview ? <Button asChild variant="ghost"><Link to={`/novels/${encodeURIComponent(novelId)}/ai-usage`}>Uso de IA</Link></Button> : null}
         </div>
       </header>
       {!preview && !bookQuery.isError && book?.bookCompletion?.status === "completed" ? (
@@ -92,20 +92,20 @@ export default function DirectorNovelPage({ previewOnly = false }: { previewOnly
           {book.bookCompletion.finalReviewRoute && params.get("delivery")==="review" && <FinalReviewDialog key={novelId} novelId={novelId} onClose={()=>setParams({}, {replace:true})}/>}</>
       ) : null}
       {book?.outlineBinding ? <OutlineBookSource binding={book.outlineBinding}/> : null}
-      {follow.disconnected ? <p role="status" className="text-xs text-muted-foreground">正文预览连接中断，正在重新连接。创作任务继续运行。</p> : null}
-      {preview ? <details className="rounded-md bg-muted/30 px-4 py-3"><summary className="cursor-pointer text-xs text-muted-foreground">示例预览 · 切换导演状态</summary><p className="mt-3 text-xs text-muted-foreground">本页使用示例内容，创作命令禁用。</p><div className="mt-3 flex flex-wrap gap-2">{previewStates.map((state) => <Button key={state.id} size="sm" variant={(params.get("state") ?? "running") === state.id ? "default" : "ghost"} onClick={() => setParams({ state: state.id })}>{state.label}</Button>)}</div></details> : null}
-      <ResizableWorkspace id="director-novel-layout" className="min-h-0 flex-1" label="调整正文与导演台宽度" defaultLeft={78} minLeft={580} minRight={280} breakpoint={920} left={<div className="flex h-full min-h-0 min-w-0 flex-col">
-          {!preview && bookQuery.isError ? <div role="alert" className="mb-4 space-y-2 rounded-md bg-destructive/5 p-4"><p className="text-sm text-destructive">本书内容读取失败。{book ? "你仍可查看上次读取的内容。" : ""}</p><Button variant="outline" size="sm" onClick={() => void bookQuery.refetch()}>重新读取本书</Button></div> : null}
-          {book ? <NovelWorkspace key={novelId} book={book} preview={preview} review={params} onLeaveReview={()=>setParams({})} onOpenChapterReview={preview ? undefined : ()=>setParams({review:"chapter_task_sheet"})} followGeneration={follow.enabled && !editingChapterId && !adjustingCharacter} generation={follow.snapshot} activity={view?.workspaceActivity} onEditChapter={preview ? undefined : setEditingChapterId} editedChapter={editedChapter} onAdjustingCharacter={setAdjustingCharacter} /> : <p className="py-12 text-sm text-muted-foreground">{bookQuery.isLoading ? "正在读取本书内容…" : "暂无可展示的内容。"}</p>}
-        </div>} right={directorOpen ? <aside aria-label="导演台" className="h-full min-h-0 min-w-0 overflow-y-auto overscroll-contain px-3 py-1">
-          {!preview && error ? <div role="alert" className="space-y-3 py-4"><p className="text-sm text-destructive">{error instanceof Error ? error.message : "导演信息读取失败。"}</p>
-            {diagnostic ? <div className="space-y-2 text-sm"><p>保存的运行状态：{diagnostic.status} · 版本 {diagnostic.controlVersion}</p>{diagnostic.lastFailure ? <p>最近中断原因：{diagnostic.lastFailure.message}</p> : null}<p className="text-muted-foreground">正文进度暂不可读取，请处理原因后重新读取。</p></div> : diagnosticQuery.isError ? <p className="text-sm">运行诊断也暂时无法读取。</p> : null}
-            <Button variant="outline" onClick={() => void Promise.all([summaryQuery.refetch(), ...(runId ? [detailQuery.refetch()] : []), diagnosticQuery.refetch()])}>重新读取</Button></div>
+      {follow.disconnected ? <p role="status" className="text-xs text-muted-foreground">La conexión de vista previa de texto se interrumpió y se está reconectando. La tarea de creación continúa ejecutándose.</p> : null}
+      {preview ? <details className="rounded-md bg-muted/30 px-4 py-3"><summary className="cursor-pointer text-xs text-muted-foreground">Vista previa de muestra · Cambiar estado de director</summary><p className="mt-3 text-xs text-muted-foreground">Esta página utiliza contenido de muestra con los comandos de creación deshabilitados.</p><div className="mt-3 flex flex-wrap gap-2">{previewStates.map((state) => <Button key={state.id} size="sm" variant={(params.get("state") ?? "running") === state.id ? "default" : "ghost"} onClick={() => setParams({ state: state.id })}>{state.label}</Button>)}</div></details> : null}
+      <ResizableWorkspace id="director-novel-layout" className="min-h-0 flex-1" label="Ajustar el texto y el ancho del escritorio del director." defaultLeft={78} minLeft={580} minRight={280} breakpoint={920} left={<div className="flex h-full min-h-0 min-w-0 flex-col">
+          {!preview && bookQuery.isError ? <div role="alert" className="mb-4 space-y-2 rounded-md bg-destructive/5 p-4"><p className="text-sm text-destructive">No se pudo leer el contenido de este libro.{book ? "Aún puedes ver la última lectura." : ""}</p><Button variant="outline" size="sm" onClick={() => void bookQuery.refetch()}>Vuelva a leer este libro</Button></div> : null}
+          {book ? <NovelWorkspace key={novelId} book={book} preview={preview} review={params} onLeaveReview={()=>setParams({})} onOpenChapterReview={preview ? undefined : ()=>setParams({review:"chapter_task_sheet"})} followGeneration={follow.enabled && !editingChapterId && !adjustingCharacter} generation={follow.snapshot} activity={view?.workspaceActivity} onEditChapter={preview ? undefined : setEditingChapterId} editedChapter={editedChapter} onAdjustingCharacter={setAdjustingCharacter} /> : <p className="py-12 text-sm text-muted-foreground">{bookQuery.isLoading ? "Leyendo este libro..." : "Actualmente no hay contenido para mostrar."}</p>}
+        </div>} right={directorOpen ? <aside aria-label="Escritorio del director" className="h-full min-h-0 min-w-0 overflow-y-auto overscroll-contain px-3 py-1">
+          {!preview && error ? <div role="alert" className="space-y-3 py-4"><p className="text-sm text-destructive">{error instanceof Error ? error.message : "No se pudo leer la información del director."}</p>
+            {diagnostic ? <div className="space-y-2 text-sm"><p>Estado de ejecución guardado:{diagnostic.status} · Versión {diagnostic.controlVersion}</p>{diagnostic.lastFailure ? <p>Motivo de la interrupción reciente:{diagnostic.lastFailure.message}</p> : null}<p className="text-muted-foreground">El progreso del texto es temporalmente ilegible. Resuelva el motivo y vuelva a leer.</p></div> : diagnosticQuery.isError ? <p className="text-sm">Los diagnósticos de ejecución también son temporalmente ilegibles.</p> : null}
+            <Button variant="outline" onClick={() => void Promise.all([summaryQuery.refetch(), ...(runId ? [detailQuery.refetch()] : []), diagnosticQuery.refetch()])}>Releer</Button></div>
             : view ? <DirectorPanel view={view} novelId={novelId} outlineBound={Boolean(book?.outlineBinding)} timeline={preview ? previewTimeline : detail?.timeline} preview={preview} startForm={startForm} reviewTarget={savedReview ? location.pathname+location.search : undefined} reviewReady={Boolean(savedReview?.ready) && !bookQuery.isError} reviewCanRegenerate={Boolean(savedReview?.canRegenerate) && !bookQuery.isError} reviewRunId={savedReview?.runId} reviewVersion={savedReview?.controlVersion}
                 proseApproval={reviewType === "chapter_task_sheet" && book?.planning?.activeVersionId && book.chapterReviewFingerprint
                   ? {planVersionId:book.planning.activeVersionId, approveForProse:book.chapterReviewFingerprint} : undefined}
                 renderPlanEditor={renderReviewEditor}/>
-              : <p className="py-4 text-sm text-muted-foreground">{summaryQuery.isLoading || detailQuery.isLoading ? "正在读取导演信息…" : "选择创作范围，让 AI 从本书内容继续。"}</p>}
+              : <p className="py-4 text-sm text-muted-foreground">{summaryQuery.isLoading || detailQuery.isLoading ? "Cargando información del director..." : "Elija su alcance creativo y deje que la IA continúe con el libro."}</p>}
           {!error && !view ? startForm?.(null):null}
         </aside> : null}/>
       {!preview && editingChapterId ? <DirectorChapterEditor key={`${novelId}:${editingChapterId}`} novelId={novelId} chapterId={editingChapterId}

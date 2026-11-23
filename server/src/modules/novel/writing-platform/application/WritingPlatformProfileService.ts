@@ -16,12 +16,12 @@ function parseProfile(raw: string): WritingPlatformProfileDefinition {
 }
 
 function validateProfile(platform: WritingPlatform, profile: WritingPlatformProfileDefinition): void {
-  if (profile.platform !== platform) throw new Error("平台标识不能在编辑时改变。");
-  if (!profile.label.trim() || !profile.summary.trim()) throw new Error("平台名称和说明不能为空。");
+  if (profile.platform !== platform) throw new Error("La identificación de la plataforma no se puede cambiar durante la edición.");
+  if (!profile.label.trim() || !profile.summary.trim()) throw new Error("El nombre y la descripción de la plataforma no pueden estar vacíos.");
   for (const form of profile.supportedNarrativeForms) {
     const guidance = profile.guidance[form];
     if (!guidance || Object.values(guidance).some((value) => !value.trim())) {
-      throw new Error(`请完整填写 ${form === "short_story" ? "短篇" : "长篇"} 的五类写法指导。`);
+      throw new Error(`Por favor complete completamente ${form === "short_story" ? "cuento corto" : "larga historia"} Cinco categorías de orientación para la escritura.`);
     }
   }
 }
@@ -89,9 +89,9 @@ export class WritingPlatformProfileService {
 
   async activate(platform: WritingPlatform, versionId: string): Promise<Awaited<ReturnType<WritingPlatformProfileService["get"]>>> {
     const override = await prisma.writingPlatformProfileOverride.findUnique({ where: { platform } });
-    if (!override) throw new Error("平台写法还没有自定义版本。");
+    if (!override) throw new Error("Aún no existe una versión personalizada del método de escritura de la plataforma.");
     const version = await prisma.writingPlatformProfileVersion.findFirst({ where: { id: versionId, overrideId: override.id } });
-    if (!version) throw new Error("平台写法版本不存在。");
+    if (!version) throw new Error("La versión de escritura de la plataforma no existe.");
     await prisma.writingPlatformProfileOverride.update({ where: { id: override.id }, data: { activeVersionId: version.id } });
     return this.get(platform);
   }
@@ -107,10 +107,10 @@ export class WritingPlatformProfileService {
   }
 
   async snapshot(platform: WritingPlatform, narrativeForm: "short_story" | "long_novel"): Promise<WritingPlatformSnapshot> {
-    if (!supportsWritingPlatformForm(platform, narrativeForm)) throw new Error("所选平台不支持当前作品规模。");
+    if (!supportsWritingPlatformForm(platform, narrativeForm)) throw new Error("La plataforma seleccionada no admite el tamaño de producción actual.");
     const resolved = await this.resolve(platform);
     const guidance = resolved.profile.guidance[narrativeForm];
-    if (!guidance) throw new Error("平台写法缺少当前作品规模的配置。");
+    if (!guidance) throw new Error("El método de escritura de la plataforma carece de la configuración de la escala de trabajo actual.");
     return {
       platform,
       label: resolved.profile.label,

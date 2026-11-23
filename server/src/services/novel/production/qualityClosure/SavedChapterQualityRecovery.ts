@@ -34,11 +34,11 @@ export async function recoverSavedChapterQuality(
   options: ReviewOptions & {manualRevision?: boolean} = {},
 ): Promise<PipelineRuntimeResult> {
   if (!hasCurrentChapterArtifactSyncBoundary(chapter.content, chapter.artifactSyncCheckpoints ?? [], {requireAppliedDelta: true})) {
-    throw new SavedChapterQualityRecoveryError("本章正文或状态同步记录与保存进度不一致，请核对章节内容后继续。");
+    throw new SavedChapterQualityRecoveryError("El texto de este capítulo o el registro de sincronización de estado no coincide con el progreso de guardado. Por favor verifique el contenido del capítulo antes de continuar.");
   }
   const qualityLoop = JSON.parse(chapter.riskFlags || "{}").qualityLoop;
   if (qualityLoop?.rootCauseCode === "replan_required" || qualityLoop?.recommendedAction === "replan") {
-    throw new SavedChapterQualityRecoveryError("本章需要调整后续规划，请保存规划后继续。", "quality.replan_required");
+    throw new SavedChapterQualityRecoveryError("Este capítulo requiere ajustes para la planificación posterior, guarde el plan y continúe.", "quality.replan_required");
   }
   const contentHash = hashContent(chapter.content!);
   const row = await prisma.chapterArtifactSyncCheckpoint.findFirst({
@@ -56,12 +56,12 @@ export async function recoverSavedChapterQuality(
     }
   }
   if (!parsed.success || row?.contentHash !== contentHash || parsed.data.contentHash !== contentHash) {
-    throw new SavedChapterQualityRecoveryError("本章缺少与保存正文对应的检查结果，请核对章节内容后继续。");
+    throw new SavedChapterQualityRecoveryError("Este capítulo carece de los resultados de la verificación correspondientes al texto guardado. Por favor verifique el contenido del capítulo antes de continuar.");
   }
   const { assessment, score, issues } = parsed.data.result;
   if (assessment.repairability === "plan_misalignment"
     || (!options.manualRevision && (assessment.continuePolicy === "pause" || assessment.status === "needs_manual_review"))) {
-    throw new SavedChapterQualityRecoveryError("本章检查要求调整规划或人工处理，请核对检查结果后继续。", "quality.replan_required");
+    throw new SavedChapterQualityRecoveryError("La inspección en este capítulo requiere un ajuste de la planificación o el procesamiento manual. Verifique los resultados de la inspección antes de continuar.", "quality.replan_required");
   }
   return {
     reviewExecuted: true,

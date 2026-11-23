@@ -81,20 +81,20 @@ function getSectionSource(input: {
   const { globalOverride, novelOverride, scope } = input;
   if (scope === "novel") {
     if (isOfficialDefaultEntry(novelOverride)) {
-      return { source: "novel_official_default", sourceLabel: "本书使用官方默认" };
+      return { source: "novel_official_default", sourceLabel: "Este libro utiliza el valor predeterminado oficial." };
     }
     if (novelOverride) {
-      return { source: "novel", sourceLabel: "本书覆盖" };
+      return { source: "novel", sourceLabel: "Este libro cubre" };
     }
     if (globalOverride && !isOfficialDefaultEntry(globalOverride)) {
-      return { source: "global", sourceLabel: "全局覆盖" };
+      return { source: "global", sourceLabel: "Cobertura global" };
     }
-    return { source: "official", sourceLabel: "官方默认" };
+    return { source: "official", sourceLabel: "Por defecto oficial" };
   }
   if (globalOverride && !isOfficialDefaultEntry(globalOverride)) {
-    return { source: "global", sourceLabel: "全局覆盖" };
+    return { source: "global", sourceLabel: "Cobertura global" };
   }
-  return { source: "official", sourceLabel: "官方默认" };
+  return { source: "official", sourceLabel: "Por defecto oficial" };
 }
 
 export function buildPromptEditorSections(input: {
@@ -223,7 +223,7 @@ export function usePromptDraftSlots(prompt: PromptCatalogItem | null) {
   useEffect(() => {
     if (saveMutation.isError) {
       const error = saveMutation.error;
-      setSaveError(error instanceof Error ? error.message : "保存失败，请重试。");
+      setSaveError(error instanceof Error ? error.message : "Error al guardar, inténtelo de nuevo.");
     }
   }, [saveMutation.error, saveMutation.isError]);
 

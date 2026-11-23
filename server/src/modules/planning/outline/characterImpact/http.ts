@@ -16,7 +16,7 @@ const route = (action: (projectId: string, input: unknown) => Promise<unknown>, 
     try {
       const data = await action(String(req.params.id), req.method === "GET" ? req.query : req.body);
       res.status(created ? 201 : 200).json({success: true, data});
-    } catch (error) { next(error instanceof z.ZodError ? new AppError("人物联动请求格式有误。", 400, error.issues) : error); }
+    } catch (error) { next(error instanceof z.ZodError ? new AppError("El formato de solicitud de vinculación de caracteres es incorrecto.", 400, error.issues) : error); }
   };
 
 router.get("/conversation/turns/:turnId/stream", async (req, res, next) => {

@@ -131,9 +131,9 @@ export function toEvidenceList(value: unknown, sourceLabelFallback = ""): BookAn
         : undefined;
       const excerptOffsetRange = normalizeExcerptOffsetRange(row.excerptOffsetRange);
       return {
-        label: label || "片段",
+        label: label || "fragmento",
         excerpt: excerpt || "",
-        sourceLabel: sourceLabel || "源文档",
+        sourceLabel: sourceLabel || "Documento fuente",
         ...(fieldKey ? { fieldKey } : {}),
         ...(fieldIndex !== undefined ? { fieldIndex } : {}),
         ...(chapterIndex !== undefined ? { chapterIndex } : {}),
@@ -256,7 +256,7 @@ function splitIntoChunkSegments(normalized: string): SourceSegment[] {
   const charsPerAdditionalSegment = MAX_SEGMENT_CHARS - CHUNK_OVERLAP_CHARS;
   const coverageLimit = MAX_SEGMENT_CHARS + (MAX_SEGMENT_COUNT - 1) * charsPerAdditionalSegment;
   if (normalized.length > coverageLimit) {
-    throw new AppError("所选原文超过单次拆书可完整分析的范围。请缩小章节范围，或分批导入原文。", 400);
+    throw new AppError("El texto original seleccionado excede el alcance que puede analizarse íntegramente en una sola apertura del libro. Limite el alcance del capítulo o importe el texto original en lotes.", 400);
   }
   const segments: SourceSegment[] = [];
   let start = 0;
@@ -274,7 +274,7 @@ function splitIntoChunkSegments(normalized: string): SourceSegment[] {
     const chunk = normalized.slice(start, boundary).trim();
     if (chunk) {
       segments.push({
-        label: `片段 ${segments.length + 1}`,
+        label: `fragmento ${segments.length + 1}`,
         content: chunk,
       });
     }
@@ -296,7 +296,7 @@ export function buildSourceSegments(content: string): SourceSegment[] {
 }
 
 function renderNoteField(label: string, values: string[]): string {
-  return `${label}：${values.join("；") || "无"}`;
+  return `${label}:${values.join(";") || "Ninguno"}`;
 }
 
 type SourceNoteStringListKey =
@@ -386,59 +386,59 @@ function getNoteFieldsForSection(sectionKey?: BookAnalysisSectionKey): Array<{
   switch (sectionKey) {
     case "plot_structure":
       return [
-        { label: "剧情要点", key: "plotPoints" },
-        { label: "时间线节点", key: "timelineEvents" },
-        { label: "读者信号", key: "readerSignals" },
-        { label: "短板信号", key: "weaknessSignals" },
+        { label: "puntos de la trama", key: "plotPoints" },
+        { label: "nodo de línea de tiempo", key: "timelineEvents" },
+        { label: "señal del lector", key: "readerSignals" },
+        { label: "señal corta", key: "weaknessSignals" },
       ];
     case "timeline":
       return [
-        { label: "时间线节点", key: "timelineEvents" },
-        { label: "剧情要点", key: "plotPoints" },
-        { label: "人物信息", key: "characters" },
+        { label: "nodo de línea de tiempo", key: "timelineEvents" },
+        { label: "puntos de la trama", key: "plotPoints" },
+        { label: "Información del personaje", key: "characters" },
       ];
     case "character_system":
       return [
-        { label: "人物信息", key: "characters" },
-        { label: "剧情要点", key: "plotPoints" },
-        { label: "主题信息", key: "themes" },
+        { label: "Información del personaje", key: "characters" },
+        { label: "puntos de la trama", key: "plotPoints" },
+        { label: "Información del tema", key: "themes" },
       ];
     case "worldbuilding":
       return [
-        { label: "设定信息", key: "worldbuilding" },
-        { label: "剧情要点", key: "plotPoints" },
-        { label: "短板信号", key: "weaknessSignals" },
+        { label: "Información de configuración", key: "worldbuilding" },
+        { label: "puntos de la trama", key: "plotPoints" },
+        { label: "señal corta", key: "weaknessSignals" },
       ];
     case "themes":
       return [
-        { label: "主题信息", key: "themes" },
-        { label: "读者信号", key: "readerSignals" },
-        { label: "短板信号", key: "weaknessSignals" },
+        { label: "Información del tema", key: "themes" },
+        { label: "señal del lector", key: "readerSignals" },
+        { label: "señal corta", key: "weaknessSignals" },
       ];
     case "style_technique":
       return [
-        { label: "文风技法", key: "styleTechniques" },
-        { label: "读者信号", key: "readerSignals" },
-        { label: "短板信号", key: "weaknessSignals" },
+        { label: "Estilo y técnicas", key: "styleTechniques" },
+        { label: "señal del lector", key: "readerSignals" },
+        { label: "señal corta", key: "weaknessSignals" },
       ];
     case "market_highlights":
       return [
-        { label: "商业卖点", key: "marketHighlights" },
-        { label: "读者信号", key: "readerSignals" },
-        { label: "短板信号", key: "weaknessSignals" },
-        { label: "人物信息", key: "characters" },
+        { label: "punto de venta comercial", key: "marketHighlights" },
+        { label: "señal del lector", key: "readerSignals" },
+        { label: "señal corta", key: "weaknessSignals" },
+        { label: "Información del personaje", key: "characters" },
       ];
     default:
       return [
-        { label: "剧情要点", key: "plotPoints" },
-        { label: "时间线节点", key: "timelineEvents" },
-        { label: "人物信息", key: "characters" },
-        { label: "设定信息", key: "worldbuilding" },
-        { label: "主题信息", key: "themes" },
-        { label: "文风技法", key: "styleTechniques" },
-        { label: "商业卖点", key: "marketHighlights" },
-        { label: "读者信号", key: "readerSignals" },
-        { label: "短板信号", key: "weaknessSignals" },
+        { label: "puntos de la trama", key: "plotPoints" },
+        { label: "nodo de línea de tiempo", key: "timelineEvents" },
+        { label: "Información del personaje", key: "characters" },
+        { label: "Información de configuración", key: "worldbuilding" },
+        { label: "Información del tema", key: "themes" },
+        { label: "Estilo y técnicas", key: "styleTechniques" },
+        { label: "punto de venta comercial", key: "marketHighlights" },
+        { label: "señal del lector", key: "readerSignals" },
+        { label: "señal corta", key: "weaknessSignals" },
       ];
   }
 }
@@ -452,11 +452,11 @@ export function renderNotesForPrompt(notes: SourceNote[], sectionKey?: BookAnaly
       });
       const sections = [
         `## ${note.sourceLabel}`,
-        `摘要：${note.summary}`,
+        `resumen:${note.summary}`,
         ...fieldLines,
         note.evidence.length > 0
-          ? `证据摘录：\n${note.evidence.map((item) => `- ${item.label}：${item.excerpt}`).join("\n")}`
-          : "证据摘录：无",
+          ? `Extracto de evidencia: \\n${note.evidence.map((item) => `- ${item.label}:${item.excerpt}`).join("\n")}`
+          : "Extractos de evidencia: Ninguno",
       ];
       return sections.join("\n");
     })

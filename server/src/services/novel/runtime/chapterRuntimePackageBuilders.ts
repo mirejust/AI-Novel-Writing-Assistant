@@ -114,15 +114,15 @@ export function buildObligationCoverage(input: {
     return {
       status: "satisfied",
       missing: [],
-      summary: "章节义务已满足。",
+      summary: "Obligaciones capitulares cumplidas.",
     };
   }
   return {
     status: input.hasBlockingIssues ? "unmet" : "partial",
     missing: input.missingObligations,
     summary: input.hasBlockingIssues
-      ? `仍有 ${input.missingObligations.length} 项章节义务未满足。`
-      : `仍有 ${input.missingObligations.length} 项章节义务需要后续回收。`,
+      ? `todavía hay ${input.missingObligations.length} No se han cumplido las obligaciones del capítulo.`
+      : `todavía hay ${input.missingObligations.length} Las obligaciones del capítulo requieren un reciclaje posterior.`,
   };
 }
 
@@ -135,7 +135,7 @@ export function buildFailureClassification(input: {
   if (input.replanRecommended || input.acceptance.repairability === "plan_misalignment") {
     return {
       code: "replan_required",
-      summary: "当前章节目标与计划窗口已失配，需要先调整附近章节职责。",
+      summary: "Los objetivos del capítulo actual no coinciden con la ventana de planificación y primero es necesario ajustar las responsabilidades de los capítulos cercanos.",
       decisionReason: input.acceptance.decisionReason,
       blockingObligations: input.missingObligations,
     };
@@ -143,7 +143,7 @@ export function buildFailureClassification(input: {
   if (input.missingObligations.length > 0) {
     return {
       code: "draft_obligation_unmet",
-      summary: "正文已生成，但仍有本章必达义务没有兑现。",
+      summary: "El texto ha sido generado, pero aún quedan obligaciones en este capítulo que no se han cumplido.",
       decisionReason: input.acceptance.decisionReason,
       blockingObligations: input.missingObligations,
     };
@@ -151,14 +151,14 @@ export function buildFailureClassification(input: {
   if (input.hasBlockingIssues) {
     return {
       code: "draft_repair_exhausted",
-      summary: "正文已生成，但仍有阻塞性问题需要继续修复。",
+      summary: "Se ha generado el texto principal, pero todavía hay problemas de bloqueo que deben solucionarse.",
       decisionReason: input.acceptance.decisionReason,
       blockingObligations: [],
     };
   }
   return {
     code: "none",
-    summary: "正文已生成，可继续推进。",
+    summary: "El texto ha sido generado y se puede avanzar.",
     decisionReason: input.acceptance.decisionReason,
     blockingObligations: [],
   };
@@ -241,7 +241,7 @@ function normalizeBoundaryProbe(value: string | null | undefined): string {
 
 function boundaryProbeCandidates(value: string, splitInstructionPrefix: boolean): string[] {
   const trimmed = value.trim();
-  const afterColon = splitInstructionPrefix && trimmed.includes("：") ? trimmed.split("：").slice(1).join("：").trim() : "";
+  const afterColon = splitInstructionPrefix && trimmed.includes(":") ? trimmed.split(":").slice(1).join(":").trim() : "";
   return [trimmed, afterColon]
     .map((item) => item.trim())
     .filter((item) => item.length >= 4);
@@ -281,12 +281,12 @@ export function buildBoundaryLeakageIssues(input: {
       severity: candidate.severity,
       code: candidate.type,
       description: candidate.type === "protected_reveal"
-        ? "章节正文疑似提前泄露受保护信息。"
-        : "章节正文疑似越过本章边界。重写或修复时必须回到当前章节合同内。",
+        ? "Se sospecha que el texto del capítulo filtra información protegida de antemano."
+        : "El texto del capítulo parece haber cruzado los límites de este capítulo. Al reescribir o reparar, debe volver al contrato del capítulo actual.",
       evidence: leaked,
       fixSuggestion: candidate.type === "protected_reveal"
-        ? "删除或改写提前揭露的信息，只保留铺垫、压力或预兆。"
-        : "删除越章内容，停在本章 endingState 或当前场景 exitState。",
+        ? "Eliminar o reescribir la información revelada de antemano, dejando solo presagios, presiones o presagios."
+        : "Elimine el contenido más allá del capítulo y deténgase en el estado final de este capítulo o en el estado de salida de la escena actual.",
       status: "open" as const,
       createdAt: now,
       updatedAt: now,
@@ -395,7 +395,7 @@ export function buildRuntimePackage(input: BuildRuntimePackageInput): ChapterRun
       ),
       action: hasBlockingIssues ? "local_patch_plan" as const : "continue_with_warning" as const,
       reason: input.contextPackage.ledgerSummary?.overdueCount
-        ? "存在逾期承诺，记录为章节级质量债并继续执行。"
+        ? "Existen compromisos vencidos, los cuales se registran como deuda de calidad a nivel de capítulo y continuada."
         : hasBlockingIssues
           ? "Blocking audit issues remain open after generation."
           : "No blocking audit issues were detected.",

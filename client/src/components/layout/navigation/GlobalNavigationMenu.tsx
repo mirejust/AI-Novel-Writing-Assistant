@@ -15,12 +15,12 @@ export default function GlobalNavigationMenu() {
       <Popover.Root open={open} onOpenChange={setOpen}>
         <Popover.Trigger asChild>
           <Button ref={trigger} type="button" size="sm" variant="ghost" className="group gap-1.5 data-[state=open]:bg-accent">
-            全局菜单
+            menú global
             <ChevronDown aria-hidden="true" className="size-3.5 text-muted-foreground group-data-[state=open]:rotate-180" />
           </Button>
         </Popover.Trigger>
         <Popover.Portal>
-          <Popover.Content side="bottom" align="start" sideOffset={6} collisionPadding={12} aria-label="全局菜单"
+          <Popover.Content side="bottom" align="start" sideOffset={6} collisionPadding={12} aria-label="Menú global"
             className="z-50 max-h-[var(--radix-popover-content-available-height)] w-[min(39rem,calc(100vw-1.5rem))] overflow-y-auto overscroll-contain rounded-xl bg-popover p-3 text-popover-foreground shadow-lg"
             onOpenAutoFocus={event => {
               event.preventDefault();

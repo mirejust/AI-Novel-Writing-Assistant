@@ -138,7 +138,7 @@ async function requireCheckpointIdForBranch(
   if (checkpointId || parentMessages.length === 0) {
     return checkpointId;
   }
-  const message = "未能匹配到对应的历史检查点，当前消息无法生成新分支。";
+  const message = "El punto de control histórico correspondiente no puede coincidir y el mensaje actual no puede generar una nueva rama.";
   toast.error(message);
   throw new Error(message);
 }
@@ -198,7 +198,7 @@ export function useCreativeHubRuntime({
     () =>
       async function* streamCallback(messages, config) {
         if (!isThreadReady) {
-          throw new Error("创作中枢线程尚未初始化。");
+          throw new Error("El subproceso del centro de creación aún no se ha inicializado.");
         }
         const streamSessionId = streamSessionRef.current;
         const streamThreadId = threadId;
@@ -288,7 +288,7 @@ export function useCreativeHubRuntime({
         const message = error && typeof error === "object" && "message" in error
           && typeof error.message === "string" && error.message.trim()
           ? error.message.trim()
-          : "创作中枢运行失败，请检查模型连接后重试。";
+          : "El centro de creación no pudo ejecutarse. Verifique la conexión del modelo e inténtelo nuevamente.";
         toast.error(message);
       },
     },
@@ -497,7 +497,7 @@ export function useCreativeHubRuntime({
           threadId,
           message: error instanceof Error && error.message.trim()
             ? error.message.trim()
-            : "当前线程内容加载失败。",
+            : "No se pudo cargar el contenido del hilo actual.",
         });
       });
     return () => {

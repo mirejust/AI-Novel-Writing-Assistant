@@ -60,7 +60,7 @@ function hasPersistedChapterContent(chapter: Pick<TakeoverChapterRow, "content">
 }
 
 function isNoChaptersToGenerateFailure(message: string | null | undefined): boolean {
-  return typeof message === "string" && message.includes("指定区间内没有可生成的章节");
+  return typeof message === "string" && message.includes("No hay capítulos que se puedan generar en el rango especificado.");
 }
 
 function isPendingAutoExecutionChapter(chapter: TakeoverChapterRow): boolean {
@@ -111,7 +111,7 @@ function reconcileAutoExecutionStateAfterStaleNoChapterFailure(input: {
 
   const deferredState = buildDirectorAutoExecutionDeferredQualityState({
     state,
-    reason: "继续已有进度时已跳过当前待修章节，后续章节继续执行。",
+    reason: "Al continuar con el progreso existente, se omitirá el capítulo actual que se va a revisar y se continuarán ejecutando los capítulos siguientes.",
     source: "review_skip",
     chapter: {
       id: nextChapter.id,
@@ -454,7 +454,7 @@ export async function loadDirectorTakeoverState(input: {
     }),
   ]);
   if (!novelRow) {
-    throw new Error("小说不存在。");
+    throw new Error("La novela no existe.");
   }
 
   const novel = normalizeNovelOutput(novelRow) as DirectorTakeoverNovelContext & {
@@ -589,7 +589,7 @@ export function resolveDirectorRunningStateForPhase(
     return {
       stage: "story_macro" as const,
       itemKey: "book_contract" as const,
-      itemLabel: "正在准备 Book Contract 与故事宏观规划",
+      itemLabel: "Preparación del contrato del libro y planificación macro de la historia.",
       progress: DIRECTOR_PROGRESS.bookContract,
     };
   }
@@ -597,7 +597,7 @@ export function resolveDirectorRunningStateForPhase(
     return {
       stage: "world_setup" as const,
       itemKey: "world_setup" as const,
-      itemLabel: "正在准备本书世界观",
+      itemLabel: "Preparando la cosmovisión de este libro",
       progress: DIRECTOR_PROGRESS.worldSetup,
     };
   }
@@ -605,7 +605,7 @@ export function resolveDirectorRunningStateForPhase(
     return {
       stage: "character_setup" as const,
       itemKey: "character_setup" as const,
-      itemLabel: "正在补齐角色准备",
+      itemLabel: "Se está completando la preparación del rol.",
       progress: DIRECTOR_PROGRESS.characterSetup,
     };
   }
@@ -613,14 +613,14 @@ export function resolveDirectorRunningStateForPhase(
     return {
       stage: "volume_strategy" as const,
       itemKey: "volume_strategy" as const,
-      itemLabel: "正在继续生成卷战略",
+      itemLabel: "Se sigue generando estrategia de volumen",
       progress: DIRECTOR_PROGRESS.volumeStrategy,
     };
   }
   return {
     stage: "structured_outline" as const,
     itemKey: "beat_sheet" as const,
-    itemLabel: "正在继续生成第 1 卷节奏板与细化",
+    itemLabel: "Continúa la producción de tablas rítmicas y elaboraciones del Volumen 1",
     progress: DIRECTOR_PROGRESS.beatSheet,
   };
 }

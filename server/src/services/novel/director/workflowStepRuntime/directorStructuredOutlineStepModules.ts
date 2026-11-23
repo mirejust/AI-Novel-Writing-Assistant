@@ -12,11 +12,11 @@ export const DIRECTOR_STRUCTURED_OUTLINE_STEP_MODULES = {
     descriptor: buildStructuredOutlineStepDescriptor({
       id: DIRECTOR_STRUCTURED_OUTLINE_STEP_IDS.chapter_list,
       nodeKey: "volume_chapter_list_generate",
-      label: "生成卷拆章列表",
+      label: "Generar volumen y lista de capítulos.",
       defaultWaitingState: {
         stage: "structured_outline",
         itemKey: "chapter_list",
-        itemLabel: "等待卷拆章列表准备完成",
+        itemLabel: "Esperando a que se complete la lista de capítulos.",
         progress: 0.8,
       },
     }),
@@ -26,11 +26,11 @@ export const DIRECTOR_STRUCTURED_OUTLINE_STEP_MODULES = {
     descriptor: buildStructuredOutlineStepDescriptor({
       id: DIRECTOR_STRUCTURED_OUTLINE_STEP_IDS.chapter_detail_bundle,
       nodeKey: "volume_chapter_detail_bundle_generate",
-      label: "细化章节任务单与执行资源",
+      label: "Refinar las órdenes de tareas de los capítulos y los recursos de ejecución",
       defaultWaitingState: {
         stage: "structured_outline",
         itemKey: "chapter_detail_bundle",
-        itemLabel: "等待章节任务单与执行资源准备完成",
+        itemLabel: "Esperando que se preparen el orden de tareas del capítulo y los recursos de ejecución.",
         progress: 0.88,
       },
     }),

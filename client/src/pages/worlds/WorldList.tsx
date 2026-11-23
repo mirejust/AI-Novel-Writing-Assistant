@@ -46,7 +46,7 @@ function extractStructuredPreview(raw: string): string | null {
           const title = [record.name, record.title, record.label].find((value) => typeof value === "string");
           const description = [record.description, record.content, record.detail].find((value) => typeof value === "string");
           if (typeof title === "string" && typeof description === "string") {
-            return `${title.trim()}：${description.trim()}`;
+            return `${title.trim()}:${description.trim()}`;
           }
           if (typeof title === "string") {
             return title.trim();
@@ -58,9 +58,9 @@ function extractStructuredPreview(raw: string): string | null {
         })
         .filter(Boolean);
       if (parts.length > 0) {
-        return parts.join("；");
+        return parts.join(";");
       }
-      return "包含世界手册内容，进入工作台查看详情。";
+      return "Contiene el contenido del manual mundial, ingrese al banco de trabajo para ver los detalles.";
     }
     if (parsed && typeof parsed === "object") {
       const record = parsed as Record<string, unknown>;
@@ -68,7 +68,7 @@ function extractStructuredPreview(raw: string): string | null {
       if (typeof summary === "string" && summary.trim()) {
         return summary.trim();
       }
-      return "包含世界手册内容，进入工作台查看详情。";
+      return "Contiene el contenido del manual mundial, ingrese al banco de trabajo para ver los detalles.";
     }
   } catch {
     return null;
@@ -122,10 +122,10 @@ function buildWorldLibraryProjection(world: {
   structureJson?: string | null;
 }): WorldLibraryCardProjection {
   const structured = parseStructuredWorldData(world.structureJson);
-  const legacySummary = buildPreview(world.description ?? world.overviewSummary, "等待补充世界概要", 120);
+  const legacySummary = buildPreview(world.description ?? world.overviewSummary, "Esperando resumen mundial suplementario", 120);
   const legacyDetail = buildPreview(
     world.conflicts ?? world.geography ?? world.background ?? world.factions,
-    "进入工作台整理核心规则、主要势力和故事舞台。",
+    "Ingrese al banco de trabajo para organizar las reglas básicas, las fuerzas principales y las etapas de la historia.",
     160,
   );
 
@@ -147,21 +147,21 @@ function buildWorldLibraryProjection(world: {
   }
 
   const coreRules = (structured.rules?.axioms ?? [])
-    .map((rule) => compactText([rule.name, rule.summary].filter(Boolean).join("："), 72))
+    .map((rule) => compactText([rule.name, rule.summary].filter(Boolean).join(":"), 72))
     .filter((item): item is string => Boolean(item))
     .slice(0, 3);
   const majorForces = [...(structured.forces ?? []), ...(structured.factions ?? [])]
-    .map((force) => compactText("name" in force ? [force.name, "summary" in force ? force.summary : force.position].filter(Boolean).join("：") : "", 64))
+    .map((force) => compactText("name" in force ? [force.name, "summary" in force ? force.summary : force.position].filter(Boolean).join(":") : "", 64))
     .filter((item): item is string => Boolean(item))
     .slice(0, 3);
   const storyLocations = (structured.locations ?? [])
-    .map((location) => compactText([location.name, location.narrativeFunction || location.summary].filter(Boolean).join("："), 64))
+    .map((location) => compactText([location.name, location.narrativeFunction || location.summary].filter(Boolean).join(":"), 64))
     .filter((item): item is string => Boolean(item))
     .slice(0, 3);
   const tensions = [
     compactText(structured.profile?.coreConflict, 80),
     ...(structured.relations?.forceRelations ?? []).map((relation) =>
-      compactText([relation.relation, relation.tension || relation.detail].filter(Boolean).join("："), 72),
+      compactText([relation.relation, relation.tension || relation.detail].filter(Boolean).join(":"), 72),
     ),
     ...(structured.rules?.sharedConsequences ?? []).map((item) => compactText(item, 72)),
   ]
@@ -223,17 +223,17 @@ export default function WorldList() {
     mutationFn: (id: string) => deleteWorld(id),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: queryKeys.worlds.all });
-      toast.success("世界样本已删除。");
+      toast.success("Se han eliminado muestras mundiales.");
     },
     onError: (error) => {
-      toast.error(error instanceof Error ? error.message : "删除世界样本失败。");
+      toast.error(error instanceof Error ? error.message : "No se pudo eliminar la muestra mundial.");
     },
   });
 
   const worlds = worldListQuery.data?.data ?? [];
 
   const handleDelete = (worldId: string, worldName: string) => {
-    const confirmed = window.confirm(`确认删除世界样本「${worldName}」？此操作不可恢复。`);
+    const confirmed = window.confirm(`Confirmar la eliminación de la muestra mundial "${worldName}”? Esta operación es irreversible.`);
     if (!confirmed) {
       return;
     }
@@ -248,16 +248,16 @@ export default function WorldList() {
             <LibraryBig className="h-5 w-5" aria-hidden="true" />
           </div>
           <div>
-            <h1 className="text-xl font-semibold tracking-tight">世界样本库</h1>
+            <h1 className="text-xl font-semibold tracking-tight">Biblioteca mundial de muestras</h1>
             <p className="mt-1 max-w-3xl text-sm leading-6 text-muted-foreground">
-              浏览可复用的世界设定，从中寻找适合新故事的规则、势力、舞台和冲突线索。
+              Explore entornos mundiales reutilizables para encontrar reglas, fuerzas, etapas y pistas de conflictos adecuadas para nuevas historias.
             </p>
           </div>
         </div>
         <div className="flex flex-wrap justify-end gap-2">
           {featureFlags.worldWizardEnabled ? (
             <Button asChild className="rounded-full">
-              <Link to="/worlds/generator">生成世界样本</Link>
+              <Link to="/worlds/generator">Generar muestras mundiales</Link>
             </Button>
           ) : null}
         </div>
@@ -265,38 +265,38 @@ export default function WorldList() {
 
       <details className="group rounded-2xl bg-muted/20 px-5 py-3">
         <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm marker:hidden">
-          <span className="font-medium">如何把样本用于小说</span>
+          <span className="font-medium">Cómo utilizar muestras en una novela.</span>
           <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" aria-hidden="true" />
         </summary>
         <div className="mt-3 grid gap-3 border-t border-border/30 pt-3 text-sm leading-6 text-muted-foreground md:grid-cols-3">
-          <div><span className="mr-2 font-medium text-foreground">1</span>整理可复用的世界规则、势力、地点和张力。</div>
-          <div><span className="mr-2 font-medium text-foreground">2</span>从小说基础信息页导入，小说会建立自己的世界副本。</div>
-          <div><span className="mr-2 font-medium text-foreground">3</span>样本和本书世界有差异时，再决定推送或拉取。</div>
+          <div><span className="mr-2 font-medium text-foreground">1</span>Organice reglas, fuerzas, ubicaciones y tensiones mundiales reutilizables.</div>
+          <div><span className="mr-2 font-medium text-foreground">2</span>Importe desde la página de información básica de la novela y la novela creará su propia copia del mundo.</div>
+          <div><span className="mr-2 font-medium text-foreground">3</span>Cuando haya diferencias entre la muestra y el mundo de este libro, decida si empujar o tirar.</div>
         </div>
       </details>
 
       {worldListQuery.isLoading ? (
-        <div className="grid gap-4 lg:grid-cols-2 2xl:grid-cols-3" aria-label="正在加载世界样本">
+        <div className="grid gap-4 lg:grid-cols-2 2xl:grid-cols-3" aria-label="Cargando muestras del mundo">
           {[0, 1, 2].map((item) => (
             <div key={item} className="h-80 animate-pulse rounded-3xl bg-muted/30" />
           ))}
         </div>
       ) : worldListQuery.isError ? (
         <div className="flex min-h-52 flex-col items-center justify-center rounded-3xl bg-destructive/[0.04] px-6 text-center">
-          <div className="font-medium">世界样本加载失败</div>
-          <div className="mt-1 text-sm text-muted-foreground">请检查网络连接后重试。</div>
+          <div className="font-medium">Error al cargar la muestra mundial</div>
+          <div className="mt-1 text-sm text-muted-foreground">Verifique su conexión de red e inténtelo nuevamente.</div>
           <Button type="button" variant="outline" className="mt-4 rounded-full" onClick={() => void worldListQuery.refetch()}>
-            重新加载
+            recargar
           </Button>
         </div>
       ) : worlds.length === 0 ? (
         <div className="flex min-h-64 flex-col items-center justify-center rounded-3xl bg-muted/20 px-6 text-center">
           <BookOpen className="h-7 w-7 text-muted-foreground/60" aria-hidden="true" />
-          <div className="mt-3 font-medium">还没有世界样本</div>
-          <div className="mt-1 text-sm text-muted-foreground">生成一个可复用世界，为后续小说准备规则、舞台和冲突来源。</div>
+          <div className="mt-3 font-medium">Aún no hay muestras mundiales</div>
+          <div className="mt-1 text-sm text-muted-foreground">Generar un mundo reutilizable y preparar reglas, escenarios y fuentes de conflicto para novelas posteriores.</div>
           {featureFlags.worldWizardEnabled ? (
             <Button asChild className="mt-5 rounded-full">
-              <Link to="/worlds/generator">生成第一个世界样本</Link>
+              <Link to="/worlds/generator">Generar muestra del primer mundo</Link>
             </Button>
           ) : null}
         </div>
@@ -335,57 +335,57 @@ export default function WorldList() {
                 ) : null}
 
                 <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-xs text-muted-foreground">
-                  <span><strong className="font-semibold tabular-nums text-foreground">{preview.ruleCount}</strong> 条规则</span>
-                  <span><strong className="font-semibold tabular-nums text-foreground">{preview.forceCount}</strong> 个势力</span>
-                  <span><strong className="font-semibold tabular-nums text-foreground">{preview.locationCount}</strong> 个地点</span>
-                  <span><strong className="font-semibold tabular-nums text-foreground">{preview.relationCount}</strong> 条关系</span>
+                  <span><strong className="font-semibold tabular-nums text-foreground">{preview.ruleCount}</strong> Normas</span>
+                  <span><strong className="font-semibold tabular-nums text-foreground">{preview.forceCount}</strong> una fuerza</span>
+                  <span><strong className="font-semibold tabular-nums text-foreground">{preview.locationCount}</strong> Ubicaciones</span>
+                  <span><strong className="font-semibold tabular-nums text-foreground">{preview.relationCount}</strong> Relación</span>
                 </div>
 
                 <details className="group mt-4 border-t border-border/30 pt-3">
                   <summary className="flex cursor-pointer list-none items-center justify-between text-xs text-muted-foreground marker:hidden">
-                    <span>展开创作线索</span>
+                    <span>Ampliar pistas creativas</span>
                     <ChevronDown className="h-4 w-4 transition-transform group-open:rotate-180" aria-hidden="true" />
                   </summary>
                   <div className="mt-4 grid gap-4 sm:grid-cols-2">
                     <WorldSampleLine
                       icon={Sparkles}
-                      label="力量与规则"
+                      label="Poder y reglas"
                       items={preview.coreRules}
-                      fallback="进入工作台整理本世界必须遵守的规则。"
+                      fallback="Ingresa al banco de trabajo para organizar las reglas que se deben seguir en este mundo."
                     />
                     <WorldSampleLine
                       icon={Castle}
-                      label="势力舞台"
+                      label="Etapa de potencia"
                       items={preview.majorForces}
-                      fallback="进入工作台补充会推动剧情的组织与阵营。"
+                      fallback="Entrar al banco de trabajo para complementar favorecerá la organización y campamento de la parcela."
                     />
                     <WorldSampleLine
                       icon={MapPin}
-                      label="故事发生地"
+                      label="donde se desarrolla la historia"
                       items={preview.storyLocations}
-                      fallback="进入工作台标记适合小说开局和冲突升级的地点。"
+                      fallback="Ingrese al banco de trabajo para marcar lugares adecuados para el inicio de la novela y la escalada del conflicto."
                     />
                     <WorldSampleLine
                       icon={GitBranch}
-                      label="可抽取的冲突线"
+                      label="Líneas de conflicto extraíbles"
                       items={preview.tensions}
-                      fallback="进入工作台整理世界矛盾，供小说生成使用。"
+                      fallback="Ingrese al banco de trabajo para resolver los conflictos mundiales y usarlos en la generación de novelas."
                     />
                   </div>
-                  <div className="mt-4 text-[11px] text-muted-foreground">版本 v{world.version} · {world.status}</div>
+                  <div className="mt-4 text-[11px] text-muted-foreground">Versión v{world.version} · {world.status}</div>
                 </details>
 
                 <div className="mt-auto flex flex-wrap items-center gap-1 border-t border-border/30 pt-4">
                   <Button asChild size="sm" className="rounded-full">
                     <Link to={`/worlds/${world.id}/workspace`}>
                       <Compass className="mr-1 h-4 w-4" aria-hidden="true" />
-                      查看世界手册
+                      Ver el manual mundial
                     </Link>
                   </Button>
                   <Button asChild size="sm" variant="ghost" className="rounded-full text-muted-foreground">
                     <Link to={`/worlds/${world.id}/workspace`}>
                       <Pencil className="mr-1 h-4 w-4" aria-hidden="true" />
-                      整理样本
+                      Organizar muestras
                     </Link>
                   </Button>
                   <Button
@@ -394,10 +394,10 @@ export default function WorldList() {
                     className="ml-auto rounded-full px-2 text-muted-foreground hover:text-destructive"
                     onClick={() => handleDelete(world.id, world.name)}
                     disabled={deleteWorldMutation.isPending && deleteWorldMutation.variables === world.id}
-                    aria-label={`删除世界样本 ${world.name}`}
+                    aria-label={`Eliminar muestra mundial ${world.name}`}
                   >
                     <Trash2 className="h-4 w-4" aria-hidden="true" />
-                    {deleteWorldMutation.isPending && deleteWorldMutation.variables === world.id ? "删除中..." : "删除"}
+                    {deleteWorldMutation.isPending && deleteWorldMutation.variables === world.id ? "Eliminando..." : "Eliminar"}
                   </Button>
                 </div>
               </article>

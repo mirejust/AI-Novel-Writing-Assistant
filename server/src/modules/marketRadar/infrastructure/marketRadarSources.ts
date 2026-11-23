@@ -13,14 +13,14 @@ export interface CollectedRankingItem {
 }
 
 export const MARKET_RADAR_SOURCES: MarketRadarListSource[] = [
-  { platform: "fanqie", platformLabel: "番茄小说", listKey: "reading", listLabel: "阅读榜", channel: "general", sourceUrl: "https://fanqienovel.com/rank" },
-  { platform: "fanqie", platformLabel: "番茄小说", listKey: "new_book", listLabel: "新书榜", channel: "general", sourceUrl: "https://fanqienovel.com/rank/1_1" },
-  { platform: "qidian", platformLabel: "起点中文网", listKey: "hotsales", listLabel: "畅销榜", channel: "male", sourceUrl: "https://m.qidian.com/rank/hotsales/" },
-  { platform: "qidian", platformLabel: "起点中文网", listKey: "monthly_ticket", listLabel: "月票榜", channel: "male", sourceUrl: "https://m.qidian.com/rank/yuepiao/" },
-  { platform: "qidian", platformLabel: "起点中文网", listKey: "new_book", listLabel: "新书榜", channel: "male", sourceUrl: "https://m.qidian.com/rank/" },
-  { platform: "jinjiang", platformLabel: "晋江文学城", listKey: "monthly", listLabel: "月度榜", channel: "female", sourceUrl: "https://m.jjwxc.net/rank/naturalmore/5" },
-  { platform: "jinjiang", platformLabel: "晋江文学城", listKey: "quarterly", listLabel: "季度榜", channel: "female", sourceUrl: "https://m.jjwxc.net/rank/naturalmore/6" },
-  { platform: "jinjiang", platformLabel: "晋江文学城", listKey: "new_author", listLabel: "新晋作者榜", channel: "female", sourceUrl: "https://m.jjwxc.net/rank/naturalmore/29" },
+  { platform: "fanqie", platformLabel: "novela de tomate", listKey: "reading", listLabel: "lista de lectura", channel: "general", sourceUrl: "https://fanqienovel.com/rank" },
+  { platform: "fanqie", platformLabel: "novela de tomate", listKey: "new_book", listLabel: "Nueva lista de libros", channel: "general", sourceUrl: "https://fanqienovel.com/rank/1_1" },
+  { platform: "qidian", platformLabel: "Sitio web chino Qidian", listKey: "hotsales", listLabel: "lista de los más vendidos", channel: "male", sourceUrl: "https://m.qidian.com/rank/hotsales/" },
+  { platform: "qidian", platformLabel: "Sitio web chino Qidian", listKey: "monthly_ticket", listLabel: "Lista de votación mensual", channel: "male", sourceUrl: "https://m.qidian.com/rank/yuepiao/" },
+  { platform: "qidian", platformLabel: "Sitio web chino Qidian", listKey: "new_book", listLabel: "Nueva lista de libros", channel: "male", sourceUrl: "https://m.qidian.com/rank/" },
+  { platform: "jinjiang", platformLabel: "Ciudad de la literatura de Jinjiang", listKey: "monthly", listLabel: "lista mensual", channel: "female", sourceUrl: "https://m.jjwxc.net/rank/naturalmore/5" },
+  { platform: "jinjiang", platformLabel: "Ciudad de la literatura de Jinjiang", listKey: "quarterly", listLabel: "lista trimestral", channel: "female", sourceUrl: "https://m.jjwxc.net/rank/naturalmore/6" },
+  { platform: "jinjiang", platformLabel: "Ciudad de la literatura de Jinjiang", listKey: "new_author", listLabel: "Nueva lista de autores", channel: "female", sourceUrl: "https://m.jjwxc.net/rank/naturalmore/29" },
 ];
 
 const NAMED_ENTITIES: Record<string, string> = {
@@ -80,7 +80,7 @@ export function parseFanqieDetail(html: string, item: CollectedRankingItem): Col
   const title = plainText(html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/)?.[1]);
   const author = plainText(html.match(/author-name-text[^>]*>([\s\S]*?)<\/a>/)?.[1]);
   const synopsis = plainText(html.match(/<div class="page-abstract-content"[^>]*>\s*<p[^>]*>([\s\S]*?)<\/p>/)?.[1]);
-  if (!title || hasPrivateUseCharacters(title)) throw new Error("作品详情页未提供可读书名");
+  if (!title || hasPrivateUseCharacters(title)) throw new Error("La página de detalles del trabajo no proporciona un título legible.");
   return {
     ...item,
     title,
@@ -92,7 +92,7 @@ export function parseFanqieDetail(html: string, item: CollectedRankingItem): Col
 
 export function parseQidianRanking(html: string, source: MarketRadarListSource): CollectedRankingItem[] {
   const escapedLabel = source.listLabel.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const itemPattern = new RegExp(`<a[^>]+href="([^"]*\\/book\\/[^"?]+)[^"]*"[^>]*>[\\s\\S]*?<h2[^>]+title="${escapedLabel}第(\\d+)位"[^>]*>([\\s\\S]*?)<\\/h2>[\\s\\S]*?<p[^>]*class="[^"]*subTitle[^"]*"[^>]*>([\\s\\S]*?)<\\/p>[\\s\\S]*?<\\/a>`, "g");
+  const itemPattern = new RegExp(`<a[^>]+href="([^"]*\\/book\\/[^"?]+)[^"]*"[^>]*>[\\s\\S]*?<h2[^>]+title="${escapedLabel}La (\\\\d+)ésima posición"[^>]*>([\\\\s\\\\S]*?)<\\\\/h2>[\\\\s\\\\S]*?<p[^>]*class="[ ^"]*subTítulo[^"]*"[^>]*>([\\\\s\\\\S]*?)<\\\\/p>[\\\\s\\\\S]*?<\\\\/a>`, "g");
   return Array.from(html.matchAll(itemPattern)).slice(0, 30).map((match) => {
     const subTitle = plainText(match[4]);
     const parts = subTitle.split("·").map((part) => part.trim()).filter(Boolean);
@@ -123,7 +123,7 @@ async function fetchHtml(url: string): Promise<string> {
     headers: { "user-agent": "Mozilla/5.0 (compatible; AI-Novel-Market-Radar/1.0; public-ranking-metadata-only)" },
     signal: AbortSignal.timeout(20_000),
   });
-  if (!response.ok) throw new Error(`榜单页面返回 HTTP ${response.status}`);
+  if (!response.ok) throw new Error(`La página de lista devuelve HTTP ${response.status}`);
   const bytes = await response.arrayBuffer();
   const headerCharset = response.headers.get("content-type")?.match(/charset=([^;]+)/i)?.[1]?.trim();
   const metaProbe = new TextDecoder("latin1").decode(bytes.slice(0, 4096));
@@ -155,6 +155,6 @@ export async function collectMarketSource(source: MarketRadarListSource): Promis
   };
   const parsed = parsers[source.platform](html, source);
   const items = source.platform === "fanqie" ? await hydrateFanqieItems(parsed) : parsed;
-  if (items.length === 0) throw new Error("榜单页面结构可能已变化，未识别到公开作品元数据");
+  if (items.length === 0) throw new Error("Es posible que la estructura de la página de la lista haya cambiado y no se hayan identificado los metadatos de las obras públicas.");
   return items;
 }

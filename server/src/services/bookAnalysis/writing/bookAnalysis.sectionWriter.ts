@@ -63,7 +63,7 @@ export class BookAnalysisSectionWriter {
     const parsed = result.output;
     const markdown = typeof (parsed as any).markdown === "string" ? (parsed as any).markdown.trim() : "";
     if (!markdown) {
-      throw new AppError("AI 未返回可展示的拆书正文，请检查模型配置后重试。", 502);
+      throw new AppError("AI no devolvió el texto visualizable del libro abierto. Verifique la configuración del modelo e inténtelo nuevamente.", 502);
     }
     const normalizedStructuredData =
       (parsed as any).structuredData && typeof (parsed as any).structuredData === "object"
@@ -121,7 +121,7 @@ export class BookAnalysisSectionWriter {
       ? (parsed as any).optimizedDraft.trim()
       : "";
     if (!optimizedDraft) {
-      throw new AppError("AI 未返回可用的优化草稿，请检查模型配置后重试。", 502);
+      throw new AppError("AI no devolvió un borrador de optimización utilizable; verifique la configuración del modelo e inténtelo nuevamente.", 502);
     }
     return optimizedDraft;
   }
@@ -147,16 +147,16 @@ function buildSectionTokenUsage(
 
 function renderOverviewContextForPrompt(context: BookAnalysisOverviewContext): string {
   const lines = [
-    context.markdownSummary ? `总览摘要：${context.markdownSummary}` : "",
-    context.oneLinePositioning ? `一句话定位：${context.oneLinePositioning}` : "",
-    context.genreTags.length > 0 ? `题材标签：${context.genreTags.join("、")}` : "",
-    context.sellingPointTags.length > 0 ? `卖点标签：${context.sellingPointTags.join("、")}` : "",
-    context.targetReaders.length > 0 ? `目标读者：${context.targetReaders.join("、")}` : "",
-    context.strengths.length > 0 ? `整体优势：${context.strengths.join("、")}` : "",
-    context.weaknesses.length > 0 ? `整体短板：${context.weaknesses.join("、")}` : "",
+    context.markdownSummary ? `Resumen general:${context.markdownSummary}` : "",
+    context.oneLinePositioning ? `Posicionamiento en una frase:${context.oneLinePositioning}` : "",
+    context.genreTags.length > 0 ? `Etiquetas de asunto:${context.genreTags.join(",")}` : "",
+    context.sellingPointTags.length > 0 ? `Etiqueta de punto de venta:${context.sellingPointTags.join(",")}` : "",
+    context.targetReaders.length > 0 ? `Lectores objetivo:${context.targetReaders.join(",")}` : "",
+    context.strengths.length > 0 ? `Ventajas generales:${context.strengths.join(",")}` : "",
+    context.weaknesses.length > 0 ? `Deficiencias generales:${context.weaknesses.join(",")}` : "",
   ].filter(Boolean);
 
   return lines.length > 0
-    ? ["## 整本定位（来自总览小节）", ...lines].join("\n")
+    ? ["## Posicionamiento de todo el libro (de la sección de descripción general)", ...lines].join("\n")
     : "";
 }

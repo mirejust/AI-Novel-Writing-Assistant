@@ -27,8 +27,8 @@ function previousState(snapshot: PreviousSnapshot | null): string {
   const relations = snapshot.relationStates.map(item => item.summary?.trim()).filter(Boolean).slice(0, 5);
   const information = snapshot.informationStates.map(item => `${item.holderType}:${item.fact}`).slice(0, 6);
   const foreshadows = snapshot.foreshadowStates.map(item => `${item.title}(${item.status})`).slice(0, 6);
-  return [snapshot.summary ? `摘要：${snapshot.summary}` : "",
-    ...([["角色", characters], ["关系", relations], ["信息", information], ["伏笔", foreshadows]] as const)
+  return [snapshot.summary ? `resumen:${snapshot.summary}` : "",
+    ...([["Personaje", characters], ["relación", relations], ["información", information], ["Presagio", foreshadows]] as const)
       .map(([label, values]) => values.length ? `${label}：\n${values.map(value => `- ${value}`).join("\n")}` : ""),
   ].filter(Boolean).join("\n\n").slice(0, 5000);
 }
@@ -64,13 +64,13 @@ export function createArtifactSourceReader(
       ? await facades.readLocationContext({ novelId, chapterOrder: order, characters }) : "";
     return {
       novelTitle: novel.title, chapterTitle: chapter.title,
-      chapterGoal: chapter.taskSheet?.trim() || chapter.expectation?.trim() || "无明确章节目标",
+      chapterGoal: chapter.taskSheet?.trim() || chapter.expectation?.trim() || "No hay objetivos claros del capítulo",
       ...buildChapterArtifactLedgerContext({ characters, resources, payoffs }), characterLocationText,
       previousStateText: previousState(snapshot),
       activeCharacterDialogueInfluenceText: influences.map(item => [`- influenceId=${item.id}`,
-        `角色=${item.character.name}`, `对话沉淀=${item.summary}`, `窗口=${item.targetStartChapterOrder}-${item.targetEndChapterOrder}`,
-        `行动倾向=${item.behaviorGuidance}`, item.emotionalGuidance ? `情绪倾向=${item.emotionalGuidance}` : "",
-        item.relationTension ? `关系张力=${item.relationTension}` : ""].filter(Boolean).join(" | ")).join("\n").slice(0, 3500),
+        `rol=${item.character.name}`, `Precipitación del diálogo=${item.summary}`, `ventana =${item.targetStartChapterOrder}-${item.targetEndChapterOrder}`,
+        `tendencia de acción =${item.behaviorGuidance}`, item.emotionalGuidance ? `Tendencias emocionales =${item.emotionalGuidance}` : "",
+        item.relationTension ? `tensión en la relación =${item.relationTension}` : ""].filter(Boolean).join(" | ")).join("\n").slice(0, 3500),
     };
   };
 }

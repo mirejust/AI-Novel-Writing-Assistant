@@ -36,7 +36,7 @@ export function useOutlineReviewTurn(projectId: string, onFinish: (proposalId: s
     lastHandled.current = turn.id;
     setTracked(null);
     try { sessionStorage.removeItem(key); } catch { /* The completed turn is persisted on the server. */ }
-    if (turn.status !== "completed") setFailure(turn.replyText || "这一轮未能完成，可以调整要求后重试。");
+    if (turn.status !== "completed") setFailure(turn.replyText || "Si esta ronda no se completa, puedes ajustar los requisitos y volver a intentarlo.");
     void cache.invalidateQueries({ queryKey: ["outline-pending", projectId] });
     void cache.invalidateQueries({ queryKey: ["outline-review", projectId] });
     onFinish(turn.result?.id, target);

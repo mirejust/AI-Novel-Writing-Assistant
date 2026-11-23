@@ -18,7 +18,7 @@ function noLegacyCurrent(res: import("express").Response, novelId: string) {
 }
 
 function rejectFrozenWrite(res: import("express").Response, novelId?: string | null, taskId?: string) {
-  res.status(409).json({success:false,error:novelId ? "请打开小说导演台，选择创作范围后继续。" : "请从开书页面选择方向并继续。",
+  res.status(409).json({success:false,error:novelId ? "Abra la consola del director novel, seleccione el alcance creativo y continúe." : "Seleccione una dirección en la página inicial y continúe.",
     sourceRoute:novelId ? `/lab/director/${encodeURIComponent(novelId)}` : taskId ? `/novels/auto-director?taskId=${encodeURIComponent(taskId)}` : "/novels/auto-director"});
 }
 
@@ -70,7 +70,7 @@ export function createFrozenTaskEntry(options: TaskLookup & {findPipelineOwner?:
   };
   router.post("/recovery-candidates/:kind/:id/resume",freeze);
   router.post("/recovery-candidates/resume-all",(_req,res)=>{
-    res.status(409).json({success:false,error:"请从任务对应的创作页面恢复。",sourceRoute:"/lab/director"});
+    res.status(409).json({success:false,error:"Restaure desde la página de creación correspondiente a la tarea.",sourceRoute:"/lab/director"});
   });
   for(const action of ["retry","cancel","archive"])router.post(`/:kind/:id/${action}`,freeze);
   return router;
@@ -90,12 +90,12 @@ export function createFrozenFollowUpEntry(options: Partial<EntryOwnership> & {is
           const allowed = await Promise.all(ids.map(id => canExecuteLegacyTask(id)));
           if (allowed.every(Boolean)) {next(); return;}
         }
-        res.status(409).json({success:false,error:"请从小说对应的导演工作台查看创作范围并继续。",sourceRoute:"/lab/director"});
+        res.status(409).json({success:false,error:"Verifique el alcance creativo desde el banco de trabajo del director correspondiente a la novela y continúe.",sourceRoute:"/lab/director"});
         return;
       }
       const taskId = req.body?.taskId ?? req.query.taskId ?? /^\/([^/]+)\/actions$/.exec(req.path)?.[1];
       if (typeof taskId === "string" && await canExecute(taskId)) {next(); return;}
-      res.status(409).json({success:false,error:"请从小说对应的导演工作台查看创作范围并继续。",sourceRoute:"/lab/director"});
+      res.status(409).json({success:false,error:"Verifique el alcance creativo desde el banco de trabajo del director correspondiente a la novela y continúe.",sourceRoute:"/lab/director"});
     } catch(error) {next(error);}
   };
   router.get(["/wecom/execute", "/dingtalk/execute"],reject);
@@ -120,9 +120,9 @@ export function createFrozenDirectorEntry(options: {findTaskNovelId?: (taskId: s
       if (req.params.taskId && await canExecuteLegacyTask(String(req.params.taskId))) {next(); return;}
       if (novelId && !await isV2(novelId) && !req.params.taskId) {next(); return;}
       if (!novelId && !req.params.taskId && req.body?.payload?.directorVersion !== "v2") {next(); return;}
-      res.status(409).json({success: false, error: novelId ? "请打开小说导演台，选择创作范围后继续。" : "请从创作入口确认长篇方向，再进入小说导演台。",
+      res.status(409).json({success: false, error: novelId ? "Abra la consola del director novel, seleccione el alcance creativo y continúe." : "Confirme la dirección de la función desde la entrada creativa y luego ingrese al escritorio del director novedoso.",
         sourceRoute: novelId ? `/lab/director/${encodeURIComponent(novelId)}` : "/create?form=long_novel",
-        sourceActionLabel: novelId ? "打开小说导演台" : "开始长篇创作"});
+        sourceActionLabel: novelId ? "Abre el escritorio del director de novelas." : "Comience a escribir una característica"});
     } catch(error) { next(error); }
   };
   router.post("/tasks", frozen);

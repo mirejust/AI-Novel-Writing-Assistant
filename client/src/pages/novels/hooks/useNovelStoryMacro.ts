@@ -135,7 +135,7 @@ export function useNovelStoryMacro(input: UseNovelStoryMacroInput): {
       temperature: llm.temperature,
     }),
     onSuccess: async (response) => {
-      setMessage(response.message ?? "故事引擎原型已生成。");
+      setMessage(response.message ?? "Se ha generado el prototipo del motor de historias.");
       setExpansion(normalizeExpansion(response.data?.expansion));
       setDecomposition(response.data?.decomposition ?? EMPTY_DECOMPOSITION);
       setConstraints(response.data?.constraints ?? []);
@@ -144,7 +144,7 @@ export function useNovelStoryMacro(input: UseNovelStoryMacroInput): {
       await syncNovelWorkflowStageSilently({
         novelId,
         stage: "story_macro",
-        itemLabel: "故事引擎原型已生成",
+        itemLabel: "Se ha generado el prototipo del motor de historia.",
         status: "waiting_approval",
       });
       await invalidatePlan();
@@ -158,13 +158,13 @@ export function useNovelStoryMacro(input: UseNovelStoryMacroInput): {
       temperature: llm.temperature,
     }),
     onSuccess: async (response) => {
-      setMessage(response.message ?? "约束引擎已构建。");
+      setMessage(response.message ?? "Se ha construido el motor de restricciones.");
       await syncNovelWorkflowStageSilently({
         novelId,
         stage: "story_macro",
-        itemLabel: "约束引擎已构建",
+        itemLabel: "Motor de restricción construido",
         checkpointType: "book_contract_ready",
-        checkpointSummary: "故事宏观规划与约束引擎已具备进入下一步的条件。",
+        checkpointSummary: "La planificación macro de la historia y el motor de restricciones están listos para pasar al siguiente paso.",
         status: "waiting_approval",
       });
       await invalidatePlan();
@@ -180,11 +180,11 @@ export function useNovelStoryMacro(input: UseNovelStoryMacroInput): {
       lockedFields,
     }),
     onSuccess: async (response) => {
-      setMessage(response.message ?? "故事宏观规划已保存。");
+      setMessage(response.message ?? "Imagen general de la historia guardada.");
       await syncNovelWorkflowStageSilently({
         novelId,
         stage: "story_macro",
-        itemLabel: "故事宏观规划已保存",
+        itemLabel: "Plan macro de historia guardado",
         status: "waiting_approval",
       });
       await invalidatePlan();
@@ -194,7 +194,7 @@ export function useNovelStoryMacro(input: UseNovelStoryMacroInput): {
   const saveStateMutation = useMutation({
     mutationFn: () => updateNovelStoryMacroState(novelId, storyState),
     onSuccess: async () => {
-      setMessage("故事宏观状态已保存。");
+      setMessage("Estado de la macro de la historia guardado.");
       await invalidatePlan();
     },
   });
@@ -209,7 +209,7 @@ export function useNovelStoryMacro(input: UseNovelStoryMacroInput): {
       });
     },
     onSuccess: async (response) => {
-      setMessage(response.message ?? "字段已重生成。");
+      setMessage(response.message ?? "El campo ha sido regenerado.");
       await invalidatePlan();
     },
     onSettled: () => {

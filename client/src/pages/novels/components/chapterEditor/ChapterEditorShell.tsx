@@ -62,20 +62,20 @@ const EMPTY_SESSION: ChapterEditorSessionState = {
 };
 
 function formatQualityDebtSource(source: string | null): string {
-  if (source === "repair_recheck") return "自动修复后的复审";
-  if (source === "pipeline_review") return "AI 自动审校";
-  if (source === "manual_review") return "手动审校";
-  return "历史质量记录";
+  if (source === "repair_recheck") return "Revisión después de la reparación automática.";
+  if (source === "pipeline_review") return "Revisión automática de IA";
+  if (source === "manual_review") return "Revisión manual";
+  return "Registros históricos de calidad";
 }
 
 function formatQualityDebtAttempts(details: ChapterQualityDebtDetails): string {
   if (details.repairAttemptsUsed === null) {
-    return "历史记录未保存自动修复次数";
+    return "El historial no se guarda el número de reparaciones automáticas.";
   }
   if (details.repairAttemptsAllowed === 0) {
-    return `${details.repairAttemptsUsed} 次，本次未启用自动修复`;
+    return `${details.repairAttemptsUsed} veces, la reparación automática no está habilitada esta vez`;
   }
-  return `${details.repairAttemptsUsed}/${details.repairAttemptsAllowed} 次`;
+  return `${details.repairAttemptsUsed}/${details.repairAttemptsAllowed} veces`;
 }
 
 function toSelectionFromRange(
@@ -209,10 +209,10 @@ export default function ChapterEditorShell(props: ChapterEditorShellProps) {
 
   const leaveEditor = (action?: () => void) => {
     if (isBusy) {
-      toast.error("请等待当前操作完成后再离开正文编辑。");
+      toast.error("Espere hasta que se complete la operación actual antes de abandonar la edición de texto.");
       return;
     }
-    if ((isDirty || session.status === "ready") && !window.confirm("未保存的修改可从草稿恢复，未采纳的 AI 候选将被关闭。要离开正文编辑吗？")) {
+    if ((isDirty || session.status === "ready") && !window.confirm("Los cambios no guardados se pueden restaurar desde borradores y los candidatos de IA no adoptados se cerrarán. ¿Quieres dejar la edición de texto?")) {
       return;
     }
     action?.();
@@ -221,7 +221,7 @@ export default function ChapterEditorShell(props: ChapterEditorShellProps) {
   const saveMutation = useMutation({
     mutationFn: async (nextContent: string) => {
       if (!chapter) {
-        throw new Error("当前未选中章节。");
+        throw new Error("Actualmente no hay capítulos seleccionados.");
       }
       if (loadedSnapshotId) {
         await createNovelSnapshot(novelId, {
@@ -240,11 +240,11 @@ export default function ChapterEditorShell(props: ChapterEditorShellProps) {
       setSaveStatus("saved");
       await invalidateChapterQueries();
       await props.onChapterSaved?.();
-      toast.success("章节正文已保存。");
+      toast.success("El texto del capítulo se ha guardado.");
     },
     onError: (error) => {
       setSaveStatus("error");
-      toast.error(error instanceof Error ? error.message : "章节保存失败。");
+      toast.error(error instanceof Error ? error.message : "Error al guardar el capítulo.");
     },
   });
 
@@ -265,10 +265,10 @@ export default function ChapterEditorShell(props: ChapterEditorShellProps) {
   const reviewMutation = useMutation({
     mutationFn: async () => {
       if (!chapter) {
-        throw new Error("当前未选中章节。");
+        throw new Error("Actualmente no hay capítulos seleccionados.");
       }
       if (isDirty || saveMutation.isPending) {
-        throw new Error("请先保存正文，再重新审校。");
+        throw new Error("Guarde el texto primero y luego revíselo nuevamente.");
       }
       return reviewNovelChapter(novelId, chapter.id, {
         provider: llm.provider,
@@ -281,11 +281,11 @@ export default function ChapterEditorShell(props: ChapterEditorShellProps) {
       await invalidateChapterQueries();
       const assessment = response.data?.qualityAssessment;
       toast.success(assessment?.recommendedAction === "continue"
-        ? "重新审校通过，本章待优化项已关闭。"
-        : "重新审校完成，AI 仍发现需要处理的内容。");
+        ? "Se pasó la nueva revisión y se cerraron los elementos que se optimizarán en este capítulo."
+        : "La nueva revisión está completa y la IA aún encontró algo que debe abordarse.");
     },
     onError: (error) => {
-      toast.error(error instanceof Error ? error.message : "重新审校失败，请稍后重试。");
+      toast.error(error instanceof Error ? error.message : "No se pudo volver a revisar, inténtelo de nuevo más tarde.");
     },
   });
 
@@ -304,27 +304,27 @@ export default function ChapterEditorShell(props: ChapterEditorShellProps) {
       setSelectedDiagnosticId(null);
       await invalidateChapterQueries();
       onRefreshWorkspace?.();
-      toast.success("问题已标记为处理完成，重新分析后会确认正文状态。");
+      toast.success("El problema se marcó como procesado y el estado del texto se confirmará después de un nuevo análisis.");
     },
     onError: (error) => {
-      toast.error(error instanceof Error ? error.message : "问题状态更新失败，请稍后重试。");
+      toast.error(error instanceof Error ? error.message : "Error al actualizar el estado del problema. Vuelve a intentarlo más tarde.");
     },
   });
 
   const previewMutation = useMutation({
     mutationFn: async (request: ReturnType<typeof buildAiRevisionRequest>) => {
       if (!chapter) {
-        throw new Error("当前未选中章节。");
+        throw new Error("Actualmente no hay capítulos seleccionados.");
       }
       return previewChapterAiRevision(novelId, chapter.id, request);
     },
     onMutate: (request) => {
       lastPreviewRequestRef.current = request;
       const label = request.source === "freeform"
-        ? (request.scope === "chapter" ? "正在生成整章自然语言修正方案" : "正在按你的意见改写片段")
+        ? (request.scope === "chapter" ? "Generando el plan de corrección del lenguaje natural para todo el capítulo." : "El clip está siendo reescrito según tus comentarios.")
         : request.presetOperation
-          ? `正在生成${CHAPTER_EDITOR_OPERATION_LABELS[request.presetOperation]}方案`
-          : "正在生成修正方案";
+          ? `Generando${CHAPTER_EDITOR_OPERATION_LABELS[request.presetOperation]}Plan`
+          : "Se está generando remediación";
       setSession((current) => ({
         ...current,
         mode: "revision",
@@ -349,7 +349,7 @@ export default function ChapterEditorShell(props: ChapterEditorShellProps) {
         setSession((current) => ({
           ...current,
           status: "error",
-          errorMessage: "AI 未返回改写结果，请重试。",
+          errorMessage: "AI no arrojó resultados de reescritura, inténtelo de nuevo.",
         }));
         return;
       }
@@ -369,7 +369,7 @@ export default function ChapterEditorShell(props: ChapterEditorShellProps) {
       setSession((current) => ({
         ...current,
         status: "error",
-        errorMessage: error instanceof Error ? error.message : "AI 修正失败，请重试。",
+        errorMessage: error instanceof Error ? error.message : "La corrección de IA falló, inténtelo de nuevo.",
       }));
     },
   });
@@ -377,7 +377,7 @@ export default function ChapterEditorShell(props: ChapterEditorShellProps) {
   const continuationMutation = useMutation({
     mutationFn: async (request: ChapterEditorCursorContinuationRequest) => {
       if (!chapter) {
-        throw new Error("当前未选中章节。");
+        throw new Error("Actualmente no hay capítulos seleccionados.");
       }
       return previewChapterCursorContinuation(novelId, chapter.id, request);
     },
@@ -388,7 +388,7 @@ export default function ChapterEditorShell(props: ChapterEditorShellProps) {
         mode: "continuation",
         diagnosticCard: undefined,
         status: "loading",
-        requestLabel: `正在生成${CHAPTER_EDITOR_CURSOR_OPERATION_LABELS[request.operation]}方案`,
+        requestLabel: `Generando${CHAPTER_EDITOR_CURSOR_OPERATION_LABELS[request.operation]}Plan`,
         continuationOperation: request.operation,
         scope: "selection",
         targetRange: {
@@ -404,7 +404,7 @@ export default function ChapterEditorShell(props: ChapterEditorShellProps) {
     onSuccess: (response) => {
       const data = response.data;
       if (!data) {
-        setSession((current) => ({ ...current, status: "error", errorMessage: "AI 未返回续写结果，请重试。" }));
+        setSession((current) => ({ ...current, status: "error", errorMessage: "AI no devolvió el resultado de la escritura, inténtelo de nuevo." }));
         return;
       }
       setSession((current) => ({
@@ -424,7 +424,7 @@ export default function ChapterEditorShell(props: ChapterEditorShellProps) {
       setSession((current) => ({
         ...current,
         status: "error",
-        errorMessage: error instanceof Error ? error.message : "AI 续写失败，请重试。",
+        errorMessage: error instanceof Error ? error.message : "La continuación de la IA falló, inténtelo de nuevo.",
       }));
     },
   });
@@ -444,10 +444,10 @@ export default function ChapterEditorShell(props: ChapterEditorShellProps) {
       if (completedCard?.sourceIssueId) {
         try {
           const response = await resolveChapterAuditIssue(novelId, completedCard.sourceIssueId);
-          if (!response.success) throw new Error(response.error || "问题状态更新失败。");
+          if (!response.success) throw new Error(response.error || "Error al actualizar el estado del problema.");
         } catch {
           completedCard = undefined;
-          toast.error("正文已保存，但问题状态更新失败。请在问题卡中确认已处理。");
+          toast.error("El texto se guardó, pero la actualización del estado del problema falló. Confirme en la tarjeta de emisión que se ha procesado.");
         }
       }
       if (chapter && session.targetRange) {
@@ -504,7 +504,7 @@ export default function ChapterEditorShell(props: ChapterEditorShellProps) {
   if (!chapter) {
     return (
       <div className="rounded-3xl border border-dashed border-border/70 bg-muted/10 p-10 text-center text-sm text-muted-foreground">
-        请选择一个章节后开始编辑正文。
+        Seleccione un capítulo y comience a editar el texto.
       </div>
     );
   }
@@ -531,7 +531,7 @@ export default function ChapterEditorShell(props: ChapterEditorShellProps) {
     },
   ) => {
     if (isBusy || session.status !== "idle") {
-      toast.error("请先完成或拒绝当前候选，再处理其他问题。");
+      toast.error("Complete o rechace al candidato actual antes de trabajar en otros temas.");
       return;
     }
     const resolvedSelection = scope === "selection"
@@ -539,7 +539,7 @@ export default function ChapterEditorShell(props: ChapterEditorShellProps) {
       : null;
 
     if (scope === "selection" && !resolvedSelection) {
-      toast.error("请先选中正文片段，或先从问题卡定位到对应片段。");
+      toast.error("Seleccione primero el fragmento de texto o ubique primero el fragmento correspondiente de la tarjeta de preguntas.");
       return;
     }
 
@@ -584,11 +584,11 @@ export default function ChapterEditorShell(props: ChapterEditorShellProps) {
 
   const handleRunCursorOperation = (operation: ChapterEditorCursorOperation, instruction?: string) => {
     if (isBusy || session.status !== "idle") {
-      toast.error("请先完成当前操作，再生成续写候选。");
+      toast.error("Complete la operación actual antes de generar candidatos de continuación.");
       return;
     }
     if (cursorOffset === null) {
-      toast.error("请先把光标放在正文中，再选择续写方向。");
+      toast.error("Primero coloque el cursor en el texto y luego seleccione la dirección de continuación.");
       return;
     }
     const normalizedContent = normalizeChapterContent(contentDraft);
@@ -677,12 +677,12 @@ export default function ChapterEditorShell(props: ChapterEditorShellProps) {
   const handleRunDiagnostic = (card: ChapterEditorDiagnosticCard) => {
     if (isBusy || session.status !== "idle") return;
     if (contentDraft !== savedContent || workspace?.chapterMeta.updatedAt !== draft.savedUpdatedAt) {
-      toast.error("正文已变化，请先保存并重新分析本章，确认问题位置。");
+      toast.error("El texto ha cambiado. Guarde y vuelva a analizar este capítulo para confirmar la ubicación del problema.");
       return;
     }
     const target = toSelectionFromRange(contentDraft, card.anchorRange ?? null);
     if (card.recommendedScope === "selection" && !target) {
-      toast.error("问题卡的正文位置需要重新确认，请重新分析本章后再处理。");
+      toast.error("Es necesario reconfirmar la posición del texto de la tarjeta de preguntas. Vuelva a analizar este capítulo antes de procesarlo.");
       return;
     }
     flushSync(() => {
@@ -719,7 +719,7 @@ export default function ChapterEditorShell(props: ChapterEditorShellProps) {
   const cursorParagraph = cursorOffset !== null
     ? getParagraphIndicesForRange(contentDraft, { from: cursorOffset, to: cursorOffset })
     : null;
-  const cursorTargetLabel = cursorParagraph ? `第 ${cursorParagraph.startIndex + 1} 段的光标处` : "正文光标处";
+  const cursorTargetLabel = cursorParagraph ? `Cap. ${cursorParagraph.startIndex + 1} cursor de segmento` : "Posición del cursor de texto";
   const [layoutMode, setLayoutMode] = useState<"standard" | "wide" | "immersive">(() => {
     try {
       const saved = globalThis.localStorage?.getItem("ai-novel:chapter-editor:layout:v1");
@@ -767,20 +767,20 @@ export default function ChapterEditorShell(props: ChapterEditorShellProps) {
     setPanelsCollapsed((current) => ({ ...current, left: false }));
   };
   const qualityNotice = qualityDebtDetails ? (
-    <section aria-label="本章质量提醒" className="space-y-3 rounded-xl bg-amber-50 px-3 py-3 text-sm text-amber-950">
+    <section aria-label="Recordatorio de calidad para este capítulo." className="space-y-3 rounded-xl bg-amber-50 px-3 py-3 text-sm text-amber-950">
       <div className="flex items-center gap-2 font-medium">
         <AlertTriangle className="h-4 w-4 shrink-0 text-amber-600" />
-        正文可继续使用
+        El texto principal se puede seguir utilizando.
       </div>
       <details className="text-xs leading-5 text-amber-900/80">
-        <summary className="cursor-pointer font-medium">质量待优化 · 查看详情</summary>
+        <summary className="cursor-pointer font-medium">Es necesario optimizar la calidad · Ver detalles</summary>
         <div className="mt-2 space-y-1">
-          <p>{qualityDebtDetails.reason || "AI 审校发现了局部问题。"}</p>
-          <p>来源：{formatQualityDebtSource(qualityDebtDetails.source)}</p>
-          <p>自动修复：{formatQualityDebtAttempts(qualityDebtDetails)}</p>
+          <p>{qualityDebtDetails.reason || "La revisión de IA encontró problemas locales."}</p>
+          <p>Fuente:{formatQualityDebtSource(qualityDebtDetails.source)}</p>
+          <p>Reparación automática:{formatQualityDebtAttempts(qualityDebtDetails)}</p>
         </div>
       </details>
-      {isDirty ? <p className="text-xs font-medium">请先保存正文，再让 AI 重新审校确认。</p> : null}
+      {isDirty ? <p className="text-xs font-medium">Primero guarde el texto y luego deje que AI lo revise y lo confirme nuevamente.</p> : null}
       <Button
         type="button"
         size="sm"
@@ -790,7 +790,7 @@ export default function ChapterEditorShell(props: ChapterEditorShellProps) {
         onClick={() => reviewMutation.mutate()}
       >
         {reviewMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-        重新审校确认
+        Vuelva a revisar y confirmar
       </Button>
     </section>
   ) : null;
@@ -799,43 +799,43 @@ export default function ChapterEditorShell(props: ChapterEditorShellProps) {
     <div className="flex min-h-0 flex-1 flex-col gap-4">
       {(restored || hasExternalChange || storageError) ? (
         <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950">
-          <span>{storageError ? "浏览器暂时无法保存本地草稿，请尽快保存到作品。" : hasExternalChange ? "本章已有新的保存版本，你的草稿仍保留。" : "已恢复未保存的正文草稿。"}</span>
-          {hasExternalChange ? <Button size="sm" variant="outline" onClick={draft.loadSavedVersion}>加载新保存版本</Button> : null}
+          <span>{storageError ? "El navegador no puede guardar temporalmente el borrador local; guárdelo lo antes posible." : hasExternalChange ? "Hay una nueva versión guardada de este capítulo, pero su borrador aún está ahí." : "Borrador de texto no guardado restaurado."}</span>
+          {hasExternalChange ? <Button size="sm" variant="outline" onClick={draft.loadSavedVersion}>Cargar nueva versión guardada</Button> : null}
         </div>
       ) : null}
       {effectiveLayout !== "standard" ? (
         <div className="flex shrink-0 flex-wrap items-center gap-2 text-sm">
           {props.headerExtra}
-          {onBack ? <Button size="sm" variant="outline" onClick={() => leaveEditor(onBack)}>{props.backLabel ?? "返回章节执行页"}</Button> : null}
-          <span className="truncate font-medium">第 {chapter.order} 章 · {chapter.title?.trim() || "未命名章节"}</span>
-          <span className="shrink-0 text-xs text-muted-foreground">{wordCount} 字 · {headerSaveLabel}</span>
+          {onBack ? <Button size="sm" variant="outline" onClick={() => leaveEditor(onBack)}>{props.backLabel ?? "Volver a la página de ejecución del capítulo"}</Button> : null}
+          <span className="truncate font-medium">Cap. {chapter.order} capítulo · {chapter.title?.trim() || "Capítulo sin título"}</span>
+          <span className="shrink-0 text-xs text-muted-foreground">{wordCount} Personaje · {headerSaveLabel}</span>
           <Button size="sm" onClick={() => saveMutation.mutate(contentDraft)} disabled={!isDirty || saveMutation.isPending}>
-            {saveMutation.isPending ? "保存中..." : "保存"}
+            {saveMutation.isPending ? "Guardando..." : "Guardar"}
           </Button>
-          <Button size="sm" variant="outline" onClick={() => setIsVersionDrawerOpen(true)}>查看本章版本</Button>
+          <Button size="sm" variant="outline" onClick={() => setIsVersionDrawerOpen(true)}>Ver versión de este capítulo</Button>
           {qualityDebtDetails ? (
             <Button size="sm" variant="ghost" className="text-amber-700 hover:text-amber-800" onClick={openQualityNotice}>
-              <AlertTriangle className="mr-1 h-4 w-4" />质量待优化
+              <AlertTriangle className="mr-1 h-4 w-4" />Es necesario optimizar la calidad
             </Button>
           ) : null}
           {(workspace?.diagnosticCards.length ?? 0) > 0 ? (
             <Button size="sm" variant="ghost" onClick={() => setLayoutMode("standard")}>
-              待处理问题 {workspace?.diagnosticCards.length} 项 · 回标准布局处理
+              asuntos pendientes {workspace?.diagnosticCards.length} Artículo · Volver al procesamiento de diseño estándar
             </Button>
           ) : null}
         </div>
       ) : null}
       <WorkspaceColumns layoutId="chapter-editor" className="grid min-h-0 flex-1 gap-4 overflow-y-auto xl:overflow-hidden xl:workspace-split"
-        left={effectiveLayout === "standard" ? { label: "调整本章信息宽度", initial: leftCollapsed ? "44px" : "320px", min: leftCollapsed ? 44 : 176, collapsed: leftCollapsed } : undefined}
-        right={effectiveLayout !== "immersive" ? { label: "调整 AI 改写宽度", initial: rightCollapsed ? "44px" : effectiveLayout === "wide" ? "384px" : "400px", min: rightCollapsed ? 44 : 224, collapsed: rightCollapsed } : undefined}>
+        left={effectiveLayout === "standard" ? { label: "Ajustar el ancho de la información de este capítulo.", initial: leftCollapsed ? "44px" : "320px", min: leftCollapsed ? 44 : 176, collapsed: leftCollapsed } : undefined}
+        right={effectiveLayout !== "immersive" ? { label: "Ajustar el ancho de sobrescritura de IA", initial: rightCollapsed ? "44px" : effectiveLayout === "wide" ? "384px" : "400px", min: rightCollapsed ? 44 : 224, collapsed: rightCollapsed } : undefined}>
         {effectiveLayout === "standard" && panelsCollapsed.left ? (
         <div className="order-1 flex min-h-0 flex-col items-center gap-2 py-2 xl:order-none">
-          <Button size="icon" variant="ghost" className="h-8 w-8" title="展开左栏" onClick={() => setPanelsCollapsed((current) => ({ ...current, left: false }))}>
+          <Button size="icon" variant="ghost" className="h-8 w-8" title="Expandir columna izquierda" onClick={() => setPanelsCollapsed((current) => ({ ...current, left: false }))}>
             <PanelLeftOpen className="h-4 w-4" />
           </Button>
-          <span className="text-xs text-muted-foreground" style={{ writingMode: "vertical-rl" }}>本章信息</span>
+          <span className="text-xs text-muted-foreground" style={{ writingMode: "vertical-rl" }}>Información en este capítulo</span>
           {qualityDebtDetails ? (
-            <Button size="icon" variant="ghost" className="h-8 w-8 text-amber-600 hover:text-amber-700" title="查看本章质量提醒" aria-label="查看本章质量提醒" onClick={openQualityNotice}>
+            <Button size="icon" variant="ghost" className="h-8 w-8 text-amber-600 hover:text-amber-700" title="Ver el recordatorio de calidad de este capítulo." aria-label="Ver el recordatorio de calidad de este capítulo." onClick={openQualityNotice}>
               <AlertTriangle className="h-4 w-4" />
             </Button>
           ) : null}
@@ -922,10 +922,10 @@ export default function ChapterEditorShell(props: ChapterEditorShellProps) {
 
         {effectiveLayout === "standard" && rightPanelCollapsed ? (
         <div className="order-2 flex min-h-0 flex-col items-center gap-2 py-2 xl:order-none">
-          <Button size="icon" variant="ghost" className="h-8 w-8" title="展开右栏" onClick={() => setPanelsCollapsed((current) => ({ ...current, right: false }))}>
+          <Button size="icon" variant="ghost" className="h-8 w-8" title="Expandir columna derecha" onClick={() => setPanelsCollapsed((current) => ({ ...current, right: false }))}>
             <PanelRightOpen className="h-4 w-4" />
           </Button>
-          <span className="text-xs text-muted-foreground" style={{ writingMode: "vertical-rl" }}>AI 改写</span>
+          <span className="text-xs text-muted-foreground" style={{ writingMode: "vertical-rl" }}>Reescritura de IA</span>
         </div>
         ) : effectiveLayout !== "immersive" ? (
         <div className="order-2 min-h-0 overflow-hidden xl:order-none">
@@ -935,7 +935,7 @@ export default function ChapterEditorShell(props: ChapterEditorShellProps) {
               selectedDiagnosticCard={assistantDiagnosticCard}
               actionContext={actionContext}
               cursorTargetDescription={cursorTargetLabel}
-              selectionTargetDescription={selection ? `已选中 ${countEditorWords(selection.text)} 字` : ""}
+              selectionTargetDescription={selection ? `seleccionado ${countEditorWords(selection.text)} palabras` : ""}
               session={session}
               activeCandidate={activeCandidate}
               diffChanges={review.changes}

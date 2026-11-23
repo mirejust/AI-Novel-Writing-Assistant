@@ -57,17 +57,17 @@ export default function StoryModeTreeCard({
             <div className="flex flex-wrap items-center gap-2">
               <div className="text-sm font-semibold text-foreground">{node.name}</div>
               <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] text-muted-foreground">
-                小说 {node.novelCount}
+                novedoso {node.novelCount}
               </span>
               <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] text-muted-foreground">
-                子类 {node.childCount}
+                Subclase {node.childCount}
               </span>
             </div>
             <div className="text-sm leading-6 text-muted-foreground">
               {node.description?.trim() || node.profile.coreDrive}
             </div>
             <div className="text-xs leading-5 text-muted-foreground">
-              核心驱动：{node.profile.coreDrive}
+              Controlador principal:{node.profile.coreDrive}
             </div>
           </div>
 
@@ -75,12 +75,12 @@ export default function StoryModeTreeCard({
             {depth === 0 ? (
               <Button type="button" variant="ghost" size="sm" onClick={() => onCreateChild(node.id)}>
                 <Plus className="mr-1 h-4 w-4" />
-                新增子类
+                Agregar nueva subcategoría
               </Button>
             ) : null}
             <Button type="button" variant="ghost" size="sm" onClick={() => onEdit(node.id)}>
               <Pencil className="mr-1 h-4 w-4" />
-              编辑
+              editar
             </Button>
             <Button
               type="button"
@@ -88,11 +88,11 @@ export default function StoryModeTreeCard({
               size="sm"
               className="text-destructive hover:text-destructive"
               disabled={deleteDisabled || deletingId === node.id}
-              title={deleteDisabled ? "请先解绑当前推进模式或其子类下引用的小说后再删除。" : undefined}
+              title={deleteDisabled ? "Desvincule las novelas a las que se hace referencia en el modo de avance actual o sus subcategorías antes de eliminarlas." : undefined}
               onClick={() => onDelete(node)}
             >
               <Trash2 className="mr-1 h-4 w-4" />
-              {deletingId === node.id ? "删除中..." : "删除"}
+              {deletingId === node.id ? "Eliminando..." : "Eliminar"}
             </Button>
           </div>
         </div>

@@ -30,7 +30,7 @@ export class AgentConversationStore {
       if (turn?.scopeKey === scopeKey && turn.contextVersion === contextVersion && turn.requestText === requestText && turn.parentResultId === parentResultId) {
         return { turn, created: false };
       }
-      throw new AppError("请刷新对话，查看正在处理的这一轮。", 409);
+      throw new AppError("Actualice la conversación para ver la ronda actual en progreso.", 409);
     }
   }
 
@@ -50,12 +50,12 @@ export class AgentConversationStore {
   static async complete(tx: Prisma.TransactionClient, scopeKey: string, id: string, resultId: string | null, replyText: string, resultPayloadJson?: string) {
     const changed = await tx.agentConversationTurn.updateMany({ where: { id, scopeKey, status: running },
       data: { status: "completed", activeSlot: null, resultId, replyText, resultPayloadJson } });
-    if (!changed.count) throw new AppError("本轮讨论已结束，请查看对话记录。", 409);
+    if (!changed.count) throw new AppError("Esta ronda de discusión ha finalizado, verifique el registro de la conversación.", 409);
   }
 
   async stop(scopeKey: string, id: string, status: "failed" | "interrupted", replyText: string) {
     const changed = await this.db.agentConversationTurn.updateMany({ where: { scopeKey, id, status: running },
       data: { status, activeSlot: null, replyText } });
-    if (!changed.count && status === "interrupted") throw new AppError("本轮状态已改变，请刷新对话。", 409);
+    if (!changed.count && status === "interrupted") throw new AppError("El estado de esta ronda ha cambiado; actualice la conversación.", 409);
   }
 }

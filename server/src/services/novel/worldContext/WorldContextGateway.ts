@@ -55,7 +55,7 @@ export interface WorldContextGatewayGenerateOptions extends NovelWorldGenerateIn
   openingOnly?: boolean;
 }
 
-function compactList(items: string[], fallback = "暂无"): string {
+function compactList(items: string[], fallback = "Sin datos"): string {
   const normalized = items.map((item) => item.trim()).filter(Boolean);
   return normalized.length > 0 ? normalized.map((item) => `- ${item}`).join("\n") : fallback;
 }
@@ -78,43 +78,43 @@ function mapPurposeToBuilderMode(purpose: WorldContextPurpose): StoryWorldSliceB
 function formatRule(rule: StoryWorldSlice["appliedRules"][number]): string {
   return [
     rule.name,
-    rule.summary ? `说明：${rule.summary}` : "",
-    rule.whyItMatters ? `影响：${rule.whyItMatters}` : "",
+    rule.summary ? `ilustrar:${rule.summary}` : "",
+    rule.whyItMatters ? `Influencia:${rule.whyItMatters}` : "",
   ].filter(Boolean).join(" | ");
 }
 
 function formatForce(force: StoryWorldSlice["activeForces"][number]): string {
   return [
     force.name,
-    force.roleInStory ? `本书作用：${force.roleInStory}` : "",
-    force.pressure ? `施压方式：${force.pressure}` : "",
-    force.summary ? `概述：${force.summary}` : "",
+    force.roleInStory ? `Función de este libro:${force.roleInStory}` : "",
+    force.pressure ? `Método de presión:${force.pressure}` : "",
+    force.summary ? `Descripción general:${force.summary}` : "",
   ].filter(Boolean).join(" | ");
 }
 
 function formatLocation(location: StoryWorldSlice["activeLocations"][number]): string {
   return [
     location.name,
-    location.storyUse ? `剧情用途：${location.storyUse}` : "",
-    location.risk ? `风险：${location.risk}` : "",
-    location.summary ? `概述：${location.summary}` : "",
+    location.storyUse ? `Uso de la trama:${location.storyUse}` : "",
+    location.risk ? `riesgo:${location.risk}` : "",
+    location.summary ? `Descripción general:${location.summary}` : "",
   ].filter(Boolean).join(" | ");
 }
 
 function buildPurposeLead(purpose: WorldContextPurpose): string {
   switch (purpose) {
     case "character":
-      return "角色生成必须贴合本书世界：优先使用活跃势力、身份边界、地点压力和禁止搭配，不要生成脱离世界规则的人设。";
+      return "La generación de personajes debe adaptarse al mundo de este libro: dar prioridad al uso de fuerzas activas, límites de identidad, presión de ubicación y combinaciones prohibidas, y no generar personajes que se desvíen de las reglas del mundo.";
     case "outline":
-      return "故事规划必须使用本书世界：优先围绕核心规则、压力来源、开局入口和扩展边界设计主线。";
+      return "La planificación de la historia debe utilizar el mundo de este libro: priorizar el diseño de la línea principal en torno a reglas centrales, fuentes de presión, entradas abiertas y límites de expansión.";
     case "chapter":
-      return "章节生成必须遵守本书世界：只使用当前切片允许的规则、地点、势力和压力源。";
+      return "La generación de capítulos debe adherirse al mundo del libro: utilizar únicamente las reglas, ubicaciones, fuerzas y factores estresantes permitidos por la porción actual.";
     case "bible":
-      return "Bible 只能汇总本书世界手册，不能把世界规则改写成另一套权威来源。";
+      return "La Biblia sólo puede resumir este manual mundial, no puede reescribir las reglas del mundo en otro conjunto de fuentes autorizadas.";
     case "optimize":
-      return "优化与审校必须检查文本是否越过本书世界边界、硬规则和禁止搭配。";
+      return "Los optimizadores y revisores deben comprobar si el texto traspasa los límites del mundo del libro, las reglas estrictas y las colocaciones prohibidas.";
     default:
-      return "生成必须遵守本书世界边界。";
+      return "La generación debe respetar las fronteras del mundo del libro.";
   }
 }
 
@@ -140,34 +140,34 @@ export function buildWorldContextBlockFromSlice(input: {
   }));
 
   const worldRulesText = [
-    slice.coreWorldFrame ? `世界底色：${slice.coreWorldFrame}` : "",
-    hardRules.length > 0 ? `硬规则：\n${compactList(hardRules)}` : "",
+    slice.coreWorldFrame ? `Antecedentes mundiales:${slice.coreWorldFrame}` : "",
+    hardRules.length > 0 ? `Reglas estrictas: \\n${compactList(hardRules)}` : "",
     slice.forbiddenCombinations.length > 0
-      ? `禁止搭配：\n${compactList(slice.forbiddenCombinations)}`
+      ? `Combinación prohibida: \\n${compactList(slice.forbiddenCombinations)}`
       : "",
-    slice.storyScopeBoundary ? `本书边界：${slice.storyScopeBoundary}` : "",
+    slice.storyScopeBoundary ? `Límites del libro:${slice.storyScopeBoundary}` : "",
   ].filter(Boolean).join("\n\n");
 
   const worldStageText = [
-    slice.coreWorldFrame ? `核心舞台：${slice.coreWorldFrame}` : "",
+    slice.coreWorldFrame ? `Etapa central:${slice.coreWorldFrame}` : "",
     slice.activeForces.length > 0
-      ? `活跃势力：\n${slice.activeForces.map((force: StoryWorldSliceForce) => `- ${formatForce(force)}`).join("\n")}`
+      ? `Fuerzas activas: \\n${slice.activeForces.map((force: StoryWorldSliceForce) => `- ${formatForce(force)}`).join("\n")}`
       : "",
     slice.activeLocations.length > 0
-      ? `本书舞台：\n${slice.activeLocations.map((location: StoryWorldSliceLocation) => `- ${formatLocation(location)}`).join("\n")}`
+      ? `Etapa del libro: \\n${slice.activeLocations.map((location: StoryWorldSliceLocation) => `- ${formatLocation(location)}`).join("\n")}`
       : "",
-    slice.pressureSources.length > 0 ? `压力来源：\n${compactList(slice.pressureSources)}` : "",
-    slice.conflictCandidates.length > 0 ? `可展开冲突：\n${compactList(slice.conflictCandidates)}` : "",
-    slice.recommendedEntryPoints.length > 0 ? `适合切入口：\n${compactList(slice.recommendedEntryPoints)}` : "",
+    slice.pressureSources.length > 0 ? `Fuente de presión: \\n${compactList(slice.pressureSources)}` : "",
+    slice.conflictCandidates.length > 0 ? `Conflictos ampliables: \\n${compactList(slice.conflictCandidates)}` : "",
+    slice.recommendedEntryPoints.length > 0 ? `Adecuado para incisión: \\n${compactList(slice.recommendedEntryPoints)}` : "",
   ].filter(Boolean).join("\n\n");
 
   const promptBlock = [
-    `【本书世界上下文｜用途：${purpose}｜强度：${strength}】`,
+    `[Contexto mundial de este libro | Objetivo:${purpose}|Fuerza:${strength}]`,
     buildPurposeLead(purpose),
     worldRulesText,
     worldStageText,
-    slice.mysterySources.length > 0 ? `悬念来源：\n${compactList(slice.mysterySources)}` : "",
-    slice.suggestedStoryAxes.length > 0 ? `故事轴建议：\n${compactList(slice.suggestedStoryAxes)}` : "",
+    slice.mysterySources.length > 0 ? `Fuente de suspenso: \\n${compactList(slice.mysterySources)}` : "",
+    slice.suggestedStoryAxes.length > 0 ? `Sugerencia de historia: \\n${compactList(slice.suggestedStoryAxes)}` : "",
   ].filter(Boolean).join("\n\n");
 
   return {

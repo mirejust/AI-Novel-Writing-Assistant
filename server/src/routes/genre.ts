@@ -59,7 +59,7 @@ router.get("/", async (_req, res, next) => {
     res.status(200).json({
       success: true,
       data,
-      message: "获取类型树成功。",
+      message: "La obtención del árbol de tipos fue exitosa.",
     } satisfies ApiResponse<typeof data>);
   } catch (error) {
     next(error);
@@ -72,7 +72,7 @@ router.post("/", validate({ body: createGenreSchema }), async (req, res, next) =
     res.status(201).json({
       success: true,
       data,
-      message: "创建类型成功。",
+      message: "Creación de tipo exitosa.",
     } satisfies ApiResponse<typeof data>);
   } catch (error) {
     next(error);
@@ -85,7 +85,7 @@ router.post("/generate", validate({ body: generateGenreSchema }), async (req, re
     res.status(200).json({
       success: true,
       data,
-      message: "AI 类型树生成成功。",
+      message: "Árbol de tipo AI generado con éxito.",
     } satisfies ApiResponse<typeof data>);
   } catch (error) {
     next(error);
@@ -99,7 +99,7 @@ router.put("/:id", validate({ params: idParamsSchema, body: updateGenreSchema })
     res.status(200).json({
       success: true,
       data,
-      message: "更新类型成功。",
+      message: "Tipo de actualización exitoso.",
     } satisfies ApiResponse<typeof data>);
   } catch (error) {
     next(error);
@@ -112,7 +112,7 @@ router.delete("/:id", validate({ params: idParamsSchema }), async (req, res, nex
     await genreService.deleteGenre(id);
     res.status(200).json({
       success: true,
-      message: "删除类型成功。",
+      message: "Eliminación del tipo exitosa.",
     } satisfies ApiResponse<null>);
   } catch (error) {
     next(error);

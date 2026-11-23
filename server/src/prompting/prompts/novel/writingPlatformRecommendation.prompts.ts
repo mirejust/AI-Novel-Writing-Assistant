@@ -34,7 +34,7 @@ export const writingPlatformRecommendationPrompt: PromptAsset<WritingPlatformRec
   management: { productPrompt: true, editModes: ["readonly"] },
   render: (input) => [
     new SystemMessage([
-      "你负责为中文网络小说选择目标平台写法。必须基于作品体验、受众、冲突引擎、篇幅和叙事重点做结构化判断，不得用关键词或题材正则机械路由。",
+      "你负责为西班牙语网络小说选择目标平台写法。必须基于作品体验、受众、冲突引擎、篇幅和叙事重点做结构化判断，不得用关键词或题材正则机械路由。",
       "可选平台：番茄免费网文（长篇/短篇）、起点男频（长篇）、晋江女频（长篇）、知乎短故事（短篇）。",
       "推荐必须适配作品形态，并给出新手能理解的具体理由。只输出严格 JSON。",
     ].join("\n")),

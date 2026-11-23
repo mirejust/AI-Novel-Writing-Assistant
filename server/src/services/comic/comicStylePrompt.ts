@@ -15,12 +15,12 @@ interface StyleEntry {
 
 // 与前端 ComicProjectPage STYLE_OPTIONS 的 value 对应
 const STYLE_KEYWORDS: Record<string, StyleEntry> = {
-  webtoon_color: { zh: "彩色韩漫风格，干净线条，鲜艳配色", en: "Korean webtoon style, clean line art, vibrant colors" },
-  bl_manga: { zh: "彩色少女漫风格，柔和色调，精致五官", en: "shoujo manga style, soft palette, delicate features" },
-  shounen_bw: { zh: "黑白少年漫风格，粗犷线条，动感构图", en: "black-and-white shounen manga, bold ink line art, dynamic composition" },
-  ink_traditional: { zh: "水墨国风，传统毛笔笔触，淡彩晕染", en: "traditional Chinese ink-wash painting style, brush strokes, muted washed colors" },
-  chibi: { zh: "Q版萌漫风格，圆润可爱，夸张表情", en: "chibi / SD cute manga style, round soft proportions" },
-  realistic: { zh: "写实漫画风格，细腻光影，真实感", en: "semi-realistic illustration style, detailed shading and lighting" },
+  webtoon_color: { zh: "Colorido estilo cómico coreano, líneas limpias, colores brillantes.", en: "Korean webtoon style, clean line art, vibrant colors" },
+  bl_manga: { zh: "Estilo manga femenino colorido, tonos suaves, rasgos faciales delicados.", en: "shoujo manga style, soft palette, delicate features" },
+  shounen_bw: { zh: "Estilo cómico shonen en blanco y negro, líneas ásperas, composición dinámica", en: "black-and-white shounen manga, bold ink line art, dynamic composition" },
+  ink_traditional: { zh: "Estilo chino de tinta y lavado, pinceladas tradicionales, manchas de colores claros", en: "traditional Chinese ink-wash painting style, brush strokes, muted washed colors" },
+  chibi: { zh: "Versión Q de lindo estilo de dibujos animados, expresiones redondas y lindas, exageradas.", en: "chibi / SD cute manga style, round soft proportions" },
+  realistic: { zh: "Estilo cómico realista, luces y sombras delicadas, realismo.", en: "semi-realistic illustration style, detailed shading and lighting" },
 };
 
 const DEFAULT_STYLE: StyleEntry = STYLE_KEYWORDS.webtoon_color;
@@ -37,7 +37,7 @@ function resolveStyleEntry(stylePresetRaw: string | null | undefined): StyleEntr
 /** 返回中英组合画风关键词串，直接拼入图像 prompt */
 export function resolveComicStyleKeywords(stylePresetRaw: string | null | undefined): string {
   const entry = resolveStyleEntry(stylePresetRaw);
-  return `${entry.zh}，${entry.en}`;
+  return `${entry.zh},${entry.en}`;
 }
 
 /** 仅英文画风片段（用于以英文为主的 prompt） */
@@ -59,13 +59,13 @@ export function buildGenderLockPrompt(
       return [
         `*** GENDER LOCK ***: ${characterName ?? "this character"} is MALE`,
         "render with masculine anatomy: male facial bone structure, male shoulder/torso proportions, Adam's apple, masculine hairline; NOT feminine",
-        "中文：本角色为男性，画面性别必须正确，不要画成女性",
+        "Chino: este personaje es un hombre. El género en la imagen debe ser correcto. No lo dibujes como una mujer.",
       ].join(", ");
     case "female":
       return [
         `*** GENDER LOCK ***: ${characterName ?? "this character"} is FEMALE`,
         "render with feminine anatomy: female facial bone structure, female body proportions, feminine hairline; NOT masculine",
-        "中文：本角色为女性，画面性别必须正确，不要画成男性或中性美少年",
+        "Chino: este personaje es femenino. El género en la imagen debe ser correcto. No lo dibujes como un hombre o un niño neutral.",
       ].join(", ");
     case "other":
       // 中性/非二元：不强约束某一性别，但提示不要随机偏向

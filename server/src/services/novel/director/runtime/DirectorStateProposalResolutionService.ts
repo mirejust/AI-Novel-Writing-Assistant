@@ -123,7 +123,7 @@ export class DirectorStateProposalResolutionService {
         proposalsJson: JSON.stringify(proposals, null, input.resourceReview ? undefined : 2),
         canonicalStateJson: JSON.stringify(reviewContext, null, input.resourceReview ? undefined : 2),
         protectedContentJson: JSON.stringify({
-          rule: "不要自动覆盖用户明确手写或保护的正文；无法确认时进入人工恢复。",
+          rule: "No sobrescriba automáticamente texto que haya sido escrito explícitamente a mano o protegido por el usuario; ingrese a la recuperación manual cuando no pueda confirmar.",
         }),
         savedChapterContent: input.resourceReview?.expectedChapterContent,
       },
@@ -140,10 +140,10 @@ export class DirectorStateProposalResolutionService {
       },
     }).catch(error => {
       if (!input.resourceReview) throw error;
-      console.warn("[auto-director] 资源变动 AI 核验失败，保留待核验记录", { novelId: input.novelId, chapterId: input.chapterId, error: error instanceof Error ? error.message : String(error) });
+      console.warn("[auto-director] La verificación por IA de los cambios de recursos falló y el registro se conserva para su verificación.", { novelId: input.novelId, chapterId: input.chapterId, error: error instanceof Error ? error.message : String(error) });
       return null;
     });
-    if (!aiResult) return { processed: false, decision: "manual_required", reason: "资源变动未完成 AI 核验，可在本书工作台查看。", proposalIds: [], blockingLedgerKeys: [], reviewFailed: true };
+    if (!aiResult) return { processed: false, decision: "manual_required", reason: "Los cambios de recursos no han completado la verificación de la IA y se pueden ver en el banco de trabajo de este libro.", proposalIds: [], blockingLedgerKeys: [], reviewFailed: true };
     await input.resourceReview?.assertExecutionOwnership();
     const resolution = this.normalizeResolution(aiResult.output, proposals, input);
     const targetIds = this.resolveTargetProposalIds(resolution, proposals);
@@ -158,7 +158,7 @@ export class DirectorStateProposalResolutionService {
       });
       if (input.resourceReview && !committed?.committed.length) {
         resolution.decision = "manual_required";
-        resolution.reason = "资源变动未通过正文版本或当前资源状态核对，请在本书工作台查看。";
+        resolution.reason = "Los cambios de recursos no han sido verificados por la versión de texto o el estado actual de los recursos; verifique en el banco de trabajo del libro.";
       }
     } else if (!input.resourceReview && (resolution.decision === "defer" || resolution.decision === "auto_replan_window")) {
       await this.archiveProposals({
@@ -179,7 +179,7 @@ export class DirectorStateProposalResolutionService {
       taskId: input.taskId ?? null,
       novelId: input.novelId,
       nodeKey: "state_proposal_resolution",
-      summary: `状态提案处理：${resolution.reason}`,
+      summary: `Procesamiento de propuesta de estado:${resolution.reason}`,
       affectedScope: targetIds.length > 0 ? `state_proposals:${targetIds.join(",")}` : null,
       severity: resolution.decision === "manual_required"
         ? "high"

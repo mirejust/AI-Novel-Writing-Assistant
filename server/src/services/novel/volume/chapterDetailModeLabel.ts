@@ -2,10 +2,10 @@ import type { ChapterDetailMode } from "./volumeModels";
 
 export function formatChapterDetailModeLabel(detailMode: ChapterDetailMode): string {
   if (detailMode === "purpose") {
-    return "章节目标";
+    return "Objetivo del capítulo";
   }
   if (detailMode === "boundary") {
-    return "执行边界";
+    return "límite de ejecución";
   }
-  return "任务单";
+  return "Hoja de tareas";
 }

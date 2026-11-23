@@ -27,7 +27,7 @@ export async function readExistingAssets(contract: RunContract): Promise<Existin
   for (const chapter of prose) assets.push({type: "chapter_draft", scope: `chapter:${chapter.order}`, usable: true, contentRef: `chapter:${chapter.id}`, content: {id: chapter.id, order: chapter.order, content: chapter.content}});
   if (version) {
     const workspace = normalizeVolumeWorkspaceDocument(novelId, version.contentJson, {activeVersionId: version.id});
-    if (!workspace) throw new Error("已保存的卷规划无法读取，请先在规划页核对。");
+    if (!workspace) throw new Error("El plan de volumen guardado no se puede leer; consulte primero la página de planificación.");
     if (workspace.volumes.length && workspace.strategyPlan) add("volume_strategy", workspace);
     const targetId = workspace.volumes.length ? findTargetVolume({contract},workspace) : undefined;
     const volume = workspace.volumes.find(item => item.id === targetId);

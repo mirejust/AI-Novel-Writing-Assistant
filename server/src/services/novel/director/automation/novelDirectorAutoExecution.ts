@@ -140,19 +140,19 @@ export function buildDirectorAutoExecutionScopeLabel(
 ): string {
   const normalized = normalizeDirectorAutoExecutionPlan(plan);
   if (normalized.mode === "book") {
-    return "全书";
+    return "libro completo";
   }
   if (normalized.mode === "chapter_range") {
     if ((normalized.startOrder ?? 1) === (normalized.endOrder ?? 1)) {
-      return `第 ${normalized.startOrder} 章`;
+      return `Cap. ${normalized.startOrder}`;
     }
-    return `第 ${normalized.startOrder}-${normalized.endOrder} 章`;
+    return `Cap. ${normalized.startOrder}-${normalized.endOrder}`;
   }
   if (normalized.mode === "volume") {
     const volumeLabel = fallbackVolumeTitle?.trim() ? ` · ${fallbackVolumeTitle.trim()}` : "";
-    return `第 ${normalized.volumeOrder} 卷${volumeLabel}`;
+    return `Cap. ${normalized.volumeOrder} rollo${volumeLabel}`;
   }
-  return `第 1-${Math.max(1, normalized.endOrder ?? fallbackTotalChapterCount ?? 10)} 章`;
+  return `No. 1-${Math.max(1, normalized.endOrder ?? fallbackTotalChapterCount ?? 10)}`;
 }
 
 export function resolveDirectorAutoExecutionBookRange(
@@ -308,7 +308,7 @@ export function buildDirectorAutoExecutionDeferredQualityState(input: {
     {
       chapterId,
       chapterOrder,
-      reason: input.reason.trim() || "自动成书已暂存本章质量问题，继续推进后续章节。",
+      reason: input.reason.trim() || "Los problemas de calidad de este capítulo se han almacenado temporalmente en el libro de forma automática y se seguirán desarrollando los capítulos posteriores.",
       source: input.source,
       deferredAt,
     },
@@ -448,18 +448,18 @@ export function buildDirectorAutoExecutionState(input: {
 }
 
 export function buildDirectorAutoExecutionPausedLabel(state: DirectorAutoExecutionState): string {
-  return `${buildDirectorAutoExecutionScopeLabelFromState(state)}自动执行已暂停`;
+  return `${buildDirectorAutoExecutionScopeLabelFromState(state)}La ejecución automatizada está en pausa`;
 }
 
 export function buildDirectorAutoExecutionStageLabel(state: DirectorAutoExecutionState): string {
   if (state.completionProfile?.mode !== "compact_book") {
-    return `正在自动执行${buildDirectorAutoExecutionScopeLabelFromState(state)}`;
+    return `Ejecutando automáticamente${buildDirectorAutoExecutionScopeLabelFromState(state)}`;
   }
   const remaining = state.remainingChapterCount ?? 0;
-  if (remaining <= 3) return "正在补齐结局";
-  if (remaining <= 8) return "正在收束主线";
-  if ((state.completedChapterCount ?? 0) <= 3) return "正在完成开篇";
-  return "正在推进故事";
+  if (remaining <= 3) return "El final se esta completando";
+  if (remaining <= 8) return "Concluyendo la línea principal";
+  if ((state.completedChapterCount ?? 0) <= 3) return "Completando el capítulo inicial";
+  return "Historia avanzada";
 }
 
 export function buildDirectorAutoExecutionPausedSummary(input: {
@@ -478,16 +478,16 @@ export function buildDirectorAutoExecutionPausedSummary(input: {
     });
   }
   const remainingSummary = input.remainingChapterCount > 0
-    ? `当前仍有 ${input.remainingChapterCount} 章待继续`
-    : "当前批次已无待继续章节";
+    ? `todavía hay ${input.remainingChapterCount} Capítulo continuará`
+    : "No hay capítulos para continuar en el lote actual.";
   const nextSummary = typeof input.nextChapterOrder === "number"
-    ? `，建议从第 ${input.nextChapterOrder} 章继续`
+    ? `, se recomienda comenzar con ${input.nextChapterOrder} El capítulo continúa`
     : "";
-  return `${input.scopeLabel}已进入自动执行，但当前批量任务未完全完成：${input.failureMessage} ${remainingSummary}${nextSummary}。`;
+  return `${input.scopeLabel}Se ingresó la ejecución automática, pero la tarea por lotes actual no se completa por completo:${input.failureMessage} ${remainingSummary}${nextSummary}.`;
 }
 
 export function buildDirectorAutoExecutionCompletedLabel(scopeLabel: string): string {
-  return `${scopeLabel}自动执行完成`;
+  return `${scopeLabel}Ejecución automática completada`;
 }
 
 export function buildDirectorAutoExecutionCompletedSummary(input: {
@@ -497,14 +497,14 @@ export function buildDirectorAutoExecutionCompletedSummary(input: {
   autoRepair?: boolean;
 }): string {
   const completedScope = input.scopeLabel;
-  const title = input.title.trim() || "当前项目";
+  const title = input.title.trim() || "Proyecto actual";
   if (input.autoReview === false) {
-    return `《${title}》已自动完成${completedScope}的章节执行，正文生成后未额外执行自动审核或修复。`;
+    return `«${title}»Completado automáticamente${completedScope}Los capítulos se ejecutan y no se realiza ninguna revisión o reparación automática adicional después de generar el texto.`;
   }
   if (input.autoRepair === false) {
-    return `《${title}》已自动完成${completedScope}的章节执行与自动审核，未开启自动修复。`;
+    return `«${title}»Completado automáticamente${completedScope}Ejecución de capítulos y revisión automática, la reparación automática no está activada.`;
   }
-  return `《${title}》已自动完成${completedScope}的章节执行、自动审核与修复。`;
+  return `«${title}»Completado automáticamente${completedScope}Ejecución de capítulos, revisión y reparación automática.`;
 }
 
 export function buildDirectorAutoExecutionPipelineOptions(input: {
@@ -571,7 +571,7 @@ export function resolveDirectorAutoExecutionWorkflowState(
     return {
       stage: "quality_repair",
       itemKey: "quality_repair",
-      itemLabel: `正在自动审校${scopeLabel}${chapterLabel}${activityLabel}`,
+      itemLabel: `Revisando automáticamente${scopeLabel}${chapterLabel}${activityLabel}`,
       progress: Number((0.965 + ((job.progress ?? 0) * 0.02)).toFixed(4)),
     };
   }
@@ -579,14 +579,14 @@ export function resolveDirectorAutoExecutionWorkflowState(
     return {
       stage: "quality_repair",
       itemKey: "quality_repair",
-      itemLabel: `正在自动修复${scopeLabel}${chapterLabel}${activityLabel}`,
+      itemLabel: `Reparando automáticamente${scopeLabel}${chapterLabel}${activityLabel}`,
       progress: Number((0.975 + ((job.progress ?? 0) * 0.015)).toFixed(4)),
     };
   }
   return {
     stage: "chapter_execution",
     itemKey: "chapter_execution",
-    itemLabel: `正在自动执行${scopeLabel}${chapterLabel}${activityLabel}`,
+    itemLabel: `Ejecutando automáticamente${scopeLabel}${chapterLabel}${activityLabel}`,
     progress: Number((0.93 + ((job.progress ?? 0) * 0.035)).toFixed(4)),
   };
 }

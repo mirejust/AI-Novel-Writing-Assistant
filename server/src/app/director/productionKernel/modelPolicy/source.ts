@@ -28,7 +28,7 @@ export async function captureKernelModelPolicy(contract: RunContract, sources: K
   const windows:KernelModelPolicy["windows"]=[],targets:KernelModelPolicy["targets"]=[];
   for(const target of models){
     const contextWindow=await windowFor(target.provider,target.model);
-    if(contextWindow===null)throw new Error(`模型缺少明确的上下文窗口配置（${target.provider}/${target.model}）。`);
+    if(contextWindow===null)throw new Error(`El modelo carece de configuración de ventana de contexto explícita (${target.provider}/${target.model}).`);
     windows.push({...target,contextWindow});
   }
   for(const target of models)for(const taskType of KERNEL_MODEL_TASKS){
@@ -39,7 +39,7 @@ export async function captureKernelModelPolicy(contract: RunContract, sources: K
     const window=windows.find(row=>row.provider===target.provider&&row.model===target.model)!.contextWindow;
     if(!Number.isSafeInteger(effective.maxTokens)||effective.maxTokens!<1)
       throw new MissingTaskOutputBudgetError(target.provider, target.model, taskType);
-    if(effective.maxTokens!+1024>=window) throw new Error(`模型 ${target.provider}/${target.model} 的 ${taskType} 输出预算超出了可用上下文，请调整模型路由后重新准备。`);
+    if(effective.maxTokens!+1024>=window) throw new Error(`Modelo ${target.provider}/${target.model} de ${taskType} El presupuesto de producción excede el contexto disponible. Ajuste la ruta del modelo y prepárese nuevamente.`);
     targets.push({...target,taskType,configurationHash:configurationKey(effective),
       ...(!saved || previous?.maxTokens != null ? {maxTokens: effective.maxTokens} : {})});
   }

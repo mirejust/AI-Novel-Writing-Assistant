@@ -14,15 +14,15 @@ export interface DirectorRunModeOption {
 export const RUN_MODE_OPTIONS: DirectorRunModeOption[] = [
   {
     value: "stage_review",
-    label: "逐阶段确认",
-    description: "与 AI 讨论每一阶段的结果，确认后再继续。",
+    label: "Confirmar paso a paso",
+    description: "Discuta los resultados de cada etapa con la IA y confírmelo antes de continuar.",
   },
   {
     value: "auto_to_ready",
-    label: "先完成导演准备",
-    description: "AI 会准备书级规划、角色、卷章安排和章节执行资源，再由你选择简易生产或专业生产。",
+    label: "Primero, complete la preparación del director.",
+    description: "La IA preparará la planificación a nivel de libro, los personajes, la disposición de los capítulos y los recursos de ejecución de los capítulos, y luego podrá elegir entre producción simple o producción profesional.",
     recommended: true,
-    recommendation: "正文不会提前生成，准备完成后再决定如何生产整本书。",
+    recommendation: "El texto no se generará de antemano y la decisión sobre cómo producir el libro completo se tomará una vez que se complete la preparación.",
   },
 ];
 
@@ -37,8 +37,8 @@ export interface AutoDirectorRequestLlmOptions {
 export function buildInitialIdea(basicForm: NovelBasicFormState): string {
   const lines = [
     basicForm.description.trim(),
-    basicForm.title.trim() ? `我想写一本暂名为《${basicForm.title.trim()}》的小说。` : "",
-    basicForm.styleTone.trim() ? `文风希望偏 ${basicForm.styleTone.trim()}。` : "",
+    basicForm.title.trim() ? `Quiero escribir un libro titulado provisionalmente "${basicForm.title.trim()}" novedoso.` : "",
+    basicForm.styleTone.trim() ? `Es de esperar que el estilo de escritura sea parcial. ${basicForm.styleTone.trim()}.` : "",
   ].filter(Boolean);
   return lines.join("\n");
 }

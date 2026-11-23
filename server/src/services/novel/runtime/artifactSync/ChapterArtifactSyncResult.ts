@@ -30,21 +30,21 @@ export function mergeChapterArtifactSyncResults(
 
 export class CharacterCandidateReviewRequiredError extends Error {
   constructor(readonly reviewId: string) {
-    super("本章正文已保存，请确认本章人物后继续；可选择新增、关联已有角色或忽略。");
+    super("El texto de este capítulo ha sido guardado. Confirme los caracteres de este capítulo antes de continuar; puedes optar por agregar nuevos personajes, asociar personajes existentes o ignorarlos.");
     this.name = "CharacterCandidateReviewRequiredError";
   }
 }
 
 export class ChapterArtifactSyncBoundaryError extends Error {
   constructor(readonly result: ChapterArtifactSyncResult) {
-    super(result.reason || `章节资产同步未完成（${result.status}）。`);
+    super(result.reason || `Sincronización de recursos del capítulo no completada (${result.status}).`);
     this.name = "ChapterArtifactSyncBoundaryError";
   }
 }
 
 /** A saved chapter changed while a background artifact run was still active. */
 export class ChapterArtifactContentVersionError extends Error {
-  constructor(message = "章节正文版本已变化，已拒绝过期资产结果。") {
+  constructor(message = "La versión del texto del capítulo cambió y los resultados de los activos vencidos fueron rechazados.") {
     super(message);
     this.name = "ChapterArtifactContentVersionError";
   }

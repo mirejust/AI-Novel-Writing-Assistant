@@ -21,9 +21,9 @@ interface BookAnalysisSourceRangePickerProps {
 }
 
 const CHAR_PRESETS = [
-  { label: "前 5 万字", value: 50_000 },
-  { label: "前 10 万字", value: 100_000 },
-  { label: "前 20 万字", value: 200_000 },
+  { label: "Primeras 50.000 palabras", value: 50_000 },
+  { label: "Primeras 100.000 palabras", value: 100_000 },
+  { label: "Primeras 200.000 palabras", value: 200_000 },
 ];
 
 const numberFormatter = new Intl.NumberFormat("zh-CN");
@@ -50,7 +50,7 @@ function parseCharInput(input: string): number | null {
     return null;
   }
   const unit = match[2];
-  if (unit === "万") {
+  if (unit === "Millones") {
     return Math.round(value * 10_000);
   }
   if (unit === "k") {
@@ -241,24 +241,24 @@ export default function BookAnalysisSourceRangePicker({
   };
 
   const rangeTitle = selectedRange && selectedStartChapter && selectedEndChapter
-    ? `第 ${selectedStartChapter.chapterIndex + 1} 章 ~ 第 ${selectedEndChapter.chapterIndex + 1} 章`
-    : "全文";
+    ? `Cap. ${selectedStartChapter.chapterIndex + 1} Capítulo ~ Capítulo ${selectedEndChapter.chapterIndex + 1}`
+    : "Texto completo";
   const rangeDetail = selectedRange && selectedStartChapter && selectedEndChapter
-    ? `${selectedChapterCount} 章 · 约 ${formatCount(selectedCharCount)} 字 · 占全文 ${Math.round(percent)}%`
-    : `${sortedChapters.length > 0 ? `${sortedChapters.length} 章 · ` : ""}约 ${formatCount(sourceCharCount)} 字`;
+    ? `${selectedChapterCount} capítulo · aprox. ${formatCount(selectedCharCount)} Palabras · Texto completo ${Math.round(percent)}%`
+    : `${sortedChapters.length > 0 ? `${sortedChapters.length} Capítulo · ` : ""}aprox. ${formatCount(sourceCharCount)} palabras`;
   const charModeHint = selectedRange && selectedStartChapter && selectedEndChapter
-    ? `按章节边界覆盖第 ${selectedStartChapter.chapterIndex + 1} 章 ~ 第 ${selectedEndChapter.chapterIndex + 1} 章`
-    : "输入字数后会自动换算为章节范围";
+    ? `Cobertura por límites de capítulo ${selectedStartChapter.chapterIndex + 1} Capítulo ~ Capítulo ${selectedEndChapter.chapterIndex + 1}`
+    : "Después de ingresar la cantidad de palabras, se convertirá automáticamente en un rango de capítulos.";
 
   return (
     <div className="space-y-2 rounded-md border bg-background p-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <div className="text-sm font-medium">原文范围</div>
+        <div className="text-sm font-medium">Alcance del texto original</div>
         <div className="inline-flex rounded-md bg-muted/40 p-1">
           {([
-            ["full", "全文"],
-            ["chapter", "按章节"],
-            ["chars", "按字数"],
+            ["full", "Texto completo"],
+            ["chapter", "por capitulo"],
+            ["chars", "Por recuento de palabras"],
           ] as const).map(([key, label]) => (
             <button
               key={key}
@@ -292,7 +292,7 @@ export default function BookAnalysisSourceRangePicker({
               >
                 {sortedChapters.map((chapter) => (
                   <option key={chapter.id} value={chapter.chapterIndex}>
-                    起：第 {chapter.chapterIndex + 1} 章 · {shortTitle(chapter.title)}
+                    A partir de: No. {chapter.chapterIndex + 1} capítulo · {shortTitle(chapter.title)}
                   </option>
                 ))}
               </SelectControl>
@@ -309,7 +309,7 @@ export default function BookAnalysisSourceRangePicker({
                   .filter((chapter) => chapter.chapterIndex >= (selectedRange?.startChapterIndex ?? sortedChapters[0]?.chapterIndex ?? 0))
                   .map((chapter) => (
                     <option key={chapter.id} value={chapter.chapterIndex}>
-                      止：第 {chapter.chapterIndex + 1} 章 · {shortTitle(chapter.title)}
+                      Parada: No. {chapter.chapterIndex + 1} capítulo · {shortTitle(chapter.title)}
                     </option>
                   ))}
               </SelectControl>
@@ -334,7 +334,7 @@ export default function BookAnalysisSourceRangePicker({
               disabled={!canUseChapterRange}
               onChange={(event) => setCharStartInput(event.target.value)}
               onBlur={() => applyCharRange(charStartInput, charEndInput)}
-              placeholder="起始字数，如 5000"
+              placeholder="Recuento inicial de palabras, como 5000"
             />
             <Input
               className="h-9 text-xs"
@@ -342,7 +342,7 @@ export default function BookAnalysisSourceRangePicker({
               disabled={!canUseChapterRange}
               onChange={(event) => setCharEndInput(event.target.value)}
               onBlur={() => applyCharRange(charStartInput, charEndInput)}
-              placeholder="结束字数，如 5万"
+              placeholder="Finalizar el recuento de palabras, como 50.000"
             />
           </div>
           <div className="text-xs text-muted-foreground">{charModeHint}</div>
@@ -359,11 +359,11 @@ export default function BookAnalysisSourceRangePicker({
 
       {mode === "chapter" && canUseChapterRange ? (
         <div className="flex flex-wrap gap-1.5">
-          <QuickButton onClick={() => applyChapterPreset("first5")}>前 5 章</QuickButton>
-          <QuickButton onClick={() => applyChapterPreset("last5")}>后 5 章</QuickButton>
-          <QuickButton onClick={() => applyChapterPreset("frontThird")}>前 1/3</QuickButton>
-          <QuickButton onClick={() => applyChapterPreset("middleThird")}>中 1/3</QuickButton>
-          <QuickButton onClick={() => applyChapterPreset("backThird")}>后 1/3</QuickButton>
+          <QuickButton onClick={() => applyChapterPreset("first5")}>Primeros 5 capitulos</QuickButton>
+          <QuickButton onClick={() => applyChapterPreset("last5")}>Próximos 5 capítulos</QuickButton>
+          <QuickButton onClick={() => applyChapterPreset("frontThird")}>Primer 1/3</QuickButton>
+          <QuickButton onClick={() => applyChapterPreset("middleThird")}>Mediano 1/3</QuickButton>
+          <QuickButton onClick={() => applyChapterPreset("backThird")}>Después de 1/3</QuickButton>
         </div>
       ) : null}
 
@@ -415,15 +415,15 @@ function RangeLoadHint({
   error?: string;
   sourceSelected: boolean;
 }) {
-  let message = "选择文档后可按章节或字数限制本次分析输入。";
+  let message = "Después de seleccionar un documento, puede limitar la entrada para este análisis por capítulo o recuento de palabras.";
   if (sourceSelected && loading) {
-    message = "正在加载章节范围...";
+    message = "Cargando rango de capítulos...";
   } else if (sourceSelected && error) {
-    message = "章节范围加载失败，可先按全文创建拆书。";
+    message = "Error al cargar el rango de capítulos. Primero puede crear un libro dividido basado en el texto completo.";
   } else if (sourceSelected && requested) {
-    message = "当前文档章节不足，可按全文创建拆书。";
+    message = "El documento actual no tiene suficientes capítulos. Puede crear un libro dividido basado en el texto completo.";
   } else if (sourceSelected) {
-    message = "切换到范围模式后会加载章节范围。";
+    message = "Los rangos de capítulos se cargan después de cambiar al modo de rango.";
   }
   return (
     <div className="rounded-md border bg-muted/20 px-3 py-2 text-xs leading-5 text-muted-foreground">

@@ -6,10 +6,10 @@ import {FactIntegrityError, type ArtifactTypeInfo, type RunContract, type RunCon
 import {directorVolumeChapterPlanFilter} from "../planning";
 
 const reviewTargets: Record<string, string> = {
-  story_macro: "故事规划", book_contract: "创作约定", world_skeleton: "世界设定",
-  character_cast: "角色阵容", volume_strategy: "卷纲", volume_beat_sheet: "节奏段",
-  volume_chapter_list: "章节路线", chapter_task_sheet: "章节任务与场景",
-  chapter_execution_contract: "正文执行计划", chapter_batch_closed: "本批次正文",
+  story_macro: "Planificación de la historia", book_contract: "acuerdo creativo", world_skeleton: "Ambientación del mundo",
+  character_cast: "Reparto de personajes", volume_strategy: "describir", volume_beat_sheet: "sección rítmica",
+  volume_chapter_list: "Ruta del capítulo", chapter_task_sheet: "Tareas y escenas del capítulo.",
+  chapter_execution_contract: "Plan de ejecución de texto", chapter_batch_closed: "Texto de este lote",
 };
 
 export const directorArtifactTypes: Readonly<Record<string, ArtifactTypeInfo>> = Object.fromEntries(
@@ -33,7 +33,7 @@ export async function resolveSavedReviewContexts({contract, control}: {contract:
       // A story-only opening gains its runtime slots after strategy, not at launch.
       const state=await readOutlinePlanningState(prisma,contract.novelId,contract.chapterRange ?? {from:1,to:1});
       const slots=state ? [...state.mapping.volumes,...(state.mapping.runtimeVolumes ?? [])].filter(slot=>state.range.from>=slot.from && state.range.from<=slot.to) : [];
-      if (slots.length!==1) throw new FactIntegrityError("待确认卷缺少唯一的已保存章节位置。");
+      if (slots.length!==1) throw new FactIntegrityError("Al volumen pendiente le falta una ubicación única del capítulo guardado.");
       volumeId=slots[0].volumeId;
     }
     for (const context of volumeContexts) context.volumeId=volumeId;
@@ -41,7 +41,7 @@ export async function resolveSavedReviewContexts({contract, control}: {contract:
   const chapterTypes = contexts.filter(row => ["chapter_task_sheet", "chapter_execution_contract", "chapter_batch_closed"].includes(row.type));
   if (!chapterTypes.length) return contexts;
   const from = contract.chapterRange?.from, to = contract.chapterRange?.to;
-  if (!from || !to || !Number.isSafeInteger(from) || !Number.isSafeInteger(to) || from < 1 || to < from) throw new FactIntegrityError("待确认章节缺少有效的授权范围。");
+  if (!from || !to || !Number.isSafeInteger(from) || !Number.isSafeInteger(to) || from < 1 || to < from) throw new FactIntegrityError("La sección a confirmar carece de alcance válido de autoridad.");
   for (const context of chapterTypes) {
     const {type}=context;
     if (type === "chapter_task_sheet") {
@@ -54,17 +54,17 @@ export async function resolveSavedReviewContexts({contract, control}: {contract:
       if (rows.length > 1) context.chapterPlans = rows.map(({id, volumeId, chapterOrder}) => ({id, volumeId, chapterOrder}));
     } else if (type === "chapter_batch_closed") {
       const chapters = await prisma.chapter.findMany({where: {novelId: contract.novelId, order: from}, select: {id: true}});
-      if (chapters.length !== 1) throw new FactIntegrityError("待确认正文缺少唯一的已保存章节。");
+      if (chapters.length !== 1) throw new FactIntegrityError("Al texto a confirmar le falta un capítulo guardado único.");
       context.chapterId=chapters[0].id;
     } else {
       const chapters = await prisma.volumeChapterPlan.findMany({where: {volume: directorVolumeChapterPlanFilter(contract.novelId), chapterOrder: from}, select: {id: true, volumeId: true}});
       if (chapters.length !== 1 || (contract.launchInput?.targetVolumeId && chapters[0].volumeId !== contract.launchInput.targetVolumeId)) {
-        throw new FactIntegrityError("待确认计划缺少唯一的已保存目标卷章节。");
+        throw new FactIntegrityError("Al plan por confirmar le falta un capítulo de volumen objetivo guardado único.");
       }
       context.volumeId=chapters[0].volumeId;
       if (type === "chapter_execution_contract") {
         const saved = await prisma.chapter.findMany({where: {novelId: contract.novelId, order: from}, select: {id: true}});
-        if (saved.length !== 1) throw new FactIntegrityError("待确认执行计划缺少唯一的已保存章节。");
+        if (saved.length !== 1) throw new FactIntegrityError("Al plan de ejecución por confirmar le falta un capítulo guardado único.");
         context.chapterId=saved[0].id;
       } else context.chapterId=chapters[0].id;
     }

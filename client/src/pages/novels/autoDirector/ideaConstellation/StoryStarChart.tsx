@@ -29,7 +29,7 @@ export default function StoryStarChart({ options, inspectedId, selected, onInspe
   const noted = new Set(selected.map((item) => item.id));
   const hoverStar = stars.find((item) => item.option.id === hovered);
   return (
-    <div className="sky-field" ref={field} role="group" aria-label="灵感星空" onPointerLeave={() => setHovered(undefined)}>
+    <div className="sky-field" ref={field} role="group" aria-label="Inspiración cielo estrellado" onPointerLeave={() => setHovered(undefined)}>
       {stars.map(({ option, x, y, label }) => {
         const inspecting = inspectedId === option.id;
         return (
@@ -38,7 +38,7 @@ export default function StoryStarChart({ options, inspectedId, selected, onInspe
             "--caption-y": (label?.y ?? y) - y + "px", "--caption-width": label?.width + "px",
           } as CSSProperties} data-kind={option.category} data-relevance={option.relevance}
             data-saved={noted.has(option.id)} aria-pressed={inspecting} disabled={disabled}
-            aria-label={`${option.label}，${IDEA_CONSTELLATION_CATEGORY_LABELS[option.category]}${noted.has(option.id) ? "，已收下" : ""}`}
+            aria-label={`${option.label},${IDEA_CONSTELLATION_CATEGORY_LABELS[option.category]}${noted.has(option.id) ? ", aceptado" : ""}`}
             onPointerEnter={(event) => { if (event.pointerType === "mouse") setHovered(option.id); }}
             onPointerLeave={() => setHovered(undefined)} onFocus={() => onInspect(option.id)}
             onClick={() => { onInspect(option.id); setHovered(undefined); }}>

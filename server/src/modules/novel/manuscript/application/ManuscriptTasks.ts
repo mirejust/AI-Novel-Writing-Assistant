@@ -41,7 +41,7 @@ export class ManuscriptTaskService {
   if(!taken.count)return;
   const task=new ManuscriptTaskExecution({...row,dependenciesJson:JSON.stringify(claimed)});
   try{await assertManuscriptSnapshot(prisma,row.projectId,task.snapshot);await handlers.get(row.kind)!(task);await assertManuscriptSnapshot(prisma,row.projectId,task.snapshot);await task.write("pending");}
-  catch(error){if(error instanceof Error&&error.message==="TASK_CANCELLED")return;task.payload.error=error instanceof Error&&error.message==="MANUSCRIPT_REQUEST_BUDGET_EXHAUSTED"?"本次分析达到结构化请求上限，已完成片段保留；请提高上限后继续。":"本次分析未完成，已读取的片段保留；请核对版本后继续。";await task.write(error instanceof Error&&error.message==="REVISION_BASE_STALE"?"stale":"failed").catch(()=>{});}
+  catch(error){if(error instanceof Error&&error.message==="TASK_CANCELLED")return;task.payload.error=error instanceof Error&&error.message==="MANUSCRIPT_REQUEST_BUDGET_EXHAUSTED"?"Este análisis ha alcanzado el límite superior de solicitudes estructuradas y los fragmentos se han conservado; aumente el límite superior antes de continuar.":"Este análisis no se completa y los fragmentos leídos se conservan; por favor verifique la versión antes de continuar.";await task.write(error instanceof Error&&error.message==="REVISION_BASE_STALE"?"stale":"failed").catch(()=>{});}
   finally{controllers.delete(id);}
  }
  async cancel(projectId:string,id:string){const row=await prisma.manuscriptRevisionProposal.findFirst({where:{id,projectId}});if(!row)throw Error("MANUSCRIPT_NOT_FOUND");if(row.status==="applied")throw Error("REVISION_BASE_STALE");await prisma.manuscriptRevisionProposal.updateMany({where:{id,projectId,status:{in:["generating","failed","pending"]}},data:{status:"rejected"}});controllers.get(id)?.abort();return {cancelled:true};}

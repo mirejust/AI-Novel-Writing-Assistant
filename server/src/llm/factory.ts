@@ -277,7 +277,7 @@ export async function resolveLLMClientOptions(
     ?? getProviderEnvApiKey(resolvedProvider);
 
   if (!apiKey && providerRequiresApiKey(resolvedProvider)) {
-    throw new Error(`未配置 ${providerName} 的 API Key。`);
+    throw new Error(`No configurado ${providerName} Clave API.`);
   }
 
   const model = resolvedModel
@@ -285,7 +285,7 @@ export async function resolveLLMClientOptions(
     ?? getProviderEnvModel(resolvedProvider)
     ?? (isBuiltInProvider(resolvedProvider) ? PROVIDERS[resolvedProvider].defaultModel : undefined);
   if (!model) {
-    throw new Error(`未配置 ${providerName} 的默认模型。`);
+    throw new Error(`No configurado ${providerName} el modelo predeterminado.`);
   }
 
   const baseURL = resolveProviderBaseUrl(
@@ -294,7 +294,7 @@ export async function resolveLLMClientOptions(
     dbSecret?.baseURL,
   );
   if (!baseURL) {
-    throw new Error(`未配置 ${providerName} 的 API URL。`);
+    throw new Error(`No configurado ${providerName} URL de la API.`);
   }
   const authMode = normalizeProviderAuthMode(options.authMode ?? dbSecret?.authMode);
 

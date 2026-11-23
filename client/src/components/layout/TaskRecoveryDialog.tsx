@@ -10,18 +10,18 @@ import { useTaskRecovery } from "./TaskRecoveryContext";
 
 function formatTaskKind(kind: RecoverableTaskSummary["kind"]): string {
   if (kind === "novel_workflow") {
-    return "小说主流程";
+    return "El flujo principal de la novela.";
   }
   if (kind === "novel_pipeline") {
-    return "章节流水线";
+    return "Canalización de capítulos";
   }
   if (kind === "book_analysis") {
-    return "拆书任务";
+    return "Tarea de apertura de libro";
   }
   if (kind === "style_extraction") {
-    return "写法提取";
+    return "Extracción de escritura";
   }
-  return "图片任务";
+  return "Tarea de imagen";
 }
 
 export default function TaskRecoveryDialog() {
@@ -30,11 +30,11 @@ export default function TaskRecoveryDialog() {
   return (
     <Dialog open={isOpen} onOpenChange={(nextOpen) => { if (!nextOpen) closeDialog(); }}>
       <AppDialogContent
-        title="需要处理的任务"
-        description="打开对应创作页面，查看已保存结果和中断位置，再选择下一步。"
+        title="Tareas por hacer"
+        description="Abra la página de creación correspondiente, vea los resultados guardados y la ubicación de la interrupción, y luego seleccione Siguiente."
         footer={(
           <Button variant="outline" onClick={closeDialog}>
-            稍后处理
+            lidiar con eso más tarde
           </Button>
         )}
       >
@@ -46,23 +46,23 @@ export default function TaskRecoveryDialog() {
                   <div className="flex flex-wrap items-center gap-2">
                     <Badge variant="outline">{formatTaskKind(item.kind)}</Badge>
                     <Badge variant={item.status === "running" ? "default" : "secondary"}>
-                      {item.status === "running" ? "运行中断" : "排队中断"}
+                      {item.status === "running" ? "Interrupción de la operación" : "Interrupción de la cola"}
                     </Badge>
                   </div>
                   <div className="text-base font-semibold">{item.title}</div>
-                  <div className="text-sm text-muted-foreground">所属对象：{item.ownerLabel}</div>
+                  <div className="text-sm text-muted-foreground">Objeto de pertenencia:{item.ownerLabel}</div>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
                   <Button asChild size="sm" variant="outline">
-                    <Link to={item.sourceRoute} onClick={closeDialog}>打开任务位置</Link>
+                    <Link to={item.sourceRoute} onClick={closeDialog}>Abrir ubicación de tarea</Link>
                   </Button>
                 </div>
               </div>
 
               <div className="grid gap-2 text-sm text-muted-foreground">
-                {item.currentStage ? <div>当前阶段：{item.currentStage}</div> : null}
-                {item.currentItemLabel ? <div>中断位置：{item.currentItemLabel}</div> : null}
-                {item.recoveryHint ? <div>恢复建议：{item.recoveryHint}</div> : null}
+                {item.currentStage ? <div>Etapa actual:{item.currentStage}</div> : null}
+                {item.currentItemLabel ? <div>Ubicación de interrupción:{item.currentItemLabel}</div> : null}
+                {item.recoveryHint ? <div>Sugerencias de recuperación:{item.recoveryHint}</div> : null}
               </div>
             </section>
           ))}

@@ -102,16 +102,16 @@ function formatNextAction(action: DirectorNextAction | null | undefined): string
     return null;
   }
   const labels: Record<DirectorNextAction["action"], string> = {
-    generate_candidates: "生成可选开书方向",
-    create_book_contract: "生成书级创作约定",
-    complete_story_macro: "完善故事宏观规划",
-    prepare_characters: "准备角色阵容",
-    build_volume_strategy: "生成分卷策略",
-    build_chapter_tasks: "生成章节任务单",
-    continue_chapter_execution: "继续章节生成",
-    review_recent_chapters: "复查最近章节",
-    repair_scope: "修复受影响范围",
-    ask_user_confirmation: "请确认后继续",
+    generate_candidates: "Generar direcciones de apertura de libros opcionales",
+    create_book_contract: "Generar convenciones de creación a nivel de libro.",
+    complete_story_macro: "Mejorar la planificación general de la historia.",
+    prepare_characters: "Prepara el elenco de personajes.",
+    build_volume_strategy: "Generar estrategia de volumen",
+    build_chapter_tasks: "Generar lista de tareas del capítulo",
+    continue_chapter_execution: "Continuar generación de capítulos",
+    review_recent_chapters: "Revisar capítulos recientes",
+    repair_scope: "Reparar las zonas afectadas",
+    ask_user_confirmation: "Por favor confirma para continuar",
   };
   return labels[action.action];
 }
@@ -121,21 +121,21 @@ function buildHeadline(input: {
   step: DirectorStepRun | null;
   event: DirectorEvent | null;
 }): string {
-  const label = input.step?.label?.trim() || input.event?.summary?.trim() || "同步导演进度";
+  const label = input.step?.label?.trim() || input.event?.summary?.trim() || "Sincronizar el progreso del director";
   if (input.status === "waiting_approval") {
-    return `等待确认：${label}`;
+    return `Esperando confirmación:${label}`;
   }
   if (input.status === "blocked") {
-    return `暂停处理：${label}`;
+    return `Pausar el procesamiento:${label}`;
   }
   if (input.status === "failed") {
-    return `处理失败：${label}`;
+    return `Error de procesamiento:${label}`;
   }
   if (input.status === "running") {
-    return `推进任务：${label}`;
+    return `Tareas avanzadas:${label}`;
   }
   if (input.status === "completed") {
-    return `步骤完成：${label}`;
+    return `Pasos completados:${label}`;
   }
   return label;
 }
@@ -148,7 +148,7 @@ function buildDetail(input: {
 }): string | null {
   if (input.status === "running") {
     const eventSummary = input.event?.summary?.trim();
-    return eventSummary ? `最近进展：${eventSummary}` : "系统正在处理这一步，完成后会写入新的进展。";
+    return eventSummary ? `Desarrollos recientes:${eventSummary}` : "El sistema está procesando este paso y se escribirá un nuevo progreso cuando se complete.";
   }
   if (input.status === "waiting_approval" || input.status === "blocked" || input.status === "failed") {
     return input.blockedReason;
@@ -164,16 +164,16 @@ function buildScopeSummary(inventory: DirectorWorkspaceInventory | null | undefi
     return null;
   }
   const parts = [
-    `${inventory.chapterCount} 章`,
-    `${inventory.draftedChapterCount} 章有正文`,
+    `${inventory.chapterCount}`,
+    `${inventory.draftedChapterCount} El capítulo tiene texto.`,
   ];
   if (inventory.pendingRepairChapterCount > 0) {
-    parts.push(`${inventory.pendingRepairChapterCount} 章待修复`);
+    parts.push(`${inventory.pendingRepairChapterCount} Capítulo a reparar`);
   }
   if (inventory.missingArtifactTypes.length > 0) {
-    parts.push(`${inventory.missingArtifactTypes.length} 类产物待补齐`);
+    parts.push(`${inventory.missingArtifactTypes.length} Productos por completar`);
   }
-  return `工作区：${parts.join("，")}。`;
+  return `Espacio de trabajo:${parts.join(",")}.`;
 }
 
 function buildProgressSummary(
@@ -192,25 +192,25 @@ function buildProgressSummary(
   const repairCount = inventory?.needsRepairArtifacts.length
     ?? snapshot.artifacts.filter((artifact) => artifact.artifactType === "repair_ticket" && artifact.status !== "rejected").length;
   const parts = [
-    `${completedSteps}/${snapshot.steps.length} 个步骤完成`,
-    `${snapshot.artifacts.length} 个产物记录`,
+    `${completedSteps}/${snapshot.steps.length} pasos completados`,
+    `${snapshot.artifacts.length} registros de productos`,
   ];
   if (waitingSteps > 0) {
-    parts.push(`${waitingSteps} 个步骤待确认`);
+    parts.push(`${waitingSteps} pasos por confirmar`);
   }
   if (failedSteps > 0) {
-    parts.push(`${failedSteps} 个步骤失败`);
+    parts.push(`${failedSteps} pasos fallidos`);
   }
   if (protectedCount > 0) {
-    parts.push(`${protectedCount} 个用户内容受保护`);
+    parts.push(`${protectedCount} El contenido personal está protegido.`);
   }
   if (staleCount > 0) {
-    parts.push(`${staleCount} 个产物需确认`);
+    parts.push(`${staleCount} Los productos necesitan ser confirmados.`);
   }
   if (repairCount > 0) {
-    parts.push(`${repairCount} 个修复任务`);
+    parts.push(`${repairCount} tareas de reparacion`);
   }
-  return `进展：${parts.join("，")}。`;
+  return `progreso:${parts.join(",")}.`;
 }
 
 const PLANNING_ARTIFACT_TYPES: DirectorArtifactType[] = [
@@ -421,8 +421,8 @@ function buildProgressBreakdown(
     totalChapters,
     pendingRepairChapters,
     explanation: totalChapters > 0
-      ? `章节进度 ${continuableChapters}/${totalChapters}，规划 ${planningPercent}%，质量修复 ${qualityRepairPercent}%，综合进度 ${totalPercent}%。`
-      : `规划 ${planningPercent}%，章节执行 ${chapterExecutionPercent}%，质量修复 ${qualityRepairPercent}%，综合进度 ${totalPercent}%。`,
+      ? `Progreso del capítulo ${continuableChapters}/${totalChapters},planificación ${planningPercent}%, reparación de calidad ${qualityRepairPercent}%, progreso integral ${totalPercent}%.`
+      : `planificación ${planningPercent}%, ejecución del capítulo ${chapterExecutionPercent}%, reparación de calidad ${qualityRepairPercent}%, progreso integral ${totalPercent}%.`,
   };
 }
 
@@ -472,23 +472,23 @@ function buildVisibleRiskBadges(input: {
     }
   };
   if (input.status === "failed") {
-    push({ label: "执行失败", level: "danger", source: "status" });
+    push({ label: "La ejecución falló", level: "danger", source: "status" });
   } else if (input.status === "blocked" || input.status === "waiting_approval") {
-    push({ label: input.blockedReason ? "等待处理" : "等待确认", level: "warning", source: "status" });
+    push({ label: input.blockedReason ? "Esperando procesamiento" : "Esperando confirmación", level: "warning", source: "status" });
   }
   const inventory = input.inventory;
   if (inventory) {
     if (inventory.protectedUserContentArtifacts.length > 0) {
-      push({ label: "受保护正文", level: "danger", source: "artifact" });
+      push({ label: "texto protegido", level: "danger", source: "artifact" });
     }
     if (inventory.pendingRepairChapterCount > 0) {
-      push({ label: `${inventory.pendingRepairChapterCount} 章待修复`, level: "warning", source: "artifact" });
+      push({ label: `${inventory.pendingRepairChapterCount} Capítulo a reparar`, level: "warning", source: "artifact" });
     }
     if (inventory.staleArtifacts.length > 0) {
-      push({ label: `${inventory.staleArtifacts.length} 项需复核`, level: "warning", source: "artifact" });
+      push({ label: `${inventory.staleArtifacts.length} El artículo necesita revisión`, level: "warning", source: "artifact" });
     }
     if (inventory.missingArtifactTypes.length > 0) {
-      push({ label: "缺少规划资源", level: "warning", source: "artifact" });
+      push({ label: "Falta de recursos de planificación.", level: "warning", source: "artifact" });
     }
   }
   for (const event of input.events) {
@@ -497,23 +497,23 @@ function buildVisibleRiskBadges(input: {
         ? classifyChapterQualityLoopRisk((event.metadata?.assessment as unknown) ?? null)
         : "blocking";
       if (qualityLoopRisk === "non_blocking_quality_debt") {
-        push({ label: "已暂存质量债", level: "info", source: "event" });
+        push({ label: "Se ha depositado temporalmente deuda de calidad", level: "info", source: "event" });
       } else if (qualityLoopRisk === "blocking") {
-        push({ label: "质量阻塞", level: event.severity === "high" ? "danger" : "warning", source: "event" });
+        push({ label: "bloqueo masivo", level: event.severity === "high" ? "danger" : "warning", source: "event" });
       } else if (event.type === "quality_issue_found") {
-        push({ label: "质量风险", level: event.severity === "high" ? "danger" : "warning", source: "event" });
+        push({ label: "riesgo de calidad", level: event.severity === "high" ? "danger" : "warning", source: "event" });
       }
     }
     if (event.type === "replan_run_created") {
-      push({ label: "已进入重规划", level: "info", source: "event" });
+      push({ label: "La replanificación ha entrado", level: "info", source: "event" });
     }
     if (event.type === "circuit_breaker_opened") {
-      push({ label: "连续失败保护", level: "danger", source: "event" });
+      push({ label: "Protección continua contra fallas", level: "danger", source: "event" });
     }
   }
   for (const event of input.events) {
     if (event.type === "continue_with_risk") {
-      push({ label: "已暂存质量债", level: "info", source: "event" });
+      push({ label: "Se ha depositado temporalmente deuda de calidad", level: "info", source: "event" });
     }
   }
   return badges.slice(0, 6);
@@ -604,10 +604,10 @@ function buildQualityDebtSummary(
 
 function formatQualityBudgetNextAction(action: DirectorQualityLoopBudgetNextAction): string {
   const labels: Record<DirectorQualityLoopBudgetNextAction, string> = {
-    auto_patch_repair: "先尝试局部修复",
-    auto_rewrite_chapter: "登记为质量待回收并等待明确处理",
-    auto_replan_window: "按明确的重规划结论处理",
-    defer_and_continue: "登记为质量待回收并继续后续章节",
+    auto_patch_repair: "Pruebe primero la reparación local",
+    auto_rewrite_chapter: "Registrada como calidad pendiente de recuperación y en espera de tramitación clara",
+    auto_replan_window: "Siga conclusiones claras sobre la replanificación",
+    defer_and_continue: "Registrarse como calidad a recuperar y continuar con capítulos posteriores",
   };
   return labels[action];
 }
@@ -652,7 +652,7 @@ function buildQualityBudgetSummary(
     deferredCount: entry.deferredCount,
     nextAction,
     nextActionLabel,
-    explanation: `自动处理：本章修复 ${automaticRepairUsed}/1，窗口重规划 ${Math.min(1, entry.windowReplanCount)}/1；同类问题下一步会${nextActionLabel}。`,
+    explanation: `Procesamiento automático: este capítulo arreglado ${automaticRepairUsed}/1, replanificación de ventanas ${Math.min(1, entry.windowReplanCount)}/1; Preguntas similares se discutirán a continuación.${nextActionLabel}.`,
   };
 }
 

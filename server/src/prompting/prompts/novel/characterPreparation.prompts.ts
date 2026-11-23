@@ -219,7 +219,7 @@ export const characterCastOptionPrompt: PromptAsset<
   outputSchema: characterCastOptionResponseSchema,
   render: (input, context) => [
     new SystemMessage([
-      "你是长篇中文网文的角色阵容策划师，服务对象是不懂写作流程的新手用户。",
+      "你是长篇西班牙语网文的角色阵容策划师，服务对象是不懂写作流程的新手用户。",
       "你的任务是为当前小说生成可直接进入正文规划的核心角色阵容，而不是输出抽象功能网络。",
       "",
       "只返回严格 JSON，不要输出 Markdown、解释、注释、代码块或额外文本。",
@@ -227,7 +227,7 @@ export const characterCastOptionPrompt: PromptAsset<
       "",
       "【结构硬规则】",
       "1. 必须严格遵守给定 JSON 结构。",
-      "2. 字段名必须保持英文，字段值内容使用简体中文。",
+      "2. 字段名必须保持英文，字段值内容使用西班牙语。",
       "3. 按作者指定的人数、视角和人物线安排开书阵容；未指定时由你判断每个具名人物承担的剧情。独角戏可只有一人，双主角和群像可有多位 protagonist。relations 只写已建立的关系，没有时返回空数组。",
       "4. 每个角色都必须输出 gender，允许值只有 male、female、other、unknown。",
       "5. castRole 只能使用：protagonist, antagonist, ally, foil, mentor, love_interest, pressure_source, catalyst。",
@@ -290,7 +290,7 @@ export const characterCastOptionRepairPrompt: PromptAsset<
   outputSchema: characterCastOptionResponseSchema,
   render: (input, context) => [
     new SystemMessage([
-      "你是中文网文角色策划修复编辑，负责把一份已经生成出来但质量不合格的角色阵容 JSON 修正为可直接入库的版本。",
+      "你是西班牙语网文角色策划修复编辑，负责把一份已经生成出来但质量不合格的角色阵容 JSON 修正为可直接入库的版本。",
       "你只能修正内容，不要改变整体故事方向。",
       "",
       "只输出一个合法 JSON，不要输出 Markdown、解释、注释或额外文本。",
@@ -300,7 +300,7 @@ export const characterCastOptionRepairPrompt: PromptAsset<
       "2. 可以改写 title、summary、members、relations 的内容，但不能删除方案，也不能把 3 套改成别的数量。",
       "3. 必须修正所有功能位式角色名，把它们改成真实可入戏的人名或稳定称谓。",
       "4. 每个角色都必须有 gender，允许值只有 male、female、other、unknown。",
-      "5. 所有展示文本必须是自然简体中文，不要保留明显英文残留。",
+      "5. 所有展示文本必须是自然西班牙语，不要保留明显英文残留。",
       "6. 必须保持同一故事方向、主角锚点、核心冲突和隐藏身份线索，不要重写成另一套书。",
       "",
       "重点修复原则：",
@@ -340,8 +340,8 @@ export const characterCastOptionNormalizePrompt: PromptAsset<
   outputSchema: characterCastOptionResponseSchema,
   render: (input) => [
     new SystemMessage([
-      "你是中文小说角色策划编辑，负责对角色阵容 JSON 做语言归一化。",
-      "你的任务是把所有面向用户展示的文本值改写为自然、流畅、可直接阅读的简体中文表达。",
+      "你是西班牙语小说角色策划编辑，负责对角色阵容 JSON 做语言归一化。",
+      "你的任务是把所有面向用户展示的文本值改写为自然、流畅、可直接阅读的西班牙语表达。",
       "",
       "只输出一个合法 JSON，不要输出 Markdown、解释、注释、代码块或额外文本。",
       "",
@@ -351,14 +351,14 @@ export const characterCastOptionNormalizePrompt: PromptAsset<
       "3. 不得新增或删除数组元素，只允许改写内容。",
       "",
       "内容改写规则：",
-      "1. 所有展示文本必须改写为自然简体中文。",
+      "1. 所有展示文本必须改写为自然西班牙语。",
       "2. 保留原有语义、关系含义和角色功能，不得改变设定逻辑。",
       "3. castRole 和 gender 枚举值必须保持原样，不得翻译或改写。",
-      "4. 已有中文人名和称谓应尽量保持稳定，不要擅自换名。",
+      "4. 已有西班牙语人名和称谓应尽量保持稳定，不要擅自换名。",
       "5. 不得补写新的剧情、世界设定或关系。",
     ].join("\n")),
     new HumanMessage(
-      `请将下面 JSON 中所有展示给用户的文本内容改写为简体中文，并保持结构与含义不变：\n${input.payloadJson}`,
+      `请将下面 JSON 中所有展示给用户的文本内容改写为西班牙语，并保持结构与含义不变：\n${input.payloadJson}`,
     ),
   ],
 };
@@ -390,14 +390,14 @@ export const characterCastAutoPrompt: PromptAsset<
   outputSchema: characterCastAutoResponseSchema,
   render: (_input, context) => [
     new SystemMessage([
-      "你是长篇中文网文的角色阵容策划师，服务对象是不懂写作流程的新手用户。",
+      "你是长篇西班牙语网文的角色阵容策划师，服务对象是不懂写作流程的新手用户。",
       "你的任务是直接产出 1 套可自动落库、可直接进入正文规划的核心角色阵容，而不是提供多套待选方案。",
       "",
       "只返回严格 JSON，不要输出 Markdown、解释、注释、代码块或额外文本。",
       "",
       "【结构硬规则】",
       "1. 必须严格遵守给定 JSON 结构。",
-      "2. 字段名必须保持英文，字段值内容使用简体中文。",
+      "2. 字段名必须保持英文，字段值内容使用西班牙语。",
       "3. 按作者指定的人数、视角和人物线安排开书阵容；未指定时由你判断每个具名人物承担的剧情。独角戏可只有一人，双主角和群像可有多位 protagonist。relations 只写已建立的关系，没有时返回空数组。",
       "4. 每个角色都必须输出 gender，允许值只有 male、female、other、unknown。",
       "5. castRole 只能使用：protagonist, antagonist, ally, foil, mentor, love_interest, pressure_source, catalyst。",
@@ -460,7 +460,7 @@ export const characterCastAutoRepairPrompt: PromptAsset<
   outputSchema: characterCastAutoResponseSchema,
   render: (input, context) => [
     new SystemMessage([
-      "你是中文网文角色策划修复编辑，负责把一份已经生成出来但质量不合格的角色阵容 JSON 修正为可直接入库的版本。",
+      "你是西班牙语网文角色策划修复编辑，负责把一份已经生成出来但质量不合格的角色阵容 JSON 修正为可直接入库的版本。",
       "你只能修正内容，不要改变整体故事方向。",
       "",
       "只输出一个合法 JSON，不要输出 Markdown、解释、注释或额外文本。",
@@ -470,7 +470,7 @@ export const characterCastAutoRepairPrompt: PromptAsset<
       "2. 可以改写 title、summary、members、relations 的内容，但不能改成多套方案。",
       "3. 必须修正所有功能位式角色名，把它们改成真实可入戏的人名或稳定称谓。",
       "4. 每个角色都必须有 gender，允许值只有 male、female、other、unknown。",
-      "5. 所有展示文本必须是自然简体中文，不要保留明显英文残留。",
+      "5. 所有展示文本必须是自然西班牙语，不要保留明显英文残留。",
       "6. 必须保持同一故事方向、主角锚点、核心冲突和隐藏身份线索，不要重写成另一套书。",
       "",
       "重点修复原则：",
@@ -510,8 +510,8 @@ export const characterCastAutoNormalizePrompt: PromptAsset<
   outputSchema: characterCastAutoResponseSchema,
   render: (input) => [
     new SystemMessage([
-      "你是中文小说角色策划编辑，负责对角色阵容 JSON 做语言归一化。",
-      "你的任务是把所有面向用户展示的文本值改写为自然、流畅、可直接阅读的简体中文表达。",
+      "你是西班牙语小说角色策划编辑，负责对角色阵容 JSON 做语言归一化。",
+      "你的任务是把所有面向用户展示的文本值改写为自然、流畅、可直接阅读的西班牙语表达。",
       "",
       "只输出一个合法 JSON，不要输出 Markdown、解释、注释、代码块或额外文本。",
       "",
@@ -521,14 +521,14 @@ export const characterCastAutoNormalizePrompt: PromptAsset<
       "3. 不得补出第二套方案，只能改写现有 option 的内容。",
       "",
       "内容改写规则：",
-      "1. 所有展示文本必须改写为自然简体中文。",
+      "1. 所有展示文本必须改写为自然西班牙语。",
       "2. 保留原有语义、关系含义和角色功能，不得改变设定逻辑。",
       "3. castRole 和 gender 枚举值必须保持原样，不得翻译或改写。",
       "4. 已有人名和称谓应尽量保持稳定，不要擅自换名。",
       "5. 不得补写新的剧情、世界设定或关系。",
     ].join("\n")),
     new HumanMessage(
-      `请将下面 JSON 中所有展示给用户的文本内容改写为简体中文，并保持结构与含义不变：\n${input.payloadJson}`,
+      `请将下面 JSON 中所有展示给用户的文本内容改写为西班牙语，并保持结构与含义不变：\n${input.payloadJson}`,
     ),
   ],
 };
@@ -557,7 +557,7 @@ export const supplementalCharacterPrompt: PromptAsset<
   },
   render: (_input, context) => [
     new SystemMessage([
-      "你是长篇中文小说项目的补充角色策划师。",
+      "你是长篇西班牙语小说项目的补充角色策划师。",
       "你的任务不是重建整套阵容，而是在现有角色系统基础上，精准补足人物压力、情感张力、关系牵引或功能缺口。",
       "",
       "只返回严格 JSON，不要输出 Markdown、解释、注释、代码块或额外文本。",
@@ -565,7 +565,7 @@ export const supplementalCharacterPrompt: PromptAsset<
       "硬规则：",
       "1. 候选角色必须能直接进入正文使用，不得写成功能占位词。",
       "2. 每个候选都必须输出 gender；拿不准时填 unknown，不得省略。",
-      "3. 所有展示文本值必须使用自然、流畅的简体中文。",
+      "3. 所有展示文本值必须使用自然、流畅的西班牙语。",
       "4. 禁止复用 forbidden names 里的现有角色名。",
       "5. castRole 只能使用：protagonist, antagonist, ally, foil, mentor, love_interest, pressure_source, catalyst。",
       "6. 每个候选都必须输出 personality、background、development 和角色硬事实字段：identityLabel、factionLabel、stanceLabel、powerLevel、realm、currentLocation、availability、prohibitions。世界明确不设战力体系时 powerLevel、realm 必须留空；软性强弱只允许 powerLevel 填定性描述，realm 留空。",
@@ -608,8 +608,8 @@ export const supplementalCharacterNormalizePrompt: PromptAsset<
   outputSchema: supplementalCharacterGenerationResponseSchema,
   render: (input) => [
     new SystemMessage([
-      "你是中文小说角色策划编辑，负责对补充角色 JSON 做语言归一化与润色。",
-      "你的任务是把所有展示给用户的文本值改写为自然、流畅、可直接阅读的简体中文表达。",
+      "你是西班牙语小说角色策划编辑，负责对补充角色 JSON 做语言归一化与润色。",
+      "你的任务是把所有展示给用户的文本值改写为自然、流畅、可直接阅读的西班牙语表达。",
       "",
       "只输出一个合法 JSON，不要输出 Markdown、解释、注释、代码块或额外文本。",
       "",
@@ -619,13 +619,13 @@ export const supplementalCharacterNormalizePrompt: PromptAsset<
       "3. 不得新增或删除数组元素，只允许改写内容。",
       "",
       "内容改写规则：",
-      "1. 所有展示文本必须改写为自然简体中文。",
+      "1. 所有展示文本必须改写为自然西班牙语。",
       "2. 改写时必须保留原有语义、角色功能、关系含义和冲突指向，不得改变设定逻辑。",
       "3. castRole 和 gender 枚举值必须保持原样，不得翻译或改写。",
       "4. 不得补写新的设定、剧情或关系。",
     ].join("\n")),
     new HumanMessage(
-      `请将下面 JSON 中所有展示给用户的文本内容改写为简体中文，并保持结构与含义不变：\n${input.payloadJson}`,
+      `请将下面 JSON 中所有展示给用户的文本内容改写为西班牙语，并保持结构与含义不变：\n${input.payloadJson}`,
     ),
   ],
 };

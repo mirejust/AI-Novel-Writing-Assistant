@@ -115,7 +115,7 @@ function isWorkflowTaskCancelledError(error: unknown): boolean {
     && error.message === "WORKFLOW_TASK_CANCELLED"
   )
     || message === "WORKFLOW_TASK_CANCELLED"
-    || message.includes("当前自动导演任务已取消")
+    || message.includes("La tarea actual del director automático ha sido cancelada.")
     || message.includes("This operation was aborted");
 }
 
@@ -269,7 +269,7 @@ export class NovelDirectorService {
       if (isWorkflowTaskCancelledError(error) || isDirectorRuntimeGateError(error)) {
         return;
       }
-      const message = error instanceof Error ? error.message : "自动导演后台任务执行失败。";
+      const message = error instanceof Error ? error.message : "Falló la ejecución de la tarea automática en segundo plano del director.";
       await new DirectorTaskStateWriter(this.workflowService).markFailed(taskId, message);
       console.error(`[director.background] task failed taskId=${taskId}`, error);
     } finally {
@@ -315,7 +315,7 @@ export class NovelDirectorService {
     if (styleProfileId) {
       styleProfile = await this.styleProfileService.getProfileById(styleProfileId);
       if (!styleProfile) {
-        throw new Error("所选写法资产不存在。");
+        throw new Error("El recurso de escritura seleccionado no existe.");
       }
     }
 
@@ -510,11 +510,11 @@ export class NovelDirectorService {
   async calibrateStep(taskId: string, input: DirectorStepCalibrationRequest): Promise<unknown> {
     const task = await this.workflowService.getTaskById(taskId);
     if (!task?.novelId) {
-      throw new AppError("步骤校准需要关联到小说导演任务。", 404);
+      throw new AppError("La calibración de pasos debe estar vinculada a la nueva tarea del director.", 404);
     }
     const module = directorWorkflowStepModuleRegistry.maybeGet(input.stepId.trim());
     if (!module || !isExecutableWorkflowStepModule(module)) {
-      throw new AppError(`不支持校准导演步骤：${input.stepId}`, 400);
+      throw new AppError(`No se admiten los pasos del director de calibración:${input.stepId}`, 400);
     }
     const context = {
       taskId,
@@ -534,7 +534,7 @@ export class NovelDirectorService {
     const directorTaskData = (storedState ? toDirectorTaskDataView(storedState) : {}) as DirectorWorkflowSeedPayload;
     const directorInput = getDirectorInputFromSeedPayload(directorTaskData);
     if (!directorInput) {
-      throw new AppError("当前导演任务缺少可复用的生成输入，请从项目接管入口继续。", 409);
+      throw new AppError("La tarea actual del director carece de información de generación reutilizable; continúe desde la entrada de adquisición del proyecto.", 409);
     }
     const instruction = input.instruction?.trim() || null;
     if (input.action === "regenerate") {
@@ -575,9 +575,9 @@ export class NovelDirectorService {
     await stateWriter.markWaitingCheckpoint(taskId, {
       stage: "auto_director",
       itemKey: module.id,
-      itemLabel: `${module.label}已校准，请检查后继续`,
+      itemLabel: `${module.label}Ya calibrado, por favor verifique antes de continuar.`,
       checkpointType: "step_review_required",
-      checkpointSummary: `${module.label}已完成${input.action === "improve" ? "完善" : "重新生成"}。请确认当前内容后再继续导演。`,
+      checkpointSummary: `${module.label}Completado${input.action === "improve" ? "Completo" : "Regenerado"}. Confirme el contenido actual antes de continuar con la dirección.`,
     });
     return {
       action: input.action,
@@ -640,7 +640,7 @@ export class NovelDirectorService {
     });
     const takeoverStrategy = input.strategy ?? (input.startPhase ? "restart_current_step" : "continue_existing");
     if (takeoverState.hasActiveTask && takeoverStrategy !== "continue_existing") {
-      throw new Error("当前已有自动导演任务在运行或等待审核，请先继续或取消当前任务。");
+      throw new Error("Actualmente hay una tarea de director automática ejecutándose o esperando revisión. Continúe o cancele la tarea actual primero.");
     }
     const takeoverValidation = validateAutoDirectorTakeoverRequest({
       source: "takeover",
@@ -660,7 +660,7 @@ export class NovelDirectorService {
       },
     });
     if (!takeoverValidation.allowed) {
-      throw new AppError(takeoverValidation.blockingReasons.join("；") || "当前接管请求需要先重新校验。", 409);
+      throw new AppError(takeoverValidation.blockingReasons.join(";") || "Primero es necesario volver a verificar la solicitud de adquisición actual.", 409);
     }
 
     const takeoverDirectorInput = buildDirectorTakeoverInput({
@@ -709,7 +709,7 @@ export class NovelDirectorService {
           novelId: input.novelId,
           entrypoint: "takeover",
           policyMode: isFullBookAutopilot ? "auto_safe_scope" : "run_until_gate",
-          summary: "AI 自动导演接管已并入统一运行时。",
+          summary: "La toma de control automática del director por IA se ha incorporado al tiempo de ejecución unificado.",
         });
         await this.directorRuntime.recordWorkspaceAnalysis({
           taskId,
@@ -775,7 +775,7 @@ export class NovelDirectorService {
       novelId: input.novelId,
       entrypoint: "takeover",
       policyMode: "run_until_gate",
-      summary: "AI 自动导演接管已并入统一运行时。",
+      summary: "La toma de control automática del director por IA se ha incorporado al tiempo de ejecución unificado.",
     });
     await this.directorRuntime.recordWorkspaceAnalysis({
       taskId: response.workflowTaskId,

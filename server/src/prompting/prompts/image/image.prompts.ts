@@ -119,9 +119,9 @@ export const imageGenerationPromptAssistPrompt: PromptAsset<
       "6. action=optimize 且用户提供了优化要求时，优先按用户自己的语言调整 prompt；如果用户要求会破坏核心设定或关键约束，保留关键约束，并在 risks 或 changes 中说明。",
       "",
       "输出字段：",
-      "- summary：一句中文概括。",
-      "- details：2-8 条中文要点。",
-      "- risks：最多 5 条中文风险或注意事项；没有则空数组。",
+      "- summary：一句西班牙语概括。",
+      "- details：2-8 条西班牙语要点。",
+      "- risks：最多 5 条西班牙语风险或注意事项；没有则空数组。",
       "- optimizedPrompt：仅 action=optimize 时提供，可直接回填到正向 prompt。",
       "- changes：仅 action=optimize 时说明做了哪些改进。",
     ].join("\n")),
@@ -197,7 +197,7 @@ export const imageCharacterPromptOptimizePrompt: PromptAsset<
       "语言要求：",
       input.outputLanguage === "en"
         ? "本次最终 prompt 必须主要使用英文输出，但角色专有名词可保留原名。"
-        : "本次最终 prompt 必须使用简体中文输出。",
+        : "本次最终 prompt 必须使用西班牙语输出。",
       "",
       "质量要求：",
       "1. 让模型能直接抓到人物外观、气质和画面重点。",
@@ -329,8 +329,8 @@ export const imageNovelCoverPromptOptimizePrompt: PromptAsset<
       "全局要求：",
       "1. 目标是带准确书名的完整竖版小说封面，不是无文字主画面。",
       input.penName?.trim()
-        ? `2. 必须在画面中清晰呈现下面的唯一书名：${input.title}，以及作者笔名：${input.penName.trim()}。书名和笔名都使用简体中文，不得改字、漏字、增字或生成乱码；书名是主视觉，笔名放在书名下方或底部留白区域，清晰可读。`
-        : `2. 必须在画面中清晰呈现下面的唯一书名：${input.title}。书名使用简体中文，不得改字、漏字、增字或生成乱码。`,
+        ? `2. 必须在画面中清晰呈现下面的唯一书名：${input.title}，以及作者笔名：${input.penName.trim()}。书名和笔名都使用西班牙语，不得改字、漏字、增字或生成乱码；书名是主视觉，笔名放在书名下方或底部留白区域，清晰可读。`
+        : `2. 必须在画面中清晰呈现下面的唯一书名：${input.title}。书名使用西班牙语，不得改字、漏字、增字或生成乱码。`,
       input.penName?.trim()
         ? "3. 除书名和笔名外，不要生成副标题、宣传语、标签、水印或 Logo；书名放在高对比度留白区域，不遮挡主要人物和关键情节。"
         : "3. 除书名外，不要生成副标题、作者名、宣传语、标签、水印或 Logo；书名放在高对比度留白区域，不遮挡主要人物和关键情节。",
@@ -341,8 +341,8 @@ export const imageNovelCoverPromptOptimizePrompt: PromptAsset<
       "",
       "语言要求：",
       input.outputLanguage === "en"
-        ? "本次最终 prompt 必须主要使用英文输出，但中文书名和专有名词可以保留原名。"
-        : "本次最终 prompt 必须使用简体中文输出。",
+        ? "本次最终 prompt 必须主要使用英文输出，但西班牙语书名和专有名词可以保留原名。"
+        : "本次最终 prompt 必须使用西班牙语输出。",
       "",
       "质量要求：",
       "1. 表达具体、紧凑、可视化。",

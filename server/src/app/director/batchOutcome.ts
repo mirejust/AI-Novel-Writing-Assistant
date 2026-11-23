@@ -9,7 +9,7 @@ export async function readBatchOutcome(job: BatchJob, context: StepContext): Pro
   const saved = await prisma.generationJob.findUniqueOrThrow({where: {id: job.id}});
   const payload = parsePipelinePayload(saved.payload);
   if (payload.directorNext?.runId !== context.runId || saved.novelId !== context.contract.novelId) {
-    return {chapters: [], debts: [], stopSignal: {kind: "data_integrity", reason: "正文作业不属于本次创作运行。"}};
+    return {chapters: [], debts: [], stopSignal: {kind: "data_integrity", reason: "La tarea de texto no pertenece a esta ejecución creativa."}};
   }
   const chapters = await prisma.chapter.findMany({where: {novelId: saved.novelId, order: {gte: saved.startOrder, lte: saved.endOrder}},
     orderBy: {order: "asc"}, include: {artifactSyncCheckpoints: {where: {artifactType: CHAPTER_ARTIFACT_BOUNDARY_TYPE, status: "succeeded"},
@@ -20,11 +20,11 @@ export async function readBatchOutcome(job: BatchJob, context: StepContext): Pro
   const outcome: BatchOutcome = {chapters: chapters.map(chapter => ({...chapter, closed: isCurrentChapterProductionCompleted(chapter)})), debts};
   if (saved.pendingManualRecovery && payload.directorNext.pendingCharacterReviewId) {
     return {...outcome, stopSignal: {kind: "manual_recovery", action: "pause_for_manual", source: "runtime",
-      reason: "本章正文已保存，请在导演台确认本章人物，再继续回填和下一章创作。"}};
+      reason: "El texto de este capítulo ha sido guardado. Confirme los personajes de este capítulo en el escritorio del director antes de continuar completando y creando el siguiente capítulo."}};
   }
   const replan = decisions.find(decision => decision.issueCode === "quality.replan_required");
   if (replan || jobNotice(saved.payload) === PIPELINE_REPLAN_NOTICE_CODE) {
-    return {...outcome, stopSignal: {kind: "replan", action: "stop_for_replan", reason: replan?.reason ?? "章节生产明确要求重规划后续路线。"}};
+    return {...outcome, stopSignal: {kind: "replan", action: "stop_for_replan", reason: replan?.reason ?? "La producción de capítulos claramente requiere una replanificación de rutas posteriores."}};
   }
   const terminal = [...decisions].reverse().find(decision => decision.action === "fail_task" || decision.action === "pause_for_manual");
   if (terminal?.action === "fail_task") {
@@ -35,7 +35,7 @@ export async function readBatchOutcome(job: BatchJob, context: StepContext): Pro
     const quality = DIRECTOR_ISSUE_CATALOG_BY_CODE[terminal.issueCode].category === "quality";
     const retryPause = terminal.issueCode === "quality.loop_exhausted"
       && context.contract.issuePolicy.pipelinePolicy?.chapterReviewRetryPolicy?.onExhausted === "pause_for_manual";
-    if (quality && context.contract.issuePolicy.mode !== "quality_first" && !retryPause) throw new Error("完成优先运行出现了不一致的质量暂停策略。");
+    if (quality && context.contract.issuePolicy.mode !== "quality_first" && !retryPause) throw new Error("Se produce una política de pausa de calidad inconsistente con las ejecuciones con prioridad de finalización.");
     return {...outcome, stopSignal: {kind: "manual_recovery", action: "pause_for_manual", source: retryPause ? "retry_policy" : quality ? "quality" : "runtime", reason: saved.error?.trim() || terminal.reason}};
   }
   return outcome;

@@ -91,7 +91,7 @@ export class NovelWorkflowApplicationService {
               heartbeatAt: new Date(),
             },
           }).catch(error => {
-            if (guarded && error?.code === "P2025") throw new AppError("开书方向有更新，请刷新后再继续。", 409);
+            if (guarded && error?.code === "P2025") throw new AppError("La dirección de apertura del libro se ha actualizado; actualice antes de continuar.", 409);
             throw error;
           });
         }
@@ -161,8 +161,8 @@ export class NovelWorkflowApplicationService {
           ? (attachable.currentItemKey ?? "novel_create")
           : stage,
         currentItemLabel: attachable.lane === "auto_director"
-          ? (attachable.currentItemLabel ?? "正在创建小说项目")
-          : (stage === "project_setup" ? "小说项目已创建" : (attachable.currentItemLabel ?? "已恢复小说主任务")),
+          ? (attachable.currentItemLabel ?? "Creando un proyecto novedoso")
+          : (stage === "project_setup" ? "Nuevo proyecto creado" : (attachable.currentItemLabel ?? "La misión principal de la novela ha sido restaurada.")),
         resumeTargetJson: stringifyResumeTarget(this.workflow.buildResumeTarget({
           taskId,
           novelId,
@@ -445,7 +445,7 @@ export class NovelWorkflowApplicationService {
       return existing;
     }
     if (!parseSeedPayload<Record<string, unknown>>(existing.seedPayloadJson)) {
-      throw new AppError("当前自动导演任务缺少可覆盖的模型上下文。", 400);
+      throw new AppError("A la tarea actual de AutoDirector le falta un contexto de modelo anulable.", 400);
     }
     return new DirectorTaskStateWriter(this.workflow).applyLlmOverride(taskId, llmOverride);
   }
@@ -512,7 +512,7 @@ export class NovelWorkflowApplicationService {
         status: "waiting_approval",
         currentStage: stageLabel("auto_director"),
         currentItemKey: "auto_director",
-        currentItemLabel: "等待确认书级方向",
+        currentItemLabel: "Esperando confirmación de la dirección del libro",
         checkpointType: "candidate_selection_required",
         checkpointSummary: input.summary,
         resumeTargetJson: stringifyResumeTarget(buildNovelCreateResumeTarget(taskId, "director")),

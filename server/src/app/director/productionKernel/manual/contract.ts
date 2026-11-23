@@ -21,7 +21,7 @@ export function readManualChapterRequest(contract: RunContract): ManualChapterRe
   if (contract.planVersion !== MANUAL_CHAPTER_PLAN_VERSION || !contract.chapterRange
     || contract.chapterRange.from !== contract.chapterRange.to
     || contract.stepIdsInScope?.length !== 1 || contract.stepIdsInScope[0] !== "chapter_batch") {
-    throw new Error("手动章节任务的执行范围无效。");
+    throw new Error("El alcance de ejecución de la tarea del capítulo del manual no es válido.");
   }
   return manualChapterRequestSchema.parse(input?.manualChapter);
 }

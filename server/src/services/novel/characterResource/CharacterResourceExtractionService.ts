@@ -96,8 +96,8 @@ export class CharacterResourceExtractionService {
         riskLevel: "low",
         status: "committed",
         summary: input.sourceType === MANUAL_BACKFILL_SOURCE_TYPE
-          ? "本章角色资源回填已检查，未发现需要进入账本的变化。"
-          : "本章角色资源同步已完成，未发现需要进入账本的变化。",
+          ? "Se ha verificado el reabastecimiento de recursos de personajes en este capítulo y no se encontraron cambios que deban ingresarse en el libro mayor."
+          : "La sincronización de los recursos de los personajes en este capítulo se completó y no se encontraron cambios que deban ingresarse en el libro mayor.",
         payloadJson: JSON.stringify({
           syncContentHash: input.contentHash,
           chapterOrder: input.chapterOrder,
@@ -172,7 +172,7 @@ export class CharacterResourceExtractionService {
         chapterContent: content,
         rosterText: buildRosterText(characters),
         existingResourceText: existingResources.slice(0, 20).map((item) => (
-          `- ${item.name} | holder=${item.holderCharacterName ?? "未知"} | status=${item.status} | ${item.summary}`
+          `- ${item.name} | holder=${item.holderCharacterName ?? "Desconocido"} | status=${item.status} | ${item.summary}`
         )).join("\n"),
       },
       options: {

@@ -8,6 +8,6 @@ export async function streamOutlineReply(res: Response, projectId: string, scope
     prisma.outlineProject.findFirst({where: {id: projectId, status: "active"}, select: {id: true}}),
     prisma.agentConversationTurn.findFirst({where: {id: turnId, scopeKey}, select: {status: true}}),
   ]);
-  if (!project || !turn) throw new AppError("找不到这轮对话。", 404);
+  if (!project || !turn) throw new AppError("No se puede encontrar esta conversación.", 404);
   streamAgentReply(res, turnId, turn.status);
 }

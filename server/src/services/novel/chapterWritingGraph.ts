@@ -27,11 +27,11 @@ async function loadWritingPlatformBlock(novelId: string) {
     where: { id: novelId },
     select: { writingPlatformSnapshotJson: true },
   });
-  let content = "沿用通用中文商业网文写法，保持情节推进、人物主动、因果清晰和章节回报。";
+  let content = "Siga el método general de redacción web de negocios chinos para mantener el avance de la trama, la iniciativa de los personajes, la causa y efecto claros y las recompensas de los capítulos.";
   if (novel?.writingPlatformSnapshotJson) {
     try {
       const snapshot = JSON.parse(novel.writingPlatformSnapshotJson) as WritingPlatformSnapshot;
-      content = `${snapshot.label}（配置版本 ${snapshot.profileVersion}）：${snapshot.guidance.drafting}`;
+      content = `${snapshot.label}(Versión de configuración ${snapshot.profileVersion}):${snapshot.guidance.drafting}`;
     } catch { /* 旧数据继续使用通用合同。 */ }
   }
   return createContextBlock({ id: "writing_platform", group: "writing_platform", priority: 105, required: true, content });
@@ -102,7 +102,7 @@ function isOutputTruncated(chunk: BaseMessageChunk): boolean {
 }
 
 function outputTruncatedError(): Error {
-  return new Error("章节正文达到模型输出上限后被截断，未保存不完整草稿。请提高 Writer 输出预算后重试。");
+  return new Error("El texto del capítulo se truncó después de alcanzar el límite de salida del modelo y el borrador incompleto no se guardó. Aumente el presupuesto de salida de Writer y vuelva a intentarlo.");
 }
 
 function buildLengthInstruction(targetWordCount?: number | null): {
@@ -291,7 +291,7 @@ export class ChapterWritingGraph {
       }
       const completed = await completion;
       if (completionError) throw completionError;
-      if (!completed) throw new Error("章节续写流未能完成。");
+      if (!completed) throw new Error("La secuencia de continuación del capítulo no se pudo completar.");
       output = completed.output;
     } else {
       output = (await runTextPrompt(promptRequest)).output;
@@ -404,7 +404,7 @@ export class ChapterWritingGraph {
       onDone: async (fullContent: string) => {
         const completed = await completion;
         if (completionError) throw completionError;
-        if (!completed) throw new Error("章节初稿流未能完成。");
+        if (!completed) throw new Error("No se pudo completar la secuencia del primer borrador del capítulo.");
         const rawContent = completed.output ?? fullContent;
         assertChapterContentNotEmpty(rawContent, {
           novelId: input.novelId,

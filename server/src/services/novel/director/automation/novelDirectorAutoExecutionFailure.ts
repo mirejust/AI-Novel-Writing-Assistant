@@ -11,28 +11,28 @@ function formatAutoExecutionContinuation(input: Pick<
 >): string {
   const remainingPart = typeof input.remainingChapterCount === "number"
     ? input.remainingChapterCount > 0
-      ? `当前仍有 ${input.remainingChapterCount} 章待继续`
-      : "当前已无待继续章节"
-    : "当前仍有待继续章节";
+      ? `todavía hay ${input.remainingChapterCount} Capítulo continuará`
+      : "Actualmente no hay capítulos para continuar."
+    : "Actualmente hay capítulos para continuar.";
   const nextPart = typeof input.nextChapterOrder === "number"
-    ? `，系统会从第 ${input.nextChapterOrder} 章继续`
-    : "，系统会从下一章继续";
-  return `${remainingPart}${nextPart}。`;
+    ? `, el sistema comenzará desde el ${input.nextChapterOrder} El capítulo continúa`
+    : ", el sistema continuará desde el siguiente capítulo";
+  return `${remainingPart}${nextPart}.`;
 }
 
 function formatAutoExecutionActionLabel(
   autoExecution?: Pick<DirectorAutoExecutionState, "scopeLabel"> | null,
 ): string {
   const scopeLabel = autoExecution?.scopeLabel?.trim();
-  return scopeLabel ? `继续自动执行${scopeLabel}` : "继续自动执行当前范围";
+  return scopeLabel ? `Continuar la ejecución automática${scopeLabel}` : "Continuar ejecutando automáticamente el alcance actual";
 }
 
 export function buildSkippableAutoExecutionReviewFailureSummary(
   autoExecution?: Pick<DirectorAutoExecutionState, "remainingChapterCount" | "nextChapterOrder" | "scopeLabel"> | null,
 ): string {
   return [
-    "当前章因审核阻断而暂停，但这类问题允许跳过当前章继续执行。",
-    `点击“${formatAutoExecutionActionLabel(autoExecution)}”后，系统会直接续跑剩余章节。`,
+    "El capítulo actual está suspendido debido al bloqueo de revisión, pero estos problemas le permiten omitir el capítulo actual y continuar con la ejecución.",
+    `Haga clic en "${formatAutoExecutionActionLabel(autoExecution)}”, el sistema continuará ejecutando directamente los capítulos restantes.`,
     formatAutoExecutionContinuation({
       remainingChapterCount: autoExecution?.remainingChapterCount,
       nextChapterOrder: autoExecution?.nextChapterOrder,
@@ -45,8 +45,8 @@ export function buildSkippableAutoExecutionReviewCheckpointSummary(input: {
   autoExecution?: Pick<DirectorAutoExecutionState, "remainingChapterCount" | "nextChapterOrder"> | null;
 }): string {
   return [
-    `${input.scopeLabel}已进入自动执行，但当前章因审核阻断而暂停。`,
-    "这类问题允许跳过当前章继续执行。",
+    `${input.scopeLabel}Se ha ingresado a la ejecución automática, pero el capítulo actual está suspendido debido al bloqueo de revisión.`,
+    "Este tipo de pregunta le permite saltarse el capítulo actual y continuar.",
     formatAutoExecutionContinuation({
       remainingChapterCount: input.autoExecution?.remainingChapterCount,
       nextChapterOrder: input.autoExecution?.nextChapterOrder,
@@ -59,9 +59,9 @@ export function buildSkippableAutoExecutionReviewBlockingReason(
 ): string {
   const actionLabel = formatAutoExecutionActionLabel(autoExecution);
   if (typeof autoExecution?.nextChapterOrder === "number") {
-    return `当前章因审核阻断而暂停，但这类问题允许跳过当前章继续执行。点击“${actionLabel}”后，系统会从第 ${autoExecution.nextChapterOrder} 章继续。`;
+    return `El capítulo actual está suspendido debido al bloqueo de revisión, pero estos problemas le permiten omitir el capítulo actual y continuar con la ejecución. Haga clic en "${actionLabel}”, el sistema comenzará desde el ${autoExecution.nextChapterOrder} El capítulo continúa.`;
   }
-  return `当前章因审核阻断而暂停，但这类问题允许跳过当前章继续执行。点击“${actionLabel}”后，系统会从下一章继续。`;
+  return `El capítulo actual está suspendido debido al bloqueo de revisión, pero estos problemas le permiten omitir el capítulo actual y continuar con la ejecución. Haga clic en "${actionLabel}”, el sistema continuará a partir del siguiente capítulo.`;
 }
 
 export function buildSkippableAutoExecutionReviewRecoveryHint(
@@ -69,7 +69,7 @@ export function buildSkippableAutoExecutionReviewRecoveryHint(
 ): string {
   const actionLabel = formatAutoExecutionActionLabel(autoExecution);
   if (typeof autoExecution?.nextChapterOrder === "number") {
-    return `可直接点击“${actionLabel}”，系统会跳过当前审核阻断章并从第 ${autoExecution.nextChapterOrder} 章继续；如需修复当前章，再回到章节执行或质量修复处理。`;
+    return `Puedes hacer clic directamente en "${actionLabel}”, el sistema omitirá el capítulo de bloqueo de revisión actual y comenzará desde el ${autoExecution.nextChapterOrder} El capítulo continúa; Si necesita reparar el capítulo actual, regrese al proceso de ejecución del capítulo o reparación de calidad.`;
   }
-  return `可直接点击“${actionLabel}”，系统会跳过当前审核阻断章并从下一章继续；如需修复当前章，再回到章节执行或质量修复处理。`;
+  return `Puedes hacer clic directamente en "${actionLabel}", el sistema omitirá el capítulo actual bloqueado por auditoría y continuará desde el siguiente capítulo; si necesita reparar el capítulo actual, regrese a la ejecución del capítulo o al procesamiento de reparación de calidad.`;
 }

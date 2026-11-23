@@ -61,7 +61,7 @@ export function createKernelPromptPreparer(deps: KernelPromptPreparerDependencie
     const fallback=structuredClone(await (deps.readFallback ?? getStructuredFallbackSettings)());
     const configurations=new Map<string,{configuration:ResolvedLLMClientOptions;window:number}>(),formats:unknown[]=[];
     async function add(configuration: ResolvedLLMClientOptions) {
-      if(!Number.isSafeInteger(configuration.maxTokens) || configuration.maxTokens!<1)throw new Error("模型配置缺少可执行的输出额度上限。");
+      if(!Number.isSafeInteger(configuration.maxTokens) || configuration.maxTokens!<1)throw new Error("La configuración del modelo carece de un límite de cuota de salida exigible.");
       const window=await deps.contextWindowFor(configuration.provider,configuration.model);
       if(window === null)throw new ProductionContextBudgetError();
       configurations.set(configurationKey(configuration),{configuration,window});

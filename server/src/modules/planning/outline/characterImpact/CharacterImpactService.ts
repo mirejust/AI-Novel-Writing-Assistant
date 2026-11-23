@@ -10,7 +10,7 @@ import { mapOutlineGenerateFailure } from "../application/OutlineProposalService
 import { buildNoUsableImpactError, composeImpact, reviewHandoff, type ImpactComposeResult } from "./compose";
 import { readWrittenChapterIds } from "./writtenChapters";
 
-const reviewStages: Record<ImpactRole, string> = {character: "正在梳理人物动机…", plot: "正在核对相关卷章…", payoff: "正在综合伏笔与人物修改…"};
+const reviewStages: Record<ImpactRole, string> = {character: "Clasificando las motivaciones de los personajes...", plot: "Comprobando volúmenes relevantes...", payoff: "Presagio integral y modificación de personajes..."};
 
 export interface ImpactDialogueContext {
   scopeKey: string;
@@ -24,12 +24,12 @@ export class CharacterImpactService {
 
   async context(projectId: string, characterId: string, baseVersion: number): Promise<ImpactSnapshot> {
     const project = await this.db.outlineProject.findUnique({where: {id: projectId}, select: {currentVersion: true, currentRevisionId: true, status: true}});
-    if (!project || project.status !== "active") throw new AppError("找不到可编辑的大纲。", 404);
-    if (project.currentVersion !== baseVersion) throw new AppError("大纲已有新修订，请按最新版本重新分析。", 409);
+    if (!project || project.status !== "active") throw new AppError("No se encontró ningún esquema editable.", 404);
+    if (project.currentVersion !== baseVersion) throw new AppError("El plan de estudios ha sido revisado. Vuelva a analizarlo según la última versión.", 409);
     const revision = await this.db.outlineRevision.findFirstOrThrow({where: {projectId, version: baseVersion, id: project.currentRevisionId!}});
     const document = validateOutlineDocument(JSON.parse(revision.documentJson));
     const character = document.characters.find(person => person.nodeId === characterId);
-    if (!character) throw new AppError("本版大纲中找不到选中的人物。", 404);
+    if (!character) throw new AppError("El personaje seleccionado no se encuentra en esta versión de la sinopsis.", 404);
     const [parent, writtenChapterIds] = await Promise.all([
       revision.parentRevisionId ? this.db.outlineRevision.findFirst({where: {projectId, id: revision.parentRevisionId}, select: {documentJson: true}}) : null,
       readWrittenChapterIds(this.db, projectId),
@@ -54,9 +54,9 @@ export class CharacterImpactService {
       const previous = await this.db.outlineProposal.findFirst({where: {id: request.priorProposalId, projectId,
         kind: "character_impact", ...(dialogue ? {} : {baseVersion: snapshot.baseVersion, status: "pending"})}});
       const payload = previous && JSON.parse(previous.proposalJson);
-      if (payload?.impact.characterId !== request.characterId) throw new AppError("原建议与当前人物或版本不符，请刷新待审建议。", 409);
+      if (payload?.impact.characterId !== request.characterId) throw new AppError("La sugerencia original no coincide con el carácter o la versión actual; actualice la sugerencia pendiente de revisión.", 409);
       if (!previous || (dialogue && !["pending", "applied", "partially_applied"].includes(previous.status))) {
-        throw new AppError("请基于仍可讨论的提案继续。", 409);
+        throw new AppError("Proceda basándose en las propuestas que aún están abiertas a discusión.", 409);
       }
       replacesPending = previous.status === "pending" && previous.baseVersion === snapshot.baseVersion;
       previousProposal = {requestText: previous.requestText, operations: payload.operations, retained: payload.impact.retained,
@@ -67,7 +67,7 @@ export class CharacterImpactService {
     let composed: ImpactComposeResult | undefined;
     for (const role of impactRoles) {
       if (dialogue && !await this.db.agentConversationTurn.count({where: {id: dialogue.turnId, scopeKey: dialogue.scopeKey, status: "running"}})) {
-        throw new AppError("本轮讨论已结束。", 409);
+        throw new AppError("Esta ronda de discusión ha terminado.", 409);
       }
       try {
         const promptInput: CharacterImpactPromptInput = {snapshot, requestText: request.requestText, role, prior: {...reviews}, previousProposal,
@@ -141,7 +141,7 @@ export class CharacterImpactService {
       const current = await tx.outlineProject.findUniqueOrThrow({where: {id: projectId}, select: {updatedAt: true}});
       const guard = await tx.outlineProject.updateMany({where: {id: projectId, currentVersion: snapshot.baseVersion, status: "active"},
         data: {currentVersion: {increment: 0}, updatedAt: current.updatedAt}});
-      if (!guard.count) throw new AppError("大纲已有新修订，请按最新版本重新分析。", 409);
+      if (!guard.count) throw new AppError("El plan de estudios ha sido revisado. Vuelva a analizarlo según la última versión.", 409);
       if (origin === "external") {
         const id = createHash("sha256").update(JSON.stringify([projectId, snapshot.baseVersion, request.characterId, request.requestText, reviews])).digest("hex");
         return tx.outlineProposal.upsert({where: {id}, create: {...data, id}, update: {}});
@@ -153,7 +153,7 @@ export class CharacterImpactService {
       if (dialogue?.priorProposalId && dialogue.replacesPending) {
         const parent = await tx.outlineProposal.updateMany({ where: { id: dialogue.priorProposalId, projectId,
           baseVersion: snapshot.baseVersion, kind: "character_impact", status: "pending" }, data: { status: "superseded" } });
-        if (!parent.count) throw new AppError("上一版提案已处理，请刷新后再发起讨论。", 409);
+        if (!parent.count) throw new AppError("La versión anterior de la propuesta ha sido procesada; actualice e inicie una discusión nuevamente.", 409);
       }
       const proposal = await tx.outlineProposal.create({data: {...data, id: randomUUID()}});
       if (dialogue) {

@@ -44,7 +44,7 @@ export class ShortStoryStudioService {
       return { novel, job };
     }, { isolationLevel: "Serializable" });
     if (!novel || novel.narrativeForm !== "short_story") {
-      throw new AppError("短篇作品不存在。", 404);
+      throw new AppError("Los cuentos cortos no existen.", 404);
     }
     const imported=await prisma.manuscriptProject.findUnique({where:{novelId},select:{narrativeForm:true}}).then(value=>value?.narrativeForm==="short_story");
     const intentRow = novel.intentVersions[0] ?? null;
@@ -127,21 +127,21 @@ export class ShortStoryStudioService {
       orderBy: { updatedAt: "desc" },
     });
     if (!task) {
-      throw new AppError("没有可继续的短篇生成任务。", 404);
+      throw new AppError("No hay misiones de generación de cuentos para continuar.", 404);
     }
     if (task.checkpointType === "replan_required") {
-      throw new AppError("这篇作品需要先确认新的创作方向。", 409);
+      throw new AppError("Este trabajo primero debe confirmar la nueva dirección creativa.", 409);
     }
-    if (!await canRetryStructuredTask(task.id)) throw new AppError("模型服务要求稍后再试，请等待后继续。", 429);
+    if (!await canRetryStructuredTask(task.id)) throw new AppError("El servicio modelo requiere que vuelvas a intentarlo más tarde; espera antes de continuar.", 429);
     if (task.shortStoryOperationId) {
       await shortStoryRevisionService.retry(task.shortStoryOperationId);
       shortStoryProductionService.schedule(task.id);
       return { taskId: task.id };
     }
     const active = await prisma.novelIntentVersion.findFirst({ where: { workflowTaskId: task.id, status: "active" }, orderBy: { version: "desc" } });
-    if (isLegacyRevision(task, active?.source)) throw new AppError("请重新预览并确认修改，已保存的正文和快照会保留。", 409);
+    if (isLegacyRevision(task, active?.source)) throw new AppError("Obtenga una vista previa nuevamente y confirme los cambios. Se conservarán el texto y las instantáneas guardados.", 409);
     if (task.status !== "failed" && task.status !== "cancelled") {
-      throw new AppError("当前生成任务不需要重试。", 409);
+      throw new AppError("No es necesario volver a intentar la tarea de compilación actual.", 409);
     }
     await prisma.novelWorkflowTask.updateMany({
       where: { id: task.id, status: task.status, checkpointType: task.checkpointType },
@@ -158,16 +158,16 @@ export class ShortStoryStudioService {
     segmentId: string,
     input: ShortStorySegmentUpdateRequest,
   ) {
-    if(await prisma.manuscriptProject.findUnique({where:{novelId},select:{narrativeForm:true}}).then(value=>value?.narrativeForm==="short_story"))throw new AppError("请在原稿修订工作区保存当前分节，保留来源对照与版本保护。",409);
+    if(await prisma.manuscriptProject.findUnique({where:{novelId},select:{narrativeForm:true}}).then(value=>value?.narrativeForm==="short_story"))throw new AppError("Guarde la sección actual en el espacio de trabajo de revisión del manuscrito y conserve la comparación de fuentes y la protección de versiones.",409);
     const segment = await prisma.shortStorySegment.findFirst({
       where: { id: segmentId, novelId },
     });
     if (!segment) {
-      throw new AppError("要保存的正文片段不存在。", 404);
+      throw new AppError("El fragmento de texto a guardar no existe.", 404);
     }
     const content = input.content.trim();
     if (!content) {
-      throw new AppError("正文不能为空。", 400);
+      throw new AppError("El texto no puede estar vacío.", 400);
     }
     const updated = await prisma.shortStorySegment.updateMany({
       where: { id: segment.id, version: input.expectedVersion },
@@ -180,7 +180,7 @@ export class ShortStoryStudioService {
       },
     });
     if (updated.count === 0) {
-      throw new AppError("正文已在其他位置更新，请刷新后再保存。", 409);
+      throw new AppError("El texto se ha actualizado en otro lugar; actualice antes de guardar.", 409);
     }
     return prisma.shortStorySegment.findUniqueOrThrow({ where: { id: segment.id } });
   }

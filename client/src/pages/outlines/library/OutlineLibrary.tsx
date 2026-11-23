@@ -20,21 +20,21 @@ function OutlineEntry({ item, latest, feedback }: { item: OutlineProject; latest
     <Link to={`/outlines/${item.id}`} className="outline-catalog-link">
       {latest && <span className="outline-folio-mark" aria-hidden="true"><NotebookPen /></span>}
       <div className="outline-catalog-description">
-        {latest && <span className="outline-recent-label">最近编辑</span>}
+        {latest && <span className="outline-recent-label">Editado recientemente</span>}
         <Title>{item.title}</Title>
         {summary && <p>{summary}</p>}
       </div>
       <div className="outline-catalog-meta">
-        {item.boundNovelId && <span className="outline-bound"><BookMarked size={13} aria-hidden="true" />已开书</span>}
-        <span>修订 v{item.currentVersion}</span>
-        <time dateTime={item.updatedAt} title={`${updatedDay(item)} ${clock} 更新`}>
+        {item.boundNovelId && <span className="outline-bound"><BookMarked size={13} aria-hidden="true" />Libro abierto</span>}
+        <span>Revisión vi{item.currentVersion}</span>
+        <time dateTime={item.updatedAt} title={`${updatedDay(item)} ${clock} renovar`}>
           {latest ? `${updatedDay(item)} ${clock}` : clock}
         </time>
       </div>
-      <span className="outline-catalog-open">{latest && "继续编辑"}<ArrowRight size={16} aria-hidden="true" /></span>
+      <span className="outline-catalog-open">{latest && "Continuar editando"}<ArrowRight size={16} aria-hidden="true" /></span>
     </Link>
     {feedback && <Button asChild size="sm" variant="ghost" className="outline-feedback-link">
-      <Link to={`/outlines/${item.id}#outline-feedback-panel`}>章节反馈</Link></Button>}
+      <Link to={`/outlines/${item.id}#outline-feedback-panel`}>Comentarios del capítulo</Link></Button>}
   </div>;
 }
 
@@ -51,12 +51,12 @@ export function OutlineLibrary({ projects }: { projects: OutlineProject[] }) {
   const hasFeedback = (item: OutlineProject) => Boolean(featureFlags.outlineFeedbackEnabled && !isMobileViewport && item.boundNovelId);
   return <section aria-labelledby="outline-library-title" className="outline-library">
     <div className="outline-library-heading">
-      <h2 id="outline-library-title">我的大纲</h2><span>{projects.length} 份</span>
+      <h2 id="outline-library-title">Mi esquema</h2><span>{projects.length} Porción</span>
     </div>
     {latest && <OutlineEntry item={latest} latest feedback={hasFeedback(latest)} />}
     {Array.from(days, ([day, items]) => <div className="outline-day" key={day}>
       <h3 className="outline-day-title">{day}</h3>
-      <ul aria-label={`${day}更新的大纲`}>{items.map(item => <li key={item.id}>
+      <ul aria-label={`${day}Esquema actualizado`}>{items.map(item => <li key={item.id}>
         <OutlineEntry item={item} feedback={hasFeedback(item)} />
       </li>)}</ul>
     </div>)}
@@ -66,9 +66,9 @@ export function OutlineLibrary({ projects }: { projects: OutlineProject[] }) {
 export function OutlineSamplePage() {
   return <div className="outline-sample" aria-hidden="true">
     <div className="outline-sample-page">
-      <strong>故事总纲</strong>
-      <span>第一卷</span>
-      <span>第一章</span>
+      <strong>Resumen de la historia</strong>
+      <span>Volumen 1</span>
+      <span>Capítulo 1</span>
     </div>
   </div>;
 }

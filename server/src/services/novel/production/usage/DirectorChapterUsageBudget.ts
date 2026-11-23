@@ -15,12 +15,12 @@ type Usage = number | ChapterUsageCounters;
 type Checkpoint = NonNullable<PipelineDirectorSnapshot["chapterUsage"]>[number];
 
 function validCount(value: number) {
-  if (!Number.isSafeInteger(value) || value < 0) throw new Error("章节用量计数无效，不能继续生成。");
+  if (!Number.isSafeInteger(value) || value < 0) throw new Error("El recuento de uso del capítulo no es válido y no se puede generar más.");
 }
 function total(usage: Usage): number {
   if (typeof usage === "number") {validCount(usage); return usage;}
   for (const value of [usage.totalTokens, usage.promptTokens, usage.completionTokens, usage.cacheHitTokens]) validCount(value);
-  if (usage.cacheHitTokens > usage.promptTokens) throw new Error("缓存用量计数超过输入，不能继续生成。");
+  if (usage.cacheHitTokens > usage.promptTokens) throw new Error("El recuento de uso de caché excede la entrada y no se puede seguir generando.");
   return usage.totalTokens;
 }
 
@@ -31,8 +31,8 @@ export function beginChapterUsage(snapshot: PipelineDirectorSnapshot, chapterId:
   const rows = snapshot.chapterUsage ??= [];
   const previous = rows.find(row => row.chapterId === chapterId || row.chapterOrder === chapterOrder);
   if (previous) {
-    if (previous.chapterId !== chapterId || previous.chapterOrder !== chapterOrder) throw new Error("章节用量检查点身份不一致。");
-    if (previous.endJobTokens !== undefined) throw new Error("本章用量已闭合，不能在同一作业重新生成已保存正文。");
+    if (previous.chapterId !== chapterId || previous.chapterOrder !== chapterOrder) throw new Error("La identidad del punto de control de uso del capítulo es inconsistente.");
+    if (previous.endJobTokens !== undefined) throw new Error("El uso de este capítulo se ha cerrado y el texto guardado no se puede regenerar en el mismo trabajo.");
     return false;
   }
   const row: Checkpoint = {chapterId, chapterOrder, startJobTokens: jobTokens, totalTokens: 0,
@@ -53,9 +53,9 @@ export function observeChapterUsage(snapshot: PipelineDirectorSnapshot, chapterI
   const jobTokens = total(job);
   if (batch !== undefined) total(batch);
   const checkpoint = snapshot.chapterUsage?.find(row => row.chapterId === chapterId);
-  if (!checkpoint) throw new Error("缺少已保存的章节用量检查点。");
+  if (!checkpoint) throw new Error("Falta el punto de control de uso del capítulo guardado.");
   const closed = checkpoint.endJobTokens !== undefined;
-  if (closed && jobTokens < checkpoint.endJobTokens!) throw new Error("章节用量计数倒退，不能继续生成。");
+  if (closed && jobTokens < checkpoint.endJobTokens!) throw new Error("El recuento de uso del capítulo ha retrocedido y no se puede generar más.");
   // Closed boundaries are immutable. Never subtract a live planning counter
   // from saved net components, or attribute the next chapter's usage here.
   if (closed) return observed(checkpoint);
@@ -64,11 +64,11 @@ export function observeChapterUsage(snapshot: PipelineDirectorSnapshot, chapterI
     ? total(batch) - checkpoint.startChapterBatchTokens : 0;
   const totalTokens = rawTotal - planningDelta;
   if (planningDelta < 0 || planningDelta > rawTotal || totalTokens < checkpoint.totalTokens) {
-    throw new Error("章节用量计数倒退，不能继续生成。");
+    throw new Error("El recuento de uso del capítulo ha retrocedido y no se puede generar más.");
   }
   if (checkpoint.metric === "uncached_tokens_v1") {
     if (typeof job === "number" || (checkpoint.startChapterBatchTokens !== undefined && (batch === undefined || typeof batch === "number"))) {
-      throw new Error("章节分项用量计数暂不可读取，不能继续生成。");
+      throw new Error("Los recuentos de uso detallados de los capítulos son temporalmente ilegibles y no se pueden generar más.");
     }
     const planning = typeof batch === "object" && checkpoint.startChapterBatchTokens !== undefined ? batch : undefined;
     const promptTokens = job.promptTokens - checkpoint.startPromptTokens! - (planning ? planning.promptTokens - checkpoint.startBatchPromptTokens! : 0);
@@ -76,13 +76,13 @@ export function observeChapterUsage(snapshot: PipelineDirectorSnapshot, chapterI
     const cacheHitTokens = job.cacheHitTokens - checkpoint.startCacheHitTokens! - (planning ? planning.cacheHitTokens - checkpoint.startBatchCacheHitTokens! : 0);
     for (const value of [promptTokens, completionTokens, cacheHitTokens]) validCount(value);
     if (promptTokens < checkpoint.promptTokens! || completionTokens < checkpoint.completionTokens! || cacheHitTokens < checkpoint.cacheHitTokens!
-      || cacheHitTokens > promptTokens) throw new Error("章节分项用量计数倒退或不一致，不能继续生成。");
+      || cacheHitTokens > promptTokens) throw new Error("Los recuentos de uso detallados de los capítulos están al revés o son inconsistentes y no se pueden generar más.");
     // Providers may return only a total. Unknown components cannot create a
     // free allowance: retain that reported remainder without guessing its split.
     const unclassifiedTokens = Math.max(0, totalTokens - promptTokens - completionTokens);
     const effectiveTokens = promptTokens - cacheHitTokens + completionTokens + unclassifiedTokens;
     validCount(effectiveTokens);
-    if (effectiveTokens < checkpoint.effectiveTokens!) throw new Error("章节有效用量计数倒退，不能继续生成。");
+    if (effectiveTokens < checkpoint.effectiveTokens!) throw new Error("El recuento de uso efectivo de los capítulos ha retrocedido y no se puede generar más.");
     Object.assign(checkpoint, {promptTokens, completionTokens, cacheHitTokens, effectiveTokens, unclassifiedTokens});
   }
   checkpoint.totalTokens = totalTokens;

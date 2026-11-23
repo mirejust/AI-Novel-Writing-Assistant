@@ -36,7 +36,7 @@ export function createChapterBatchStepHandler<Options extends BatchOptions>(depe
     const range = context.contract.chapterRange;
     if (!range || !Number.isSafeInteger(input.startOrder) || !Number.isSafeInteger(input.endOrder)
       || input.startOrder < 1 || input.endOrder < input.startOrder || input.startOrder < range.from || input.endOrder > range.to) {
-      throw new Error("正文批次缺少明确授权的章节范围。");
+      throw new Error("El lote de textos carece de rangos de capítulos claramente autorizados.");
     }
     const novelId = context.contract.novelId;
     const bound = await dependencies.jobBinding.get(context.runId);
@@ -44,27 +44,27 @@ export function createChapterBatchStepHandler<Options extends BatchOptions>(depe
       : await dependencies.pipelineService.startPipelineJob(novelId, {...input, skipCompleted: true});
     const valid = (candidate: BatchJob | null): candidate is BatchJob => Boolean(candidate?.id && candidate.novelId === novelId
       && candidate.startOrder === input.startOrder && candidate.endOrder === input.endOrder && (!bound || candidate.id === bound));
-    if (!valid(job)) return integrity("正文作业记录丢失、跨书或超出授权范围，请检查运行记录。");
+    if (!valid(job)) return integrity("Falta el registro de trabajo de texto principal, abarca libros o excede el alcance autorizado. Por favor verifique el registro de ejecución.");
     if (!bound) await dependencies.jobBinding.save(context.runId, job.id);
     while (active(job)) {
-      if (!await dependencies.isRunActive(context.runId)) throw new Error("导演运行已结束或暂停，停止等待正文作业。");
+      if (!await dependencies.isRunActive(context.runId)) throw new Error("La ejecución del director ha finalizado o está en pausa, dejando de esperar el trabajo de texto.");
       // A foreign pipeline lease can outlive the director lease after a crash.
       // Resume is conditional on pipeline ownership and preserves manual recovery.
       await dependencies.pipelineService.resumePipelineJob(job.id, {preserveManualRecovery: true, expectedOwner: {directorNext: {runId: context.runId}}});
       await dependencies.waitForPoll();
       const next = await dependencies.pipelineService.getPipelineJobById(job.id);
-      if (!valid(next) || next.id !== job.id) return integrity("等待正文时作业身份或范围发生变化。");
+      if (!valid(next) || next.id !== job.id) return integrity("La identidad o el alcance del trabajo cambió mientras se esperaba el cuerpo.");
       job = next;
     }
     const outcome = await dependencies.readOutcome(job, context);
     if (outcome.stopSignal) return {debts: outcome.debts, stopSignal: outcome.stopSignal};
-    if (job.pendingManualRecovery) return integrity("正文作业等待人工恢复，但缺少结构化暂停决定。");
-    if (outcome.chapters.some(chapter => chapter.novelId !== novelId)) return integrity("正文闭合结果包含其他小说章节。");
+    if (job.pendingManualRecovery) return integrity("El trabajo principal espera la reanudación manual pero carece de una decisión de pausa estructurada.");
+    if (outcome.chapters.some(chapter => chapter.novelId !== novelId)) return integrity("El cierre del texto da como resultado capítulos novedosos adicionales.");
     const chapters = outcome.chapters.filter(chapter => chapter.order >= input.startOrder && chapter.order <= input.endOrder)
       .sort((a,b) => a.order-b.order);
     if (chapters.length !== input.endOrder-input.startOrder+1 || chapters.some((chapter,index) => chapter.order !== input.startOrder+index
       || !chapter.content?.trim() || !chapter.closed)) {
-      return {debts: outcome.debts, stopSignal: {kind: "no_usable_content", action: "fail_task", reason: "授权批次存在未闭合或无可用正文的章节。"}};
+      return {debts: outcome.debts, stopSignal: {kind: "no_usable_content", action: "fail_task", reason: "El lote de autorización contiene capítulos que no están cerrados o no tienen texto disponible."}};
     }
     return {debts: outcome.debts, artifact: {scope: context.contract.scope, status: "draft", protectedUserContent: false,
       contentRef: `chapter_batch_closed:${novelId}:${input.startOrder}-${input.endOrder}`, contentHash: dependencies.contentHash(chapters)}};

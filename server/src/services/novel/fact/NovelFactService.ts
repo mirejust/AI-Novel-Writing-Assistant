@@ -75,7 +75,7 @@ export class NovelFactService {
         select: { id: true },
       });
       if (!chapter) {
-        throw new ChapterArtifactContentVersionError("章节正文版本已变化，已拒绝写入过期事实账本。");
+        throw new ChapterArtifactContentVersionError("La versión del texto del capítulo ha cambiado y se ha rechazado escribir en el libro de datos obsoleto.");
       }
       const existing = await tx.novelFactEntry.findMany({
         where: { novelId, chapterOrder },

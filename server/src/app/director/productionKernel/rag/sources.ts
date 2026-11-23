@@ -17,7 +17,7 @@ export async function readKernelRagConfiguration(): Promise<KernelRagConfigurati
   for (const target of targets) {
     const contextWindow = await reader(target.provider, target.model);
     if (contextWindow === null) throw new KernelReadinessError({code: "production_model_capability_missing",
-      message: "检索模型缺少明确的上下文窗口配置，请补齐知识库所用准确模型的能力信息。"});
+      message: "El modelo de recuperación carece de una configuración de ventana de contexto explícita. Complete la información de capacidad para el modelo exacto utilizado en la base de conocimientos."});
     windows.push({provider: target.provider, model: target.model, contextWindow});
   }
   return {version: 1, enabled: ragConfig.enabled, targets, windows,

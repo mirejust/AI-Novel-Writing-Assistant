@@ -24,7 +24,7 @@ export async function readChapterUsageCounters(jobId: string, db: Pick<Prisma.Tr
       batch: {totalTokens: batch._sum.totalTokens ?? 0, promptTokens: batch._sum.promptTokens ?? 0,
         completionTokens: batch._sum.completionTokens ?? 0, cacheHitTokens: batch._sum.cacheHitTokens ?? 0}};
   } catch (error) {
-    logPipelineWarn("章节分项用量读取失败，保留原始用量保护", {jobId, error: error instanceof Error ? error.message : String(error)});
+    logPipelineWarn("No se pudo leer el uso detallado del capítulo; conservar la protección de uso original", {jobId, error: error instanceof Error ? error.message : String(error)});
     // New chapters may conservatively start a raw checkpoint. An existing
     // effective checkpoint rejects this missing breakdown rather than changing its metric.
     return {job: job.totalTokens};

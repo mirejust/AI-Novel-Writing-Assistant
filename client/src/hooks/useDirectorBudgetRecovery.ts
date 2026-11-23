@@ -49,7 +49,7 @@ export function useDirectorBudgetRecovery(options: DirectorBudgetRecoveryOptions
     mutationFn: async (action: DirectorBudgetRecoveryAction) => {
       if (action === "disable_thinking") {
         if (!options.provider) {
-          throw new Error("当前任务没有记录使用的厂商。");
+          throw new Error("La tarea actual no registra el fabricante utilizado.");
         }
         await saveAPIKeySetting(options.provider, { reasoningEnabled: false });
         await queryClient.invalidateQueries({ queryKey: queryKeys.settings.apiKeys });
@@ -75,16 +75,16 @@ export function useDirectorBudgetRecovery(options: DirectorBudgetRecoveryOptions
     },
     onSuccess: ({ action, saved }) => {
       if (action === "disable_thinking") {
-        toast.success("关闭深度思考后重新生成。");
+        toast.success("Regenerar después de desactivar Pensamiento profundo.");
       } else if (saved) {
-        toast.success("提高输出上限后重新生成。");
+        toast.success("Aumente el límite de salida y regenere.");
       } else {
-        toast.success("输出上限没有可提高的空间，直接重新生成。");
+        toast.success("No hay margen de mejora en el límite superior de salida, por lo que se regenera directamente.");
       }
       options.onRetry?.();
     },
     onError: (error) => {
-      const message = error instanceof Error ? error.message : "恢复失败，请重试。";
+      const message = error instanceof Error ? error.message : "La restauración falló, inténtelo de nuevo.";
       toast.error(message);
     },
   });

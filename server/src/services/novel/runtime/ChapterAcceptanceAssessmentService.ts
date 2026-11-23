@@ -62,13 +62,13 @@ const UNDER_LENGTH_MARKERS = [
   "too short",
   "insufficient length",
   "word count",
-  "正文估算",
-  "目标长度",
-  "字数",
-  "低于",
-  "不足",
-  "过短",
-  "未达",
+  "estimación de texto",
+  "longitud objetivo",
+  "recuento de palabras",
+  "inferior a",
+  "insuficiente",
+  "demasiado corto",
+  "Aún no alcanzado",
 ];
 
 const OVER_LENGTH_MARKERS = [
@@ -77,10 +77,10 @@ const OVER_LENGTH_MARKERS = [
   "over_hard",
   "too long",
   "exceeds",
-  "超出",
-  "超过",
-  "过长",
-  "冗长",
+  "más allá de",
+  "Superar",
+  "demasiado tiempo",
+  "largo",
 ];
 
 function categoryToAuditType(category: AcceptanceIssue["category"]): AuditType {
@@ -233,22 +233,22 @@ function buildFallbackAssessment(failure: ReturnType<typeof describeAcceptanceFa
   return {
     status: "continue_with_risk",
     score,
-    summary: `${failure.message}保留正文并标记后续复查风险。`,
+    summary: `${failure.message}Conserve el texto y marque el riesgo para su posterior revisión.`,
     blockingIssues: [{
       severity: "medium",
       category: "mode_fit",
       code: "acceptance_gate_unavailable",
       evidence: failure.message,
-      fixSuggestion: "保留正文，后续可重新执行章节审校或局部修文。",
+      fixSuggestion: "Conserve el texto principal y podrá volver a revisar los capítulos o revisarlo parcialmente más adelante.",
     }],
     repairDirectives: [],
     missingObligations: [],
     repairability: "none",
-    decisionReason: `${failure.message}本章留作复查风险。`,
+    decisionReason: `${failure.message}Se deja este capítulo para revisar los riesgos.`,
     riskTags: ["acceptance_gate_unavailable", failure.code],
     assetSyncRecommendation: {
       priority: "normal",
-      reason: "正文已保存，但建议后续补跑章节审校或资产同步。",
+      reason: "El texto principal se ha guardado, pero se recomienda revisar los capítulos más adelante o sincronizar los recursos.",
       requiresFullPayoffReconcile: false,
     },
     continuePolicy: "continue",
@@ -283,7 +283,7 @@ export class ChapterAcceptanceAssessmentService {
       severity: finding.severity,
       category: "voice" as const,
       code: finding.code,
-      evidence: `第 ${finding.line} 行：${finding.excerpt}`,
+      evidence: `Cap. ${finding.line} DE ACUERDO:${finding.excerpt}`,
       fixSuggestion: finding.fixSuggestion,
     }));
     const normalized = normalizeAssessment({

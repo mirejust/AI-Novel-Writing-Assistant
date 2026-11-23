@@ -14,16 +14,16 @@ export function buildOutlineWorkspace(novelId: string, doc: OutlineDocument, map
       const appearances = doc.characters.filter(p => c.characterNodeIds.includes(p.nodeId) || p.appearanceNodeIds.includes(c.nodeId));
       const characterIds = appearances.map(p => mapping.characters.find(x => x.nodeId === p.nodeId)!.characterId);
       return {id: m.planId, volumeId: m.volumeId, chapterId: m.chapterId, chapterOrder: m.chapterOrder,
-        title: c.title || `第${m.chapterOrder}章`, summary: c.summary, purpose: c.purpose, ...(c.beatKey && {beatKey: c.beatKey}),
+        title: c.title || `Cap.${m.chapterOrder}cap.`, summary: c.summary, purpose: c.purpose, ...(c.beatKey && {beatKey: c.beatKey}),
         ...(characterIds.length ? {plannedCharacterIds: characterIds} : {}), targetWordCount: chapterLength,
-        payoffRefs: c.payoffNodeIds.map(id => { const p = doc.payoffs.find(p => p.nodeId === id)!; return `计划：${p.title} [${mapping.payoffs.find(p => p.nodeId === id)!.ledgerKey}]`; }),
+        payoffRefs: c.payoffNodeIds.map(id => { const p = doc.payoffs.find(p => p.nodeId === id)!; return `plan:${p.title} [${mapping.payoffs.find(p => p.nodeId === id)!.ledgerKey}]`; }),
         createdAt: time, updatedAt: time};
     });
-    return {id: mapped.volumeId, novelId, sortOrder: i + 1, title: source.title || `第${i + 1}卷`, summary: source.summary,
+    return {id: mapped.volumeId, novelId, sortOrder: i + 1, title: source.title || `Cap.${i + 1}rollo`, summary: source.summary,
       mainPromise: source.promise, primaryPressureSource: source.pressure, protagonistChange: source.protagonistChange,
       climax: source.climax, nextVolumeHook: source.endingHook, sourceVersionId: versionId,
       status: chapters.length === mapped.chapterQuota ? "chapter_list_generated" : "chapter_list_partial",
-      chapters, openPayoffs: doc.payoffs.filter(p => [...p.setupChapterNodeIds, ...p.payoffChapterNodeIds].some(id => mapping.chapters.some(m => m.volumeId === mapped.volumeId && m.nodeId === id))).map(p => `计划：${p.title} [${mapping.payoffs.find(m => m.nodeId === p.nodeId)!.ledgerKey}]`),
+      chapters, openPayoffs: doc.payoffs.filter(p => [...p.setupChapterNodeIds, ...p.payoffChapterNodeIds].some(id => mapping.chapters.some(m => m.volumeId === mapped.volumeId && m.nodeId === id))).map(p => `plan:${p.title} [${mapping.payoffs.find(m => m.nodeId === p.nodeId)!.ledgerKey}]`),
       createdAt: time, updatedAt: time};
   })});
 }

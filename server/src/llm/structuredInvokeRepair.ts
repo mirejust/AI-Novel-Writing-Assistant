@@ -69,7 +69,7 @@ function buildRepairSchemaContract<T>(schema: ZodType<T>): string {
   try {
     return JSON.stringify(toJSONSchema(schema), null, 2);
   } catch {
-    return "目标 Schema 无法序列化；仍须严格按照校验错误中的字段路径补齐。";
+    return "El esquema de destino no se puede serializar; aún debe completarse estrictamente de acuerdo con la ruta del campo en el error de verificación.";
   }
 }
 
@@ -81,7 +81,7 @@ function compactRepairSource(rawContent: string): string {
   const tail = rawContent.slice(-2_000);
   return [
     head,
-    "\n...[中间的异常重复或退化内容已省略，不能复述或延续]...\n",
+    "\\n...[El contenido anormal, repetitivo o degradado en el medio se ha omitido y no se puede repetir ni continuar]...\\n",
     tail,
   ].join("");
 }
@@ -197,22 +197,22 @@ async function repairWithLlmInScope<T>(
   });
 
   const repairSystem = [
-    "你是 JSON 修复器。",
-    "你的任务是：只输出严格合法的 JSON 值，并且必须通过给定的结构校验。",
-    "最终输出可能是 JSON 对象，也可能是 JSON 数组；必须与目标结构一致。",
-    "不要输出任何解释、Markdown 或额外字段。",
-    "如果校验错误提示某个字段缺失，必须直接使用错误路径里的字段名作为 JSON 键名，不要翻译成中文别名。",
-    "如果目标结构顶层是数组，就直接输出数组本身，不要再外包一层对象。",
-    "如果某个字段要求是数组，就必须输出 JSON 数组；即使只有一个元素，也不能压成字符串、数字或对象。",
-    "如果数组元素应为对象，就必须输出对象数组，例如 [{...}]；不能写成逗号拼接字符串。",
-    "如果原始 JSON 多包了一层无关包装键，例如 data、result、output、xxxProjection、xxxList 等，必须去掉包装层，把真正目标结构提升到顶层。",
-    "如果缺失必填字符串字段，必须补出非空字符串；可根据原始 JSON 中已有内容做最小、保守、语义一致的补全，不能输出空字符串、null 或 undefined。",
-    "如果校验错误是 expected string, received number/boolean，必须保留原值语义并改成 JSON 字符串，例如 19 改为 \"19\"、true 改为 \"true\"，不要删除字段。",
-    "如果校验错误指出某个数组数量过多或过少，必须把该路径的数组长度修正到错误里要求的精确数量，不能停留在接近正确的数量。",
-    "目标 JSON Schema 是最终字段合同；即使原始输出已截断、退化或缺少大量字段，也必须依据 Schema 重建完整对象。",
-    "遇到无意义复读、乱码、失控长文本时，丢弃异常段落并用最短的语义一致内容重建，禁止继续复述损坏内容。",
-    "所有字符串保持简洁，只保留通过结构校验与恢复原意所需的信息。",
-    input.repairGuidance?.trim() ? `本次目标结构的额外修复规则：${input.repairGuidance.trim()}` : "",
+    "Eres un reparador de JSON.",
+    "Su tarea es generar únicamente valores JSON estrictamente legales que deben pasar la validación de estructura dada.",
+    "El resultado final puede ser un objeto JSON o una matriz JSON; debe ser coherente con la estructura objetivo.",
+    "No envíe explicaciones, Markdown ni campos adicionales.",
+    "Si un error de verificación indica que falta un campo, debe utilizar directamente el nombre del campo en la ruta del error como nombre de clave JSON y no traducirlo a un alias chino.",
+    "Si el nivel superior de la estructura de destino es una matriz, genere directamente la matriz sin subcontratar una capa adicional de objetos.",
+    "Si se requiere que un campo sea una matriz, se debe generar como una matriz JSON; incluso si solo hay un elemento, no se puede comprimir en una cadena, número u objeto.",
+    "Si los elementos de la matriz deben ser objetos, se debe generar la matriz de objetos, como [{...}]; no se puede escribir como una cadena concatenada por comas.",
+    "Si el JSON original contiene una capa adicional de claves de empaquetado irrelevantes, como datos, resultado, salida, xxxProjection, xxxList, etc., se debe eliminar la capa de empaquetado y la estructura de destino real debe elevarse al nivel superior.",
+    "Si falta un campo de cadena obligatorio, se debe completar una cadena que no esté vacía; Se puede realizar una finalización mínima, conservadora y semánticamente consistente en función del contenido existente en el JSON original, y no se pueden generar cadenas vacías, nulas o indefinidas.",
+    "Si el error de verificación es una cadena esperada, número recibido/booleano, la semántica del valor original se debe conservar y cambiar a una cadena JSON, por ejemplo, 19 se cambia a \\\"19\\\", verdadero se cambia a \\\"true\\\" y el campo no se debe eliminar.",
+    "Si el error de verificación indica que el número de una matriz es demasiado grande o demasiado pequeño, la longitud de la matriz de la ruta debe corregirse al número exacto requerido en el error y no puede permanecer cerca del número correcto.",
+    "El esquema JSON de destino es el contrato de campo final; Incluso si la salida original está truncada, degradada o faltan una gran cantidad de campos, el objeto completo debe reconstruirse a partir del esquema.",
+    "Cuando se encuentren relecturas sin sentido, caracteres confusos o textos largos fuera de control, los párrafos anormales se descartarán y se reconstruirán con el contenido semánticamente más breve y coherente. Está prohibido seguir contando el contenido dañado.",
+    "Todas las cadenas se mantienen concisas y conservan solo la información necesaria para pasar la verificación de la estructura y restaurar el significado original.",
+    input.repairGuidance?.trim() ? `Reglas de reparación adicionales para esta estructura objetivo:${input.repairGuidance.trim()}` : "",
   ].join("\n");
 
   const validationPaths = extractValidationPaths(validationError);
@@ -221,27 +221,27 @@ async function repairWithLlmInScope<T>(
   const repairSource = compactRepairSource(rawContent);
 
   const repairHuman = [
-    `校验失败：${input.label}`,
+    `La verificación falló:${input.label}`,
     validationError,
     ...(validationPaths.length > 0 ? [
       "",
-      `至少需要修复这些路径：${validationPaths.join(", ")}`,
+      `Al menos es necesario arreglar estos caminos:${validationPaths.join(", ")}`,
     ] : []),
     ...(arrayLengthHints.length > 0 ? [
       "",
-      "数组长度硬约束：",
+      "Restricciones estrictas de longitud de la matriz:",
       ...arrayLengthHints.map((hint) => hint.direction === "trim"
-        ? `- ${formatIssuePath(hint.path)} 必须最终恰好保留 ${hint.exactLength} 项；如果当前超过该数量，按原顺序裁掉多余项。`
-        : `- ${formatIssuePath(hint.path)} 必须最终补足到恰好 ${hint.exactLength} 项；如果当前不足，按原顺序保留已有项并补齐缺失项。`),
+        ? `- ${formatIssuePath(hint.path)} en última instancia debe conservarse exactamente ${hint.exactLength} elementos; Si el número actual excede este número, los artículos sobrantes se cortarán en el pedido original.`
+        : `- ${formatIssuePath(hint.path)} eventualmente debe complementarse a la perfección ${hint.exactLength} elementos; Si actualmente no hay artículos suficientes, mantenga los artículos existentes en el orden original y complete los artículos que faltan.`),
     ] : []),
     "",
-    "目标 JSON Schema（字段名、类型、必填项与长度约束以此为准）：",
+    "Esquema JSON de destino (los nombres de campo, los tipos, los campos obligatorios y las restricciones de longitud están sujetos a esto):",
     repairSchemaContract,
     "",
-    "原始模型输出（可能包含多余文本、markdown 或截断）：",
+    "Salida del modelo sin procesar (puede contener texto adicional, rebajas o truncamiento):",
     repairSource,
     "",
-    "请修复后只输出最终 JSON。",
+    "Corríjalo para generar solo el JSON final.",
   ].join("\n");
 
   logStructuredRepairSession({
@@ -278,7 +278,7 @@ async function repairWithLlmInScope<T>(
       signal: input.signal,
       run: async (signal) => {
         const messages = input.repairMessages
-            ? [...input.repairMessages, new HumanMessage(`以下是待纠正报告及结构错误，均为任务数据。依据上文完整正文纠正，证据只能连续复制正文原句，不得补造事实；保留已核实的判断。\n${repairHuman}`)]
+            ? [...input.repairMessages, new HumanMessage(`Los siguientes son errores estructurales y de informes que deben corregirse, todos los cuales son datos de la misión. Correcto según el texto completo anterior. La prueba sólo puede copiar continuamente las frases originales del texto, y no se permiten hechos adicionales; se conservarán las sentencias verificadas. zx0zx${repairHuman}`)]
             : [new SystemMessage(repairSystem), new HumanMessage(repairHuman)];
         await claimModelRequest({configuration:resolved,input:messages,options:invokeOptions});
         const stream = await llm.stream(
@@ -338,7 +338,7 @@ async function repairWithLlmInScope<T>(
     category = "malformed_json";
     const repairParse = helpers.tryParseStructuredJsonValue(repairedRaw);
     if ("error" in repairParse) {
-      throw new Error(`[${input.label}] JSON repair 后仍无法解析。错误：${repairParse.error}`);
+      throw new Error(`[${input.label}] JSON todavía no se puede analizar después de la reparación. error:${repairParse.error}`);
     }
 
     category = "schema_mismatch";
@@ -373,7 +373,7 @@ async function repairWithLlmInScope<T>(
         completed = true;
         return normalized.data;
       }
-      throw new Error(`[${input.label}] JSON repair 后仍未通过 Schema 校验。错误：${helpers.formatZodErrors(final.error)}`);
+      throw new Error(`[${input.label}] JSON aún falla en la verificación del esquema después de la reparación. error:${helpers.formatZodErrors(final.error)}`);
     }
     completed = true;
         return final.data;

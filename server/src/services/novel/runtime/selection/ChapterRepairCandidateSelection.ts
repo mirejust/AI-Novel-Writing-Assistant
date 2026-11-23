@@ -56,7 +56,7 @@ export function selectChapterRepairCandidate(input: {
   ))) {
     return {
       ...base, selected: "original", reasonCode: "original_retained_unverified_review",
-      reason: "候选正文的复验未完成有效核对，保留原稿及其检查结果。",
+      reason: "Si la nueva inspección del texto candidato no ha completado una verificación efectiva, se conservarán el manuscrito original y los resultados de su inspección.",
     };
   }
 
@@ -65,7 +65,7 @@ export function selectChapterRepairCandidate(input: {
       ...base,
       selected: "original",
       reasonCode: "original_retained_new_severe_issue",
-      reason: "修复候选引入了原稿没有的高严重度问题，因此保留原稿。",
+      reason: "El candidato a reparación introduce un problema de alta gravedad que el original no tiene, por lo que se conserva el original.",
     };
   }
 
@@ -75,7 +75,7 @@ export function selectChapterRepairCandidate(input: {
       ...base,
       selected: "original",
       reasonCode: "original_retained_obligation_regression",
-      reason: "修复候选新增或扩大了未兑现章节义务，因此保留原稿。",
+      reason: "Los candidatos a reparación añaden o amplían obligaciones del capítulo incumplidas y, por tanto, conservan el manuscrito original.",
     };
   }
 
@@ -84,7 +84,7 @@ export function selectChapterRepairCandidate(input: {
       ...base,
       selected: "candidate",
       reasonCode: "candidate_passed",
-      reason: "修复候选通过接收检查，而原稿未通过。",
+      reason: "El candidato a reparación pasó la verificación de aceptación, pero el original falló.",
     };
   }
 
@@ -95,7 +95,7 @@ export function selectChapterRepairCandidate(input: {
       ...base,
       selected: "candidate",
       reasonCode: "candidate_resolved_blockers",
-      reason: "修复候选减少了阻塞性问题，且没有引入新的严重问题或义务缺口。",
+      reason: "Los candidatos a remediación reducen los problemas de bloqueo sin introducir nuevos problemas críticos o brechas en las obligaciones.",
     };
   }
 
@@ -106,7 +106,7 @@ export function selectChapterRepairCandidate(input: {
       ...base,
       selected: "candidate",
       reasonCode: "candidate_improved",
-      reason: "修复候选减少了未兑现义务或结构化审校问题，且没有引入新的严重风险。",
+      reason: "Los candidatos a remediación reducen las obligaciones incumplidas o los problemas de revisión estructurada sin introducir nuevos riesgos graves.",
     };
   }
 
@@ -114,7 +114,7 @@ export function selectChapterRepairCandidate(input: {
     ...base,
     selected: "original",
     reasonCode: "original_retained_no_clear_improvement",
-    reason: "修复候选没有形成明确的结构化质量改善，因此保留原稿。",
+    reason: "Los candidatos a reparación no dieron como resultado una mejora clara de la calidad estructural, por lo que se conservó el original.",
   };
 }
 

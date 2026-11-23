@@ -45,7 +45,7 @@ export function finalReviewRouter() {
       chapterPath + "/findings/:finding/conversation",
       findingAddress,
       {
-        progress: "正在对照检查意见与本章原文…",
+        progress: "Comparando los dictámenes de inspección con el texto original de este capítulo...",
         draft: proseDraftSchema,
         changes: proseChanges,
         reply: proseReply,
@@ -66,7 +66,7 @@ export function finalReviewRouter() {
       async (db, a) => {
         const { book, row, findings, input } = await readFinalChapter(db, a.novelId, a.chapterId, a.sourceHash);
         const finding = a.finding === "all" ? undefined : findings?.[a.finding];
-        if (!findings || (a.finding !== "all" && !finding)) throw new AppError("请从本章已完成的检查中选择问题。", 409);
+        if (!findings || (a.finding !== "all" && !finding)) throw new AppError("Seleccione una pregunta de los exámenes completados en este capítulo.", 409);
         const { order, title, taskSheet, mustAvoid } = row;
         return {
           resource: {

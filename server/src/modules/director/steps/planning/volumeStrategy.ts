@@ -35,7 +35,7 @@ export function createVolumeStrategyStepHandler<Provider extends string, Documen
   return async context => {
     const input = await dependencies.inputProvider(context);
     if (!Number.isInteger(input.estimatedChapterCount) || input.estimatedChapterCount < 1) {
-      throw new Error("分卷策略需要有效的目标章节数。");
+      throw new Error("La estrategia de división del volumen requiere un número objetivo válido de capítulos.");
     }
     const novelId = context.contract.novelId;
     const guidance = context.regeneration?.guidance ?? input.guidance;
@@ -51,7 +51,7 @@ export function createVolumeStrategyStepHandler<Provider extends string, Documen
     if (!context.regeneration) {
       const recovered = await dependencies.volumeService.recoverVolumeStrategy?.(novelId, options);
       if (recovered) {
-        if (!recovered.volumes.length) throw new Error("分卷策略未保存可用的卷骨架。");
+        if (!recovered.volumes.length) throw new Error("La política de volumen no guarda los esqueletos de volumen disponibles.");
         return { artifact: {
           scope: context.contract.scope, status: "draft", protectedUserContent: true,
           contentRef: `volume_strategy:${novelId}`, contentHash: dependencies.contentHash(recovered),
@@ -71,7 +71,7 @@ export function createVolumeStrategyStepHandler<Provider extends string, Documen
     const saved = await dependencies.volumeService.updateVolumes(novelId, {
       ...skeleton, syncToChapterExecution: false,
     });
-    if (!saved.volumes.length) throw new Error("分卷策略未保存可用的卷骨架。");
+    if (!saved.volumes.length) throw new Error("La política de volumen no guarda los esqueletos de volumen disponibles.");
     return {
       artifact: {
         scope: context.contract.scope,

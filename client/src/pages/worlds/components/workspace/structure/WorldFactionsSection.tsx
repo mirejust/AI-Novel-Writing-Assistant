@@ -25,7 +25,7 @@ export default function WorldFactionsSection(props: {
   return (
     <div className="rounded-md border p-3 space-y-3">
       <div className="flex items-center justify-between">
-        <div className="font-medium">阵营与势力</div>
+        <div className="font-medium">Facciones y fuerzas</div>
         <div className="flex gap-2">
           <Button
             size="sm"
@@ -52,7 +52,7 @@ export default function WorldFactionsSection(props: {
               )
             }
           >
-            新增阵营
+            Agregar nuevo campamento
           </Button>
           <Button
             size="sm"
@@ -82,25 +82,25 @@ export default function WorldFactionsSection(props: {
               )
             }
           >
-            新增势力
+            Nuevas fuerzas
           </Button>
         </div>
       </div>
       <div className="rounded-md border border-dashed p-3 text-xs text-muted-foreground space-y-1">
-        <div>阵营 = 抽象立场、路线或世界站队；势力 = 具体组织、圈层、网络或机构。</div>
-        <div>像“社会压力机制”“行业运作规则”“人际网络法则”这类世界级默认规则，应优先写到“规则中心”，不要塞进阵营卡。</div>
+        <div>Campamento = postura abstracta, línea o alineación mundial; poder = organización, círculo, red o institución específica.</div>
+        <div>Las reglas predeterminadas de clase mundial, como el "Mecanismo de presión social", las "Reglas de operación de la industria" y las "Leyes de redes interpersonales", deben escribirse primero en el "Centro de reglas" y no deben incluirse en tarjetas de campamento.</div>
         <div>
-          当前阵营 ID：{
+          ID de facción actual:{
             draftStructure.factions.length > 0
-              ? draftStructure.factions.map((item) => `${item.id}（${item.name || "未命名"}）`).join("、")
-              : "暂无"
+              ? draftStructure.factions.map((item) => `${item.id}(${item.name || "Sin nombre"})`).join(",")
+              : "Sin datos"
           }
         </div>
         <div>
-          当前势力 ID：{
+          ID de fuerza actual:{
             draftStructure.forces.length > 0
-              ? draftStructure.forces.map((item) => `${item.id}（${item.name || "未命名"}）`).join("、")
-              : "暂无"
+              ? draftStructure.forces.map((item) => `${item.id}(${item.name || "Sin nombre"})`).join(",")
+              : "Sin datos"
           }
         </div>
       </div>
@@ -108,7 +108,7 @@ export default function WorldFactionsSection(props: {
         {draftStructure.factions.map((faction, index) => (
           <div key={faction.id || index} className="rounded-md border p-3 space-y-2">
             <div className="text-xs text-muted-foreground">
-              阵营卡描述的是抽象站队，不是具体公司、部门或人脉网络。
+              Las tarjetas de facción describen alineamientos abstractos, no empresas, departamentos o redes específicas.
             </div>
             <Input
               value={faction.name}
@@ -125,7 +125,7 @@ export default function WorldFactionsSection(props: {
                     : prev,
                 )
               }
-              placeholder="阵营名称，例如：体制内求稳派 / 市场逐利派 / 关系网络实用派"
+              placeholder="Nombre del campo, por ejemplo: Estabilidad dentro del sistema / Facción que busca ganancias en el mercado / Facción pragmática de la red de relaciones"
             />
             <Input
               value={faction.position}
@@ -142,7 +142,7 @@ export default function WorldFactionsSection(props: {
                     : prev,
                 )
               }
-              placeholder="立场 / 世界站队"
+              placeholder="Posición / Equipo Mundial"
             />
             <textarea
               className="min-h-[80px] w-full rounded-md border bg-background p-2 text-sm"
@@ -160,11 +160,11 @@ export default function WorldFactionsSection(props: {
                     : prev,
                 )
               }
-              placeholder="阵营理念 / 信条 / 主张"
+              placeholder="Filosofía / credo / propuesta de facción"
             />
             <div className="grid gap-2 md:grid-cols-2">
               <Input
-                value={faction.goals.join("、")}
+                value={faction.goals.join(",")}
                 onChange={(event) =>
                   setDraftStructure((prev) =>
                     prev
@@ -178,10 +178,10 @@ export default function WorldFactionsSection(props: {
                       : prev,
                   )
                 }
-                placeholder="长期目标，使用顿号或逗号分隔"
+                placeholder="Metas a largo plazo, separadas por comas o comas"
               />
               <Input
-                value={faction.methods.join("、")}
+                value={faction.methods.join(",")}
                 onChange={(event) =>
                   setDraftStructure((prev) =>
                     prev
@@ -195,11 +195,11 @@ export default function WorldFactionsSection(props: {
                       : prev,
                   )
                 }
-                placeholder="常用手段，使用顿号或逗号分隔"
+                placeholder="Medios de uso común, use comas o comas para separar"
               />
             </div>
             <Input
-              value={faction.representativeForceIds.join("、")}
+              value={faction.representativeForceIds.join(",")}
               onChange={(event) =>
                 setDraftStructure((prev) =>
                   prev
@@ -213,11 +213,11 @@ export default function WorldFactionsSection(props: {
                     : prev,
                 )
               }
-              placeholder="代表势力 ID，使用顿号或逗号分隔"
+              placeholder="Representa el ID de la facción, separado por comas o comas"
             />
             {faction.representativeForceIds.length > 0 ? (
               <div className="text-xs text-muted-foreground">
-                代表势力：{faction.representativeForceIds.map((id) => forceNameById.get(id) || id).join("、")}
+                Fuerzas representativas:{faction.representativeForceIds.map((id) => forceNameById.get(id) || id).join(",")}
               </div>
             ) : null}
           </div>
@@ -225,7 +225,7 @@ export default function WorldFactionsSection(props: {
         {draftStructure.forces.map((force, index) => (
           <div key={force.id || index} className="rounded-md border p-3 space-y-2">
             <div className="text-xs text-muted-foreground">
-              势力卡描述的是能施压、能占据地点、能参与关系网络的具体组织或圈层。
+              La carta de poder describe una organización o círculo específico que puede ejercer presión, ocupar un lugar y participar en una red de relaciones.
             </div>
             <div className="grid gap-2 md:grid-cols-3">
               <Input
@@ -243,7 +243,7 @@ export default function WorldFactionsSection(props: {
                       : prev,
                   )
                 }
-                placeholder="势力名称，例如：广告公司管理层 / 房屋中介链 / 地方商业圈人脉网"
+                placeholder="Nombres poderosos, como: Gestión de empresas de publicidad / Cadena de agencias de vivienda / Red de círculos empresariales locales."
               />
               <Input
                 value={force.type}
@@ -260,7 +260,7 @@ export default function WorldFactionsSection(props: {
                       : prev,
                   )
                 }
-                placeholder="势力类型，例如：公司 / 部门 / 中介网络 / 商业圈层"
+                placeholder="Tipo de poder, como por ejemplo: empresa/departamento/red intermediaria/círculo empresarial"
               />
               <Input
                 value={force.factionId ?? ""}
@@ -277,12 +277,12 @@ export default function WorldFactionsSection(props: {
                       : prev,
                   )
                 }
-                placeholder="所属阵营 ID（可空）"
+                placeholder="ID de facción (puede estar vacío)"
               />
             </div>
             {force.factionId ? (
               <div className="text-xs text-muted-foreground">
-                所属阵营：{factionNameById.get(force.factionId) || force.factionId}
+                Pertenecen al campamento:{factionNameById.get(force.factionId) || force.factionId}
               </div>
             ) : null}
             <textarea
@@ -301,7 +301,7 @@ export default function WorldFactionsSection(props: {
                     : prev,
                 )
               }
-              placeholder="势力概述 / 对外身份 / 在世界中的作用"
+              placeholder="Panorama de fuerzas/identidad externa/papel en el mundo"
             />
             <div className="grid gap-2 md:grid-cols-2">
               <Input
@@ -319,7 +319,7 @@ export default function WorldFactionsSection(props: {
                       : prev,
                   )
                 }
-                placeholder="权力基础 / 资源来源 / 控制抓手"
+                placeholder="Base de poder/Fuente de recursos/Manos de control"
               />
               <Input
                 value={force.currentObjective}
@@ -336,7 +336,7 @@ export default function WorldFactionsSection(props: {
                       : prev,
                   )
                 }
-                placeholder="当前目标 / 眼下想推进什么"
+                placeholder="Metas actuales/lo que quieres avanzar ahora"
               />
             </div>
             <div className="grid gap-2 md:grid-cols-2">
@@ -355,7 +355,7 @@ export default function WorldFactionsSection(props: {
                       : prev,
                   )
                 }
-                placeholder="领导者 / 关键人物（可空）"
+                placeholder="Líder/Persona clave (opcional)"
               />
               <Input
                 value={force.pressure}
@@ -372,7 +372,7 @@ export default function WorldFactionsSection(props: {
                       : prev,
                   )
                 }
-                placeholder="施压方式 / 高压来源 / 它如何逼迫角色"
+                placeholder="Formas de aplicar presión / Fuentes de presión / Cómo se fuerza al personaje"
               />
             </div>
             <div className="grid gap-2 md:grid-cols-1">
@@ -391,7 +391,7 @@ export default function WorldFactionsSection(props: {
                       : prev,
                   )
                 }
-                placeholder="叙事角色，例如：压迫源 / 诱导者 / 守门人 / 缓冲带"
+                placeholder="Roles narrativos, tales como: fuente de opresión/inductor/guardián/zona de amortiguamiento"
               />
             </div>
           </div>

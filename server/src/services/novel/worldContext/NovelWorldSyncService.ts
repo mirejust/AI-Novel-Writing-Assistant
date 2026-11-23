@@ -14,12 +14,12 @@ import { safeJsonParse } from "./novelWorldProjection";
 export const SYNC_SECTIONS: NovelWorldSyncSection[] = ["profile", "rules", "factions", "forces", "locations", "relations"];
 
 const SYNC_SECTION_LABELS: Record<NovelWorldSyncSection, string> = {
-  profile: "世界概要",
-  rules: "核心规则",
-  factions: "阵营",
-  forces: "势力",
-  locations: "地点",
-  relations: "关系网络",
+  profile: "Resumen del mundo",
+  rules: "Reglas esenciales",
+  factions: "acampar",
+  forces: "fuerza",
+  locations: "Lugar",
+  relations: "red de relaciones",
 };
 
 function stableStringify(value: unknown): string {
@@ -42,8 +42,8 @@ function compactItems(items: Array<string | null | undefined>, fallback: string)
   if (normalized.length === 0) {
     return fallback;
   }
-  const visible = normalized.slice(0, 3).join("、");
-  return normalized.length > 3 ? `${visible} 等 ${normalized.length} 项` : visible;
+  const visible = normalized.slice(0, 3).join(",");
+  return normalized.length > 3 ? `${visible} esperar ${normalized.length} artículo` : visible;
 }
 
 function summarizeProfile(structure: WorldStructuredData): string {
@@ -52,15 +52,15 @@ function summarizeProfile(structure: WorldStructuredData): string {
     structure.profile.tone,
     structure.profile.coreConflict,
     structure.profile.summary,
-  ], "未填写概要");
+  ], "Resumen no completado");
 }
 
 function summarizeRules(structure: WorldStructuredData): string {
   return compactItems([
     structure.rules.summary,
     ...structure.rules.axioms.map((rule) => rule.name || rule.summary),
-    ...structure.rules.taboo.map((item) => `禁忌：${item}`),
-  ], "未填写规则");
+    ...structure.rules.taboo.map((item) => `Tabú:${item}`),
+  ], "No hay reglas completadas");
 }
 
 function summarizeRelations(structure: WorldStructuredData): string {
@@ -75,7 +75,7 @@ function summarizeRelations(structure: WorldStructuredData): string {
       const force = forceNameById.get(relation.forceId) ?? relation.forceId;
       return [force, relation.relation, relation.locationId].filter(Boolean).join(" / ");
     }),
-  ], "未填写关系");
+  ], "No se completó ninguna relación");
 }
 
 function summarizeSection(structure: WorldStructuredData, section: NovelWorldSyncSection): string {
@@ -85,15 +85,15 @@ function summarizeSection(structure: WorldStructuredData, section: NovelWorldSyn
     case "rules":
       return summarizeRules(structure);
     case "factions":
-      return compactItems(structure.factions.map((item) => item.name), "未填写阵营");
+      return compactItems(structure.factions.map((item) => item.name), "Ningún campamento lleno");
     case "forces":
-      return compactItems(structure.forces.map((item) => item.name), "未填写势力");
+      return compactItems(structure.forces.map((item) => item.name), "Fuerza no completada");
     case "locations":
-      return compactItems(structure.locations.map((item) => item.name), "未填写地点");
+      return compactItems(structure.locations.map((item) => item.name), "No se ha completado ninguna ubicación");
     case "relations":
       return summarizeRelations(structure);
     default:
-      return "未填写内容";
+      return "No se ha completado ningún contenido";
   }
 }
 
@@ -107,12 +107,12 @@ function buildDifferenceSummary(input: {
   const localSummary = summarizeSection(input.localStructure, input.section);
   const librarySummary = summarizeSection(input.libraryStructure, input.section);
   if (input.status === "local_only") {
-    return `本书世界的「${label}」为：${localSummary}；世界库缺少这一部分。`;
+    return `"El mundo de este libro"${label}"para:${localSummary};A la biblioteca mundial le falta esta parte.`;
   }
   if (input.status === "library_only") {
-    return `世界库的「${label}」为：${librarySummary}；本书世界缺少这一部分。`;
+    return `Biblioteca Mundial "${label}"para:${librarySummary};Esta parte del mundo de este libro falta.`;
   }
-  return `本书世界的「${label}」为：${localSummary}；世界库为：${librarySummary}。`;
+  return `"El mundo de este libro"${label}"para:${localSummary};La biblioteca mundial es:${librarySummary}.`;
 }
 
 function setSection(
@@ -164,7 +164,7 @@ export function buildSyncPendingChangesPayload(
   return JSON.stringify({
     differenceCount: differences.length,
     sections: differences.map((item) => item.section),
-    summary: differences.map((item) => `${item.label}：${item.summary}`).join("\n"),
+    summary: differences.map((item) => `${item.label}:${item.summary}`).join("\n"),
     computedAt: new Date().toISOString(),
   });
 }
@@ -179,7 +179,7 @@ export class NovelWorldSyncService {
     if (!novelWorld) {
       return {
         canSync: false,
-        reason: "这本书还没有本书世界。",
+        reason: "Aún no existe un mundo de libros para este libro.",
         novelWorldId: null,
         sourceWorldId: null,
         sourceWorldName: null,
@@ -191,7 +191,7 @@ export class NovelWorldSyncService {
       await this.persistPendingChanges(novelWorld.id, null);
       return {
         canSync: false,
-        reason: "本书世界还没有关联世界库样本。",
+        reason: "El mundo de este libro aún no tiene muestras de biblioteca de mundos asociadas.",
         novelWorldId: novelWorld.id,
         sourceWorldId: null,
         sourceWorldName: null,
@@ -213,7 +213,7 @@ export class NovelWorldSyncService {
       await this.persistPendingChanges(novelWorld.id, null);
       return {
         canSync: false,
-        reason: "关联的世界库样本不存在。",
+        reason: "La muestra de biblioteca mundial asociada no existe.",
         novelWorldId: novelWorld.id,
         sourceWorldId: novelWorld.sourceWorldId,
         sourceWorldName: null,
@@ -243,7 +243,7 @@ export class NovelWorldSyncService {
   async syncWithLibrary(novelId: string, input: NovelWorldSyncInput): Promise<NovelWorldSyncDiff> {
     const novelWorld = await this.ensureNovelWorld(novelId);
     if (!novelWorld?.sourceWorldId) {
-      throw new Error("本书世界还没有关联世界库样本。");
+      throw new Error("El mundo de este libro aún no tiene muestras de biblioteca de mundos asociadas.");
     }
     if (input.direction === "none") {
       await prisma.$transaction(async (tx) => {
@@ -272,7 +272,7 @@ export class NovelWorldSyncService {
             ${novelWorld.sourceWorldId},
             ${"none"},
             ${JSON.stringify([])},
-            ${"关闭同步：本书世界保留为独立副本。"},
+            ${"Desactivar la sincronización: el mundo del libro permanece como una copia separada."},
             ${"user"},
             CURRENT_TIMESTAMP
           )
@@ -280,7 +280,7 @@ export class NovelWorldSyncService {
       });
       return {
         canSync: false,
-        reason: "同步已关闭，本书世界会保留为独立副本。",
+        reason: "La sincronización se desactiva y el mundo del libro seguirá siendo una copia separada.",
         novelWorldId: novelWorld.id,
         sourceWorldId: novelWorld.sourceWorldId,
         sourceWorldName: null,
@@ -292,13 +292,13 @@ export class NovelWorldSyncService {
       where: { id: novelWorld.sourceWorldId },
     });
     if (!sourceWorld) {
-      throw new Error("关联的世界库样本不存在。");
+      throw new Error("La muestra de biblioteca mundial asociada no existe.");
     }
 
     const selectedSections = (input.sections?.length ? input.sections : SYNC_SECTIONS)
       .filter((section, index, sections) => SYNC_SECTIONS.includes(section) && sections.indexOf(section) === index);
     if (selectedSections.length === 0) {
-      throw new Error("请选择至少一个要同步的世界部分。");
+      throw new Error("Seleccione al menos una parte del mundo para sincronizar.");
     }
 
     const localStructure = normalizeWorldStructuredData(safeJsonParse<unknown>(novelWorld.structuredDataJson, null));
@@ -399,7 +399,7 @@ export class NovelWorldSyncService {
           ${sourceWorld.id},
           ${input.direction},
           ${JSON.stringify(selectedSections)},
-          ${`${input.direction === "push" ? "推送" : "拉取"}：${selectedSections.map((section) => SYNC_SECTION_LABELS[section]).join("、")}`},
+          ${`${input.direction === "push" ? "empujar" : "jalar"}:${selectedSections.map((section) => SYNC_SECTION_LABELS[section]).join(",")}`},
           ${"user"},
           CURRENT_TIMESTAMP
         )

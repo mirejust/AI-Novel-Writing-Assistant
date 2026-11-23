@@ -53,16 +53,16 @@ function buildImagePresentation(row: {
   baseCharacter?: { name: string } | null;
 }): { title: string; ownerLabel: string; sourceRoute: string } {
   if (row.sceneType === "novel_cover" && row.novelId) {
-    const title = row.novel?.title?.trim() || `小说 ${row.novelId.slice(0, 8)}`;
+    const title = row.novel?.title?.trim() || `novedoso ${row.novelId.slice(0, 8)}`;
     return {
-      title: `小说封面：${title}`,
+      title: `Portada de la novela:${title}`,
       ownerLabel: title,
       sourceRoute: `/novels/${row.novelId}/edit?stage=basic`,
     };
   }
-  const ownerLabel = row.baseCharacter?.name?.trim() || "未关联角色";
+  const ownerLabel = row.baseCharacter?.name?.trim() || "Ningún rol asociado";
   return {
-    title: row.baseCharacter?.name ? `角色图像：${row.baseCharacter.name}` : `图像任务 ${row.id.slice(0, 8)}`,
+    title: row.baseCharacter?.name ? `Imagen del personaje:${row.baseCharacter.name}` : `tarea de imagen ${row.id.slice(0, 8)}`,
     ownerLabel,
     sourceRoute: row.baseCharacterId ? `/base-characters?id=${row.baseCharacterId}` : "/base-characters",
   };
@@ -215,26 +215,26 @@ export class RecoveryTaskService {
         status: toRunningStatus(row.status),
         currentStage: row.currentStage,
         currentItemLabel: row.currentItemLabel,
-        resumeAction: "恢复自动导演",
+        resumeAction: "Restaurar director automático",
         sourceRoute: buildWorkflowSourceRoute({
           id: row.id,
           novelId: row.novelId,
           creationExperience: row.novel?.creationExperience,
         }),
-        recoveryHint: row.lastError?.trim() || row.checkpointSummary?.trim() || "服务重启后任务已暂停，等待恢复。",
+        recoveryHint: row.lastError?.trim() || row.checkpointSummary?.trim() || "Una vez reiniciado el servicio, la tarea se suspendió y está a la espera de reanudarse.",
         updatedAt: row.updatedAt,
       })),
       ...pipelineRows.map((row) => ({
         id: row.id,
         kind: "novel_pipeline" as const,
-        title: `${row.novel.title} (${row.startOrder}-${row.endOrder}章)`,
+        title: `${row.novel.title} (${row.startOrder}-${row.endOrder}capítulo)`,
         ownerLabel: row.novel.title,
         status: toRunningStatus(row.status),
         currentStage: row.currentStage,
         currentItemLabel: row.currentItemLabel,
-        resumeAction: "恢复章节流水线",
+        resumeAction: "Restaurar canalización de capítulos",
         sourceRoute: `/novels/${row.novelId}/edit`,
-        recoveryHint: row.error?.trim() || "章节流水线已暂停，等待恢复。",
+        recoveryHint: row.error?.trim() || "La canalización del capítulo ha sido pausada, esperando ser reanudada.",
         updatedAt: row.updatedAt,
       })),
       ...bookRows.map((row) => ({
@@ -245,9 +245,9 @@ export class RecoveryTaskService {
         status: toRunningStatus(row.status),
         currentStage: row.currentStage,
         currentItemLabel: row.currentItemLabel,
-        resumeAction: "恢复拆书任务",
+        resumeAction: "Reanudar la tarea de abrir libros.",
         sourceRoute: `/book-analysis?analysisId=${row.id}&documentId=${row.documentId}`,
-        recoveryHint: row.lastError?.trim() || "拆书任务已暂停，等待恢复。",
+        recoveryHint: row.lastError?.trim() || "La tarea de apertura de libros ha sido suspendida y está a la espera de ser retomada.",
         updatedAt: row.updatedAt,
       })),
       ...imageRows.map((row) => {
@@ -260,23 +260,23 @@ export class RecoveryTaskService {
           status: toRunningStatus(row.status),
           currentStage: row.currentStage,
           currentItemLabel: row.currentItemLabel,
-          resumeAction: "恢复图像任务",
+          resumeAction: "Restaurar tarea de imagen",
           sourceRoute: presentation.sourceRoute,
-          recoveryHint: row.error?.trim() || "图像任务已暂停，等待恢复。",
+          recoveryHint: row.error?.trim() || "La tarea de imagen está en pausa, esperando ser reanudada.",
           updatedAt: row.updatedAt,
         };
       }),
       ...styleExtractionRows.map((row) => ({
         id: row.id,
         kind: "style_extraction" as const,
-        title: `写法提取：${row.name}`,
+        title: `Extracción de escritura:${row.name}`,
         ownerLabel: row.name,
         status: toRunningStatus(row.status),
         currentStage: row.currentStage,
         currentItemLabel: row.currentItemLabel,
-        resumeAction: "恢复写法提取",
+        resumeAction: "Extracción de escritura de recuperación",
         sourceRoute: "/writing-formula",
-        recoveryHint: row.error?.trim() || "写法提取任务已暂停，等待恢复。",
+        recoveryHint: row.error?.trim() || "La tarea de extracción de escritura ha sido suspendida y está a la espera de ser reanudada.",
         updatedAt: row.updatedAt,
       })),
     ];

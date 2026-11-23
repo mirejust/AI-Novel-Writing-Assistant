@@ -9,12 +9,12 @@ export class OriginalSourceAdapter implements SourceContentPort {
   async loadBundle(ref: SourceRef): Promise<SourceBundle> {
     const inspiration = ref.inspiration?.trim() || ref.rawText?.trim();
     if (!inspiration) {
-      throw new Error("original 内容源缺少灵感或题材输入。");
+      throw new Error("La fuente del contenido original carece de inspiración o aportaciones sobre el tema.");
     }
     const result = await runStructuredPrompt({
       asset: dramaOriginalSourcePrompt,
       promptInput: {
-        title: ref.ref || "原创短剧项目",
+        title: ref.ref || "Proyecto de drama corto original.",
         inspiration,
         targetEpisodes: 80,
       },

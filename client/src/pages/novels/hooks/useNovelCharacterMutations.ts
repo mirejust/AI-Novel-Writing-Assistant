@@ -121,7 +121,7 @@ export function useNovelCharacterMutations(input: UseNovelCharacterMutationsInpu
         endOrder: pipelineForm.endOrder,
       }),
     onSuccess: async (response) => {
-      setCharacterMessage(response.message ?? `角色时间线同步完成，本次新增 ${response.data?.syncedCount ?? 0} 条。`);
+      setCharacterMessage(response.message ?? `La línea de tiempo del personaje se ha sincronizado y esta vez hay una nueva incorporación. ${response.data?.syncedCount ?? 0} banda.`);
       await invalidateCharacterViews(queryClient, id, selectedCharacterId || "none");
     },
   });
@@ -133,7 +133,7 @@ export function useNovelCharacterMutations(input: UseNovelCharacterMutationsInpu
         endOrder: pipelineForm.endOrder,
       }),
     onSuccess: async (response) => {
-      setCharacterMessage(response.message ?? `全角色时间线同步完成，共新增 ${response.data?.syncedCount ?? 0} 条事件。`);
+      setCharacterMessage(response.message ?? `Se han sincronizado todas las líneas de tiempo de los personajes, con un total de nuevas incorporaciones. ${response.data?.syncedCount ?? 0} evento.`);
       await invalidateCharacterViews(queryClient, id, selectedCharacterId || "none");
     },
   });
@@ -146,7 +146,7 @@ export function useNovelCharacterMutations(input: UseNovelCharacterMutationsInpu
         temperature: 0.4,
       }),
     onSuccess: async () => {
-      setCharacterMessage("角色信息已按时间线完成演进更新。");
+      setCharacterMessage("La información del personaje se ha actualizado según la línea de tiempo.");
       await invalidateCharacterViews(queryClient, id, selectedCharacterId || "none");
     },
   });
@@ -161,10 +161,10 @@ export function useNovelCharacterMutations(input: UseNovelCharacterMutationsInpu
       }),
     onSuccess: (response) => {
       const count = Object.keys(response.data?.fields ?? {}).length;
-      setCharacterMessage(count > 0 ? `已生成 ${count} 项外显资料建议，请确认后写入。` : "当前角色没有可补写的外显资料。");
+      setCharacterMessage(count > 0 ? `Generado ${count} Elemento de sugerencia de datos explícita, por favor confirme antes de escribir.` : "No hay datos explícitos para el carácter actual que se va a reescribir.");
     },
     onError: (error) => {
-      setCharacterMessage(error instanceof Error ? error.message : "外显资料生成失败。");
+      setCharacterMessage(error instanceof Error ? error.message : "Error en la generación de datos explícitos.");
     },
   });
 
@@ -178,11 +178,11 @@ export function useNovelCharacterMutations(input: UseNovelCharacterMutationsInpu
     },
     onSuccess: async (response) => {
       const count = response.data?.appliedFields.length ?? 0;
-      setCharacterMessage(count > 0 ? `已写入 ${count} 项外显资料。` : "没有新的外显资料需要写入。");
+      setCharacterMessage(count > 0 ? `ha sido escrito ${count} Información explícita del artículo.` : "No es necesario escribir nuevos datos explícitos.");
       await invalidateCharacterViews(queryClient, id, selectedCharacterId || "none");
     },
     onError: (error) => {
-      setCharacterMessage(error instanceof Error ? error.message : "外显资料写入失败。");
+      setCharacterMessage(error instanceof Error ? error.message : "Error al escribir datos explícitos.");
     },
   });
 
@@ -196,10 +196,10 @@ export function useNovelCharacterMutations(input: UseNovelCharacterMutationsInpu
       }),
     onSuccess: (response) => {
       const count = response.data?.results.filter((item) => item.hasApplicableChanges).length ?? 0;
-      setCharacterMessage(count > 0 ? `已生成 ${count} 个角色的外显资料建议，请确认后写入。` : "当前角色资料暂时没有需要补写的外显内容。");
+      setCharacterMessage(count > 0 ? `Generado ${count} Sugerencias para los datos de apariencia de cada personaje, por favor confírmalas antes de escribir.` : "No hay contenido explícito que deba escribirse en el perfil del personaje actual.");
     },
     onError: (error) => {
-      setCharacterMessage(error instanceof Error ? error.message : "批量外显资料生成失败。");
+      setCharacterMessage(error instanceof Error ? error.message : "No se pudieron generar datos explícitos por lotes.");
     },
   });
 
@@ -216,11 +216,11 @@ export function useNovelCharacterMutations(input: UseNovelCharacterMutationsInpu
     },
     onSuccess: async (response) => {
       const count = response.data?.results.reduce((sum, item) => sum + item.appliedFields.length, 0) ?? 0;
-      setCharacterMessage(count > 0 ? `已批量写入 ${count} 项外显资料。` : "没有新的外显资料需要批量写入。");
+      setCharacterMessage(count > 0 ? `Escrito en lotes ${count} Información explícita del artículo.` : "No hay nuevos datos explícitos que deban escribirse en lotes.");
       await invalidateCharacterViews(queryClient, id, selectedCharacterId || "none");
     },
     onError: (error) => {
-      setCharacterMessage(error instanceof Error ? error.message : "批量外显资料写入失败。");
+      setCharacterMessage(error instanceof Error ? error.message : "No se pudieron escribir datos explícitos por lotes.");
     },
   });
 
@@ -237,10 +237,10 @@ export function useNovelCharacterMutations(input: UseNovelCharacterMutationsInpu
       const issueText = (response.data?.issues ?? [])
         .map((item) => `${item.severity.toUpperCase()}: ${item.message}`)
         .join(" | ");
-      setCharacterMessage(`世界规则检查(${status}) ${warningText} ${issueText}`.trim());
+      setCharacterMessage(`Verificación de reglas mundiales (${status}) ${warningText} ${issueText}`.trim());
     },
     onError: (error) => {
-      setCharacterMessage(error instanceof Error ? error.message : "世界规则检查失败。");
+      setCharacterMessage(error instanceof Error ? error.message : "La verificación de las reglas mundiales falló.");
     },
   });
 
@@ -263,7 +263,7 @@ export function useNovelCharacterMutations(input: UseNovelCharacterMutationsInpu
         currentGoal: characterForm.currentGoal,
       }),
     onSuccess: async () => {
-      setCharacterMessage("角色信息已保存。");
+      setCharacterMessage("Información de rol guardada.");
       await invalidateCharacterViews(queryClient, id, selectedCharacterId || "none");
     },
   });
@@ -271,7 +271,7 @@ export function useNovelCharacterMutations(input: UseNovelCharacterMutationsInpu
   const importBaseCharacterMutation = useMutation({
     mutationFn: async () => {
       if (!selectedBaseCharacter) {
-        throw new Error("请先选择要导入的基础角色。");
+        throw new Error("Seleccione primero el rol base para importar.");
       }
       return createNovelCharacter(id, {
         name: selectedBaseCharacter.name,
@@ -283,21 +283,21 @@ export function useNovelCharacterMutations(input: UseNovelCharacterMutationsInpu
       });
     },
     onSuccess: async (response) => {
-      setCharacterMessage(response.message ?? "基础角色已导入到当前小说。");
+      setCharacterMessage(response.message ?? "El personaje base ha sido importado a la novela actual.");
       if (response.data?.id) {
         setSelectedCharacterId(response.data.id);
       }
       await invalidateCharacterViews(queryClient, id, response.data?.id ?? selectedCharacterId ?? "none");
     },
     onError: (error) => {
-      setCharacterMessage(error instanceof Error ? error.message : "导入基础角色失败。");
+      setCharacterMessage(error instanceof Error ? error.message : "No se pudo importar el carácter base.");
     },
   });
 
   const quickCreateCharacterMutation = useMutation({
     mutationFn: async (payload?: QuickCharacterCreatePayload) => {
       const nextName = payload?.name?.trim() || quickCharacterForm.name.trim();
-      const nextRole = payload?.role?.trim() || quickCharacterForm.role.trim() || "主角";
+      const nextRole = payload?.role?.trim() || quickCharacterForm.role.trim() || "Protagonista";
       const generatedProfile = payload ? buildCharacterProfileFromWizard(payload) : {};
       return createNovelCharacter(id, {
         name: nextName,
@@ -308,7 +308,7 @@ export function useNovelCharacterMutations(input: UseNovelCharacterMutationsInpu
       });
     },
     onSuccess: async (response) => {
-      setCharacterMessage(response.message ?? "角色创建成功。");
+      setCharacterMessage(response.message ?? "El personaje fue creado con éxito.");
       setQuickCharacterForm((prev) => ({ ...prev, name: "" }));
       if (response.data?.id) {
         setSelectedCharacterId(response.data.id);
@@ -316,14 +316,14 @@ export function useNovelCharacterMutations(input: UseNovelCharacterMutationsInpu
       await invalidateCharacterViews(queryClient, id, response.data?.id ?? selectedCharacterId ?? "none");
     },
     onError: (error) => {
-      setCharacterMessage(error instanceof Error ? error.message : "角色创建失败。");
+      setCharacterMessage(error instanceof Error ? error.message : "La creación del personaje falló.");
     },
   });
 
   const deleteCharacterMutation = useMutation({
     mutationFn: (characterId: string) => deleteNovelCharacter(id, characterId),
     onSuccess: async (_response, deletedCharacterId) => {
-      setCharacterMessage("角色已删除。");
+      setCharacterMessage("El rol ha sido eliminado.");
       if (selectedCharacterId === deletedCharacterId) {
         const fallback = characters.find((item) => item.id !== deletedCharacterId);
         setSelectedCharacterId(fallback?.id ?? "");
@@ -331,7 +331,7 @@ export function useNovelCharacterMutations(input: UseNovelCharacterMutationsInpu
       await invalidateCharacterViews(queryClient, id, deletedCharacterId);
     },
     onError: (error) => {
-      setCharacterMessage(error instanceof Error ? error.message : "删除角色失败。");
+      setCharacterMessage(error instanceof Error ? error.message : "No se pudo eliminar el rol.");
     },
   });
 
@@ -344,7 +344,7 @@ export function useNovelCharacterMutations(input: UseNovelCharacterMutationsInpu
         temperature: payload.temperature ?? 0.55,
       }),
     onError: (error) => {
-      setCharacterMessage(error instanceof Error ? error.message : "补充角色生成失败。");
+      setCharacterMessage(error instanceof Error ? error.message : "Error en la generación de caracteres suplementarios.");
     },
   });
 
@@ -355,7 +355,7 @@ export function useNovelCharacterMutations(input: UseNovelCharacterMutationsInpu
       const relationCount = response.data?.relationCount ?? 0;
       setCharacterMessage(
         response.message
-        ?? `补充角色已创建${relationCount > 0 ? `，并同步 ${relationCount} 条结构化关系` : ""}。`,
+        ?? `Rol suplementario creado${relationCount > 0 ? `y sincronizar ${relationCount} relación estructurada` : ""}.`,
       );
       if (createdCharacterId) {
         setSelectedCharacterId(createdCharacterId);
@@ -363,7 +363,7 @@ export function useNovelCharacterMutations(input: UseNovelCharacterMutationsInpu
       await invalidateCharacterViews(queryClient, id, createdCharacterId || selectedCharacterId || "none");
     },
     onError: (error) => {
-      setCharacterMessage(error instanceof Error ? error.message : "应用补充角色失败。");
+      setCharacterMessage(error instanceof Error ? error.message : "Error al aplicar el rol suplementario.");
     },
   });
 

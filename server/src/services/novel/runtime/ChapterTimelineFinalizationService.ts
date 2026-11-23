@@ -72,7 +72,7 @@ export class ChapterTimelineFinalizationService {
     request?: TimelineFinalizationRequestOptions;
   }): Promise<void> {
     const current = await this.store.findChapter(input.novelId, input.chapterId);
-    if (!current) throw new Error("章节不存在，无法准备时间线上下文。");
+    if (!current) throw new Error("El capítulo no existe y el contexto de la línea de tiempo no se puede preparar.");
     const pending = await this.store.listPendingEarlierChapters(input.novelId, current.order);
     for (const { chapter } of pending) {
       await this.waitForFinalization(async () => {
@@ -105,7 +105,7 @@ export class ChapterTimelineFinalizationService {
         // A concurrent edit is reloaded on the next attempt, never committed as old context.
         if (!(error instanceof TimelineContentVersionError)) throw error;
       }
-      if (Date.now() >= deadline) throw new AppError("前文时间线同步未能完成，请稍后从章节页继续写作。", 409);
+      if (Date.now() >= deadline) throw new AppError("No se pudo completar la sincronización de la línea de tiempo del artículo anterior. Continúe escribiendo desde la página del capítulo más tarde.", 409);
       await new Promise<void>((resolve) => setTimeout(resolve, 1000));
     }
   }
@@ -258,8 +258,8 @@ export class ChapterTimelineFinalizationService {
       novelId: input.novelId,
       chapterId: input.chapterId,
       chapterIndex,
-      chapterTitle: chapter?.title ?? `第 ${chapterIndex} 章`,
-      novelTitle: input.contextPackage?.bookContract?.title ?? "当前小说",
+      chapterTitle: chapter?.title ?? `Cap. ${chapterIndex}`,
+      novelTitle: input.contextPackage?.bookContract?.title ?? "novela actual",
       chapterGoal: chapterGoalFromContext(input.contextPackage),
       content,
       timelineContext,
@@ -395,9 +395,9 @@ export class ChapterTimelineFinalizationService {
           issues: [{
             type: "unclear_time_anchor",
             severity: "warning",
-            message: "缺少时间线上下文，已降级提交最小 timeline checkpoint。",
+            message: "Falta contexto de línea de tiempo, punto de control de línea de tiempo mínimo de confirmación degradado.",
             evidence: "timelineContext missing",
-            suggestedFix: "重新组装章节上下文后补跑 timeline finalization。",
+            suggestedFix: "Ejecute la finalización de la línea de tiempo después de volver a ensamblar el contexto del capítulo.",
             relatedEventIds: [],
             relatedHookIds: [],
           }],
@@ -461,9 +461,9 @@ export class ChapterTimelineFinalizationService {
         issues: [{
           type: "unclear_time_anchor",
           severity: "warning",
-          message: "时间线抽取或检测未完成，已降级提交最小 timeline checkpoint。",
+          message: "La extracción o detección de la línea de tiempo no se completa y el envío del punto de control de la línea de tiempo mínimo se ha degradado.",
           evidence: message,
-          suggestedFix: "重试时间线检测；若仍失败，人工检查章节承接和未来事件泄漏。",
+          suggestedFix: "Reintentar la detección de la línea de tiempo; Si aún falla, verifique manualmente la continuación del capítulo y fugas de eventos futuros.",
           relatedEventIds: [],
           relatedHookIds: [],
         }],

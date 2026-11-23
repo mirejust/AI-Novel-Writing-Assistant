@@ -19,10 +19,10 @@ export function resolveCommercialTags(source: BookFramingSource): string[] {
 export function buildBookFramingSummary(source: BookFramingSource): string {
   const commercialTags = resolveCommercialTags(source);
   return [
-    source.targetAudience?.trim() ? `目标读者：${source.targetAudience.trim()}` : "",
-    commercialTags.length > 0 ? `核心商业标签：${commercialTags.join("、")}` : "",
-    source.bookSellingPoint?.trim() ? `本书核心卖点：${source.bookSellingPoint.trim()}` : "",
-    source.competingFeel?.trim() ? `竞品感 / 熟悉阅读感：${source.competingFeel.trim()}` : "",
-    source.first30ChapterPromise?.trim() ? `前 30 章承诺：${source.first30ChapterPromise.trim()}` : "",
+    source.targetAudience?.trim() ? `Lectores objetivo:${source.targetAudience.trim()}` : "",
+    commercialTags.length > 0 ? `Etiquetas comerciales principales:${commercialTags.join(",")}` : "",
+    source.bookSellingPoint?.trim() ? `Los principales puntos de venta de este libro:${source.bookSellingPoint.trim()}` : "",
+    source.competingFeel?.trim() ? `Sentido del producto competitivo/sentido de lectura familiar:${source.competingFeel.trim()}` : "",
+    source.first30ChapterPromise?.trim() ? `Los primeros 30 capítulos prometen:${source.first30ChapterPromise.trim()}` : "",
   ].filter(Boolean).join("\n");
 }

@@ -118,7 +118,7 @@ export function extractJsonPayload(source: string): string {
   if (firstBrace >= 0 && lastBrace > firstBrace) {
     return normalized.slice(firstBrace, lastBrace + 1);
   }
-  throw new Error("模型输出异常：无法解析为合法 JSON。");
+  throw new Error("Excepción de salida del modelo: no se puede analizar en JSON legal.");
 }
 
 export function normalizeRequestedCount(value: unknown, fallback = DEFAULT_TITLE_COUNT): number {
@@ -218,8 +218,8 @@ function jaccardSimilarity(left: Set<string>, right: Set<string>): number {
 
 function canonicalizeTitleFrame(title: string): string {
   return normalizeTitle(title)
-    .replace(/,/g, "，")
-    .replace(/:/g, "：");
+    .replace(/,/g, ",")
+    .replace(/:/g, ":");
 }
 
 export function detectTitleSurfaceFrame(title: string): TitleSurfaceFrame {
@@ -240,7 +240,7 @@ export function detectTitleSurfaceFrame(title: string): TitleSurfaceFrame {
   if (SCENARIO_THEN_SELF_PATTERN.test(normalized)) {
     return "scenario_then_self";
   }
-  if (normalized.includes("：")) {
+  if (normalized.includes(":")) {
     return "colon_split";
   }
   if (/^当/u.test(normalized)) {
@@ -252,7 +252,7 @@ export function detectTitleSurfaceFrame(title: string): TitleSurfaceFrame {
   if (/^我/u.test(normalized)) {
     return "self_open";
   }
-  if (normalized.includes("，")) {
+  if (normalized.includes(",")) {
     return "comma_split";
   }
   if (GENRE_OPENING_PATTERN.test(normalized)) {

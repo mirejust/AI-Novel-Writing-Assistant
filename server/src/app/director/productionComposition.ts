@@ -79,7 +79,7 @@ export function createDirectorProductionOptions(): DirectorNextServiceOptions {
         prepareEmptyCast: async (novelId, input) => {
           const generated = await generateAutoCharacterCastDraft(novelId, input);
           const ids = await appendCharacterCastOptionsDraft(novelId, generated.storyInput, {options: [generated.parsed.option]});
-          if (ids.length !== 1) throw new Error("角色候选保存结果无效。");
+          if (ids.length !== 1) throw new Error("El resultado guardado del candidato a rol no es válido.");
           return characters.applyCharacterCastOption(novelId, ids[0], {requireEmptyCast: true, postApplyMode: "deferred"});
         }}, contentHash}),
     volume_strategy: createVolumeStrategyStepHandler({volumeService: volumes, inputProvider: async context => ({...modelOptions(context), estimatedChapterCount: requireLaunch(context.contract).estimatedChapterCount,
@@ -115,12 +115,12 @@ export function createDirectorProductionOptions(): DirectorNextServiceOptions {
     chapter_batch: createKernelProductionStep({db: prisma, runtime: context => createNativeKernelRuntime(prisma, context),
       legacy: createChapterBatchStepHandler({pipelineService: pipeline, inputProvider: async context => {
       const input = requireLaunch(context.contract), range = context.contract.chapterRange;
-      if (!range) throw new Error("正文生成缺少章节授权范围。");
+      if (!range) throw new Error("A la generación de texto le falta el alcance de autorización del capítulo.");
       const binding = (await events.list(context.runId)).some(event => event.type === "chapter_batch_job");
       if (!binding) {
         const saved = await prisma.chapter.findMany({where: {novelId: context.contract.novelId, order: {gte: range.from, lte: range.to}},
           include: {artifactSyncCheckpoints: {where: {artifactType: CHAPTER_ARTIFACT_BOUNDARY_TYPE, status: "succeeded"}, select: {contentHash: true, metadataJson: true}, orderBy: {updatedAt: "desc"}, take: 6}}});
-        if (saved.some(chapter => chapter.content?.trim() && !isCurrentChapterProductionCompleted(chapter))) throw new Error("授权范围包含已有正文，请选择尚未写作的章节；已有正文可从章节页面查看和调整。");
+        if (saved.some(chapter => chapter.content?.trim() && !isCurrentChapterProductionCompleted(chapter))) throw new Error("El alcance de la autorización incluye textos existentes, seleccione capítulos que aún no hayan sido escritos; Los textos existentes se pueden ver y ajustar desde la página del capítulo.");
       }
       const policy = directorIssuePolicySchema.parse(context.contract.issuePolicy.pipelinePolicy);
       return {...modelOptions(context), startOrder: range.from, endOrder: range.to, directorNext: {runId: context.runId, decisions: [],
@@ -132,7 +132,7 @@ export function createDirectorProductionOptions(): DirectorNextServiceOptions {
     }, jobBinding: {get: async runId => {
       const event = (await events.list(runId)).find(event => event.type === "chapter_batch_job");
       if (!event) return null;
-      const payload = event.payload as {jobId?: unknown};if (typeof payload?.jobId !== "string" || !payload.jobId) throw new Error("正文作业绑定损坏。");return payload.jobId;
+      const payload = event.payload as {jobId?: unknown};if (typeof payload?.jobId !== "string" || !payload.jobId) throw new Error("El enlace del trabajo de texto está roto.");return payload.jobId;
     }, save: async (runId, jobId) => events.append({runId, type: "chapter_batch_job", payload: {jobId}})},
       readOutcome: readBatchOutcome, waitForPoll: () => new Promise(resolve => setTimeout(resolve, 1000)),
       isRunActive: async runId => (await prisma.directorNextRunControl.findUnique({where: {runId}, select: {status: true}}))?.status === "running", contentHash})}),
@@ -149,7 +149,7 @@ export function createDirectorProductionOptions(): DirectorNextServiceOptions {
       beforeRetry: async (contract, tx) => {
         const epoch = readRunExecutionEpoch(JSON.stringify(contract));
         const locked = await tx.novel.updateMany({where: {id: contract.novelId, directorEpoch: epoch}, data: {directorEpoch: {increment: 0}}});
-        if (!locked.count) throw new AppError("本书创作归属已变化，请重新打开导演台。", 409);
+        if (!locked.count) throw new AppError("La propiedad creativa de este libro ha cambiado; vuelva a abrir el escritorio del director.", 409);
         await assertNovelDirectorVersion(contract.novelId, "v2", epoch, tx);
       },
       canRun: async runId => {
@@ -162,14 +162,14 @@ export function createDirectorProductionOptions(): DirectorNextServiceOptions {
     sourceRoute: novelId => `/lab/director/${encodeURIComponent(novelId)}`,
     artifactTypes: directorArtifactTypes, resolveArtifactTypes: resolveConfirmationArtifactTypes, readProductionProjection, contractFactory: input => {
     const launch = input.launchInput;
-    if (!launch) throw new Error("启动创作需要故事、模型与范围快照。");
-    if (!launch.targetVolumeId && launch.targetMode !== "opening") throw new Error("启动创作需要明确选择开篇或目标卷。");
+    if (!launch) throw new Error("Comenzar requiere historias, modelos e instantáneas del alcance.");
+    if (!launch.targetVolumeId && launch.targetMode !== "opening") throw new Error("Iniciar una composición requiere una elección explícita del capítulo inicial o del volumen objetivo.");
     const mode = launch.issuePolicyMode ?? "completion_first";
     const preset = DIRECTOR_ISSUE_POLICY_PRESETS.find(item => item.id === (mode === "quality_first" ? "quality_first" : "finish_full_book"));
-    if (!preset) throw new Error("缺少质量策略预设。");
+    if (!preset) throw new Error("Falta el valor preestablecido de la política de calidad.");
     const requestedSteps = input.stepIdsInScope ?? (launch.executionRange ? null : directorProductionPlan.steps.filter(step => !["chapter_detail_bundle", "execution_contract_sync", "chapter_batch"].includes(step.id)).map(step => step.id));
-    if (requestedSteps?.some(id => !directorProductionPlan.steps.some(step => step.id === id))) throw new Error("创作步骤范围无效。");
-    if (!launch.executionRange && requestedSteps?.some(id => ["chapter_detail_bundle", "execution_contract_sync", "chapter_batch"].includes(id))) throw new Error("正文准备与生成需要明确授权范围。");
+    if (requestedSteps?.some(id => !directorProductionPlan.steps.some(step => step.id === id))) throw new Error("El alcance del paso de creación no es válido.");
+    if (!launch.executionRange && requestedSteps?.some(id => ["chapter_detail_bundle", "execution_contract_sync", "chapter_batch"].includes(id))) throw new Error("El alcance de la autorización debe definirse claramente para la preparación y generación de texto.");
     const manual = (launch as ManualChapterLaunchInput).manualChapter;
     const scope = manual ? `manual:chapter:${manual.chapterId}:${manual.operation}:${input.runId}` : launch.executionRange ? `chapters:${launch.executionRange.from}-${launch.executionRange.to}${launch.targetVolumeId ? `:volume:${launch.targetVolumeId}` : ""}` : launch.targetVolumeId ? `volume:${launch.targetVolumeId}` : "book";
     const contract = {runId: input.runId, novelId: input.novelId, driver: input.driver, planVersion: manual ? MANUAL_CHAPTER_PLAN_VERSION : directorProductionPlan.version, scope,

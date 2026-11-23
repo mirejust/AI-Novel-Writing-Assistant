@@ -53,9 +53,9 @@ export function getTaskNoticeSeverity(task: TaskQueuePresentationInput): TaskQue
 }
 
 export function getTaskNoticeTitle(task: TaskQueuePresentationInput): string {
-  if (isTaskReplanRequired(task)) return "需要重规划";
-  if (isTaskQueueQualityReminder(task)) return "质量提醒";
-  return "任务提醒";
+  if (isTaskReplanRequired(task)) return "Requiere replanificación";
+  if (isTaskQueueQualityReminder(task)) return "Aviso de calidad";
+  return "Recordatorio de tarea";
 }
 
 export function getTaskListPriority(task: TaskQueuePresentationInput): number {
@@ -97,14 +97,14 @@ export function getTaskQueueTone(task: TaskQueuePresentationInput): WorkspaceTon
 
 export function getTaskQueueLevelLabel(task: TaskQueuePresentationInput): string {
   const tone = getTaskQueueTone(task);
-  if (isTaskReplanRequired(task)) return "需要重规划";
-  if (task.pendingManualRecovery) return "需要恢复";
-  if (tone === "danger") return task.status === "failed" ? "任务失败" : "阻塞";
-  if (tone === "warning" && isTaskQueueQualityReminder(task)) return "质量提醒";
-  if (tone === "warning") return "待操作";
-  if (tone === "info") return task.status === "waiting_approval" ? "待操作" : "进行中";
-  if (tone === "success") return "已完成";
-  return "普通任务";
+  if (isTaskReplanRequired(task)) return "Requiere replanificación";
+  if (task.pendingManualRecovery) return "Necesidad de restaurar";
+  if (tone === "danger") return task.status === "failed" ? "Tarea fallida" : "Bloquear";
+  if (tone === "warning" && isTaskQueueQualityReminder(task)) return "Aviso de calidad";
+  if (tone === "warning") return "para ser operado";
+  if (tone === "info") return task.status === "waiting_approval" ? "para ser operado" : "En curso";
+  if (tone === "success") return "Completado";
+  return "Tareas comunes";
 }
 
 export function getTaskQueueSeverity(task: TaskQueuePresentationInput): TaskQueueSeverity {
@@ -123,11 +123,11 @@ export function getTimestamp(value: string | null | undefined): number {
 
 export function formatDate(value: string | null | undefined): string {
   if (!value) {
-    return "暂无";
+    return "Sin datos";
   }
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) {
-    return "暂无";
+    return "Sin datos";
   }
   return date.toLocaleString();
 }
@@ -138,103 +138,103 @@ export function formatTokenCount(value: number | null | undefined): string {
 
 export function formatKind(kind: TaskKind): string {
   if (kind === "book_analysis") {
-    return "拆书分析";
+    return "Análisis de división de libros";
   }
   if (kind === "novel_workflow") {
-    return "小说创作";
+    return "Creación novedosa";
   }
   if (kind === "novel_pipeline") {
-    return "小说流水线";
+    return "Nueva línea de montaje";
   }
   if (kind === "knowledge_document") {
-    return "知识库索引";
+    return "Índice de la base de conocimientos";
   }
   if (kind === "style_extraction") {
-    return "写法提取";
+    return "Extracción de escritura";
   }
   if (kind === "agent_run") {
-    return "Agent 运行";
+    return "Agente en ejecución";
   }
-  return "图片生成";
+  return "Generación de imágenes";
 }
 
 export function formatCheckpoint(checkpoint: NovelWorkflowMilestoneType | null | undefined, scopeLabel?: string | null): string {
-  const resolvedScopeLabel = scopeLabel?.trim() || "前 10 章";
+  const resolvedScopeLabel = scopeLabel?.trim() || "Primeros 10 capitulos";
   if (checkpoint === "rewrite_snapshot_created") {
-    return "重写前备份已创建";
+    return "Copia de seguridad creada antes de reescribir";
   }
   if (checkpoint === "candidate_selection_required") {
-    return "等待确认书级方向";
+    return "Esperando confirmación de la dirección del libro";
   }
   if (checkpoint === "book_contract_ready") {
-    return "Book Contract 已就绪";
+    return "El contrato del libro está listo";
   }
   if (checkpoint === "character_setup_required") {
-    return "角色准备待审核";
+    return "Preparación de personajes pendiente de revisión";
   }
   if (checkpoint === "volume_strategy_ready") {
-    return "卷战略已就绪";
+    return "La estrategia de volumen está lista";
   }
   if (checkpoint === "chapter_batch_ready") {
-    return `${resolvedScopeLabel}自动执行已暂停`;
+    return `${resolvedScopeLabel}La ejecución automatizada está en pausa`;
   }
   if (checkpoint === "step_review_required") {
-    return "当前步骤待检查";
+    return "Paso actual a comprobar";
   }
   if (checkpoint === "replan_required") {
-    return "需要重规划";
+    return "Requiere replanificación";
   }
   if (checkpoint === "workflow_completed") {
-    return "主流程完成";
+    return "Proceso principal completado";
   }
-  return "暂无";
+  return "Sin datos";
 }
 
 export function formatResumeTarget(target: NovelWorkflowResumeTarget | null | undefined): string {
   if (!target) {
-    return "暂无";
+    return "Sin datos";
   }
   if (target.route === "/novels/create") {
-    return target.mode === "director" ? "创建页 / AI 自动导演" : "创建页";
+    return target.mode === "director" ? "Crear página/director automático AI" : "Crear página";
   }
   if (target.stage === "story_macro") {
-    return "小说编辑页 / 故事宏观规划";
+    return "Página de edición de novelas/planificación macro de historias";
   }
   if (target.stage === "character") {
-    return "小说编辑页 / 角色准备";
+    return "Página de edición de novela/Preparación de personajes";
   }
   if (target.stage === "outline") {
-    return "小说编辑页 / 卷战略";
+    return "Página del editor novedoso/estrategia de volumen";
   }
   if (target.stage === "structured") {
-    return "小说编辑页 / 节奏拆章";
+    return "Página de edición novedosa/capítulo para romper el ritmo";
   }
   if (target.stage === "chapter") {
-    return "小说编辑页 / 章节执行";
+    return "Ejecución de página/capítulo de edición novedosa";
   }
   if (target.stage === "pipeline") {
-    return "小说编辑页 / 质量修复";
+    return "Página de edición novedosa/reparación de calidad.";
   }
-  return "小说编辑页 / 项目设定";
+  return "Nueva página de edición/configuración del proyecto";
 }
 
 export function formatStatus(status: TaskStatus): string {
   if (status === "queued") {
-    return "排队中";
+    return "En cola";
   }
   if (status === "running") {
-    return "运行中";
+    return "En ejecución";
   }
   if (status === "waiting_approval") {
-    return "等待审批";
+    return "Esperando aprobación";
   }
   if (status === "succeeded") {
-    return "已完成";
+    return "Completado";
   }
   if (status === "failed") {
-    return "失败";
+    return "Error";
   }
-  return "已取消";
+  return "Cancelado";
 }
 
 export function toStatusVariant(status: TaskStatus): "default" | "outline" | "secondary" | "destructive" {
@@ -274,12 +274,12 @@ export function createIdempotencyKey(taskId: string, actionCode: string): string
 
 export function formatFollowUpPriority(priority: "P0" | "P1" | "P2"): string {
   if (priority === "P0") {
-    return "P0 立即处理";
+    return "P0 Procesar inmediatamente";
   }
   if (priority === "P1") {
-    return "P1 尽快处理";
+    return "P1 Procesar lo más pronto posible";
   }
-  return "P2 可稍后处理";
+  return "P2 se puede procesar más tarde";
 }
 
 export function followUpActionVariant(action: AutoDirectorAction): "default" | "outline" {

@@ -20,10 +20,10 @@ interface VisualAssetDetailsProps {
 
 export function VisualAssetDetails({ asset, isLoading, isError, onClose, onRetry }: VisualAssetDetailsProps) {
   return (
-    <aside className="flex min-h-0 w-full flex-col border-t bg-muted/[0.16] lg:w-80 lg:border-l lg:border-t-0" aria-label="素材详情">
+    <aside className="flex min-h-0 w-full flex-col border-t bg-muted/[0.16] lg:w-80 lg:border-l lg:border-t-0" aria-label="Detalles materiales">
       <div className="flex items-center justify-between border-b px-4 py-3">
-        <div className="text-sm font-medium">素材详情</div>
-        <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={onClose} aria-label="关闭素材详情">
+        <div className="text-sm font-medium">Detalles materiales</div>
+        <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={onClose} aria-label="Cerrar detalles materiales">
           <X className="h-4 w-4" aria-hidden="true" />
         </Button>
       </div>
@@ -31,13 +31,13 @@ export function VisualAssetDetails({ asset, isLoading, isError, onClose, onRetry
         {isLoading && !asset ? (
           <div className="flex min-h-40 items-center justify-center text-sm text-muted-foreground">
             <LoaderCircle className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
-            正在读取素材详情
+            Cargando detalles del material
           </div>
         ) : null}
         {isError && !asset ? (
           <div className="space-y-3 py-8 text-center text-sm text-muted-foreground">
-            <p>暂时无法读取这项素材。</p>
-            <Button type="button" size="sm" variant="outline" onClick={onRetry}>重新加载</Button>
+            <p>Este material no se puede cargar en este momento.</p>
+            <Button type="button" size="sm" variant="outline" onClick={onRetry}>Recargar</Button>
           </div>
         ) : null}
         {asset ? (
@@ -46,21 +46,21 @@ export function VisualAssetDetails({ asset, isLoading, isError, onClose, onRetry
               <img src={resolveImageAssetUrl(asset.url)} alt={asset.source.label || getVisualAssetKindLabel(asset.kind)} className="aspect-[4/3] w-full object-cover" />
               <span className="absolute bottom-2 right-2 inline-flex items-center gap-1 rounded bg-background/85 px-2 py-1 text-xs opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
                 <ExternalLink className="h-3 w-3" aria-hidden="true" />
-                查看原图
+                Ver imagen original
               </span>
             </a>
             <div className="space-y-3 text-sm">
-              <DetailRow label="素材类型" value={getVisualAssetKindLabel(asset.kind)} />
-              <DetailRow label="来源" value={asset.source.label || getVisualAssetSourceLabel(asset.source.domain)} />
-              <DetailRow label="获取方式" value={getVisualAssetOriginLabel(asset.origin)} />
-              <DetailRow label="所属内容" value={asset.scope.label || getVisualAssetScopeLabel(asset.scope.kind)} />
-              <DetailRow label="创建时间" value={formatVisualAssetDate(asset.createdAt)} />
-              {asset.width && asset.height ? <DetailRow label="尺寸" value={`${asset.width} × ${asset.height}`} /> : null}
-              {asset.provider || asset.model ? <DetailRow label="生成工具" value={[asset.provider, asset.model].filter(Boolean).join(" · ")} /> : null}
+              <DetailRow label="Tipo de material" value={getVisualAssetKindLabel(asset.kind)} />
+              <DetailRow label="Origen" value={asset.source.label || getVisualAssetSourceLabel(asset.source.domain)} />
+              <DetailRow label="como conseguirlo" value={getVisualAssetOriginLabel(asset.origin)} />
+              <DetailRow label="Contenido" value={asset.scope.label || getVisualAssetScopeLabel(asset.scope.kind)} />
+              <DetailRow label="Tiempo de creación" value={formatVisualAssetDate(asset.createdAt)} />
+              {asset.width && asset.height ? <DetailRow label="Tamaño" value={`${asset.width} × ${asset.height}`} /> : null}
+              {asset.provider || asset.model ? <DetailRow label="Herramienta de construcción" value={[asset.provider, asset.model].filter(Boolean).join(" · ")} /> : null}
             </div>
             {asset.prompt ? (
               <div className="border-t pt-4">
-                <div className="text-xs font-medium text-muted-foreground">画面描述</div>
+                <div className="text-xs font-medium text-muted-foreground">Descripción de la pantalla</div>
                 <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-foreground">{asset.prompt}</p>
               </div>
             ) : null}

@@ -27,7 +27,7 @@ export function affectedSegmentIds(
   strategy: CreationRevisionStrategy,
 ): string[] {
   if (!orders.length || orders.some((order) => !segments.some((segment) => segment.order === order))) {
-    throw new Error("修改范围无效，请重新生成修改预览。");
+    throw new Error("El rango de modificación no es válido; vuelva a generar la vista previa de modificación.");
   }
   return segments.filter((segment) => strategy === "full_replan"
     || (strategy === "rewrite_downstream" ? segment.order >= Math.min(...orders) : orders.includes(segment.order)))

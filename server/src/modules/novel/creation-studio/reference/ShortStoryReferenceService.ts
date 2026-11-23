@@ -24,7 +24,7 @@ export function parseShortStoryReference(raw: string | null, required = false): 
   try { snapshot = JSON.parse(raw ?? "null") as ShortStoryReferenceSnapshot; } catch { /* fail below */ }
   if (!snapshot || snapshot.schemaVersion !== 1 || !snapshot.analysisRevision || !snapshot.selection
     || !snapshot.structureLessons?.length || !snapshot.originalityConstraints?.length) {
-    throw new AppError("参考资料快照不完整，请检查作品保存的数据后继续。", 409);
+    throw new AppError("La instantánea de referencia está incompleta; verifique los datos guardados por el trabajo antes de continuar.", 409);
   }
   return snapshot;
 }
@@ -35,11 +35,11 @@ export class ShortStoryReferenceService {
       where: { id: selection.analysisId }, include: { document: true, documentVersion: true,
         sections: { orderBy: { sortOrder: "asc" } } },
     });
-    if (!analysis || analysis.documentId !== selection.documentId) throw new AppError("参考拆书与所选文档不匹配，请重新选择。", 404);
+    if (!analysis || analysis.documentId !== selection.documentId) throw new AppError("El libro de referencia no coincide con el documento seleccionado, seleccione nuevamente.", 404);
     // The application currently has workspace-wide access; disabled/archived documents are unavailable.
-    if (analysis.document.status !== "enabled") throw new AppError("参考文档不可访问，请选择可用的参考小说。", 403);
+    if (analysis.document.status !== "enabled") throw new AppError("El documento de referencia no es accesible, seleccione una novela de referencia disponible.", 403);
     if (analysis.status !== "succeeded" || analysis.documentVersion.documentId !== selection.documentId) {
-      throw new AppError("请先完成所选参考小说的拆书分析。", 409);
+      throw new AppError("Primero complete el análisis de apertura del libro de la novela de referencia seleccionada.", 409);
     }
     const keys = selection.sectionKeys ?? analysis.sections
       .filter((section) => (section.status === "succeeded" || section.frozen)
@@ -47,12 +47,12 @@ export class ShortStoryReferenceService {
       .map((section) => section.sectionKey);
     const supported = new Set(BOOK_ANALYSIS_SECTIONS.map((section) => section.key as string));
     if (!keys.length || new Set(keys).size !== keys.length || keys.some((key) => !supported.has(key))) {
-      throw new AppError("请选择有效的拆书结论。", 400);
+      throw new AppError("Elija una conclusión de apertura de libro válida.", 400);
     }
     const sections = keys.map((key) => analysis.sections.find((section) => section.sectionKey === key));
     if (sections.some((section) => !section || (section.status !== "succeeded" && !section.frozen)
       || isEmptySucceededBookAnalysisSection({ ...section, status: "succeeded", frozen: false }))) {
-      throw new AppError("所选拆书结论尚未完成或没有可用内容。", 409);
+      throw new AppError("La conclusión del libro seleccionado aún no está completa o no tiene contenido disponible.", 409);
     }
     const conclusions = sections.map((section) => ({
       sectionKey: section!.sectionKey, title: section!.title,
@@ -70,10 +70,10 @@ export class ShortStoryReferenceService {
 
   async create(selection: ShortStoryReferenceSelection, idea: string, taskId: string): Promise<ShortStoryReferenceSnapshot> {
     const goal = selection.goal.trim();
-    if (!goal || goal.length > 4000) throw new AppError("请说明你希望借鉴的内容，最多 4000 字。", 400);
+    if (!goal || goal.length > 4000) throw new AppError("Describe en qué deseas basarte, hasta 4000 palabras.", 400);
     const source = await this.source(selection);
     if (JSON.stringify(source.conclusions).length > 100000) {
-      throw new AppError("所选拆书结论较长，请减少选择范围后继续；结论不会截取开头代替整篇。", 400);
+      throw new AppError("La conclusión del libro dividido seleccionado es larga; reduzca el rango de selección antes de continuar; la conclusión no cortará el principio ni reemplazará el artículo completo.", 400);
     }
     const result = await runStructuredPrompt({
       asset: shortStoryReferenceExtractPrompt,
@@ -82,7 +82,7 @@ export class ShortStoryReferenceService {
         temperature: 0.3, maxTokens: 5000 },
     });
     const current = await this.source(selection);
-    if (current.revision !== source.revision) throw new AppError("参考结论在读取期间发生变化，请重新生成方向。", 409);
+    if (current.revision !== source.revision) throw new AppError("La conclusión de referencia cambió durante la lectura, vuelva a generar la dirección.", 409);
     return { ...result.output, schemaVersion: 1, mode: "adaptation", sourceTitle: source.analysis.document.title,
       goal, originalIdea: idea, analysisId: source.analysis.id, documentId: source.analysis.documentId,
       documentVersionId: source.analysis.documentVersionId, documentVersionNumber: source.analysis.documentVersion.versionNumber,
@@ -91,7 +91,7 @@ export class ShortStoryReferenceService {
 
   async validate(snapshot: ShortStoryReferenceSnapshot): Promise<void> {
     const source = await this.source(snapshot.selection);
-    if (source.revision !== snapshot.analysisRevision) throw new AppError("参考拆书已更新，请重新生成并核对两个创作方向。", 409);
+    if (source.revision !== snapshot.analysisRevision) throw new AppError("El libro de referencia se ha actualizado, vuelva a generarlo y verifique las dos direcciones creativas.", 409);
   }
 
   async view(snapshot: ShortStoryReferenceSnapshot | null): Promise<ShortStoryReferenceView | null> {

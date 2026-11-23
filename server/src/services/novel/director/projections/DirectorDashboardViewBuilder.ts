@@ -148,36 +148,36 @@ function buildMode(input: {
 function statusLabel(mode: DirectorDashboardMode): string {
   switch (mode) {
     case "queued":
-      return "等待执行";
+      return "Esperando ejecución";
     case "running":
-      return "AI 接管中";
+      return "La IA está tomando el control";
     case "waiting_user":
-      return "等待确认";
+      return "Esperando confirmación";
     case "recovering":
-      return "等待恢复";
+      return "Esperando la recuperación";
     case "failed":
-      return "执行异常";
+      return "excepción de ejecución";
     case "completed":
-      return "已完成";
+      return "Completado";
     default:
-      return "暂未启动";
+      return "Aún no iniciado";
   }
 }
 
 function headlineForMode(mode: DirectorDashboardMode, displayState: DirectorDisplayState): string {
   switch (mode) {
     case "queued":
-      return "等待自动导演";
+      return "Esperando al director automático";
     case "running":
-      return "正在自动导演";
+      return "Dirigiendo automáticamente";
     case "waiting_user":
-      return "等待确认";
+      return "Esperando confirmación";
     case "recovering":
-      return "等待恢复";
+      return "Esperando la recuperación";
     case "failed":
-      return "执行受阻";
+      return "Ejecución bloqueada";
     case "completed":
-      return "导演已完成";
+      return "El director ha completado";
     default:
       return displayState.headline;
   }
@@ -186,17 +186,17 @@ function headlineForMode(mode: DirectorDashboardMode, displayState: DirectorDisp
 function descriptionForMode(mode: DirectorDashboardMode, displayState: DirectorDisplayState): string {
   switch (mode) {
     case "queued":
-      return "任务已进入后台队列，执行器领取后会继续推进。";
+      return "La tarea ha entrado en la cola de fondo y continuará avanzando después de ser recogida por el ejecutor.";
     case "running":
-      return "AI 正在后台接管这本书的开书流程。你可以继续手动操作当前项目；如果与自动导演同时改同一块内容，以最新写入结果为准。";
+      return "La IA se hace cargo del proceso de apertura del libro en segundo plano. Puede continuar operando manualmente el proyecto actual; si el mismo contenido se modifica al mismo tiempo que el director automático, prevalecerá el último resultado escrito.";
     case "waiting_user":
-      return "当前导演流程停在需要确认的位置。你可以先查看结果，再决定是否继续。";
+      return "El proceso actual del director está estancado en un punto en el que se requiere confirmación. Puede revisar los resultados antes de decidir si desea continuar.";
     case "recovering":
-      return "后台执行器连接中断后正在恢复，系统会优先从最近进度继续。";
+      return "La conexión del ejecutor en segundo plano se está restaurando después de haber sido interrumpida y el sistema dará prioridad a continuar desde el último progreso.";
     case "failed":
-      return "当前导演流程停在最近一步。可以先查看执行详情，再决定是否重试或继续。";
+      return "El proceso director actual está estancado en el último paso. Puede verificar los detalles de la ejecución antes de decidir si volver a intentarlo o continuar.";
     case "completed":
-      return "本轮导演流程已收尾，你可以继续推进章节、查看结果，或发起下一轮自动导演。";
+      return "Esta ronda del proceso de dirección ha terminado. Puede continuar avanzando capítulos, comprobar los resultados o iniciar la siguiente ronda de dirección automática.";
     default:
       return displayState.description;
   }
@@ -262,7 +262,7 @@ function buildCurrentAction(input: {
     return input.task.lastError?.trim()
       || input.projection?.blockingReason?.trim()
       || input.projection?.lastEventSummary?.trim()
-      || "系统会从最近进度继续恢复。";
+      || "El sistema reanudará la recuperación desde el progreso más reciente.";
   }
   if (input.mode === "running") {
     return (staleActionProjection ? null : input.projection?.currentLabel?.trim())
@@ -294,32 +294,32 @@ function buildActions(mode: DirectorDashboardMode): {
 } {
   if (mode === "waiting_user") {
     return {
-      primaryAction: action("confirm_and_continue", "确认并继续", "primary"),
-      secondaryActions: [action("open_task_center", "查看执行详情", "secondary")],
+      primaryAction: action("confirm_and_continue", "Confirmar y continuar", "primary"),
+      secondaryActions: [action("open_task_center", "Ver detalles de ejecución", "secondary")],
     };
   }
   if (mode === "failed") {
     return {
-      primaryAction: action("open_task_center", "查看执行详情", "primary"),
-      secondaryActions: [action("resume_from_checkpoint", "从最近进度恢复", "secondary")],
+      primaryAction: action("open_task_center", "Ver detalles de ejecución", "primary"),
+      secondaryActions: [action("resume_from_checkpoint", "Reanudar desde el progreso reciente", "secondary")],
     };
   }
   if (mode === "recovering") {
     return {
-      primaryAction: action("open_task_center", "查看执行详情", "primary"),
+      primaryAction: action("open_task_center", "Ver detalles de ejecución", "primary"),
       secondaryActions: [],
     };
   }
   if (mode === "running" || mode === "queued") {
     return {
-      primaryAction: action("open_task_center", "查看执行详情", "primary"),
+      primaryAction: action("open_task_center", "Ver detalles de ejecución", "primary"),
       secondaryActions: mode === "running"
-        ? [action("background_continue", "后台继续", "secondary")]
+        ? [action("background_continue", "Continuar en segundo plano", "secondary")]
         : [],
     };
   }
   return {
-    primaryAction: action("open_task_center", "查看执行详情", "primary"),
+    primaryAction: action("open_task_center", "Ver detalles de ejecución", "primary"),
     secondaryActions: [],
   };
 }
@@ -334,7 +334,7 @@ function buildDiagnostics(input: {
   if (input.task.pendingManualRecovery && input.liveRunning) {
     diagnostics.push({
       code: "stale_recovery_flag_ignored",
-      label: "恢复标记已被实时进度覆盖",
+      label: "El marcador de recuperación ha sido sobrescrito por el progreso en tiempo real.",
       detail: input.task.lastError ?? null,
       level: "info",
       source: "task",
@@ -351,7 +351,7 @@ function buildDiagnostics(input: {
   ) {
     diagnostics.push({
       code: "stale_action_projection_ignored",
-      label: "历史等待信号已被实时进度覆盖",
+      label: "Las señales de espera históricas han sido sobrescritas por el progreso en tiempo real",
       detail: input.projection?.blockedReason ?? input.projection?.detail ?? null,
       level: "info",
       source: "projection",
@@ -369,7 +369,7 @@ function buildDiagnostics(input: {
   if (input.projection?.scopeSummary) {
     diagnostics.push({
       code: "scope_summary",
-      label: "工作区摘要",
+      label: "Resumen del espacio de trabajo",
       detail: input.projection.scopeSummary,
       level: "info",
       source: "projection",

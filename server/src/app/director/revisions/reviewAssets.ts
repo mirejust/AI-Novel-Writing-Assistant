@@ -9,13 +9,13 @@ import {getActiveVersionRow, syncVolumeArc} from "../../../services/novel/volume
 import {DIRECTOR_PLANNED_VOLUME_STATUSES} from "../planning";
 
 function changed(): never {
-  throw new AppError("资料与打开编辑时不同，请关闭编辑窗口，重新读取后再修改。", 409);
+  throw new AppError("Los datos son diferentes de cuando se abrieron para editarlos. Cierre la ventana de edición y léala nuevamente antes de modificarla.", 409);
 }
 
 /** Save only selected fields inside the command transaction. Other authors' edits can coexist. */
 export async function saveReviewAssetEdit(novelId: string, raw: ReviewAssetEdit, tx: Prisma.TransactionClient) {
   const result = reviewAssetEditSchema.safeParse(raw);
-  if (!result.success) throw new AppError("请检查修改的字段和内容。", 400);
+  if (!result.success) throw new AppError("Por favor verifique los campos y el contenido modificados.", 400);
   const edit = result.data;
   if (edit.type === "character_cast") {
     const ids = new Set<string>();

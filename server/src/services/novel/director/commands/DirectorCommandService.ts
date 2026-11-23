@@ -147,10 +147,10 @@ function resolveConfirmRequestFromTaskSeed(
   const batches = Array.isArray(seed.batches) ? seed.batches : [];
   const authoritativeCandidate = findAuthoritativeCandidate(seed, input);
   if (batches.length > 0 && !authoritativeCandidate) {
-    throw new AppError("所选书级方向与任务记录不一致，请刷新候选方案后重新确认。", 409);
+    throw new AppError("La dirección seleccionada a nivel de libro no coincide con el registro de tareas. Actualice el plan del candidato y vuelva a confirmarlo.", 409);
   }
   if (authoritativeCandidate && (input.candidate.reviewRevision ?? 0) !== (authoritativeCandidate.reviewRevision ?? 0)) {
-    throw new AppError("所选方向有更新，请刷新后确认想采用的内容。", 409);
+    throw new AppError("La dirección seleccionada ha sido actualizada, actualice y confirme el contenido que desea utilizar.", 409);
   }
 
   const candidate = authoritativeCandidate
@@ -203,7 +203,7 @@ function resolveConfirmRequestFromTaskSeed(
       ?? readPositiveChapterCount(basicForm.estimatedChapterCount),
   };
   if (containsUnicodeReplacementCharacter(normalized)) {
-    throw new AppError("书级方向包含无法还原的异常字符，请刷新候选方案后重新确认。", 400);
+    throw new AppError("La dirección a nivel de libro contiene caracteres anormales que no se pueden restaurar. Actualice el plan del candidato y vuelva a confirmarlo.", 400);
   }
   return normalized;
 }
@@ -322,7 +322,7 @@ export class DirectorCommandService {
       directorVersion,
       workflowTaskId: input.workflowTaskId,
       lane: "auto_director",
-      title: input.candidate.workingTitle.trim() || input.title?.trim() || "自动导演开书",
+      title: input.candidate.workingTitle.trim() || input.title?.trim() || "Libro de apertura automática del director.",
       directorState: buildDirectorWorkflowSeedPayload(confirmedInput, null, {
         directorSession: buildDirectorSessionState({
           runMode,
@@ -333,7 +333,7 @@ export class DirectorCommandService {
       initialState: {
         stage: "auto_director",
         itemKey: "candidate_confirm",
-        itemLabel: "等待创建小说项目",
+        itemLabel: "Esperando crear un proyecto novedoso.",
         progress: 0.18,
       },
     }, existingTask ? { replaceLaunchContract: "candidate_confirmation" } : undefined);
@@ -392,11 +392,11 @@ export class DirectorCommandService {
       workflowTaskId: input.workflowTaskId?.trim() || undefined,
       novelId: input.novelId,
       lane: "auto_director",
-      title: "AI 自动导演工作区分析",
+      title: "Análisis automático del espacio de trabajo del director con IA",
       initialState: {
         stage: "auto_director",
         itemKey: "workspace_analysis",
-        itemLabel: "AI 正在检查当前小说产物和可继续状态",
+        itemLabel: "La IA está comprobando los artefactos novedosos actuales y el estado continuable",
         progress: 0.08,
       },
     });
@@ -424,11 +424,11 @@ export class DirectorCommandService {
       workflowTaskId: input.workflowTaskId?.trim() || undefined,
       novelId: input.novelId,
       lane: "auto_director",
-      title: "AI 自动导演编辑影响分析",
+      title: "Análisis de impacto de edición automática de director de IA",
       initialState: {
         stage: "auto_director",
         itemKey: "manual_edit_impact",
-        itemLabel: "AI 正在分析手动编辑对后续产物的影响",
+        itemLabel: "La IA analiza el impacto de la edición manual en productos posteriores",
         progress: 0.08,
       },
     });
@@ -524,7 +524,7 @@ export class DirectorCommandService {
       data: {
         status: "cancelled",
         finishedAt: new Date(),
-        errorMessage: "用户请求取消自动导演任务。",
+        errorMessage: "El usuario solicitó cancelar la tarea de director automático.",
       },
     });
     await new DirectorCommandLeaseService(this.workflowService).closeCancelledTaskRuntimeState(taskId, new Date());
@@ -573,11 +573,11 @@ export class DirectorCommandService {
 
     const task = await this.workflowService.startDirectorTaskForNovel({
       novelId: takeoverInput.novelId,
-      title: "执行 AI 自动导演接管",
+      title: "Realizar una adquisición de director automatizada por IA",
       initialState: {
         stage: "auto_director",
         itemKey: "takeover",
-        itemLabel: "自动导演接管任务已提交",
+        itemLabel: "Se ha enviado la tarea de adquisición automática de director.",
         progress: 0,
       },
       directorState: {
@@ -629,7 +629,7 @@ export class DirectorCommandService {
       directorVersion,
       workflowTaskId: input.workflowTaskId?.trim() || undefined,
       lane: "auto_director",
-      title: input.title?.trim() || "AI 自动导演候选方向",
+      title: input.title?.trim() || "Dirección automática del candidato a director de IA",
       directorState: {
         idea: input.idea,
         provider: input.provider ?? null,
@@ -647,7 +647,7 @@ export class DirectorCommandService {
       initialState: {
         stage: "auto_director",
         itemKey: "candidate_direction_batch",
-        itemLabel: "AI 正在生成书级方向候选",
+        itemLabel: "La IA está generando candidatos para la dirección a nivel de libro",
         progress: 0.1,
       },
     });
@@ -792,7 +792,7 @@ export class DirectorCommandService {
             },
           });
           if (!currentTask || currentTask.novelId !== row.novelId || currentTask.lane !== "auto_director") {
-            throw new AppError("这项 AI 任务已被替换或已结束，请重新尝试接管。", 409, {
+            throw new AppError("Esta tarea de IA ha sido reemplazada o finalizada; intente retomarla nuevamente.", 409, {
               code: "DIRECTOR_TASK_SUPERSEDED",
               taskId: input.taskId,
             });
@@ -823,7 +823,7 @@ export class DirectorCommandService {
             (commandType) => commandType === activeCommand.commandType,
           );
           if (!reusableExecutionCommandType) {
-            throw new AppError("无法恢复这项 AI 任务，请刷新后重试。", 409);
+            throw new AppError("Esta tarea de IA no se puede reanudar. Actualice e inténtelo de nuevo.", 409);
           }
           const acceptedTask = await this.stateWriter.clearPendingManualRecovery({
             userCommandId: activeCommand.id,
@@ -847,7 +847,7 @@ export class DirectorCommandService {
             },
           }, { transaction: tx });
           if (acceptedTask.count === 0) {
-            throw new AppError("这项 AI 任务已被替换或已结束，请重新尝试接管。", 409, {
+            throw new AppError("Esta tarea de IA ha sido reemplazada o finalizada; intente retomarla nuevamente.", 409, {
               code: "DIRECTOR_TASK_SUPERSEDED",
               taskId: input.taskId,
             });
@@ -922,7 +922,7 @@ export class DirectorCommandService {
           }, { transaction: tx })
           : await this.stateWriter.updateRunState(taskUpdate, { transaction: tx, many: true });
         if (acceptedTask.count === 0) {
-          if (input.openingStateFilter) throw new AppError("开书方向或任务状态有更新，请刷新后再继续。", 409);
+          if (input.openingStateFilter) throw new AppError("La dirección de apertura del libro o el estado de la tarea se han actualizado; actualice antes de continuar.", 409);
           if (!input.clearPendingManualRecovery) {
             const currentTask = await tx.novelWorkflowTask.findUnique({
               where: { id: input.taskId },
@@ -935,7 +935,7 @@ export class DirectorCommandService {
               });
             }
           }
-          throw new AppError("这项 AI 任务已被替换或已结束，请重新尝试接管。", 409, {
+          throw new AppError("Esta tarea de IA ha sido reemplazada o finalizada; intente retomarla nuevamente.", 409, {
             code: "DIRECTOR_TASK_SUPERSEDED",
             taskId: input.taskId,
           });

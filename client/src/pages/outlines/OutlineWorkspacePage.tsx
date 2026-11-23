@@ -214,66 +214,66 @@ function OutlineWorkspace({ id }: { id: string }) {
     });
   }
   function guardLeave(event: MouseEvent<HTMLAnchorElement>) {
-    if (draft && !event.ctrlKey && !event.metaKey && !window.confirm("离开会丢失未保存的修改。继续离开吗？")) event.preventDefault();
+    if (draft && !event.ctrlKey && !event.metaKey && !window.confirm("Al salir se perderán los cambios no guardados. ¿Continuar saliendo?")) event.preventDefault();
   }
-  if (!document) return query.isLoading ? <p role="status">正在打开大纲…</p> : <div role="alert" className="space-x-3">
-    <span>大纲读取失败。</span><Button variant="secondary" onClick={() => void query.refetch()}>重试</Button><Link to="/outlines">返回列表</Link>
+  if (!document) return query.isLoading ? <p role="status">Esquema de apertura...</p> : <div role="alert" className="space-x-3">
+    <span>La lectura del esquema falló.</span><Button variant="secondary" onClick={() => void query.refetch()}>Reintentar</Button><Link to="/outlines">Volver a la lista</Link>
   </div>;
 
   const localExpanded = !!localTarget && localEditorId === localTarget.id;
   const conversation = <OutlineConversation projectId={id} version={version} document={query.data!.document!} starting={fromIdea}
     dirty={blockRevision || turn.busy} value={request} onChange={setRequest} onSent={turnId => { rememberDiscussion("story"); turn.track(turnId); }}
     onOpenResult={prop => openReview(prop)} />;
-  const reviewLabel = localExpanded ? "收起修改" : localTarget?.kind === "character" ? "修改" + getOutlineNodeTitle(selected)
-    : localTarget?.kind === "volume" ? "调整本卷" : "调整本章";
+  const reviewLabel = localExpanded ? "Modificación de colapso" : localTarget?.kind === "character" ? "Modificar" + getOutlineNodeTitle(selected)
+    : localTarget?.kind === "volume" ? "Ajustar este volumen" : "Ajustar este capítulo";
   const readingNotices = <>
-    {params.get("returnProposalId") && <button className="outline-reading-link px-4" onClick={() => openReview(params.get("returnProposalId")!)}><ArrowLeft size={14} />回到刚才的建议</button>}
-    {pending.isError && <button className="outline-reading-link" onClick={() => void pending.refetch()}>重新读取待处理建议</button>}
+    {params.get("returnProposalId") && <button className="outline-reading-link px-4" onClick={() => openReview(params.get("returnProposalId")!)}><ArrowLeft size={14} />Volver a la sugerencia de ahora</button>}
+    {pending.isError && <button className="outline-reading-link" onClick={() => void pending.refetch()}>Releer sugerencias pendientes</button>}
     <PendingSuggestions document={document} proposals={visiblePending} version={version} onOpen={proposal => openReview(proposal, visiblePending.find(p => p.id === proposal)?.characterId ?? undefined)} />
   </>;
   return <div className="outline-workspace mx-auto max-w-[1800px]">
     <header className="outline-workspace-heading">
       <div className="min-w-0">
-        <Link className="mb-1.5 inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-primary" to="/outlines" onClick={guardLeave}><ArrowLeft size={13} />我的大纲</Link>
+        <Link className="mb-1.5 inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-primary" to="/outlines" onClick={guardLeave}><ArrowLeft size={13} />Mi esquema</Link>
         <h1 className="truncate text-2xl font-semibold tracking-tight" title={query.data?.title}>{query.data?.title}</h1>
       </div>
       <div className="flex flex-wrap items-center gap-2">
-        {!starter && <Button variant={inspectorOpen && activeInspector === "suggestions" ? "secondary" : "ghost"} size="sm" aria-expanded={inspectorOpen && activeInspector === "suggestions" && (pane === "assistant" || !isMobileViewport)} onClick={() => toggleInspector("suggestions")}><Sparkles />大纲助手</Button>}
-        <Button variant={inspectorOpen && activeInspector === "history" ? "secondary" : "ghost"} size="sm" onClick={() => toggleInspector("history")}><History />版本历史</Button>
-        <select aria-label="导出已保存的大纲" className="outline-export" value="" disabled={download.isPending || blockRevision}
+        {!starter && <Button variant={inspectorOpen && activeInspector === "suggestions" ? "secondary" : "ghost"} size="sm" aria-expanded={inspectorOpen && activeInspector === "suggestions" && (pane === "assistant" || !isMobileViewport)} onClick={() => toggleInspector("suggestions")}><Sparkles />Asistente de esquema</Button>}
+        <Button variant={inspectorOpen && activeInspector === "history" ? "secondary" : "ghost"} size="sm" onClick={() => toggleInspector("history")}><History />Historial de versiones</Button>
+        <select aria-label="Exportar un esquema guardado" className="outline-export" value="" disabled={download.isPending || blockRevision}
           onChange={event => download.mutate(event.target.value as "markdown" | "json")}>
-          <option value="" disabled>导出大纲</option><option value="markdown">Markdown 文稿</option><option value="json">JSON 数据</option>
+          <option value="" disabled>Esquema de exportación</option><option value="markdown">Documento de rebajas</option><option value="json">Datos JSON</option>
         </select>
         {!isMobileViewport && (!bindingQuery.isSuccess || (!bindingQuery.data && (!currentRevisionId || blockRevision))
-          ? <Button size="sm" disabled>按这份大纲开书</Button>
+          ? <Button size="sm" disabled>Comience un libro basado en este esquema.</Button>
           : <Button asChild size="sm"><Link onClick={guardLeave} to={bindingQuery.data ? bindingQuery.data.sourceRoute : `/outlines/${id}/open-book?revisionId=${encodeURIComponent(currentRevisionId!)}`}>
-            {bindingQuery.data ? "继续这本书" : "按这份大纲开书"}</Link></Button>)}
+            {bindingQuery.data ? "Continúa este libro" : "Comience un libro basado en este esquema."}</Link></Button>)}
       </div>
     </header>
-    {download.isError && <p role="alert" className="text-sm text-destructive">导出失败，请重新选择格式。</p>}
-    {bindingQuery.data && <p className="text-xs text-muted-foreground">《{bindingQuery.data.title}》采用修订 v{bindingQuery.data.revisionVersion}{bindingQuery.data.currentVersion !== bindingQuery.data.revisionVersion && ` · 大纲修订 v${bindingQuery.data.currentVersion} 的改动仅保存在大纲中`}</p>}
-    {bindingQuery.isError && <p role="alert" className="text-sm text-destructive">未能读取开书信息。<button className="underline" onClick={() => void bindingQuery.refetch()}>重新读取</button></p>}
+    {download.isError && <p role="alert" className="text-sm text-destructive">La exportación falló, seleccione el formato nuevamente.</p>}
+    {bindingQuery.data && <p className="text-xs text-muted-foreground">«{bindingQuery.data.title}»Adoptar la revisión v{bindingQuery.data.revisionVersion}{bindingQuery.data.currentVersion !== bindingQuery.data.revisionVersion && ` · Revisión del esquema v${bindingQuery.data.currentVersion} los cambios solo se guardan en el esquema`}</p>}
+    {bindingQuery.isError && <p role="alert" className="text-sm text-destructive">No se pudo leer la información de apertura del libro.<button className="underline" onClick={() => void bindingQuery.refetch()}>Releer</button></p>}
 
-    <div className="outline-pane-switch" role="group" aria-label="工作区视图">
-      <button type="button" data-target="directory" aria-pressed={pane === "directory"} onClick={() => setPane("directory")}><ListTree />目录</button>
-      <button type="button" aria-pressed={pane === "editor"} onClick={() => setPane("editor")}><FilePenLine />{starter ? "故事构思" : "大纲内容"}</button>
-      <button type="button" aria-pressed={pane === "assistant"} onClick={() => showInspector(starter && activeInspector === "suggestions" ? "history" : activeInspector)}>{starter ? <><History />大纲记录</> : <><Sparkles />协作与历史</>}</button>
+    <div className="outline-pane-switch" role="group" aria-label="Vista del espacio de trabajo">
+      <button type="button" data-target="directory" aria-pressed={pane === "directory"} onClick={() => setPane("directory")}><ListTree />Tabla de contenido</button>
+      <button type="button" aria-pressed={pane === "editor"} onClick={() => setPane("editor")}><FilePenLine />{starter ? "Idea de la historia" : "Contenido del esquema"}</button>
+      <button type="button" aria-pressed={pane === "assistant"} onClick={() => showInspector(starter && activeInspector === "suggestions" ? "history" : activeInspector)}>{starter ? <><History />Registro de esquema</> : <><Sparkles />Colaboración e historia</>}</button>
     </div>
     <WorkspaceColumns layoutId="outline" className="outline-workspace-grid" data-pane={pane} data-inspector-open={sideOpen} gap={0} minCenter={300}
-      left={{ label: "调整大纲目录宽度", initial: "var(--outline-directory-width)", min: 144 }}
-      right={sideOpen ? { label: "调整协作与历史宽度", initial: "var(--outline-inspector-width)", min: 260 } : undefined}>
+      left={{ label: "Ajustar el ancho de la tabla de contenido del esquema", initial: "var(--outline-directory-width)", min: 144 }}
+      right={sideOpen ? { label: "Ajustar la colaboración y el ancho del historial", initial: "var(--outline-inspector-width)", min: 260 } : undefined}>
       <OutlineDirectory document={document} selectedId={selected?.nodeId ?? ""} onSelect={selectNode} disabled={writing || hasConflict}
         onAdd={(next, newId) => {
           setDraft({ baseVersion: draft?.baseVersion ?? version, document: next });
           navigateContent(newId); setEditing(true);
         }} />
-      <section aria-label="大纲内容编辑" className="outline-editor">
-        {turn.busy && <div className="outline-activity" role="status"><Sparkles size={16} /> 正在整理建议…
-          <button onClick={() => turn.target ? showLocalResult(turn.target) : showInspector("suggestions")}>{turn.target ? "查看本次修改" : "查看整书讨论"}</button></div>}
-        {ready && <div className="outline-activity" role="status">「{getOutlineNodeTitle(findOutlineNode(document, ready.target.id))}」的修改有了回复。
-          <button onClick={() => showLocalResult(ready.target, ready.proposalId)}>{ready.proposalId ? "查看建议" : "查看回复"}</button></div>}
-        {turn.error && <p className="outline-activity" role="alert">{turn.error}<button onClick={turn.clearError}>关闭提示</button></p>}
-        {receipt && <div className="outline-activity" role="status"><Check size={16} /> 已采纳为 v{receipt} <button onClick={() => showInspector("history")}>查看版本历史</button></div>}
+      <section aria-label="Edición de contenido de esquema" className="outline-editor">
+        {turn.busy && <div className="outline-activity" role="status"><Sparkles size={16} /> Recopilando sugerencias...
+          <button onClick={() => turn.target ? showLocalResult(turn.target) : showInspector("suggestions")}>{turn.target ? "Ver esta modificación" : "Ver discusión completa del libro"}</button></div>}
+        {ready && <div className="outline-activity" role="status">«{getOutlineNodeTitle(findOutlineNode(document, ready.target.id))}"Hay una respuesta a la modificación.
+          <button onClick={() => showLocalResult(ready.target, ready.proposalId)}>{ready.proposalId ? "Ver sugerencias" : "Ver respuestas"}</button></div>}
+        {turn.error && <p className="outline-activity" role="alert">{turn.error}<button onClick={turn.clearError}>Cerrar mensaje</button></p>}
+        {receipt && <div className="outline-activity" role="status"><Check size={16} /> Adoptado como v{receipt} <button onClick={() => showInspector("history")}>Ver historial de versiones</button></div>}
         {reviewId ? <div key={reviewId} className="outline-reading-scroll"><OutlineReviewReading projectId={id} proposalId={reviewId} document={query.data!.document!} version={version}
           locked={blockRevision} busy={turn.busy} onReturn={ownerId => navigateContent(ownerId ?? nodeId)} onSelect={node => navigateContent(node, undefined, reviewId)}
           onRequest={(requestText, priorId, target) => {
@@ -284,8 +284,8 @@ function OutlineWorkspace({ id }: { id: string }) {
         : !editing && selected ? <div className={starter ? "outline-reading-scroll outline-idea-page" : "outline-reading-scroll"} key={selected.nodeId}>
           {!localTarget && readingNotices}
           {starter ? <IdeaStarter projectId={id} value={request} onChange={setRequest} busy={turn.busy || blockRevision}
-            onGenerate={() => sendOpening(request.trim() || "根据我们讨论的故事方向，生成第一版大纲。", "generate_initial")}
-            onDiscuss={() => sendOpening(request.trim() ? `我想写这样的故事，请先问我一个问题，帮我想清楚方向。\n${request.trim()}`.slice(0,6000) : "我还没有具体的故事想法，请先问我一个问题，帮我找到方向。")}
+            onGenerate={() => sendOpening(request.trim() || "Genera una primera versión del esquema basada en la dirección de la historia que discutimos.", "generate_initial")}
+            onDiscuss={() => sendOpening(request.trim() ? `Quiero escribir una historia así, primero hazme una pregunta para ayudarme a determinar la dirección. zx0zx${request.trim()}`.slice(0,6000) : "Todavía no tengo una idea específica para la historia, así que primero hazme una pregunta para ayudarme a encontrar el camino.")}
             onEdit={() => setEditing(true)}>{conversation}</IdeaStarter>
             : <OutlineReading document={document} node={selected} version={version} onSelect={selectNode} onEdit={() => setEditing(true)}
               notices={localTarget && readingNotices}
@@ -307,37 +307,37 @@ function OutlineWorkspace({ id }: { id: string }) {
                 }}>{passages}</OutlineLocalReview>)} />}
           </div>
         : selected ? <OutlineNodeEditor key={selected.nodeId} document={document} node={selected} disabled={writing} onChange={updateField}
-          onSelect={selectNode} /> : <div className="outline-editor-fields"><p>这条内容在此修订中不存在。</p><Button variant="ghost" onClick={() => selectNode(document.story.nodeId)}>查看总纲</Button></div>}
+          onSelect={selectNode} /> : <div className="outline-editor-fields"><p>Este artículo no existe en esta revisión.</p><Button variant="ghost" onClick={() => selectNode(document.story.nodeId)}>Ver descripción general</Button></div>}
         {(editing || draft) && <footer className="outline-save-bar">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <span role="status" className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
-              {!draft && <Check size={14} aria-hidden />}{draft ? `有未保存的修改 · 基于 v${draft.baseVersion}` : `已保存 · v${version}`}</span>
+              {!draft && <Check size={14} aria-hidden />}{draft ? `Hay cambios no guardados · Basado en v${draft.baseVersion}` : `Guardado · v${version}`}</span>
             <div className="flex items-center gap-1">
-            {!draft && <Button size="sm" variant="ghost" onClick={() => setEditing(false)}>回到阅读</Button>}
+            {!draft && <Button size="sm" variant="ghost" onClick={() => setEditing(false)}>Volver a leer</Button>}
             {draft && !hasConflict && <Button size="sm" variant="ghost" disabled={writing} onClick={() => {
-              if (window.confirm("放弃这份大纲中所有未保存的修改？")) {
+              if (window.confirm("¿Descartar todos los cambios no guardados en este esquema?")) {
                 setDraft(null);
                 if (nodeId && query.data?.document && !findOutlineNode(query.data.document, nodeId)) setNodeId(null);
               }
-            }}>放弃修改</Button>}
-            <Button size="sm" variant={draft ? "default" : "secondary"} disabled={!draft || hasConflict || writing} onClick={() => save.mutate()}>{save.isPending ? "保存中…" : "保存为新修订"}</Button>
+            }}>Abandonar cambios</Button>}
+            <Button size="sm" variant={draft ? "default" : "secondary"} disabled={!draft || hasConflict || writing} onClick={() => save.mutate()}>{save.isPending ? "Guardando…" : "Guardar como nueva revisión"}</Button>
             </div>
           </div>
-          {hasConflict && <p role="alert" className="mt-2 text-sm text-warning">有更新的修订。请复制要保留的修改，再
-            <button className="underline" onClick={() => { if (window.confirm("载入最新修订会替换未保存的修改。继续吗？")) setDraft(null); }}>载入最新修订</button>。</p>}
+          {hasConflict && <p role="alert" className="mt-2 text-sm text-warning">Hay revisiones actualizadas. Copie los cambios que desea conservar y luego
+            <button className="underline" onClick={() => { if (window.confirm("La carga de la última revisión reemplaza los cambios no guardados. ¿Continuar?")) setDraft(null); }}>Cargar la última revisión</button>.</p>}
           {save.isError && <p role="alert" className="mt-2 text-sm text-destructive">{save.error.message}</p>}
         </footer>}
       </section>
 
-      {(!starter || sideOpen) && <aside ref={inspectorRef} aria-label="大纲建议与历史" className="outline-inspector">
-        <div className="outline-inspector-nav" role="group" aria-label="审阅工具">
-          <button aria-pressed={activeInspector === "suggestions"} onClick={() => showInspector("suggestions")}><Sparkles />整书讨论</button>
-          <button aria-pressed={activeInspector === "history"} onClick={() => setInspector("history")}><History />修订历史</button>
-          {showFeedback && <button aria-pressed={activeInspector === "feedback"} onClick={() => setInspector("feedback")}><MessageSquareText />章节反馈</button>}
-          <button className="outline-close-inspector" aria-label="收起侧栏" onClick={closeInspector}>收起</button>
+      {(!starter || sideOpen) && <aside ref={inspectorRef} aria-label="Resumen de consejos e historia" className="outline-inspector">
+        <div className="outline-inspector-nav" role="group" aria-label="Herramientas de revisión">
+          <button aria-pressed={activeInspector === "suggestions"} onClick={() => showInspector("suggestions")}><Sparkles />Discusión de todo el libro.</button>
+          <button aria-pressed={activeInspector === "history"} onClick={() => setInspector("history")}><History />Historial de revisiones</button>
+          {showFeedback && <button aria-pressed={activeInspector === "feedback"} onClick={() => setInspector("feedback")}><MessageSquareText />Comentarios del capítulo</button>}
+          <button className="outline-close-inspector" aria-label="Contraer barra lateral" onClick={closeInspector}>Cerca</button>
         </div>
         <div className="outline-inspector-body" data-conversation={activeInspector === "suggestions"}>
-          {draft && <p role="status" className="mb-4 text-sm text-muted-foreground">先保存手动修改，再生成建议或采用其他版本。</p>}
+          {draft && <p role="status" className="mb-4 text-sm text-muted-foreground">Guarde los cambios manuales antes de generar sugerencias o adoptar una versión diferente.</p>}
           {!starter && <div hidden={activeInspector !== "suggestions"} className="outline-conversations">{conversation}</div>}
           {activeInspector === "history" && <OutlineRevisionPanel outlineId={id} currentVersion={version} document={document} restoreDisabled={blockRevision} onRestored={refresh} />}
           {showFeedback && <div hidden={activeInspector !== "feedback"}><OutlineFeedbackPanel outlineId={id} bound={!!bindingQuery.data} applyDisabled={blockRevision} document={document} /></div>}

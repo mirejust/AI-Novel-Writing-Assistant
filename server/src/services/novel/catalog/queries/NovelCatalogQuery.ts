@@ -123,7 +123,7 @@ export async function listNovels({ page, limit, search, status, narrativeForm, w
       const world = normalized.world ?? (normalized.novelWorld
         ? {
           id: normalized.novelWorld.sourceWorld?.id ?? normalized.novelWorld.id,
-          name: normalized.novelWorld.sourceWorld?.name ?? normalized.novelWorld.title ?? "本书世界",
+          name: normalized.novelWorld.sourceWorld?.name ?? normalized.novelWorld.title ?? "mundo del libro",
           worldType: normalized.novelWorld.sourceWorld?.worldType ?? null,
         }
         : null);

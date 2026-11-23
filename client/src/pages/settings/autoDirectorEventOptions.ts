@@ -27,33 +27,33 @@ export interface AutoDirectorChannelDraft {
 export const AUTO_DIRECTOR_EVENT_OPTIONS: AutoDirectorEventOption[] = [
   {
     code: "auto_director.approval_required",
-    label: "自动继续待处理",
-    description: "自动导演卡在需要继续或确认的节点时通知你处理。",
+    label: "Continuar siendo procesado automáticamente",
+    description: "La tarjeta de director automática le notifica cuando es necesario continuar o confirmar un nodo.",
   },
   {
     code: "auto_director.auto_approved",
-    label: "AI 已自动通过",
-    description: "系统按审批授权通过检查点并继续执行时通知你。",
+    label: "La IA ha pasado automáticamente",
+    description: "El sistema le notifica cuando pasa el punto de control y continúa la ejecución según lo autorizado por la aprobación.",
   },
   {
     code: "auto_director.exception",
-    label: "运行异常",
-    description: "自动导演执行报错、失败或进入异常状态时通知你。",
+    label: "Operación anormal",
+    description: "Notificarle cuando la ejecución automática del director informe un error, falle o entre en un estado anormal.",
   },
   {
     code: "auto_director.recovered",
-    label: "异常恢复",
-    description: "之前异常的自动导演任务恢复执行时通知你。",
+    label: "Recuperación de excepción",
+    description: "Se le notificará cuando la tarea del director automático previamente anormal reanude su ejecución.",
   },
   {
     code: "auto_director.completed",
-    label: "执行完成",
-    description: "自动导演任务顺利完成当前阶段或整体流程时通知你。",
+    label: "Ejecución completada",
+    description: "Notificarle automáticamente cuando una tarea del director complete con éxito la etapa actual o el proceso general.",
   },
   {
     code: "auto_director.progress_changed",
-    label: "进度变化",
-    description: "自动导演跨阶段或关键进度变化时通知你。",
+    label: "Cambios de progreso",
+    description: "Notificarle automáticamente sobre cambios de progreso críticos o entre etapas.",
   },
 ];
 
@@ -104,10 +104,10 @@ export function summarizeSelectedAutoDirectorEvents(codes: string[]): string {
     .map((code) => AUTO_DIRECTOR_EVENT_LABEL_MAP.get(code))
     .filter((label): label is string => Boolean(label));
   if (labels.length === 0) {
-    return "未订阅事件";
+    return "No suscrito a eventos";
   }
   if (labels.length <= 2) {
-    return labels.join("、");
+    return labels.join(",");
   }
-  return `${labels.slice(0, 2).join("、")} 等 ${labels.length} 项`;
+  return `${labels.slice(0, 2).join(",")} esperar ${labels.length} artículo`;
 }

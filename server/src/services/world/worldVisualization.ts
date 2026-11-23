@@ -197,17 +197,17 @@ const FACTION_TYPE_ALIASES: Record<string, FactionNodeType> = {
 };
 
 const EDGE_RELATION_LABELS = [
-  "同盟",
-  "合作",
-  "支援",
-  "对抗",
-  "敌对",
-  "统属",
-  "压制",
-  "贸易",
-  "竞争",
-  "中立",
-  "关联",
+  "alianza",
+  "cooperar",
+  "apoyo",
+  "confrontación",
+  "hostilidad",
+  "pertenecer a",
+  "reprimir",
+  "comercio",
+  "competir",
+  "neutral",
+  "asociación",
 ] as const;
 
 function cleanJsonText(source: string): string {
@@ -323,52 +323,52 @@ function normalizeEdgeRelation(raw: unknown, sentence?: string): string {
     }
     const normalized = normalizeAliasKey(value);
     if (/(alliance|ally|同盟|联合|联手)/.test(normalized)) {
-      return "同盟";
+      return "alianza";
     }
     if (/(cooperate|合作|协作|配合)/.test(normalized)) {
-      return "合作";
+      return "cooperar";
     }
     if (/(support|援助|支援)/.test(normalized)) {
-      return "支援";
+      return "apoyo";
     }
     if (/(conflict|对抗|敌对|交战|围剿|镇压)/.test(normalized)) {
-      return "对抗";
+      return "confrontación";
     }
     if (/(trade|交易|贸易)/.test(normalized)) {
-      return "贸易";
+      return "comercio";
     }
     if (/(subordinate|统属|隶属|管辖|控制)/.test(normalized)) {
-      return "统属";
+      return "pertenecer a";
     }
     if (/(rival|竞争|争夺)/.test(normalized)) {
-      return "竞争";
+      return "competir";
     }
   }
   if (!sentence) {
-    return "关联";
+    return "asociación";
   }
   if (/同盟|联合|联手|结盟/.test(sentence)) {
-    return "同盟";
+    return "alianza";
   }
   if (/合作|协作|配合|联合抗敌|共同/.test(sentence)) {
-    return "合作";
+    return "cooperar";
   }
   if (/支援|援助|接应|策应/.test(sentence)) {
-    return "支援";
+    return "apoyo";
   }
   if (/敌对|对抗|冲突|围剿|镇压|交战|打击|进攻|压迫/.test(sentence)) {
-    return "对抗";
+    return "confrontación";
   }
   if (/隶属|统辖|控制|管辖|附属/.test(sentence)) {
-    return "统属";
+    return "pertenecer a";
   }
   if (/贸易|交易|输送|通商/.test(sentence)) {
-    return "贸易";
+    return "comercio";
   }
   if (/竞争|争夺|角力/.test(sentence)) {
-    return "竞争";
+    return "competir";
   }
-  return "关联";
+  return "asociación";
 }
 
 function clampMapCoordinate(value: unknown): number | undefined {
@@ -673,7 +673,7 @@ function normalizeGeographyEdges(
     seen.add(pairKey);
     const relation = typeof edge.relation === "string" && edge.relation.trim()
       ? edge.relation.trim()
-      : "相邻";
+      : "adyacente";
     result.push({
       source,
       target,
@@ -712,13 +712,13 @@ function buildFactionLabels(world: VisualizationSource): string[] {
     world.conflicts ?? "",
   ].filter(Boolean).join("\n");
   const exclusions = new Set([
-    "核心冲突",
-    "主要势力",
-    "势力关系",
-    "政治结构",
-    "组织势力",
-    "阵营关系",
-    "社会结构",
+    "Conflicto central",
+    "Facciones principales",
+    "relaciones de poder",
+    "estructura política",
+    "poder organizacional",
+    "relaciones de campamento",
+    "estructura social",
   ]);
   const fromLists = parseListFromText(combined, []);
   const namedEntities = extractNamedEntities(
@@ -738,7 +738,7 @@ function buildFactionEdges(
     world.factions ?? "",
     world.conflicts ?? "",
     world.background ?? "",
-  ].filter(Boolean).join("。"));
+  ].filter(Boolean).join("."));
   const relationCounter = new Map<string, Map<string, number>>();
 
   for (const sentence of sentences) {
@@ -762,7 +762,7 @@ function buildFactionEdges(
   const edges = Array.from(relationCounter.entries())
     .map(([key, bucket]) => {
       const [source, target] = key.split("|");
-      const relation = Array.from(bucket.entries()).sort((a, b) => b[1] - a[1])[0]?.[0] ?? "关联";
+      const relation = Array.from(bucket.entries()).sort((a, b) => b[1] - a[1])[0]?.[0] ?? "asociación";
       return { source, target, relation };
     })
     .slice(0, MAX_FACTION_EDGES);
@@ -773,7 +773,7 @@ function buildFactionEdges(
   if (nodes.length <= 1) {
     return [];
   }
-  const defaultRelation = world.conflicts?.trim() ? "对抗" : "关联";
+  const defaultRelation = world.conflicts?.trim() ? "confrontación" : "asociación";
   return nodes.slice(1).map((node) => ({
     source: nodes[0].id,
     target: node.id,
@@ -784,7 +784,7 @@ function buildFactionEdges(
 function buildGeographyMap(world: VisualizationSource): WorldVisualizationPayload["geographyMap"] {
   const geoSeeds = parseListFromText(
     [world.geography ?? "", world.background ?? ""].filter(Boolean).join("\n"),
-    ["核心区域", "边境区域", "未知区域"],
+    ["área central", "zona fronteriza", "zona desconocida"],
   )
     .slice(0, MAX_GEO_NODES)
     .map((label, index) => {
@@ -803,7 +803,7 @@ function buildGeographyMap(world: VisualizationSource): WorldVisualizationPayloa
   const edges = geoSeeds.slice(1).map((node, index) => ({
     source: geoSeeds[index]?.id ?? geoSeeds[0].id,
     target: node.id,
-    relation: "相邻",
+    relation: "adyacente",
     routeType: "other" as const,
     direction: node.directionHint,
   }));
@@ -815,7 +815,7 @@ function buildGeographyMap(world: VisualizationSource): WorldVisualizationPayloa
 }
 
 function buildPowerTree(world: VisualizationSource): WorldVisualizationPayload["powerTree"] {
-  return parseListFromText(world.magicSystem ?? world.technology ?? "", ["力量层级未明确"])
+  return parseListFromText(world.magicSystem ?? world.technology ?? "", ["El nivel de poder no está claro."])
     .slice(0, MAX_POWER_ITEMS)
     .map((description, index) => ({
       level: `L${index + 1}`,
@@ -848,7 +848,7 @@ function buildStructuredWorldVisualizationPayload(world: VisualizationSource): W
     .map((item) => ({
       source: item.sourceForceId,
       target: item.targetForceId,
-      relation: item.relation || "关联",
+      relation: item.relation || "asociación",
     }))
     .slice(0, MAX_FACTION_EDGES);
 
@@ -869,7 +869,7 @@ function buildStructuredWorldVisualizationPayload(world: VisualizationSource): W
         terrain: item.terrain || undefined,
         summary: item.summary || undefined,
         controllingForceIds: item.controllingForceIds,
-        risk: item.risk || (item.riskLevel ? `风险等级 ${item.riskLevel}` : undefined),
+        risk: item.risk || (item.riskLevel ? `nivel de riesgo ${item.riskLevel}` : undefined),
         storyRelevance: item.storyRelevance || item.narrativeFunction || undefined,
       };
     })
@@ -881,7 +881,7 @@ function buildStructuredWorldVisualizationPayload(world: VisualizationSource): W
     .map((item) => ({
       source: item.sourceLocationId,
       target: item.targetLocationId,
-      relation: item.connectionType || "相邻",
+      relation: item.connectionType || "adyacente",
       routeType: normalizeRouteType(item.connectionType, item.connectionType),
       distanceHint: item.distanceHint || undefined,
       risk: item.narrativeUse || undefined,
@@ -902,7 +902,7 @@ function buildStructuredWorldVisualizationPayload(world: VisualizationSource): W
       acc.push({
         source: relation.locationId,
         target: sibling.locationId,
-        relation: `${forceNameById.get(relation.forceId) ?? relation.forceId}${relation.relation ? `:${relation.relation}` : "控制"}`,
+        relation: `${forceNameById.get(relation.forceId) ?? relation.forceId}${relation.relation ? `:${relation.relation}` : "control"}`,
         routeType: "border",
       });
       return acc;
@@ -913,7 +913,7 @@ function buildStructuredWorldVisualizationPayload(world: VisualizationSource): W
     structure.rules.axioms.length > 0
       ? structure.rules.axioms.map((item, index) => ({
         level: `R${index + 1}`,
-        description: [item.name, item.summary].filter(Boolean).join("："),
+        description: [item.name, item.summary].filter(Boolean).join(":"),
       }))
       : buildPowerTree(world)
   ).slice(0, MAX_POWER_ITEMS);
@@ -921,7 +921,7 @@ function buildStructuredWorldVisualizationPayload(world: VisualizationSource): W
   const bindingSupport = buildWorldBindingSupport(structure);
   const timeline = bindingSupport.compatibleConflicts.length > 0
     ? bindingSupport.compatibleConflicts.slice(0, MAX_TIMELINE_ITEMS).map((item, index) => ({
-      year: `阶段${index + 1}`,
+      year: `escenario${index + 1}`,
       event: item,
     }))
     : buildTimeline(world);
@@ -950,12 +950,12 @@ function buildStructuredWorldVisualizationPayload(world: VisualizationSource): W
 }
 
 function buildTimeline(world: VisualizationSource): WorldVisualizationPayload["timeline"] {
-  return parseListFromText(world.history ?? "", ["当前历史脉络尚未明确"])
+  return parseListFromText(world.history ?? "", ["El contexto histórico actual aún no está claro"])
     .slice(0, MAX_TIMELINE_ITEMS)
     .map((event, index) => {
       const yearMatch = event.match(/\d{2,4}(?:年)?|民国\d+年|昭和\d+年|stage\s*\d+/i);
       return {
-        year: yearMatch?.[0] ?? `阶段${index + 1}`,
+        year: yearMatch?.[0] ?? `escenario${index + 1}`,
         event,
       };
     });
@@ -984,17 +984,17 @@ export function buildFallbackWorldVisualizationPayload(world: VisualizationSourc
 
 function buildVisualizationPrompt(world: VisualizationSource): string {
   return [
-    `世界名：${world.name}`,
-    `世界类型：${world.worldType ?? "custom"}`,
-    `概述：${world.description ?? "无"}`,
-    `背景：${world.background ?? "无"}`,
-    `势力：${world.factions ?? "无"}`,
-    `政治：${world.politics ?? "无"}`,
-    `种族：${world.races ?? "无"}`,
-    `地理：${world.geography ?? "无"}`,
-    `历史：${world.history ?? "无"}`,
-    `冲突：${world.conflicts ?? "无"}`,
-    `力量/科技：${[world.magicSystem, world.technology].filter(Boolean).join("\n") || "无"}`,
+    `Nombre mundial:${world.name}`,
+    `Tipo de mundo:${world.worldType ?? "custom"}`,
+    `Descripción general:${world.description ?? "Ninguno"}`,
+    `fondo:${world.background ?? "Ninguno"}`,
+    `fuerza:${world.factions ?? "Ninguno"}`,
+    `política:${world.politics ?? "Ninguno"}`,
+    `Carrera:${world.races ?? "Ninguno"}`,
+    `geografía:${world.geography ?? "Ninguno"}`,
+    `historia:${world.history ?? "Ninguno"}`,
+    `conflicto:${world.conflicts ?? "Ninguno"}`,
+    `Energía/Tecnología:${[world.magicSystem, world.technology].filter(Boolean).join("\n") || "Ninguno"}`,
   ].join("\n\n");
 }
 
@@ -1050,7 +1050,7 @@ function sanitizeVisualizationPayload(
 
   const timeline = (draft?.timeline ?? fallback.timeline)
     .map((item, index) => ({
-      year: typeof item.year === "string" && item.year.trim() ? item.year.trim() : `阶段${index + 1}`,
+      year: typeof item.year === "string" && item.year.trim() ? item.year.trim() : `escenario${index + 1}`,
       event: typeof item.event === "string" ? item.event.trim() : "",
     }))
     .filter((item) => item.event)

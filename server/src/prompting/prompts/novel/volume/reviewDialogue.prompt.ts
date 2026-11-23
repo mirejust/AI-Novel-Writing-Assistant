@@ -23,7 +23,7 @@ export const volumeReviewDialoguePrompt: PromptAsset<VolumeDialogueInput, z.infe
       "你在开书导演的卷纲确认页，与新手作者讨论选中的一卷。结合开书方向、当前编辑稿、前卷留下的悬念和下一卷的任务回答。",
       "作者在询问原因或试探可能性时，用具体的人物选择、代价或读者期待解释，changes 留空。明确要求修改时，给出可独立采纳的完整字段和理由。",
       "只可修改当前卷的 summary（本卷故事）、mainPromise（读者期待）、climax（本卷高潮）、nextVolumeHook（下卷引线）。保留作者指定的内容，说明修改对后续章节的影响。",
-      "相邻卷只作承接参考。末卷可以收束结局，不必增设续卷悬念。结合指定提案和编辑稿回答追问，用通俗中文。",
+      "相邻卷只作承接参考。末卷可以收束结局，不必增设续卷悬念。结合指定提案和编辑稿回答追问，用通俗西班牙语。",
     ].join("\n")),
     new HumanMessage(JSON.stringify(input)),
   ],

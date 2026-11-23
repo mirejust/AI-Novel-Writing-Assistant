@@ -17,7 +17,7 @@ const payoffSource = z.object({
 
 /** This read adapter deliberately does not consume lazy-sync or generation services. */
 export async function readDirectorLedgers(novelId: string): Promise<DirectorWorkspaceLedgers> {
-  if (!await prisma.novel.findUnique({where:{id:novelId},select:{id:true}})) throw new AppError("小说不存在。",404);
+  if (!await prisma.novel.findUnique({where:{id:novelId},select:{id:true}})) throw new AppError("La novela no existe.",404);
   const [payoffs,resources,events,pending] = await prisma.$transaction([
     prisma.payoffLedgerItem.findMany({where:{novelId},orderBy:[{updatedAt:"desc"},{id:"asc"}]}),
     prisma.characterResourceLedgerItem.findMany({where:{novelId},orderBy:[{updatedAt:"desc"},{id:"asc"}],include:{holderCharacter:{select:{id:true,name:true,novelId:true}},ownerCharacter:{select:{id:true,name:true,novelId:true}}}}),
@@ -28,16 +28,16 @@ export async function readDirectorLedgers(novelId: string): Promise<DirectorWork
   function savedValue<T>(text:string|null,schema:z.ZodType<T>,fallback:T,label:string):T {
     if (!text) return fallback;
     try {const value=schema.safeParse(JSON.parse(text));if(value.success) return value.data;} catch { /* Preserve the readable base record. */ }
-    warnings.push(`${label}的部分保存资料无法读取。`);return fallback;
+    warnings.push(`${label}Algunos de los datos guardados no se pueden leer.`);return fallback;
   }
   function array<T>(text:string|null,schema:z.ZodType<T>,label:string):T[] {
     const values=savedValue(text,z.array(z.unknown()),[],label);
     const result:T[]=[];
-    for(const value of values) {const item=schema.safeParse(value);if(item.success) result.push(item.data);else warnings.push(`${label}的部分保存资料无法读取。`);}
+    for(const value of values) {const item=schema.safeParse(value);if(item.success) result.push(item.data);else warnings.push(`${label}Algunos de los datos guardados no se pueden leer.`);}
     return result;
   }
   function validRows<T>(rows:unknown[],schema:z.ZodType<T>,label:string):T[] {
-    return rows.flatMap(row=>{const parsed=schema.safeParse(row);if(parsed.success) return [parsed.data];warnings.push(`${label}有记录格式异常，请核对保存资料。`);return [];});
+    return rows.flatMap(row=>{const parsed=schema.safeParse(row);if(parsed.success) return [parsed.data];warnings.push(`${label}Hay una anomalía en el formato del registro, verifique los datos guardados.`);return [];});
   }
   return {
     novelId,
@@ -58,13 +58,13 @@ export async function readDirectorLedgers(novelId: string): Promise<DirectorWork
       knownByCharacterIds:array(row.knownByCharacterIdsJson,z.string(),row.name),constraints:array(row.constraintsJson,z.string(),row.name),
       riskSignals:array(row.riskSignalsJson,characterResourceRiskSignalSchema,row.name),sourceRefs:array(row.sourceRefsJson,characterResourceSourceRefSchema,row.name),
       evidence:array(row.evidenceJson,characterResourceEvidenceSchema,row.name),createdAt:row.createdAt.toISOString(),updatedAt:row.updatedAt.toISOString(),
-    })),characterResourceLedgerItemSchema,"背包与资源"),
-    resourceEvents:validRows(events.map(row=>({...row,evidence:array(row.evidenceJson,z.string(),"资源变化"),createdAt:row.createdAt.toISOString()})),characterResourceEventSchema,"资源变化"),
+    })),characterResourceLedgerItemSchema,"Mochilas y recursos"),
+    resourceEvents:validRows(events.map(row=>({...row,evidence:array(row.evidenceJson,z.string(),"Cambios de recursos"),createdAt:row.createdAt.toISOString()})),characterResourceEventSchema,"Cambios de recursos"),
     pendingResources:validRows(pending.map(row=>({...row,
-      payload:savedValue(row.payloadJson,z.record(z.string(),z.unknown()),{},"待核对资源"),
-      evidence:array(row.evidenceJson,z.string(),"待核对资源"),validationNotes:array(row.validationNotesJson,z.string(),"待核对资源"),
+      payload:savedValue(row.payloadJson,z.record(z.string(),z.unknown()),{},"Recursos a verificar"),
+      evidence:array(row.evidenceJson,z.string(),"Recursos a verificar"),validationNotes:array(row.validationNotesJson,z.string(),"Recursos a verificar"),
       createdAt:row.createdAt.toISOString(),updatedAt:row.updatedAt.toISOString(),
-    })),characterResourceProposalSummarySchema,"待核对资源"),
+    })),characterResourceProposalSummarySchema,"Recursos a verificar"),
     warnings:[...new Set(warnings)],
   };
 }

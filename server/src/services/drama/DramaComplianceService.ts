@@ -46,7 +46,7 @@ function complianceToQualityFlags(compliance: DramaComplianceOutput): QualityFla
   return compliance.items.map((item) => ({
     severity,
     code: `compliance_${compliance.level}`,
-    evidence: `${item.rule}：${item.excerpt}`,
+    evidence: `${item.rule}:${item.excerpt}`,
     suggestion: item.suggestion,
   }));
 }
@@ -60,7 +60,7 @@ function mergeRepairPlan(
   }
   return {
     mode: "patch",
-    instruction: flags.map((flag) => flag.suggestion).join("；"),
+    instruction: flags.map((flag) => flag.suggestion).join(";"),
   };
 }
 
@@ -158,7 +158,7 @@ export class DramaComplianceService {
 
   async checkEpisodeContext(context: ComplianceContext, options: DramaLLMOptions = {}): Promise<DramaComplianceOutput> {
     if (!context.episode.content?.trim()) {
-      throw new Error(`第 ${context.episode.order} 集尚未生成台本，不能执行合规预检。`);
+      throw new Error(`Cap. ${context.episode.order} El script no se ha generado para el conjunto y no se puede realizar la verificación previa de cumplimiento.`);
     }
     const result = await runStructuredPrompt({
       asset: dramaCompliancePrompt,

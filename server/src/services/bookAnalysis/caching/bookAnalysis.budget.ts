@@ -10,7 +10,7 @@ export class BookAnalysisBudgetExceededError extends AppError {
     readonly usedTokens: number,
     readonly budgetTokens: number,
   ) {
-    super(`拆书累计用量已达到预算。请调整预算后继续。（${BOOK_ANALYSIS_BUDGET_EXCEEDED_CODE}: ${usedTokens}/${budgetTokens} tokens）`, 409);
+    super(`El uso acumulativo de libros desempaquetados ha alcanzado el presupuesto. Por favor ajuste su presupuesto antes de continuar. (${BOOK_ANALYSIS_BUDGET_EXCEEDED_CODE}: ${usedTokens}/${budgetTokens} fichas)`, 409);
     this.name = "BookAnalysisBudgetExceededError";
   }
 }

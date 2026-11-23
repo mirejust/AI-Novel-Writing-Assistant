@@ -9,7 +9,7 @@ export function registerChapterBudgetSettingsRoutes(router: Router): void {
     catch (error) {next(error);}
   });
   router.put("/auto-director/chapter-budget", validate({body: directorChapterBudgetSettingsSchema}), async (req, res, next) => {
-    try {res.json({success: true, data: await saveDirectorChapterBudgetSettings(req.body), message: "单章 AI 用量上限已保存，将用于新任务。"});}
+    try {res.json({success: true, data: await saveDirectorChapterBudgetSettings(req.body), message: "El límite de uso de IA para un solo capítulo se ha guardado y se utilizará para nuevas misiones."});}
     catch (error) {next(error);}
   });
 }

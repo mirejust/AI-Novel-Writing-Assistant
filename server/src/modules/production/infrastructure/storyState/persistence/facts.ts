@@ -7,7 +7,7 @@ export function createFactsWriter(rag: { tenantId: string; maxAttempts: number }
 return async ({ tx, context, output }) => {
   const { novelId, chapterId, order } = context.run.progress.unit;
   const summary = compact(output.summary);
-  const shortLines = (values: (string | null | undefined)[]) => [...new Set(values.map(compact).filter(Boolean))].slice(0, 3).join("；") || null;
+  const shortLines = (values: (string | null | undefined)[]) => [...new Set(values.map(compact).filter(Boolean))].slice(0, 3).join(";") || null;
   const data = { summary, keyEvents: shortLines(output.concreteFacts.filter(fact => fact.category !== "state_changed").map(fact => fact.text)),
     characterStates: shortLines(output.stateDeltas.characterStates.map(state => state.summary)) };
   await tx.chapter.update({ where: { id: chapterId }, data: { expectation: summary } });

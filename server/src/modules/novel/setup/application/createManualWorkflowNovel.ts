@@ -9,7 +9,7 @@ import { buildNovelEditResumeTarget, stringifyResumeTarget } from "../../../../s
 
 export async function createManualWorkflowNovel(taskId: string, resolveInput: () => Promise<CreateNovelInput>) {
   const task = await prisma.novelWorkflowTask.findUnique({where: {id: taskId}, include: {novel: true}});
-  if (!task || task.lane !== "manual_create") throw new AppError("找不到这次手动开书任务。", 404);
+  if (!task || task.lane !== "manual_create") throw new AppError("Esta tarea de apertura manual de libros no se puede encontrar.", 404);
   if (task.novel) return normalizeNovelOutput(task.novel);
 
   // Resource recommendation can call a model. Keep it outside the write transaction.
@@ -20,14 +20,14 @@ export async function createManualWorkflowNovel(taskId: string, resolveInput: ()
     });
     if (!claim.count) {
       const linked = await tx.novelWorkflowTask.findUnique({where: {id: taskId}, include: {novel: true}});
-      if (!linked?.novel || linked.lane !== "manual_create") throw new AppError("无法恢复这次手动开书任务。", 409);
+      if (!linked?.novel || linked.lane !== "manual_create") throw new AppError("Esta tarea de apertura manual de libros no se puede reanudar.", 409);
       return {novel: normalizeNovelOutput(linked.novel), created: false};
     }
     const novel = await new NovelCoreCrudService().createNovel(input, tx);
     const resumeTarget = buildNovelEditResumeTarget({novelId: novel.id, taskId, lane: "manual_create", stage: "basic"});
     await tx.novelWorkflowTask.update({where: {id: taskId}, data: {
       novelId: novel.id, title: novel.title, progress: Math.max(task.progress, defaultProgressForStage("project_setup")),
-      currentStage: stageLabel("project_setup"), currentItemKey: "project_setup", currentItemLabel: "小说项目已创建",
+      currentStage: stageLabel("project_setup"), currentItemKey: "project_setup", currentItemLabel: "Nuevo proyecto creado",
       resumeTargetJson: stringifyResumeTarget(resumeTarget),
     }});
     return {novel, created: true};

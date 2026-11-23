@@ -39,13 +39,13 @@ export function createTimelineArtifactPorts(deps: TimelineArtifactDependencies):
           novelId: context.run.progress.unit.novelId, chapterId: context.run.progress.unit.chapterId,
           chapterIndex: context.run.progress.unit.order, novelTitle: prepared.novelTitle, chapterTitle: prepared.chapterTitle,
           chapterGoal: prepared.contextPackage.chapterWriteContext?.chapterMission.objective
-            ?? prepared.contextPackage.chapter.expectation ?? "无明确章节目标",
+            ?? prepared.contextPackage.chapter.expectation ?? "No hay objetivos claros del capítulo",
           chapterContent: context.content, timelineContext,
           provider: context.run.snapshots.model.provider as LLMProvider, model: context.run.snapshots.model.model, temperature: 0.2,
         };
         const description = await deps.describePrompt(request);
         if (!checkContextBudget({ input: description.renderedInput, contextWindow: description.contextWindow,
-          outputTokens: description.outputTokens, safetyTokens: 1024 }).ok) throw new InvalidProductionRequestError("完整时间线上下文超出有效模型预算。");
+          outputTokens: description.outputTokens, safetyTokens: 1024 }).ok) throw new InvalidProductionRequestError("El contexto completo del cronograma excede el presupuesto del modelo válido.");
         return { inputFingerprint: fingerprint(request, description), outputTokens: description.outputTokens, input: wire(request) };
       },
       async invoke(context, prepared) {

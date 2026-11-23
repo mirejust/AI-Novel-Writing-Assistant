@@ -42,7 +42,7 @@ export function CharacterForwardAdjustDialog({ novelId, character, initialPrevie
         queryClient.invalidateQueries({ queryKey: queryKeys.novels.characterDynamicsOverview(novelId) }),
         queryClient.invalidateQueries({ queryKey: characterForwardPreviewKey(novelId, character.id) }),
       ]);
-      toast.success(`角色调整已保存，从第 ${result.effectiveFromChapterOrder} 章起生效。`);
+      toast.success(`Ajustes de personajes guardados, comenzando con ${result.effectiveFromChapterOrder} Vigente a partir de este Capítulo.`);
       onClose();
     },
   });
@@ -55,30 +55,30 @@ export function CharacterForwardAdjustDialog({ novelId, character, initialPrevie
   }
 
   return <Dialog open onOpenChange={open => { if (!open) requestClose(); }}>
-    <AppDialogContent title={`调整 ${character.name}`} description="为后续写作修改角色状态、行动目标或成长弧。"
+    <AppDialogContent title={`Ajuste ${character.name}`} description="Revise el estado del personaje, los objetivos de acción o los arcos de crecimiento para escritura posterior."
       footer={discarding ? <>
-        <p className="mr-auto text-sm text-muted-foreground">关闭会放弃未保存的修改。</p>
-        <Button variant="ghost" onClick={() => setDiscarding(false)}>继续编辑</Button>
-        <Button variant="outline" onClick={onClose}>放弃修改</Button>
+        <p className="mr-auto text-sm text-muted-foreground">Al cerrar se descartan los cambios no guardados.</p>
+        <Button variant="ghost" onClick={() => setDiscarding(false)}>Continuar editando</Button>
+        <Button variant="outline" onClick={onClose}>Abandonar cambios</Button>
       </> : <>
-        <Button variant="ghost" disabled={pending} onClick={requestClose}>取消</Button>
+        <Button variant="ghost" disabled={pending} onClick={requestClose}>Cancelar</Button>
         <Button disabled={pending || !changed.length || !!base.blockedReason || conflict} onClick={() => save.mutate()}>
-          {save.isPending ? "正在保存…" : "保存调整"}
+          {save.isPending ? "Guardando…" : "Guardar ajustes"}
         </Button>
       </>}>
       <div className="space-y-5">
         <section className="space-y-2 rounded-md bg-muted/40 p-4 text-sm">
           {base.blockedReason ? <p role="status">{base.blockedReason}</p> : <>
-            <h3 className="font-medium">从第 {base.effectiveFromChapterOrder} 章起生效</h3>
+            <h3 className="font-medium">desde el primero {base.effectiveFromChapterOrder} En vigor a partir de la fecha del Capítulo</h3>
             <p className="text-muted-foreground">{base.effectiveFromChapterOrder > 1
-              ? `第 1 至 ${base.effectiveFromChapterOrder - 1} 章不受影响。保存不会重写正文。`
-              : "保存不会重写正文。"}</p>
+              ? `1er a ${base.effectiveFromChapterOrder - 1} El capítulo no se ve afectado. Guardar no reescribirá el texto.`
+              : "Guardar no reescribirá el texto."}</p>
             {base.affectedPlans.length ? <>
-              <p className="font-medium">保存后待核对的章节计划</p>
+              <p className="font-medium">Plan de capítulo que se comprobará después de guardar</p>
               <ul className="max-h-28 list-disc space-y-1 overflow-y-auto pl-5 text-muted-foreground">
-                {base.affectedPlans.map(plan => <li key={plan.planId}>第 {plan.chapterOrder} 章 · {plan.title}</li>)}
+                {base.affectedPlans.map(plan => <li key={plan.planId}>Cap. {plan.chapterOrder} capítulo · {plan.title}</li>)}
               </ul>
-            </> : <p className="text-muted-foreground">暂无需要核对的章节计划。</p>}
+            </> : <p className="text-muted-foreground">Actualmente no hay planes de capítulos para verificar.</p>}
           </>}
         </section>
         {characterForwardFieldNames.map(field => <label key={field} className="block space-y-2 text-sm">
@@ -89,7 +89,7 @@ export function CharacterForwardAdjustDialog({ novelId, character, initialPrevie
         </label>)}
         {save.isError || refresh.isError ? <p role="alert" className="text-sm text-destructive">{refresh.error?.message ?? save.error?.message}</p> : null}
         {conflict || base.blockedReason ? <Button variant="outline" disabled={pending || discarding} onClick={() => refresh.mutate()}>
-          {refresh.isPending ? "正在预览…" : "重新预览并重置表单"}
+          {refresh.isPending ? "Vista previa…" : "Vista previa y restablecer el formulario nuevamente"}
         </Button> : null}
       </div>
     </AppDialogContent>

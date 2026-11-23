@@ -75,7 +75,7 @@ router.get("/", validate({ query: listQuerySchema }), async (req, res, next) => 
     res.status(200).json({
       success: true,
       data,
-      message: "获取基础角色列表成功。",
+      message: "Obtención de la lista de roles básicos con éxito.",
     } satisfies ApiResponse<typeof data>);
   } catch (error) {
     next(error);
@@ -90,11 +90,11 @@ router.post("/", validate({ body: baseCharacterSchema }), async (req, res, next)
         tags: req.body.tags ?? "",
       },
     });
-    await characterLibrarySyncService.createBaseRevision(data.id, "创建角色库角色。", "manual_base_character_create");
+    await characterLibrarySyncService.createBaseRevision(data.id, "Cree un rol de biblioteca de roles.", "manual_base_character_create");
     res.status(201).json({
       success: true,
       data,
-      message: "创建基础角色成功。",
+      message: "El rol básico se creó con éxito.",
     } satisfies ApiResponse<typeof data>);
   } catch (error) {
     next(error);
@@ -110,14 +110,14 @@ router.get("/:id", validate({ params: idSchema }), async (req, res, next) => {
     if (!data) {
       res.status(404).json({
         success: false,
-        error: "角色不存在。",
+        error: "El personaje no existe.",
       } satisfies ApiResponse<null>);
       return;
     }
     res.status(200).json({
       success: true,
       data,
-      message: "获取角色详情成功。",
+      message: "Obteniendo los detalles del rol exitosamente.",
     } satisfies ApiResponse<typeof data>);
   } catch (error) {
     next(error);
@@ -136,14 +136,14 @@ router.put(
       });
       const revision = await characterLibrarySyncService.createBaseRevision(
         data.id,
-        "更新角色库基础设定。",
+        "Configuración básica de la biblioteca de personajes actualizada.",
         "manual_base_character_update",
       );
       await characterLibrarySyncService.createLibraryUpdateProposals(data.id, revision.id);
       res.status(200).json({
         success: true,
         data,
-        message: "更新角色成功。",
+        message: "Rol actualizado correctamente.",
       } satisfies ApiResponse<typeof data>);
     } catch (error) {
       next(error);
@@ -157,7 +157,7 @@ router.delete("/:id", validate({ params: idSchema }), async (req, res, next) => 
     await prisma.baseCharacter.delete({ where: { id } });
     res.status(200).json({
       success: true,
-      message: "删除角色成功。",
+      message: "El rol se eliminó exitosamente.",
     } satisfies ApiResponse<null>);
   } catch (error) {
     next(error);
@@ -173,8 +173,8 @@ router.post("/generate", validate({ body: generateSchema }), async (req, res, ne
       success: true,
       data: result.data,
       message: result.outputAnomaly
-        ? "AI 角色生成完成（模型输出异常，已自动回退）。"
-        : "AI 角色生成成功。",
+        ? "Se completa la generación de personajes de IA (la salida del modelo es anormal y se revierte automáticamente)."
+        : "Personaje AI generado con éxito.",
     } satisfies ApiResponse<typeof result.data>);
   } catch (error) {
     next(error);

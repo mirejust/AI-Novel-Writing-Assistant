@@ -34,7 +34,7 @@ function forbiddenBrief(event: StoryTimelineEvent) {
   return {
     id: event.id,
     title: event.title,
-    reason: event.summary || "该事件属于后续章节计划，当前章节不得提前发生。",
+    reason: event.summary || "Este evento pertenece al plan para capítulos posteriores y el capítulo actual no puede ocurrir con anticipación.",
   };
 }
 
@@ -49,9 +49,9 @@ function buildContinuityRequirements(input: {
   constraints: TimelineConstraint[];
 }): string[] {
   return [
-    ...input.blockingHooks.map((hook) => `必须立即承接上一章钩子：${hook.title}。${hook.description}`),
-    ...input.plannedEvents.map((event) => `本章必须推进：${event.title}。${event.summary}`),
-    ...input.forbiddenEvents.slice(0, 5).map((event) => `禁止提前发生：${event.title}。`),
+    ...input.blockingHooks.map((hook) => `Hay que retomar inmediatamente el anzuelo del capítulo anterior:${hook.title}.${hook.description}`),
+    ...input.plannedEvents.map((event) => `Este capítulo debe avanzar:${event.title}.${event.summary}`),
+    ...input.forbiddenEvents.slice(0, 5).map((event) => `Prohibido que ocurra por adelantado:${event.title}.`),
     ...input.constraints.map(constraintToRequirement),
   ].filter(Boolean);
 }

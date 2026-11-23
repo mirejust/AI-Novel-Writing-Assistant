@@ -11,7 +11,7 @@ export default function NovelWorkflowRunningIndicator(props: NovelWorkflowRunnin
   const {
     progress,
     className,
-    label = "AI 正在后台持续推进",
+    label = "La IA sigue avanzando en segundo plano",
   } = props;
   const percent = normalizeProgressPercent(progress);
 

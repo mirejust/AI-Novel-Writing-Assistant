@@ -111,20 +111,20 @@ export default function AntiAiRulesPage() {
     mutationFn: (payload: ReturnType<typeof buildPayload>) => createAntiAiRule(payload),
     onSuccess: async () => {
       await refreshRules();
-      toast.success("反 AI 规则已创建。");
+      toast.success("Se crearon reglas anti-IA.");
       setDialogOpen(false);
     },
-    onError: (error) => toast.error(error instanceof Error ? error.message : "创建规则失败。"),
+    onError: (error) => toast.error(error instanceof Error ? error.message : "No se pudo crear la regla."),
   });
 
   const updateMutation = useMutation({
     mutationFn: ({ id, payload }: { id: string; payload: Partial<ReturnType<typeof buildPayload>> }) => updateAntiAiRule(id, payload),
     onSuccess: async () => {
       await refreshRules();
-      toast.success("反 AI 规则已保存。");
+      toast.success("Se guardaron las reglas anti-IA.");
       setDialogOpen(false);
     },
-    onError: (error) => toast.error(error instanceof Error ? error.message : "保存规则失败。"),
+    onError: (error) => toast.error(error instanceof Error ? error.message : "No se pudieron guardar las reglas."),
   });
 
   const aiDraftMutation = useMutation({
@@ -148,7 +148,7 @@ export default function AntiAiRulesPage() {
     onSuccess: (response) => {
       const result = response.data;
       if (!result) {
-        toast.error("AI 没有返回可用草稿。");
+        toast.error("AI no devolvió borradores utilizables.");
         return;
       }
       setForm({
@@ -164,9 +164,9 @@ export default function AntiAiRulesPage() {
         globalBaselineEnabled: result.draft.globalBaselineEnabled,
         autoRewrite: result.draft.autoRewrite,
       });
-      toast.success("草稿填入表单，请检查后保存。");
+      toast.success("Complete el formulario como borrador, verifíquelo y guárdelo.");
     },
-    onError: (error) => toast.error(error instanceof Error ? error.message : "AI 生成草稿失败。"),
+    onError: (error) => toast.error(error instanceof Error ? error.message : "La IA no pudo generar borrador."),
   });
 
   const reviewScope = JSON.stringify([previewStyleProfileId, testPreviewRuleIds,
@@ -186,7 +186,7 @@ export default function AntiAiRulesPage() {
       return { ...response, sourceContent, sourceScope };
     },
     onSuccess: () => { setRewritePreview(""); rewriteMutation.reset(); },
-    onError: (error) => toast.error(error instanceof Error ? error.message : "检测失败。"),
+    onError: (error) => toast.error(error instanceof Error ? error.message : "La detección falló."),
   });
 
   const rewriteMutation = useMutation({
@@ -204,7 +204,7 @@ export default function AntiAiRulesPage() {
       return { ...response, sourceContent, sourceScope };
     },
     onSuccess: (response) => setRewritePreview(response.data?.content ?? ""),
-    onError: (error) => toast.error(error instanceof Error ? error.message : "修正失败。"),
+    onError: (error) => toast.error(error instanceof Error ? error.message : "La corrección falló."),
   });
 
   useEffect(() => {
@@ -236,7 +236,7 @@ export default function AntiAiRulesPage() {
     event.preventDefault();
     const payload = buildPayload(form);
     if (!payload.key || !payload.name || !payload.description) {
-      toast.error("请填写规则标识、名称和说明。");
+      toast.error("Complete el ID de la regla, el nombre y la descripción.");
       return;
     }
     if (editingRule) {
@@ -270,25 +270,25 @@ export default function AntiAiRulesPage() {
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="space-y-2">
             <h1 className="flex items-center gap-2.5 text-2xl font-semibold tracking-tight">
-              <ShieldCheck aria-hidden="true" className="h-6 w-6 text-primary" />反 AI 规则
+              <ShieldCheck aria-hidden="true" className="h-6 w-6 text-primary" />Reglas anti-IA
             </h1>
             <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
-              减少模板感，保留人物口吻。选择生成规则，再用一段正文试试效果。
+              Reducir la sensación de plantilla y conservar el tono de los personajes. Seleccione la regla de generación y pruebe el efecto con un fragmento de texto.
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Button asChild variant="ghost"><a href="#anti-ai-test-panel"><FlaskConical aria-hidden="true" className="h-4 w-4" />效果测试</a></Button>
-            <Button type="button" onClick={openCreateDialog}><Plus aria-hidden="true" className="h-4 w-4" />新建规则</Button>
+            <Button asChild variant="ghost"><a href="#anti-ai-test-panel"><FlaskConical aria-hidden="true" className="h-4 w-4" />Prueba de efecto</a></Button>
+            <Button type="button" onClick={openCreateDialog}><Plus aria-hidden="true" className="h-4 w-4" />Nueva regla</Button>
           </div>
         </div>
-        {rulesQuery.isPending ? <p role="status" className="text-sm text-muted-foreground">正在读取规则…</p> : !rulesQuery.isError ? <AntiAiRuleStats {...stats} /> : null}
+        {rulesQuery.isPending ? <p role="status" className="text-sm text-muted-foreground">Reglas de lectura...</p> : !rulesQuery.isError ? <AntiAiRuleStats {...stats} /> : null}
       </header>
 
       <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
         <AntiAiRuleList
           rules={filteredRules}
           loading={rulesQuery.isLoading}
-          error={rulesQuery.isError ? "规则加载失败，请重新加载。" : undefined}
+          error={rulesQuery.isError ? "Error al cargar la regla, vuelva a cargarla." : undefined}
           onRetry={() => { void rulesQuery.refetch(); }}
           filter={filter}
           isSaving={isSaving}
@@ -299,13 +299,13 @@ export default function AntiAiRulesPage() {
           onToggleTestingRule={toggleTestingRule}
         />
 
-        <aside id="anti-ai-test-panel" aria-label="规则生效范围与效果测试" className="min-w-0 scroll-mt-6 divide-y divide-border/60 rounded-xl bg-card text-card-foreground">
+        <aside id="anti-ai-test-panel" aria-label="Pruebas efectivas de alcance y efecto de reglas" className="min-w-0 scroll-mt-6 divide-y divide-border/60 rounded-xl bg-card text-card-foreground">
           <AntiAiEffectivePreviewCard
             profiles={profiles}
             styleProfileId={previewStyleProfileId}
             effective={effective}
             loading={effectiveQuery.isFetching}
-            error={effectiveQuery.isError ? "生效规则加载失败，请重新加载后测试。" : undefined}
+            error={effectiveQuery.isError ? "La carga de las reglas efectivas falló, vuelva a cargarlas y pruebe." : undefined}
             onRetry={() => { void effectiveQuery.refetch(); }}
             onStyleProfileChange={setPreviewStyleProfileId}
           />

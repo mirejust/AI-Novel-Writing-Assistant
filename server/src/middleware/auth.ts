@@ -25,7 +25,7 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction):
   const token = authorization ? /^Bearer (.+)$/i.exec(authorization)?.[1] ?? "" : cookieToken(req);
   const digest = (value: string) => createHash("sha256").update(value).digest();
   if (!token || !timingSafeEqual(digest(token), digest(expected))) {
-    res.status(401).json({ success: false, code: "ACCESS_TOKEN_REQUIRED", error: "请输入有效的访问令牌。" });
+    res.status(401).json({ success: false, code: "ACCESS_TOKEN_REQUIRED", error: "Introduzca un token de acceso válido." });
     return;
   }
   next();

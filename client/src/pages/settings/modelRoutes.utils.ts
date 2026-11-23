@@ -111,24 +111,24 @@ export function isSameRouteDraft(draft: RouteDraft, route: SavedModelRoute | und
 
 export function formatStructuredStatus(status: ModelRouteConnectivityStatus["structured"]): string {
   if (!status) {
-    return "结构化诊断：未执行";
+    return "Diagnóstico estructurado: no ejecutado";
   }
   if (status.ok) {
-    return `结构化正常 · ${status.requestProtocol ?? "auto"} · ${status.strategy ?? "prompt_json"}${status.reasoningForcedOff ? " · 会关闭 thinking" : ""}`;
+    return `Normal estructurado · ${status.requestProtocol ?? "auto"} · ${status.strategy ?? "prompt_json"}${status.reasoningForcedOff ? " · Dejará de pensar" : ""}`;
   }
-  return `结构化异常 · ${status.errorCategory ?? "unknown"} · ${status.error ?? "未知错误"}`;
+  return `Excepciones estructuradas · ${status.errorCategory ?? "unknown"} · ${status.error ?? "Error desconocido"}`;
 }
 
 export function formatConnectivityStatus(status?: ModelRouteConnectivityStatus | null): string {
   if (!status) {
-    return "尚未检测生效路由。";
+    return "Aún no se ha detectado ninguna ruta efectiva.";
   }
   const parts: string[] = [];
   if (status.plain) {
     parts.push(
       status.plain.ok
-        ? `普通连通正常${status.plain.latency != null ? ` · ${status.plain.latency}ms` : ""}`
-        : `普通连通失败 · ${status.plain.error ?? "未知错误"}`,
+        ? `Conexión normal${status.plain.latency != null ? ` · ${status.plain.latency}ms` : ""}`
+        : `Fallo de conexión normal · ${status.plain.error ?? "Error desconocido"}`,
     );
   }
   parts.push(formatStructuredStatus(status.structured));

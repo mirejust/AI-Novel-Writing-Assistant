@@ -32,12 +32,12 @@ export const VISIBLE_PROFILE_FIELDS: CharacterVisibleProfileField[] = [
 ];
 
 const FIELD_LABELS: Record<CharacterVisibleProfileField, string> = {
-  appearance: "样貌记忆点",
-  physique: "体态基底",
-  attireStyle: "常见穿着",
-  signatureDetail: "标志细节",
-  voiceTexture: "声音口吻",
-  presenceImpression: "登场印象",
+  appearance: "Punto de memoria de apariencia",
+  physique: "base del cuerpo",
+  attireStyle: "desgaste común",
+  signatureDetail: "Detalles del logotipo",
+  voiceTexture: "tono de voz",
+  presenceImpression: "Primera impresión",
 };
 
 const GENERIC_VISIBLE_PROFILE_PATTERN = /^(暂无|待补全|无|未知|很好看|很漂亮|气质很好|气质独特|很有辨识度|身材匀称|清冷|温柔|帅气|美丽|普通|不详)$/;
@@ -102,12 +102,12 @@ export function pickApplicableVisibleProfileFields(input: {
     const suggestedText = normalizeVisibleProfileText(input.suggested[field]);
     if (existingText && !isVagueVisibleProfileText(existingText)) {
       if (!input.overwriteExisting) {
-        skippedFields[field] = "已有明确资料";
+        skippedFields[field] = "Hay información clara";
         continue;
       }
     }
     if (!suggestedText || isVagueVisibleProfileText(suggestedText)) {
-      skippedFields[field] = "AI 建议不够具体";
+      skippedFields[field] = "Las recomendaciones de la IA no son lo suficientemente específicas";
       continue;
     }
     fields[field] = suggestedText;
@@ -118,23 +118,23 @@ export function pickApplicableVisibleProfileFields(input: {
 
 function buildCharacterProfileText(character: CharacterRow): string {
   return [
-    `姓名：${character.name}`,
-    `定位：${character.role}`,
-    character.gender ? `性别：${character.gender}` : "",
-    character.castRole ? `阵容功能：${character.castRole}` : "",
-    character.storyFunction ? `故事作用：${character.storyFunction}` : "",
-    character.relationToProtagonist ? `与主角关系：${character.relationToProtagonist}` : "",
-    character.personality ? `性格：${compactText(character.personality, 180)}` : "",
-    character.background ? `背景：${compactText(character.background, 180)}` : "",
-    character.development ? `成长弧：${compactText(character.development, 180)}` : "",
-    character.outerGoal ? `外在目标：${compactText(character.outerGoal, 120)}` : "",
-    character.innerNeed ? `内在需求：${compactText(character.innerNeed, 120)}` : "",
-    character.fear ? `恐惧：${compactText(character.fear, 100)}` : "",
-    character.wound ? `伤口：${compactText(character.wound, 100)}` : "",
-    character.misbelief ? `错误信念：${compactText(character.misbelief, 100)}` : "",
-    character.secret ? `隐藏秘密：${compactText(character.secret, 100)}` : "",
-    character.moralLine ? `道德底线：${compactText(character.moralLine, 100)}` : "",
-    character.firstImpression ? `首次印象：${compactText(character.firstImpression, 120)}` : "",
+    `Nombre:${character.name}`,
+    `posición:${character.role}`,
+    character.gender ? `género:${character.gender}` : "",
+    character.castRole ? `Características de la alineación:${character.castRole}` : "",
+    character.storyFunction ? `Función de historia:${character.storyFunction}` : "",
+    character.relationToProtagonist ? `Relación con el protagonista:${character.relationToProtagonist}` : "",
+    character.personality ? `personaje:${compactText(character.personality, 180)}` : "",
+    character.background ? `fondo:${compactText(character.background, 180)}` : "",
+    character.development ? `Arco de crecimiento:${compactText(character.development, 180)}` : "",
+    character.outerGoal ? `Metas externas:${compactText(character.outerGoal, 120)}` : "",
+    character.innerNeed ? `Necesidades internas:${compactText(character.innerNeed, 120)}` : "",
+    character.fear ? `miedo:${compactText(character.fear, 100)}` : "",
+    character.wound ? `Herida:${compactText(character.wound, 100)}` : "",
+    character.misbelief ? `Falsa creencia:${compactText(character.misbelief, 100)}` : "",
+    character.secret ? `Secretos ocultos:${compactText(character.secret, 100)}` : "",
+    character.moralLine ? `Conclusión moral:${compactText(character.moralLine, 100)}` : "",
+    character.firstImpression ? `Primeras impresiones:${compactText(character.firstImpression, 120)}` : "",
   ].filter(Boolean).join("\n");
 }
 
@@ -142,7 +142,7 @@ function buildExistingVisibleProfileText(character: CharacterRow): string {
   return VISIBLE_PROFILE_FIELDS
     .map((field) => {
       const text = normalizeVisibleProfileText(character[field]);
-      return text ? `${FIELD_LABELS[field]}：${text}` : "";
+      return text ? `${FIELD_LABELS[field]}:${text}` : "";
     })
     .filter(Boolean)
     .join("\n");
@@ -162,14 +162,14 @@ function extractBookContractText(bookContract: {
     return "";
   }
   return [
-    bookContract.readingPromise ? `阅读承诺：${bookContract.readingPromise}` : "",
-    bookContract.protagonistFantasy ? `主角爽感：${bookContract.protagonistFantasy}` : "",
-    bookContract.coreSellingPoint ? `核心卖点：${bookContract.coreSellingPoint}` : "",
-    bookContract.relationshipMainline ? `关系主线：${bookContract.relationshipMainline}` : "",
-    bookContract.escalationLadder ? `升级阶梯：${bookContract.escalationLadder}` : "",
-    bookContract.chapter3Payoff ? `3章兑现：${bookContract.chapter3Payoff}` : "",
-    bookContract.chapter10Payoff ? `10章兑现：${bookContract.chapter10Payoff}` : "",
-    bookContract.chapter30Payoff ? `30章兑现：${bookContract.chapter30Payoff}` : "",
+    bookContract.readingPromise ? `Lea el compromiso:${bookContract.readingPromise}` : "",
+    bookContract.protagonistFantasy ? `El sentimiento de placer del protagonista:${bookContract.protagonistFantasy}` : "",
+    bookContract.coreSellingPoint ? `Puntos de venta principales:${bookContract.coreSellingPoint}` : "",
+    bookContract.relationshipMainline ? `Línea principal de relación:${bookContract.relationshipMainline}` : "",
+    bookContract.escalationLadder ? `Escala de actualización:${bookContract.escalationLadder}` : "",
+    bookContract.chapter3Payoff ? `Capítulo 3 Retiro de dinero:${bookContract.chapter3Payoff}` : "",
+    bookContract.chapter10Payoff ? `Capítulo 10 Retiro de efectivo:${bookContract.chapter10Payoff}` : "",
+    bookContract.chapter30Payoff ? `Capítulo 30 retiro de efectivo:${bookContract.chapter30Payoff}` : "",
   ].filter(Boolean).join("\n");
 }
 
@@ -213,16 +213,16 @@ export class CharacterVisibleProfileService {
     ]);
 
     if (!novel || !character) {
-      throw new Error("小说或角色不存在");
+      throw new Error("La novela o el personaje no existe.");
     }
 
     const relationText = relations
       .map((relation) => [
         `${relation.sourceCharacter.name} -> ${relation.targetCharacter.name}`,
         relation.surfaceRelation,
-        relation.hiddenTension ? `暗线：${relation.hiddenTension}` : "",
-        relation.conflictSource ? `冲突：${relation.conflictSource}` : "",
-      ].filter(Boolean).join("；"))
+        relation.hiddenTension ? `Línea oscura:${relation.hiddenTension}` : "",
+        relation.conflictSource ? `conflicto:${relation.conflictSource}` : "",
+      ].filter(Boolean).join(";"))
       .join("\n");
 
     const storyModeBlock = buildStoryModePromptBlock({
@@ -240,20 +240,20 @@ export class CharacterVisibleProfileService {
       asset: characterVisibleProfileCompletionPrompt,
       promptInput: {
         novelTitle: novel.title,
-        genreName: novel.genre?.name ?? "未指定",
+        genreName: novel.genre?.name ?? "No especificado",
         projectMode: novel.projectMode ?? "co_pilot",
         storyModeBlock: compactText(storyModeBlock, 900),
         bookContractText: compactText(extractBookContractText(novel.bookContract), 1_200),
         worldContextText: compactText(worldContext?.promptBlock, 1_600),
         bibleText: compactText([
-          novel.bible?.mainPromise ? `主线承诺：${novel.bible.mainPromise}` : "",
-          novel.bible?.coreSetting ? `核心设定：${novel.bible.coreSetting}` : "",
-          novel.bible?.characterArcs ? `角色成长：${novel.bible.characterArcs}` : "",
+          novel.bible?.mainPromise ? `Compromiso línea principal:${novel.bible.mainPromise}` : "",
+          novel.bible?.coreSetting ? `Configuraciones principales:${novel.bible.coreSetting}` : "",
+          novel.bible?.characterArcs ? `Crecimiento del personaje:${novel.bible.characterArcs}` : "",
         ].filter(Boolean).join("\n"), 1_000),
         storyMacroText: compactText([
-          novel.storyMacroPlan?.storyInput ? `故事输入：${novel.storyMacroPlan.storyInput}` : "",
-          novel.storyMacroPlan?.decompositionJson ? `拆解：${compactText(novel.storyMacroPlan.decompositionJson, 500)}` : "",
-          novel.storyMacroPlan?.constraintEngineJson ? `约束：${compactText(novel.storyMacroPlan.constraintEngineJson, 500)}` : "",
+          novel.storyMacroPlan?.storyInput ? `Entrada de la historia:${novel.storyMacroPlan.storyInput}` : "",
+          novel.storyMacroPlan?.decompositionJson ? `Demoler:${compactText(novel.storyMacroPlan.decompositionJson, 500)}` : "",
+          novel.storyMacroPlan?.constraintEngineJson ? `restricción:${compactText(novel.storyMacroPlan.constraintEngineJson, 500)}` : "",
         ].filter(Boolean).join("\n"), 1_200),
         characterName: character.name,
         characterRole: character.role,
@@ -291,12 +291,12 @@ export class CharacterVisibleProfileService {
     });
     const warnings = [...output.warnings];
     if (output.confidence < 0.55) {
-      warnings.push("AI 对当前外显资料把握较低，请优先人工复核。");
+      warnings.push("La IA tiene poca comprensión de los datos explícitos actuales; dé prioridad a la revisión manual.");
       return {
         characterId,
         characterName: character.name,
         fields: {},
-        skippedFields: Object.fromEntries(VISIBLE_PROFILE_FIELDS.map((field) => [field, "AI 把握较低"])) as Partial<Record<CharacterVisibleProfileField, string>>,
+        skippedFields: Object.fromEntries(VISIBLE_PROFILE_FIELDS.map((field) => [field, "La IA tiene menos confianza"])) as Partial<Record<CharacterVisibleProfileField, string>>,
         confidence: output.confidence,
         warnings,
         hasApplicableChanges: false,
@@ -332,7 +332,7 @@ export class CharacterVisibleProfileService {
         skippedCharacters.push({
           characterId: character.id,
           characterName: character.name,
-          reason: "外显资料已较完整",
+          reason: "Los datos externos son relativamente completos.",
         });
         continue;
       }
@@ -343,7 +343,7 @@ export class CharacterVisibleProfileService {
         skippedCharacters.push({
           characterId: character.id,
           characterName: character.name,
-          reason: error instanceof Error ? error.message : "外显资料生成失败",
+          reason: error instanceof Error ? error.message : "Error en la generación de datos explícitos",
         });
       }
     }
@@ -361,7 +361,7 @@ export class CharacterVisibleProfileService {
       where: { id: characterId, novelId },
     });
     if (!character) {
-      throw new Error("角色不存在");
+      throw new Error("el rol no existe");
     }
 
     const applicable = pickApplicableVisibleProfileFields({
@@ -375,7 +375,7 @@ export class CharacterVisibleProfileService {
         character: character as unknown as Character,
         appliedFields: [],
         skippedFields: applicable.skippedFields,
-        warnings: ["没有可写入的外显资料。"],
+        warnings: ["No hay datos explícitos para escribir."],
       };
     }
 
@@ -419,11 +419,11 @@ export class CharacterVisibleProfileService {
     for (const characterId of uniqueIds) {
       const character = await prisma.character.findFirst({ where: { id: characterId, novelId } });
       if (!character) {
-        skippedCharacters.push({ characterId, characterName: characterId, reason: "角色不存在" });
+        skippedCharacters.push({ characterId, characterName: characterId, reason: "el rol no existe" });
         continue;
       }
       if (!this.needsVisibleProfile(character)) {
-        skippedCharacters.push({ characterId, characterName: character.name, reason: "外显资料已较完整" });
+        skippedCharacters.push({ characterId, characterName: character.name, reason: "Los datos externos son relativamente completos." });
         continue;
       }
       try {
@@ -436,7 +436,7 @@ export class CharacterVisibleProfileService {
         skippedCharacters.push({
           characterId,
           characterName: character.name,
-          reason: error instanceof Error ? error.message : "外显资料自动补齐失败",
+          reason: error instanceof Error ? error.message : "Falló la finalización automática de datos explícitos",
         });
       }
     }

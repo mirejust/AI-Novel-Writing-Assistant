@@ -24,7 +24,7 @@ export function getDirectorProductionServices(): DirectorNextServices {
     }};
     services.http.readUsage = (runId,query) => new InvocationUsageQueryService(prisma.llmInvocationUsageRecord).getRunUsage(runId,query);
     services.http.validateUsageCursor = (runId, cursor) => {
-      if (decodeUsageCursor(cursor).runId !== runId) throw Object.assign(new Error("分页位置不属于本次创作。"), {statusCode: 400});
+      if (decodeUsageCursor(cursor).runId !== runId) throw Object.assign(new Error("La posición de buscapersonas no pertenece a esta creación."), {statusCode: 400});
     };
     const novelUsage = new NovelInvocationUsageQueryService(prisma.llmInvocationUsageRecord, async id => {
       const novel = await prisma.novel.findUnique({where: {id}, select: {id: true, title: true}});

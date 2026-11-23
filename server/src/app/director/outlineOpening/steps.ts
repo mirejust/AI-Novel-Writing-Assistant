@@ -13,7 +13,7 @@ export function withOutlineOpeningSteps(handlers: Record<ProductionStepId, StepH
     if (!ref) return original(context);
     await assertOutlineReference(prisma, context.contract.novelId, ref);
     const state = await readOutlinePlanningState(prisma, context.contract.novelId, context.contract.chapterRange ?? {from: 1, to: 1});
-    if (!state) throw new Error("大纲绑定不存在。");
+    if (!state) throw new Error("El enlace de esquema no existe.");
     return withOutlinePlanningState(state, async () => {
       if (id === "volume_beat_sheet") {
         const workspace = await volumes.getVolumes(state.novelId, {hydrateCanonical: false});
@@ -30,7 +30,7 @@ export function withOutlineOpeningSteps(handlers: Record<ProductionStepId, StepH
             memoryTelemetry: {entrypoint: "director_next", taskId: context.runId, stage: "structured_outline", scope: "beat_sheet", volumeId: targetVolumeId}});
           sheet = saved.beatSheets.find(s => s.volumeId === targetVolumeId && s.beats.length);
         }
-        if (!sheet) throw new Error("当前卷缺少可确认的节奏安排。");
+        if (!sheet) throw new Error("El volumen actual carece de una disposición de estimulación identificable.");
         return {artifact: {scope: context.contract.scope, status: "draft" as const, protectedUserContent: false,
           contentRef: `volume_beat_sheet:${state.novelId}:${targetVolumeId}`, contentHash: artifactContentHash(sheet)}};
       }
@@ -39,7 +39,7 @@ export function withOutlineOpeningSteps(handlers: Record<ProductionStepId, StepH
         await ensureOutlineRouteWindow(state.novelId, state.range.from, {...modelOptions(context), min: 1, target: 1, taskId: context.runId}, volumes, state);
         const workspace = await volumes.getVolumes(state.novelId, {hydrateCanonical: false});
         const routes = workspace.volumes.flatMap(v => v.chapters).filter(c => c.chapterOrder === state.range.from);
-        if (routes.length !== 1) throw new Error("当前章缺少唯一的已保存路线。");
+        if (routes.length !== 1) throw new Error("Al capítulo actual le falta una ruta guardada única.");
         return {artifact: {scope: context.contract.scope, status: "draft" as const, protectedUserContent: false, contentRef: `volume_chapter_list:${state.novelId}:${state.range.from}`, contentHash: artifactContentHash(routes)}};
       }
       const result = await original(context);
@@ -47,11 +47,11 @@ export function withOutlineOpeningSteps(handlers: Record<ProductionStepId, StepH
       if (id === "volume_strategy" && !state.mapping.volumes.length && !state.mapping.runtimeVolumes?.length) {
         const workspace = await volumes.getVolumes(state.novelId, {hydrateCanonical: false});
         const total = context.contract.launchInput!.estimatedChapterCount;
-        if (workspace.volumes.length > total) throw new Error("卷数超过确认章数，请调整卷规划。");
+        if (workspace.volumes.length > total) throw new Error("La cantidad de volúmenes excede la cantidad de capítulos confirmados, ajuste el plan de volumen.");
         let from = 1, remaining = total;
         const runtimeVolumes = workspace.volumes.map((v, i) => {const chapterQuota = Math.floor(remaining/(workspace.volumes.length-i));const slot = {volumeId: v.id, chapterQuota, from, to: from+chapterQuota-1};from += chapterQuota;remaining -= chapterQuota;return slot;});
         const updated = await prisma.outlineBookBinding.updateMany({where: {id: ref.bindingId, policyVersion: ref.policyVersion, mappingJson: JSON.stringify(state.mapping)}, data: {mappingJson: JSON.stringify({...state.mapping, runtimeVolumes})}});
-        if (updated.count !== 1) throw new Error("大纲篇幅分配在准备期间变化，请重试。");
+        if (updated.count !== 1) throw new Error("La asignación de espacio del esquema cambió durante la preparación. Inténtelo de nuevo.");
       }
       return result;
     });

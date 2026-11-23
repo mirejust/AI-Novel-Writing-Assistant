@@ -16,7 +16,7 @@ export const manuscriptMergePrompt:PromptAsset<{scope:string;summaries:Array<{un
 };
 export const manuscriptVerifyPrompt:PromptAsset<{synopsis:string;endingDirection:string;coverage:{totalUnits:number;coveredUnits:number;totalChunks:number;completedChunks:number};lastChapterEvidence:string[]},{warnings:string[]}>={
  id:"manuscript.outline.verify",version:"v2",taskType:"review",mode:"structured",language:"zh",contextPolicy:{maxTokensBudget:5000},outputSchema:z.object({warnings:z.array(z.string())}),
- render:input=>[new SystemMessage("检查反推大纲的结局是否直接违背尾章证据、coverage数值是否缺失、是否冒称作者原意。lastChapterEvidence只来自最后一章，仅用于核对endingDirection；它不是全书证据，绝不能要求开端或中段剧情也在尾章出现，不能因尾章引句没提及前文事实就宣称其虚构或覆盖不足。synopsis归纳全书，缺少某情节的引句不等于原文不存在。没有直接矛盾或覆盖数值缺口时warnings为空。只列有明确依据的中文警告，不补剧情，不生成正文。"),new HumanMessage(JSON.stringify(input))]
+ render:input=>[new SystemMessage("检查反推大纲的结局是否直接违背尾章证据、coverage数值是否缺失、是否冒称作者原意。lastChapterEvidence只来自最后一章，仅用于核对endingDirection；它不是全书证据，绝不能要求开端或中段剧情也在尾章出现，不能因尾章引句没提及前文事实就宣称其虚构或覆盖不足。synopsis归纳全书，缺少某情节的引句不等于原文不存在。没有直接矛盾或覆盖数值缺口时warnings为空。只列有明确依据的西班牙语警告，不补剧情，不生成正文。"),new HumanMessage(JSON.stringify(input))]
 };
 const card=z.object({id:z.string(),title:z.string(),problemSummary:z.string(),whyItMatters:z.string(),repairGoal:z.string(),mustPreserve:z.array(z.string()),recommendedAction:z.enum(["polish","expand","compress","emotion","conflict","custom"]),recommendedScope:z.enum(["chapter","selection"]),severity:z.enum(["low","medium","high","critical"]),sourceTags:z.array(z.string()),quote:z.string()});
 export const manuscriptDiagnosePrompt:PromptAsset<{currentContent:string;revisionContext:unknown},{diagnosticCards:z.infer<typeof card>[]}>={

@@ -306,9 +306,9 @@ export class BookAnalysisCharacterAppearanceService {
       throw new AppError("Book analysis character not found.", 404);
     }
     const snapshotsText = snapshots.map((snapshot) => [
-      `第 ${snapshot.chapterIndex + 1} 章 ${snapshot.chapterTitle ?? ""}`,
-      snapshot.summaryCaption ? `摘要：${snapshot.summaryCaption}` : "",
-      snapshot.appearanceJson ? `结构：${snapshot.appearanceJson}` : "",
+      `Cap. ${snapshot.chapterIndex + 1} capítulo ${snapshot.chapterTitle ?? ""}`,
+      snapshot.summaryCaption ? `resumen:${snapshot.summaryCaption}` : "",
+      snapshot.appearanceJson ? `estructura:${snapshot.appearanceJson}` : "",
     ].filter(Boolean).join("\n")).join("\n\n");
     const result = await this.promptRunner({
       asset: bookAnalysisCharacterAppearanceConsolidatePrompt,
@@ -318,7 +318,7 @@ export class BookAnalysisCharacterAppearanceService {
           role: character.role,
           profile: { ...profile },
         },
-        snapshotsText: snapshotsText || "暂无章节快照。",
+        snapshotsText: snapshotsText || "Aún no hay instantáneas de capítulos.",
       },
       options: {
         provider: context.provider,
@@ -380,14 +380,14 @@ export class BookAnalysisCharacterAppearanceService {
       .filter((item): item is Record<string, unknown> => Boolean(item) && typeof item === "object" && !Array.isArray(item))
       .map((item): BookAnalysisCharacterEvidenceItem => {
         const { sourceType: _sourceType, chunkId: _chunkId, noteSegmentId: _noteSegmentId, dimension: _dimension, ...rest } = item;
-        const excerpt = typeof rest.excerpt === "string" && rest.excerpt.trim() ? rest.excerpt.trim() : "章节外貌证据";
+        const excerpt = typeof rest.excerpt === "string" && rest.excerpt.trim() ? rest.excerpt.trim() : "Evidencia de apariencia del capítulo";
         return {
           ...rest,
-          label: typeof rest.label === "string" && rest.label.trim() ? rest.label.trim() : "外貌词条证据",
+          label: typeof rest.label === "string" && rest.label.trim() ? rest.label.trim() : "Prueba de entrada de apariencia",
           excerpt,
           sourceLabel: typeof rest.sourceLabel === "string" && rest.sourceLabel.trim()
             ? rest.sourceLabel.trim()
-            : `第 ${chapterIndex + 1} 章`,
+            : `Cap. ${chapterIndex + 1}`,
           chapterIndex: typeof rest.chapterIndex === "number" ? rest.chapterIndex : chapterIndex,
           sourceType: "chapter_chunk",
         };

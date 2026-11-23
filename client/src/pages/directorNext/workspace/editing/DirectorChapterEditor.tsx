@@ -24,24 +24,24 @@ export function DirectorChapterEditor({ novelId, chapterId, onClose, onSaved }: 
   function requestClose() {
     const state = editingState.current;
     if (state.isBusy) {
-      toast.error("请等待当前操作完成后再离开正文编辑。");
+      toast.error("Espere hasta que se complete la operación actual antes de abandonar la edición de texto.");
       return;
     }
-    if ((state.isDirty || state.hasCandidate) && !window.confirm("未保存的修改可从草稿恢复，未采纳的 AI 候选将被关闭。要离开正文编辑吗？")) return;
+    if ((state.isDirty || state.hasCandidate) && !window.confirm("Los cambios no guardados se pueden restaurar desde borradores y los candidatos de IA no adoptados se cerrarán. ¿Quieres dejar la edición de texto?")) return;
     onClose();
   }
   return <Dialog open onOpenChange={open => { if (!open) requestClose(); }}>
-    <AppDialogContent title={chapter ? `编辑正文 · 第 ${chapter.order} 章 · ${chapter.title}` : "编辑正文"}
-      description="点击正文放置光标，在 AI 操作区选择续写方向，比较候选后插入正文。编辑期间暂停跟随生成。"
+    <AppDialogContent title={chapter ? `Editar texto · No. ${chapter.order} Capítulo · ${chapter.title}` : "Editar texto"}
+      description="Haga clic en el texto para colocar el cursor, seleccione la dirección de continuación en el área de operación de IA, compare los candidatos e inserte el texto. Pausa la generación de seguimiento durante la edición."
       className="left-0 top-0 h-dvh max-h-dvh w-full max-w-none translate-x-0 translate-y-0 rounded-none border-0"
       bodyClassName="flex min-h-0 flex-col overflow-hidden p-3 sm:p-4"
       onInteractOutside={event => event.preventDefault()}>
-      {detailQuery.isError ? <div role="alert" className="space-y-3 py-8 text-sm"><p>章节读取失败，请重新读取后再编辑。</p><Button onClick={() => void detailQuery.refetch()}>重新读取章节</Button></div>
-        : !chapter ? <p className="py-8 text-sm text-muted-foreground">{detailQuery.isLoading ? "正在读取章节…" : "未找到本章，请返回目录选择章节。"}</p>
+      {detailQuery.isError ? <div role="alert" className="space-y-3 py-8 text-sm"><p>Error al leer el capítulo, léalo nuevamente y luego edítelo.</p><Button onClick={() => void detailQuery.refetch()}>Releer el capítulo</Button></div>
+        : !chapter ? <p className="py-8 text-sm text-muted-foreground">{detailQuery.isLoading ? "Leyendo capítulos..." : "Este capítulo no fue encontrado, regrese a la tabla de contenido para seleccionar un capítulo."}</p>
           : <ChapterEditorShell key={chapter.id} novelId={novelId} chapter={chapter}
             workspace={workspaceQuery.data?.data ?? null}
             workspaceStatus={workspaceQuery.isLoading ? "loading" : workspaceQuery.isError ? "error" : "ready"}
-            backLabel="返回正文阅读" onBack={onClose} onChapterSaved={onSaved}
+            backLabel="Volver a la lectura de texto" onBack={onClose} onChapterSaved={onSaved}
             onEditingStateChange={state => { editingState.current = state; }}
             onRefreshWorkspace={() => { void workspaceQuery.refetch(); }} isRefreshingWorkspace={workspaceQuery.isFetching}/>
       }

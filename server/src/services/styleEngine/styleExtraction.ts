@@ -83,7 +83,7 @@ function normalizeFeature(raw: unknown, index: number): StyleExtractionFeature |
     group,
     label,
     description,
-    evidence: evidence || "未提供证据片段。",
+    evidence: evidence || "No se aportaron pruebas.",
     importance: normalizeScore(record.importance, 0.5),
     imitationValue: normalizeScore(record.imitationValue, 0.5),
     transferability: normalizeScore(record.transferability, 0.5),
@@ -146,16 +146,16 @@ function decideFeatureDecision(feature: StyleExtractionFeature, presetKey: Prese
 function buildFallbackPreset(features: StyleExtractionFeature[], presetKey: PresetKey): StyleExtractionPreset {
   const labels: Record<PresetKey, { label: string; summary: string }> = {
     imitate: {
-      label: "高保真仿写",
-      summary: "尽量保留高相似度特征，适合临摹、仿写和风格贴近试写。",
+      label: "Simulación de alta fidelidad",
+      summary: "Trate de conservar rasgos de alta similitud, lo cual es adecuado para copiar, imitar y escribir pruebas con un estilo cercano.",
     },
     balanced: {
-      label: "平衡保留",
-      summary: "保住写法骨架，同时弱化原文指纹，适合大多数写作场景。",
+      label: "retención del equilibrio",
+      summary: "Mantiene el esqueleto de la escritura al tiempo que debilita la huella digital del texto original, lo que lo hace adecuado para la mayoría de escenarios de escritura.",
     },
     transfer: {
-      label: "写法迁移",
-      summary: "优先保留可迁移规则，主动剥离高指纹风险特征，适合整书绑定。",
+      label: "transferencia de escritura",
+      summary: "Se da prioridad a conservar las reglas transferibles y eliminar proactivamente las características de alto riesgo de huellas dactilares, lo que lo hace adecuado para encuadernar todo el libro.",
     },
   };
 
@@ -243,7 +243,7 @@ export function normalizeStyleExtractionDraft(
     tags: normalizeStringArray(record.tags),
     applicableGenres: normalizeStringArray(record.applicableGenres),
     analysisMarkdown: normalizeText(record.analysisMarkdown) || null,
-    summary: normalizeText(record.summary) || "已完成文本写法特征提取。",
+    summary: normalizeText(record.summary) || "Se ha completado la extracción de funciones de escritura de texto.",
     features,
     presets: buildPresetMap(features, record.presets),
     antiAiRuleKeys: normalizeStringArray(record.antiAiRuleKeys),
@@ -321,15 +321,15 @@ export function buildExtractionAnalysisMarkdown(
   const decisionMap = resolveStyleExtractionDecisions(draft, decisions, presetKey);
   const lines = [draft.summary];
   const groups: Array<{ key: StyleFeatureDecision; label: string }> = [
-    { key: "keep", label: "保留特征" },
-    { key: "weaken", label: "弱化特征" },
-    { key: "remove", label: "剥离特征" },
+    { key: "keep", label: "Preservar características" },
+    { key: "weaken", label: "Debilitar características" },
+    { key: "remove", label: "Función de pelado" },
   ];
 
   for (const group of groups) {
     const matched = draft.features
       .filter((feature) => (decisionMap.get(feature.id) ?? "keep") === group.key)
-      .map((feature) => `- ${feature.label}：${feature.description}`);
+      .map((feature) => `- ${feature.label}:${feature.description}`);
     if (matched.length === 0) {
       continue;
     }
@@ -341,14 +341,14 @@ export function buildExtractionAnalysisMarkdown(
 
 export function buildProfileFeatureAnalysisMarkdown(summary: string, features: StyleProfileFeature[]): string {
   const lines = [summary];
-  const enabled = features.filter((feature) => feature.enabled).map((feature) => `- ${feature.label}：${feature.description}`);
-  const disabled = features.filter((feature) => !feature.enabled).map((feature) => `- ${feature.label}：${feature.description}`);
+  const enabled = features.filter((feature) => feature.enabled).map((feature) => `- ${feature.label}:${feature.description}`);
+  const disabled = features.filter((feature) => !feature.enabled).map((feature) => `- ${feature.label}:${feature.description}`);
 
   if (enabled.length > 0) {
-    lines.push(`\n启用特征\n${enabled.join("\n")}`);
+    lines.push(`Función de habilitación \\n \\n${enabled.join("\n")}`);
   }
   if (disabled.length > 0) {
-    lines.push(`\n停用特征\n${disabled.join("\n")}`);
+    lines.push(`\\nDesactivar función\\n${disabled.join("\n")}`);
   }
 
   return lines.join("\n");

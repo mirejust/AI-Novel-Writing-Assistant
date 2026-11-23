@@ -44,7 +44,7 @@ export default function ModelRouteFields({
   return (
     <div className={`grid gap-3 ${showProtocolFields ? "md:grid-cols-6" : "md:grid-cols-4"}`}>
       <div className="space-y-1">
-        <div className="text-xs text-muted-foreground">服务商</div>
+        <div className="text-xs text-muted-foreground">Proveedor de servicios</div>
         <Select
           value={draft.provider}
           onValueChange={(value) => {
@@ -55,8 +55,8 @@ export default function ModelRouteFields({
             });
           }}
         >
-          <SelectTrigger aria-label="服务商">
-            <SelectValue placeholder="选择服务商" />
+          <SelectTrigger aria-label="Proveedor de servicios">
+            <SelectValue placeholder="Elija un proveedor de servicios" />
           </SelectTrigger>
           <SelectContent>
             {providerOptions.map((provider) => (
@@ -69,50 +69,50 @@ export default function ModelRouteFields({
       </div>
 
       <div className="space-y-1">
-        <div className="text-xs text-muted-foreground">模型</div>
+        <div className="text-xs text-muted-foreground">Modelo</div>
         <SearchableSelect
           value={draft.model || undefined}
           onValueChange={(value) => onPatch({ model: value })}
           options={modelOptions.map((model) => ({ value: model }))}
-          placeholder="选择模型"
-          searchPlaceholder="搜索模型"
+          placeholder="Seleccionar modelo"
+          searchPlaceholder="Modelo de búsqueda"
           emptyText={modelEmptyText}
         />
         <Input
           value={draft.model}
-          aria-label="手动填写模型名称"
+          aria-label="Complete manualmente el nombre del modelo"
           placeholder={manualModelPlaceholder}
           onChange={(event) => onPatch({ model: event.target.value })}
         />
       </div>
 
       <div className="space-y-1">
-        <div className="text-xs text-muted-foreground">温度</div>
+        <div className="text-xs text-muted-foreground">Temperatura</div>
         <Input
           value={draft.temperature}
-          aria-label="温度"
+          aria-label="Temperatura"
           placeholder={temperaturePlaceholder}
           onChange={(event) => onPatch({ temperature: event.target.value })}
         />
       </div>
 
       <div className="space-y-1">
-        <div className="text-xs text-muted-foreground">最大输出长度</div>
+        <div className="text-xs text-muted-foreground">Longitud máxima de salida</div>
         <Input
           value={draft.maxTokens}
           type="number"
           min={1}
           step={1}
-          aria-label="单次最大输出 Tokens"
+          aria-label="Tokens de salida máxima única"
           placeholder={maxTokensPlaceholder}
           onChange={(event) => onPatch({ maxTokens: event.target.value })}
         />
-        <p className="text-xs text-muted-foreground">留空时自动分配，通常从 {DEFAULT_MODEL_OUTPUT_TOKENS.toLocaleString("zh-CN")} Tokens 起。</p>
+        <p className="text-xs text-muted-foreground">Asignado automáticamente cuando se deja en blanco, generalmente de {DEFAULT_MODEL_OUTPUT_TOKENS.toLocaleString("zh-CN")} A partir de fichas.</p>
       </div>
 
       {showProtocolFields ? (
         <div className="space-y-1">
-          <div className="text-xs text-muted-foreground">请求协议</div>
+          <div className="text-xs text-muted-foreground">Protocolo de solicitud</div>
           <Select
             value={draft.requestProtocol}
             onValueChange={(value) => {
@@ -125,12 +125,12 @@ export default function ModelRouteFields({
               });
             }}
           >
-            <SelectTrigger aria-label="请求协议">
-              <SelectValue placeholder="自动选择" />
+            <SelectTrigger aria-label="Protocolo de solicitud">
+              <SelectValue placeholder="Selección automática" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="auto">自动选择</SelectItem>
-              <SelectItem value="openai_compatible">OpenAI 兼容</SelectItem>
+              <SelectItem value="auto">Selección automática</SelectItem>
+              <SelectItem value="openai_compatible">Compatible con OpenAI</SelectItem>
               <SelectItem value="anthropic">Anthropic</SelectItem>
             </SelectContent>
           </Select>
@@ -139,20 +139,20 @@ export default function ModelRouteFields({
 
       {showProtocolFields ? (
         <div className="space-y-1">
-          <div className="text-xs text-muted-foreground">结构化格式</div>
+          <div className="text-xs text-muted-foreground">Formato estructurado</div>
           <Select
             value={draft.structuredResponseFormat}
             onValueChange={(value) => onPatch({
               structuredResponseFormat: value as ModelRouteStructuredResponseFormat,
             })}
           >
-            <SelectTrigger aria-label="结构化格式">
-              <SelectValue placeholder="自动选择" />
+            <SelectTrigger aria-label="Formato estructurado">
+              <SelectValue placeholder="Selección automática" />
             </SelectTrigger>
             <SelectContent>
               {getStructuredResponseFormatOptions(draft.requestProtocol).map((format) => (
                 <SelectItem key={format} value={format}>
-                  {format === "auto" ? "自动选择" : format === "tool_calling" ? "工具调用" : format}
+                  {format === "auto" ? "Selección automática" : format === "tool_calling" ? "Llamada de herramienta" : format}
                 </SelectItem>
               ))}
             </SelectContent>

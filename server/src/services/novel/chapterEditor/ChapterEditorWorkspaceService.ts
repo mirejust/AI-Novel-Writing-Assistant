@@ -54,12 +54,12 @@ export interface ChapterEditorWorkspaceContext {
 
 function toRoleLabel(planRole?: StoryPlan["planRole"] | null): string | null {
   return ({
-    setup: "负责建立局面与预期",
-    progress: "负责推动目标前进",
-    pressure: "负责抬高压迫与难度",
-    turn: "负责形成转折或方向变化",
-    payoff: "负责兑现前文承诺",
-    cooldown: "负责收束余波并转场",
+    setup: "Responsable de establecer situaciones y expectativas.",
+    progress: "Responsable de impulsar los objetivos hacia adelante.",
+    pressure: "Responsable de aumentar la presión y la dificultad.",
+    turn: "Responsable de crear un punto de inflexión o cambio de dirección.",
+    payoff: "Responsable de cumplir los compromisos anteriores.",
+    cooldown: "Responsable de resolver las secuelas y hacer la transición de la escena.",
   } as Record<string, string | undefined>)[planRole ?? ""] ?? null;
 }
 
@@ -95,7 +95,7 @@ function buildChapterSummary(chapter: LoadedWorkspaceNovel["chapters"][number], 
   return chapterWithSummary.chapterSummary?.summary?.trim()
     || chapter.expectation?.trim()
     || content.slice(0, 180)
-    || "暂无章节摘要。";
+    || "Aún no hay un resumen del capítulo.";
 }
 
 function buildActivePlotThreads(
@@ -241,7 +241,7 @@ export class ChapterEditorWorkspaceService {
     ]);
 
     if (!novel) {
-      throw new Error("小说不存在。");
+      throw new Error("La novela no existe.");
     }
 
     const activeChapters = await readActiveManuscriptChapters(prisma as never, novelId);
@@ -250,7 +250,7 @@ export class ChapterEditorWorkspaceService {
       : novel.chapters;
     const chapter = effectiveChapters.find((item) => item.id === chapterId);
     if (!chapter) {
-      throw new Error("章节不存在。");
+      throw new Error("El capítulo no existe.");
     }
 
     const latestStateSnapshot = normalizeSnapshotDates(latestStateSnapshotRaw);
@@ -277,21 +277,21 @@ export class ChapterEditorWorkspaceService {
       || currentVolumeChapter?.purpose?.trim()
       || currentVolumeChapter?.summary?.trim()
       || chapter.expectation?.trim()
-      || "当前重点是保证本章继续服务卷内推进。";
+      || "El objetivo actual es garantizar que este capítulo siga contribuyendo al avance del volumen.";
     const chapterRoleInVolume = currentVolumeChapter?.purpose?.trim()
       || toRoleLabel(chapterPlan?.planRole)
       || chapterPlan?.phaseLabel?.trim()
-      || "负责承接本章在卷内的推进职责。";
+      || "Responsable de asumir las responsabilidades de promoción de este capítulo en el volumen.";
     const macroContext: ChapterEditorMacroContext = {
       chapterRoleInVolume,
-      volumeTitle: location.volume?.title?.trim() || "未识别所属卷",
+      volumeTitle: location.volume?.title?.trim() || "Volumen no identificado",
       volumePositionLabel: location.volumePositionLabel,
       volumePhaseLabel: location.volumePhaseLabel,
       paceDirective: buildPaceDirective(location.volumePhaseLabel, novel.pacePreference),
       chapterMission,
-      previousChapterBridge: buildVolumeChapterBridge(previousVolumeChapter, buildBridgeLabel(previousChapter, "本章前没有可承接的上一章摘要。")),
-      nextChapterBridge: buildVolumeChapterBridge(nextVolumeChapter, buildBridgeLabel(nextChapter, "本章后没有可参考的下一章摘要。")),
-      activePlotThreads: activePlotThreads.length > 0 ? activePlotThreads : ["当前没有明确抽取出的主线提醒。"],
+      previousChapterBridge: buildVolumeChapterBridge(previousVolumeChapter, buildBridgeLabel(previousChapter, "No hay ningún resumen del capítulo anterior antes de este capítulo.")),
+      nextChapterBridge: buildVolumeChapterBridge(nextVolumeChapter, buildBridgeLabel(nextChapter, "No hay ningún resumen del próximo capítulo después de este capítulo al que hacer referencia.")),
+      activePlotThreads: activePlotThreads.length > 0 ? activePlotThreads : ["Actualmente no hay ningún recordatorio principal extraído explícitamente."],
       characterStateSummary: buildCharacterStateSummary(latestStateSnapshot),
       worldConstraintSummary: buildWorldConstraintSummary(novel.world),
       mustKeepConstraints: buildMustKeepConstraints(novel.bookContract, chapterPlan),
@@ -321,7 +321,7 @@ export class ChapterEditorWorkspaceService {
         chapterMeta: {
           chapterId: context.chapter.id,
           order: context.chapter.order,
-          title: context.chapter.title?.trim() || "未命名章节",
+          title: context.chapter.title?.trim() || "Capítulo sin título",
           wordCount: countEditorWords(context.normalizedContent),
           openIssueCount: context.openAuditIssues.length,
           styleSummary: context.styleSummary || null,
@@ -330,7 +330,7 @@ export class ChapterEditorWorkspaceService {
         macroContext: context.macroContext,
         diagnosticCards: [],
         recommendedTask: null,
-        refreshReason: "当前章节正文为空，先补正文后再由 AI 生成修文建议。",
+        refreshReason: "El texto del capítulo actual está vacío. Primero complete el texto y luego use AI para generar sugerencias de revisión.",
       };
     }
 
@@ -338,7 +338,7 @@ export class ChapterEditorWorkspaceService {
       const result = await this.promptRunner({
         asset: chapterEditorWorkspaceDiagnosisPrompt,
         promptInput: {
-          chapterTitle: `第 ${context.chapter.order} 章 · ${context.chapter.title?.trim() || "未命名章节"}`,
+          chapterTitle: `Cap. ${context.chapter.order} capítulo · ${context.chapter.title?.trim() || "Capítulo sin título"}`,
           chapterMission: context.macroContext.chapterMission,
           volumePositionLabel: context.macroContext.volumePositionLabel,
           volumePhaseLabel: context.macroContext.volumePhaseLabel,
@@ -373,7 +373,7 @@ export class ChapterEditorWorkspaceService {
         chapterMeta: {
           chapterId: context.chapter.id,
           order: context.chapter.order,
-          title: context.chapter.title?.trim() || "未命名章节",
+          title: context.chapter.title?.trim() || "Capítulo sin título",
           wordCount: countEditorWords(context.normalizedContent),
           openIssueCount: context.openAuditIssues.length,
           styleSummary: context.styleSummary || null,
@@ -382,7 +382,7 @@ export class ChapterEditorWorkspaceService {
         macroContext: context.macroContext,
         diagnosticCards,
         recommendedTask,
-        refreshReason: "已基于本章内容、卷内定位与开放问题实时生成修文建议。",
+        refreshReason: "Las sugerencias de revisión se han generado en tiempo real en función del contenido de este capítulo, posicionamiento dentro del volumen y preguntas abiertas.",
       };
     } catch (error) {
       console.warn("Failed to generate chapter editor workspace diagnosis.", error);
@@ -390,7 +390,7 @@ export class ChapterEditorWorkspaceService {
         chapterMeta: {
           chapterId: context.chapter.id,
           order: context.chapter.order,
-          title: context.chapter.title?.trim() || "未命名章节",
+          title: context.chapter.title?.trim() || "Capítulo sin título",
           wordCount: countEditorWords(context.normalizedContent),
           openIssueCount: context.openAuditIssues.length,
           styleSummary: context.styleSummary || null,
@@ -399,7 +399,7 @@ export class ChapterEditorWorkspaceService {
         macroContext: context.macroContext,
         diagnosticCards: [],
         recommendedTask: null,
-        refreshReason: "AI 暂未完成本章诊断，你仍可先手动定位片段或直接告诉 AI 怎么改。",
+        refreshReason: "La IA aún no ha completado el diagnóstico de este capítulo. Aún puedes localizar manualmente el fragmento o decirle directamente a la IA cómo cambiarlo.",
       };
     }
   }

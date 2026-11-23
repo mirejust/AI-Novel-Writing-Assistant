@@ -26,24 +26,24 @@ export class DramaStrategyService {
       include: { sourceBundle: true },
     });
     if (!project) {
-      throw new Error(`未找到短剧项目：${projectId}`);
+      throw new Error(`Elementos dramáticos cortos no encontrados:${projectId}`);
     }
     if (!project.track) {
-      throw new Error("请先为项目设置赛道（track）再生成策略。");
+      throw new Error("Establezca un seguimiento para el proyecto antes de generar la estrategia.");
     }
     const track = rhythmEngine.getTrack(project.track as TrackId);
     if (!track) {
-      throw new Error(`未知赛道：${project.track}`);
+      throw new Error(`Pista desconocida:${project.track}`);
     }
     const synopsis = project.sourceBundle?.synopsis?.trim();
     if (!synopsis) {
-      throw new Error("请先装配内容包（source-bundle）再生成策略。");
+      throw new Error("Primero monte el paquete de contenido (paquete fuente) y luego genere la política.");
     }
 
     const preferredHooks = rhythmEngine
       .recommendHooksForTrack(track.id)
       .map((hook) => hook.label)
-      .join("、");
+      .join(",");
 
     const result = await runStructuredPrompt({
       asset: dramaStrategyPrompt,
@@ -52,7 +52,7 @@ export class DramaStrategyService {
         trackLabel: track.label,
         trackDescription: track.description,
         rhythmNote: track.rhythmNote,
-        taboos: track.taboos.join("；"),
+        taboos: track.taboos.join(";"),
         preferredHooks,
         targetEpisodes: project.targetEpisodes,
         freeEpisodes: DEFAULT_PAYWALL_STRATEGY.freeEpisodes,

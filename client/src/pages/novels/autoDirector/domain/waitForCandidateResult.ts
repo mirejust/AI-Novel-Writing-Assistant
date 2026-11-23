@@ -20,22 +20,22 @@ export async function waitForCandidateResult<T extends {batch: unknown}>(
       continue;
     }
     signal.throwIfAborted();
-    if (!command) throw new Error("未找到这次开书操作，请重新打开开书页查看进度。");
+    if (!command) throw new Error("Esta operación de apertura de libro no fue encontrada. Vuelva a abrir la página de apertura del libro para comprobar el progreso.");
     switch (command.status) {
       case "failed":
       case "cancelled":
       case "stale":
-        throw new Error(command.errorMessage || "这次开书操作已停止，请在开书页查看详情。");
+        throw new Error(command.errorMessage || "Esta vez la operación de apertura del libro se ha detenido. Consulte los detalles en la página de apertura del libro.");
       case "succeeded":
         if (command.result?.batch) return command.result;
-        throw new Error("开书操作已结束，未返回候选方案，请重新打开开书页查看结果。");
+        throw new Error("La operación de apertura del libro ha finalizado y no se han devuelto ninguna solución candidata. Vuelva a abrir la página de apertura del libro para ver los resultados.");
       case "queued":
       case "leased":
       case "running":
         await wait();
         break;
       default:
-        throw new Error("无法识别开书进度，请重新打开开书页。");
+        throw new Error("No se puede reconocer el progreso de apertura del libro, vuelva a abrir la página de apertura del libro.");
     }
   }
 }

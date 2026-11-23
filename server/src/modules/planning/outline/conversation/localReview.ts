@@ -13,7 +13,7 @@ export const localReviewScope = (projectId: string, target: ReviewTarget) =>
 
 export async function readLocalReviews(db: PrismaClient, projectId: string, target: ReviewTarget) {
   const project = await db.outlineProject.findFirst({ where: { id: projectId, status: "active" }, select: { id: true } });
-  if (!project) throw new AppError("找不到可编辑的大纲。", 404);
+  if (!project) throw new AppError("No se encontró ningún esquema editable.", 404);
   return db.$transaction(async tx => {
     const turns = await tx.agentConversationTurn.findMany({ where: { scopeKey: localReviewScope(projectId, target) }, orderBy: [{ createdAt: "asc" }, { id: "asc" }] });
     const results = await tx.outlineProposal.findMany({
@@ -37,15 +37,15 @@ interface ReviewInput {
 async function reviewFields(db: PrismaClient, projectId: string, target: ReviewTarget, turnId: string, document: OutlineDocument, input: ReviewInput) {
   if (target.kind === "volume") {
     const volume = document.volumes.find(item => item.nodeId === target.id);
-    if (!volume) throw new AppError("当前大纲中找不到这卷。", 404);
-    const result = await agentReplyLive.during(turnId, "正在对照本卷与前后卷的安排…", true, itemKey =>
+    if (!volume) throw new AppError("Este volumen no se puede encontrar en el programa de estudios actual.", 404);
+    const result = await agentReplyLive.during(turnId, "Comparando la disposición de este volumen con los volúmenes anteriores y posteriores...", true, itemKey =>
       runOutlineProposalStructuredCall({ asset: outlineVolumeReviewPrompt, promptInput: { volume, document, ...input }, options: { itemKey } }));
     return { node: volume, result };
   }
   const chapter = document.chapters.find(item => item.nodeId === target.id);
-  if (!chapter) throw new AppError("当前大纲中找不到这章。", 404);
-  if ((await readWrittenChapterIds(db, projectId)).includes(target.id)) throw new AppError("这章已有正文，请从正文编辑页调整。", 409);
-  const result = await agentReplyLive.during(turnId, "正在对照本章与前后情节…", true, itemKey =>
+  if (!chapter) throw new AppError("Este capítulo no se puede encontrar en el programa de estudios actual.", 404);
+  if ((await readWrittenChapterIds(db, projectId)).includes(target.id)) throw new AppError("Este capítulo ya tiene texto, ajústelo desde la página de edición de texto.", 409);
+  const result = await agentReplyLive.during(turnId, "Comparando este capítulo con las tramas anteriores y posteriores...", true, itemKey =>
     runOutlineProposalStructuredCall({ asset: outlineChapterReviewPrompt, promptInput: { chapter, document, ...input }, options: { itemKey } }));
   return { node: chapter, result };
 }

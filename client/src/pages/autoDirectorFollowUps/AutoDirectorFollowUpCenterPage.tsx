@@ -102,7 +102,7 @@ function shouldConfirmAction(action: AutoDirectorAction): boolean {
   if (!action.requiresConfirm) {
     return false;
   }
-  return window.confirm(`确认执行“${action.label}”？`);
+  return window.confirm(`Confirmar ejecución"${action.label}”?`);
 }
 
 function formatActionFeedbackMessage(message: string, fallback: string): string {
@@ -262,7 +262,7 @@ export default function AutoDirectorFollowUpCenterPage() {
     }),
     onSuccess: async (response) => {
       await invalidateFollowUps();
-      toast.success(formatActionFeedbackMessage(response.message ?? "", "操作已提交"));
+      toast.success(formatActionFeedbackMessage(response.message ?? "", "Operación enviada"));
     },
   });
 
@@ -277,7 +277,7 @@ export default function AutoDirectorFollowUpCenterPage() {
     }),
     onSuccess: async (response) => {
       await invalidateFollowUps();
-      toast.success(formatActionFeedbackMessage(response.message ?? "", "批量操作已提交"));
+      toast.success(formatActionFeedbackMessage(response.message ?? "", "Operación por lotes enviada"));
       setSelectedDirectorTaskIds([]);
     },
   });
@@ -289,7 +289,7 @@ export default function AutoDirectorFollowUpCenterPage() {
         queryKeys.autoDirectorFollowUps.detail(directorTaskId),
         response,
       );
-      toast.success("校验结果已刷新。");
+      toast.success("Los resultados de la verificación se han actualizado.");
     },
   });
 
@@ -403,26 +403,26 @@ export default function AutoDirectorFollowUpCenterPage() {
   } = resolveFollowUpOverviewPresentation(overview);
   const overviewErrorMessage = overviewQuery.error instanceof Error
     ? overviewQuery.error.message
-    : overviewQuery.isError ? "导演跟进摘要读取失败，请重试。" : null;
+    : overviewQuery.isError ? "No se pudo leer el resumen de seguimiento del director. Inténtelo de nuevo." : null;
   const listErrorMessage = listQuery.error instanceof Error
     ? listQuery.error.message
-    : listQuery.isError ? "导演跟进列表读取失败，请重试。" : null;
+    : listQuery.isError ? "No se pudo leer la lista de seguimiento del director. Inténtelo de nuevo." : null;
   const detailErrorMessage = detailQuery.error instanceof Error
     ? detailQuery.error.message
-    : detailQuery.isError ? "导演跟进详情读取失败，请重试。" : null;
+    : detailQuery.isError ? "No se pudieron leer los detalles de seguimiento del director. Inténtelo de nuevo." : null;
 
   return (
     <div className={AUTO_DIRECTOR_MOBILE_CLASSES.followUpPageRoot}>
       <WorkspaceHeader
         icon={ShieldAlert}
-        context="自动导演"
-        title="导演跟进中心"
-        description="只汇总 AI 自动导演任务，不混入手动工作区任务；阻塞、质量提醒、待操作和自动推进使用不同等级。"
+        context="Director automático"
+        title="Centro de Seguimiento del Director"
+        description="Solo se agregan las tareas del director automático de IA y las tareas manuales del espacio de trabajo no se mezclan; el bloqueo, los recordatorios de calidad, las operaciones pendientes y el avance automático utilizan diferentes niveles."
         meta={(
           <>
-            <span>阻塞 {criticalCount} 项</span>
-            <span>待操作 {pendingActionCount} 项</span>
-            <span>自动推进 {progressCount} 项</span>
+            <span>bloquear {criticalCount} Artículo</span>
+            <span>para ser operado {pendingActionCount} Artículo</span>
+            <span>avance automático {progressCount} Artículo</span>
           </>
         )}
         actions={(
@@ -433,7 +433,7 @@ export default function AutoDirectorFollowUpCenterPage() {
             onClick={() => void Promise.all([overviewQuery.refetch(), listQuery.refetch()])}
           >
             <RefreshCw className={overviewQuery.isFetching || listQuery.isFetching ? "h-4 w-4 animate-spin" : "h-4 w-4"} aria-hidden="true" />
-            刷新跟进
+            Actualizar para hacer seguimiento
           </Button>
         )}
       />
@@ -442,36 +442,36 @@ export default function AutoDirectorFollowUpCenterPage() {
         <WorkspaceNextAction
           icon={Activity}
           tone="info"
-          title="正在读取导演跟进"
-          description="正在汇总阻塞、待操作和自动推进任务，请稍候。"
+          title="Seguimiento del director de lectura"
+          description="Se están resumiendo las tareas de bloqueo, pendientes y avance automático, por favor espera."
         />
       ) : overviewErrorMessage ? (
         <WorkspaceNextAction
           icon={RefreshCw}
           tone="danger"
-          title="重新读取导演跟进"
+          title="Releer el seguimiento del director."
           description={overviewErrorMessage}
-          consequence="只重新读取跟进摘要，不会执行恢复、重试或重规划。"
-          action={<Button size="sm" variant="outline" onClick={() => void overviewQuery.refetch()}>重新读取</Button>}
+          consequence="Sólo se vuelve a leer el resumen de seguimiento, no se realiza ninguna recuperación, reintento ni replanificación."
+          action={<Button size="sm" variant="outline" onClick={() => void overviewQuery.refetch()}>Releer</Button>}
         />
       ) : (
         <WorkspaceNextAction
           icon={criticalCount > 0 ? ShieldAlert : Activity}
           tone={criticalCount > 0 ? "danger" : pendingActionCount > 0 ? "info" : progressCount > 0 ? "info" : "success"}
-          title={replanCount > 0 ? "先处理明确的重规划" : criticalCount > 0 ? "先处理阻塞任务" : pendingActionCount > 0 ? "确认待操作节点" : progressCount > 0 ? "自动导演正在推进" : "当前没有需要跟进的导演任务"}
+          title={replanCount > 0 ? "Aborde primero una replanificación clara" : criticalCount > 0 ? "Primero maneje las tareas de bloqueo" : pendingActionCount > 0 ? "Confirmar el nodo a operar" : progressCount > 0 ? "Autodirector avanza" : "Actualmente no hay asignaciones de dirección a seguir"}
           description={criticalCount > 0
             ? replanCount > 0
-              ? "后续章节已明确要求停止并重规划；先确认影响范围，再进入重规划入口。"
-              : "先查看校验或异常原因，再选择安全修复、恢复或重试。"
+              ? "Los capítulos posteriores han exigido claramente que se detuvieran ambos planes; El alcance del impacto debe confirmarse primero antes de ingresar al portal de replanificación."
+              : "Primero verifique la causa de la verificación o excepción y luego seleccione reparación, recuperación o reintento seguro."
             : pendingActionCount > 0
-              ? "待操作节点需要确认或继续；质量提醒不会阻止全书继续执行。"
+              ? "Los nodos que se van a operar requieren confirmación o continuación; Los recordatorios de calidad no impedirán que todo el libro continúe ejecutándose."
               : progressCount > 0
-                ? "自动推进记录用于了解进度，不需要手动干预。"
-                : "后续出现审批、异常或恢复需要时，会按影响等级出现在这里。"}
-          consequence={recommendedSection ? "只切换跟进分区，不会自动执行导演动作。" : undefined}
+                ? "La grabación de avance automático se utiliza para comprender el progreso sin intervención manual."
+                : "Cuando se produzcan aprobaciones posteriores, excepciones o necesidades de recuperación, aparecerán aquí según el nivel de impacto."}
+          consequence={recommendedSection ? "Solo se cambia la partición de seguimiento y la acción del director no se realizará automáticamente." : undefined}
           action={recommendedSection ? (
             <Button size="sm" variant={criticalCount > 0 ? "destructive" : "outline"} onClick={() => handleSectionChange(recommendedSection)}>
-              查看推荐分区
+              Ver particiones recomendadas
             </Button>
           ) : undefined}
         />

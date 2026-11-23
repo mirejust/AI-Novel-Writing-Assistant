@@ -77,20 +77,20 @@ function formatGeneratedLayerObject(raw: unknown, depth = 0): string {
     if (Array.isArray(value)) {
       const items = value.map((item) => normalizeGeneratedLayerFieldValue(item)).filter(Boolean);
       if (items.length > 0) {
-        lines.push(`${label}：${items.join("、")}`);
+        lines.push(`${label}:${items.join(",")}`);
       }
       continue;
     }
     if (value && typeof value === "object") {
       const nested = formatGeneratedLayerObject(value, depth + 1);
       if (nested) {
-        lines.push(depth === 0 ? `${label}\n${nested}` : `${label}：${nested.replace(/\n/g, "；")}`);
+        lines.push(depth === 0 ? `${label}\n${nested}` : `${label}:${nested.replace(/\n/g, ";")}`);
       }
       continue;
     }
     const text = normalizeGeneratedLayerFieldValue(value);
     if (text) {
-      lines.push(`${label}：${text}`);
+      lines.push(`${label}:${text}`);
     }
   }
   return lines.join("\n");
@@ -158,7 +158,7 @@ export async function buildWorldLayerGeneration(
   let layerRagContext = "";
   try {
     layerRagContext = await ragServices.hybridRetrievalService.buildContextBlock(
-      `世界分层生成 ${layerKey}\n${world.name}\n${world.description ?? ""}`,
+      `Generación mundial en capas ${layerKey}\n${world.name}\n${world.description ?? ""}`,
       {
         worldId: world.id,
         ownerTypes: ["world", "world_library_item"],
@@ -222,7 +222,7 @@ export async function buildWorldLayerGeneration(
   }
 
   if (Object.keys(layeredGenerated).length === 0) {
-    throw new Error(`世界分层生成未返回可用的 ${layerKey} 内容。`);
+    throw new Error(`La generación de capas mundiales no vuelve a ser utilizable ${layerKey} contenido.`);
   }
 
   return localizeLayerGenerationToChineseIfNeeded(options, layerKey, targetFields, layeredGenerated);

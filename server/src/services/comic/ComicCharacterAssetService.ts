@@ -177,8 +177,8 @@ export class ComicCharacterAssetService {
       where: { id: input.characterId },
       select: { id: true, projectId: true },
     });
-    if (!char) throw new AppError(`角色不存在：${input.characterId}`, 404);
-    if (char.projectId !== input.projectId) throw new AppError("角色与项目不匹配", 400);
+    if (!char) throw new AppError(`El rol no existe:${input.characterId}`, 404);
+    if (char.projectId !== input.projectId) throw new AppError("El rol no coincide con el proyecto", 400);
 
     return prisma.comicCharacterAsset.create({
       data: {
@@ -209,7 +209,7 @@ export class ComicCharacterAssetService {
 
   async getAsset(assetId: string) {
     const asset = await prisma.comicCharacterAsset.findUnique({ where: { id: assetId } });
-    if (!asset) throw new AppError(`资产不存在：${assetId}`, 404);
+    if (!asset) throw new AppError(`El activo no existe:${assetId}`, 404);
     return asset;
   }
 
@@ -269,7 +269,7 @@ export class ComicCharacterAssetService {
         project: { select: { stylePreset: true } },
       },
     });
-    if (!asset) throw new AppError(`资产不存在：${assetId}`, 404);
+    if (!asset) throw new AppError(`El activo no existe:${assetId}`, 404);
 
     const refImagePaths = await resolveSheetRefPaths(asset.characterId);
     const prompt = buildAssetPrompt({
@@ -289,7 +289,7 @@ export class ComicCharacterAssetService {
     if (sheetState.status === "done") {
       referenceImages.push({
         kind: "character_sheet",
-        label: `${asset.character.name} · 三视图`,
+        label: `${asset.character.name} ·Tres vistas`,
         url: `/api/comic/character-images/${asset.character.id}/sheet`,
       });
     }
@@ -311,7 +311,7 @@ export class ComicCharacterAssetService {
       refImagePaths,
       referenceImages,
       size: "1024x1024" as const,
-      title: `生成${asset.assetType === "costume" ? "服装" : asset.assetType === "weapon" ? "武器" : "资产"}：${asset.name}`,
+      title: `generar${asset.assetType === "costume" ? "ropa" : asset.assetType === "weapon" ? "brazos" : "activos"}:${asset.name}`,
     };
   }
 
@@ -352,7 +352,7 @@ export class ComicCharacterAssetService {
 
   async serveAssetImage(assetId: string): Promise<{ filePath: string; mimeType: string }> {
     const resolved = await resolveAssetFile(assetId);
-    if (!resolved) throw new AppError(`资产图片未找到：${assetId}`, 404);
+    if (!resolved) throw new AppError(`Imagen del activo no encontrada:${assetId}`, 404);
     return resolved;
   }
 }

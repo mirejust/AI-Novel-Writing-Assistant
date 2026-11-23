@@ -36,13 +36,13 @@ export class DramaEpisodeOutlineService {
       include: { sourceBundle: true },
     });
     if (!project) {
-      throw new Error(`未找到短剧项目：${projectId}`);
+      throw new Error(`Elementos dramáticos cortos no encontrados:${projectId}`);
     }
     if (!project.strategy) {
-      throw new Error("请先生成改编策略（strategy）再生成分集大纲。");
+      throw new Error("Genere una estrategia de adaptación (estrategia) para regenerar el esquema del componente.");
     }
     if (!project.track || !rhythmEngine.getTrack(project.track as TrackId)) {
-      throw new Error("项目赛道无效，请先设置有效赛道。");
+      throw new Error("El seguimiento del proyecto no es válido. Primero establezca un seguimiento válido.");
     }
     const track = rhythmEngine.getTrack(project.track as TrackId)!;
     const synopsis = project.sourceBundle?.synopsis?.trim() ?? "";
@@ -61,12 +61,12 @@ export class DramaEpisodeOutlineService {
     }
     const beatsDigest = beats
       .slice(0, 60)
-      .map((beat) => `${beat.order}：${beat.summary}`)
-      .join("\n") || "（无结构化节拍，按梗概自由分集）";
+      .map((beat) => `${beat.order}:${beat.summary}`)
+      .join("\n") || "(Sin ritmo estructurado, episodios gratuitos según el esquema)";
 
     const hookLibrary = rhythmEngine
       .listHooks()
-      .map((hook) => `${hook.id}：${hook.label} — ${hook.description}`)
+      .map((hook) => `${hook.id}:${hook.label} — ${hook.description}`)
       .join("\n");
 
     // 确定性卡点集号
@@ -87,7 +87,7 @@ export class DramaEpisodeOutlineService {
         hookLibrary,
         startOrder,
         count: endOrder - startOrder + 1,
-        paywallEpisodes: paywallInRange.join("、"),
+        paywallEpisodes: paywallInRange.join(","),
         paywallPlanDigest: describeDramaPaywallPlan(paywallPlan),
       },
       options: {

@@ -21,7 +21,7 @@ export function projectLocationDeltas(input: {
   return [...groups].map(([characterId, deltas]) => {
     // The wire contract requests one final record per actor. Never choose an arbitrary duplicate.
     if (deltas.length !== 1) {
-      return { characterId, locationName: null, evidence: null, concern: "本章位置记录存在多项判断，保留最后确认的位置。" };
+      return { characterId, locationName: null, evidence: null, concern: "Hay múltiples juicios en el registro de ubicación de este capítulo y se conserva la última ubicación confirmada." };
     }
     const delta = deltas[0];
     const evidence = compact(delta.evidence);
@@ -34,10 +34,10 @@ export function projectLocationDeltas(input: {
       locationName: canConfirm ? delta.locationName : null,
       evidence: validEvidence ? delta.evidence : null,
       concern: canConfirm ? null : !validEvidence
-        ? "本章位置判断缺少可定位的正文证据，保留最后确认的位置。"
-        : `候选位置=${delta.locationName || "未知"}；${input.contentProvenance === "debt"
-          ? "本章质量待核对，位置变化暂不作为已确认事实。"
-          : delta.explanation || "本章移动经过或位置关系不明确，保留最后确认的位置。"}`,
+        ? "El juicio de posición de este capítulo carece de evidencia textual que pueda localizarse, por lo que se conserva la última posición confirmada."
+        : `posición del candidato =${delta.locationName || "Desconocido"};${input.contentProvenance === "debt"
+          ? "Es necesario comprobar la calidad de este capítulo y el cambio de ubicación no se considera un hecho confirmado por el momento."
+          : delta.explanation || "Si el historial de movimientos o la relación de ubicación en este capítulo no están claros, se conservará la última ubicación confirmada."}`,
     };
   });
 }

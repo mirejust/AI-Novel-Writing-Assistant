@@ -64,26 +64,26 @@ export function buildPlannerStoryModeBlock(input: {
 
 export function buildStoryMacroSummary(plan: StoryMacroPlan | null): string {
   if (!plan) {
-    return "无";
+    return "Ninguno";
   }
   const lines = [
-    plan.expansion?.expanded_premise ? `扩展 premise：${plan.expansion.expanded_premise}` : "",
-    plan.expansion?.protagonist_core ? `主角核心：${plan.expansion.protagonist_core}` : "",
-    plan.decomposition?.selling_point ? `卖点拆解：${plan.decomposition.selling_point}` : "",
-    plan.decomposition?.core_conflict ? `核心冲突：${plan.decomposition.core_conflict}` : "",
-    plan.decomposition?.main_hook ? `主钩子：${plan.decomposition.main_hook}` : "",
-    plan.decomposition?.progression_loop ? `推进回路：${plan.decomposition.progression_loop}` : "",
-    plan.decomposition?.growth_path ? `成长路径：${plan.decomposition.growth_path}` : "",
+    plan.expansion?.expanded_premise ? `Ampliar la premisa:${plan.expansion.expanded_premise}` : "",
+    plan.expansion?.protagonist_core ? `Núcleo protagonista:${plan.expansion.protagonist_core}` : "",
+    plan.decomposition?.selling_point ? `Desmontaje de puntos de venta:${plan.decomposition.selling_point}` : "",
+    plan.decomposition?.core_conflict ? `Conflicto central:${plan.decomposition.core_conflict}` : "",
+    plan.decomposition?.main_hook ? `Gancho principal:${plan.decomposition.main_hook}` : "",
+    plan.decomposition?.progression_loop ? `Circuito de propulsión:${plan.decomposition.progression_loop}` : "",
+    plan.decomposition?.growth_path ? `Camino de crecimiento:${plan.decomposition.growth_path}` : "",
     plan.decomposition?.major_payoffs?.length
-      ? `关键兑现：${plan.decomposition.major_payoffs.join("；")}`
+      ? `Cumplimiento clave:${plan.decomposition.major_payoffs.join(";")}`
       : "",
-    plan.decomposition?.ending_flavor ? `结尾风味：${plan.decomposition.ending_flavor}` : "",
-    plan.constraints.length > 0 ? `硬约束：${plan.constraints.join("；")}` : "",
+    plan.decomposition?.ending_flavor ? `Sabor final:${plan.decomposition.ending_flavor}` : "",
+    plan.constraints.length > 0 ? `Restricciones duras:${plan.constraints.join(";")}` : "",
     plan.constraintEngine?.phase_model?.length
-      ? `阶段模型：${plan.constraintEngine.phase_model.map((item) => `${item.name}:${item.goal}`).join(" | ")}`
+      ? `Modelo de escenario:${plan.constraintEngine.phase_model.map((item) => `${item.name}:${item.goal}`).join(" | ")}`
       : "",
   ].filter(Boolean);
-  return lines.join("\n") || "无";
+  return lines.join("\n") || "Ninguno";
 }
 
 export function buildCurrentVolumeWindowSummary(
@@ -91,16 +91,16 @@ export function buildCurrentVolumeWindowSummary(
   chapterOrder: number,
 ): string {
   if (volumes.length === 0) {
-    return "当前尚未建立卷级窗口，请先确认卷工作台。";
+    return "La ventana de nivel de volumen aún no se ha creado; primero confirme el banco de trabajo de volumen.";
   }
   const currentIndex = volumes.findIndex((volume) => (
     volume.chapters.some((chapter) => chapter.chapterOrder === chapterOrder)
   ));
   if (currentIndex < 0) {
     return [
-      `当前章节：第${chapterOrder}章`,
-      "当前尚未绑定到任何卷结构，请先同步章节与卷窗口。",
-      `已有卷窗口：${volumes.map((volume) => `第${volume.sortOrder}卷《${volume.title}》`).join("；")}`,
+      `Capítulo actual: Capítulo${chapterOrder}cap.`,
+      "Actualmente no está vinculado a ninguna estructura de volumen; primero sincronice las ventanas de capítulo y volumen.",
+      `Ya tengo una ventana de volumen:${volumes.map((volume) => `Cap.${volume.sortOrder}rollo"${volume.title}»`).join(";")}`,
     ].join("\n");
   }
 
@@ -114,18 +114,18 @@ export function buildCurrentVolumeWindowSummary(
     .findIndex((chapter) => chapter.chapterOrder === chapterOrder);
 
   return [
-    `当前章节：第${chapterOrder}章（卷内位置 ${chapterIndex + 1}/${currentVolume.chapters.length}）`,
-    `当前卷：第${currentVolume.sortOrder}卷《${currentVolume.title}》`,
-    `卷使命：${currentVolume.mainPromise ?? currentVolume.summary ?? "无"}`,
-    currentVolume.climax ? `卷末高潮：${currentVolume.climax}` : "",
-    chapterOrders.length > 0 ? `卷章节范围：${chapterOrders[0]}-${chapterOrders[chapterOrders.length - 1]}` : "",
-    currentVolume.openPayoffs.length > 0 ? `本卷待兑现事项：${currentVolume.openPayoffs.join("；")}` : "",
+    `Capítulo actual: Capítulo${chapterOrder}Capítulo (posición dentro del volumen) ${chapterIndex + 1}/${currentVolume.chapters.length})`,
+    `Volumen actual: No.${currentVolume.sortOrder}rollo"${currentVolume.title}»`,
+    `Misión de volumen:${currentVolume.mainPromise ?? currentVolume.summary ?? "Ninguno"}`,
+    currentVolume.climax ? `Clímax al final del volumen:${currentVolume.climax}` : "",
+    chapterOrders.length > 0 ? `Rango de capítulos de volumen:${chapterOrders[0]}-${chapterOrders[chapterOrders.length - 1]}` : "",
+    currentVolume.openPayoffs.length > 0 ? `Artículos a canjear en este volumen:${currentVolume.openPayoffs.join(";")}` : "",
     previousVolume
-      ? `上一卷承接：第${previousVolume.sortOrder}卷《${previousVolume.title}》 | ${previousVolume.mainPromise ?? previousVolume.summary ?? "无"}`
-      : "上一卷承接：无",
+      ? `Continuación del volumen anterior: Capítulo${previousVolume.sortOrder}rollo"${previousVolume.title}» | ${previousVolume.mainPromise ?? previousVolume.summary ?? "Ninguno"}`
+      : "Volumen anterior realizado: Ninguno",
     nextVolume
-      ? `下一卷预期：第${nextVolume.sortOrder}卷《${nextVolume.title}》 | ${nextVolume.mainPromise ?? nextVolume.summary ?? "无"}`
-      : "下一卷预期：无",
+      ? `Próximo volumen esperado: Capítulo${nextVolume.sortOrder}rollo"${nextVolume.title}» | ${nextVolume.mainPromise ?? nextVolume.summary ?? "Ninguno"}`
+      : "Expectativas para el próximo volumen: Ninguna",
   ].filter(Boolean).join("\n");
 }
 
@@ -134,15 +134,15 @@ function describeConflictStep(
   current: number | null | undefined,
 ): string {
   if (typeof previous !== "number" || typeof current !== "number") {
-    return "未知";
+    return "Desconocido";
   }
   if (current > previous) {
-    return "上升";
+    return "elevar";
   }
   if (current < previous) {
-    return "下降";
+    return "rechazar";
   }
-  return "持平";
+  return "departamento";
 }
 
 export function buildPlannerConflictLevelAnchorContext(
@@ -165,15 +165,15 @@ export function buildPlannerConflictLevelAnchorContext(
       const previous = index > 0 ? chapters[index - 1] : null;
       const next = index < chapters.length - 1 ? chapters[index + 1] : null;
       lines.push([
-        `第${chapter.chapterOrder}章《${chapter.title}》`,
+        `Cap.${chapter.chapterOrder}capítulo"${chapter.title}»`,
         `conflictLevel=${chapter.conflictLevel}`,
-        "用户锚定，不可更改",
-        `相对上一章=${describeConflictStep(previous?.conflictLevel, chapter.conflictLevel)}`,
-        `相对下一章=${describeConflictStep(chapter.conflictLevel, next?.conflictLevel)}`,
+        "Usuario anclado, no se puede cambiar",
+        `Comparado con el capítulo anterior =${describeConflictStep(previous?.conflictLevel, chapter.conflictLevel)}`,
+        `En relación con el próximo capítulo =${describeConflictStep(chapter.conflictLevel, next?.conflictLevel)}`,
       ].join(" | "));
     }
   }
-  return lines.join("\n") || "无";
+  return lines.join("\n") || "Ninguno";
 }
 
 export function buildPlannerCharacterDynamicsContext(overview: PlannerCharacterDynamicsOverview | null): {
@@ -184,51 +184,51 @@ export function buildPlannerCharacterDynamicsContext(overview: PlannerCharacterD
 } {
   if (!overview) {
     return {
-      summary: "无",
-      volumeAssignments: "无",
-      relationStages: "无",
-      candidateGuards: "无",
+      summary: "Ninguno",
+      volumeAssignments: "Ninguno",
+      relationStages: "Ninguno",
+      candidateGuards: "Ninguno",
     };
   }
 
   const highRiskCharacters = overview.characters
     .filter((item) => item.absenceRisk === "high" || item.absenceRisk === "warn")
     .slice(0, 4)
-    .map((item) => `${item.name}(${item.absenceRisk}, 缺席跨度=${item.absenceSpan})`);
+    .map((item) => `${item.name}(${item.absenceRisk}, período de ausencia =${item.absenceSpan})`);
   const coreCharacters = overview.characters
     .filter((item) => item.isCoreInVolume)
     .slice(0, 6)
     .map((item) => (
       [
         item.name,
-        item.volumeRoleLabel ? `卷级身份=${item.volumeRoleLabel}` : "",
-        item.volumeResponsibility ? `卷级职责=${item.volumeResponsibility}` : "",
-        item.plannedChapterOrders.length > 0 ? `计划章次=${item.plannedChapterOrders.join("、")}` : "",
-        item.absenceRisk !== "none" ? `缺席风险=${item.absenceRisk}(跨度=${item.absenceSpan})` : "",
+        item.volumeRoleLabel ? `Identidad del nivel de volumen =${item.volumeRoleLabel}` : "",
+        item.volumeResponsibility ? `Responsabilidades de nivel de volumen=${item.volumeResponsibility}` : "",
+        item.plannedChapterOrders.length > 0 ? `Capítulo del plan =${item.plannedChapterOrders.join(",")}` : "",
+        item.absenceRisk !== "none" ? `Riesgo de ausencia =${item.absenceRisk}(lapso =${item.absenceSpan})` : "",
       ].filter(Boolean).join(" | ")
     ));
   const relationStages = overview.relations
     .slice(0, 8)
     .map((item) => (
-      `${item.sourceCharacterName} -> ${item.targetCharacterName}: ${item.stageLabel} | ${item.stageSummary}${item.nextTurnPoint ? ` | 下一步=${item.nextTurnPoint}` : ""}`
+      `${item.sourceCharacterName} -> ${item.targetCharacterName}: ${item.stageLabel} | ${item.stageSummary}${item.nextTurnPoint ? ` |Siguiente=${item.nextTurnPoint}` : ""}`
     ));
   const candidateGuards = overview.candidates
     .slice(0, 4)
     .map((item) => (
-      `${item.proposedName}${item.proposedRole ? `(${item.proposedRole})` : ""} | ${item.summary ?? "待确认候选"} | 来源章节=${item.sourceChapterOrder ?? "未知"} | 只读约束，未确认前禁止写入正式执行链`
+      `${item.proposedName}${item.proposedRole ? `(${item.proposedRole})` : ""} | ${item.summary ?? "Candidatos por confirmar"} | Capítulo fuente =${item.sourceChapterOrder ?? "Desconocido"} | Restricciones de solo lectura, está prohibido escribir en la cadena de ejecución formal antes de la confirmación.`
     ));
 
   return {
     summary: [
       overview.summary,
-      overview.currentVolume ? `当前卷：${overview.currentVolume.title}` : "当前卷：未定位",
-      coreCharacters.length > 0 ? `当前卷核心角色：${coreCharacters.map((item) => item.split(" | ")[0]).join("、")}` : "当前卷核心角色：无",
-      highRiskCharacters.length > 0 ? `缺席高风险角色：${highRiskCharacters.join("；")}` : "缺席高风险角色：无",
-      overview.pendingCandidateCount > 0 ? `待确认候选：${overview.pendingCandidateCount} 个` : "待确认候选：无",
+      overview.currentVolume ? `Volumen actual:${overview.currentVolume.title}` : "Volumen actual: no localizado",
+      coreCharacters.length > 0 ? `Funciones principales del volumen actual:${coreCharacters.map((item) => item.split(" | ")[0]).join(",")}` : "Rol principal actual: Ninguno",
+      highRiskCharacters.length > 0 ? `Ausencia de roles de alto riesgo:${highRiskCharacters.join(";")}` : "Ausencia en roles de alto riesgo: Ninguno",
+      overview.pendingCandidateCount > 0 ? `Candidatos por confirmar:${overview.pendingCandidateCount} individual` : "Candidatos por confirmar: Ninguno",
     ].join("\n"),
-    volumeAssignments: coreCharacters.join("\n") || "无",
-    relationStages: relationStages.join("\n") || "无",
-    candidateGuards: candidateGuards.join("\n") || "无",
+    volumeAssignments: coreCharacters.join("\n") || "Ninguno",
+    relationStages: relationStages.join("\n") || "Ninguno",
+    candidateGuards: candidateGuards.join("\n") || "Ninguno",
   };
 }
 
@@ -237,11 +237,11 @@ export function buildPlannerStyleEngineSummary(styleContext: ResolvedStyleContex
   const compiled = styleContext?.compiledBlocks;
 
   if (matchedBindings.length === 0 && !compiled) {
-    return "无";
+    return "Ninguno";
   }
 
   const bindingLine = matchedBindings.length > 0
-    ? `当前命中写法：${matchedBindings
+    ? `Escritura de éxito actual:${matchedBindings
       .map((binding) => compactText(binding.styleProfile?.name, binding.styleProfileId))
       .join(" / ")}`
     : "";
@@ -251,13 +251,13 @@ export function buildPlannerStyleEngineSummary(styleContext: ResolvedStyleContex
 
   return [
     bindingLine,
-    sections.length > 0 ? `规划期写法约束：\n${sections.join("\n")}` : "",
-  ].filter(Boolean).join("\n\n") || "无";
+    sections.length > 0 ? `Restricciones de escritura del período de planificación: \\n${sections.join("\n")}` : "",
+  ].filter(Boolean).join("\n\n") || "Ninguno";
 }
 
 export function buildPlannerPayoffLedgerContext(ledger: PayoffLedgerResponse, chapterOrder: number): string {
   if (!ledger.items.length) {
-    return "无";
+    return "Ninguno";
   }
 
   const pendingItems = ledger.items
@@ -276,18 +276,18 @@ export function buildPlannerPayoffLedgerContext(ledger: PayoffLedgerResponse, ch
       || isPayoffOverdueAtChapter(item, chapterOrder)
     ))
     .slice(0, 5)
-    .map((item) => `${item.title} | 窗口=${item.targetStartChapterOrder ?? "?"}-${item.targetEndChapterOrder ?? "?"}`);
+    .map((item) => `${item.title} | ventana =${item.targetStartChapterOrder ?? "?"}-${item.targetEndChapterOrder ?? "?"}`);
   const recentlyPaidOff = ledger.items
     .filter((item) => item.currentStatus === "paid_off")
     .sort((left, right) => (right.lastTouchedChapterOrder ?? 0) - (left.lastTouchedChapterOrder ?? 0))
     .slice(0, 4)
-    .map((item) => `${item.title} | 已在第${item.lastTouchedChapterOrder ?? "?"}章附近兑现`);
+    .map((item) => `${item.title} | Ya en el${item.lastTouchedChapterOrder ?? "?"}efectivo cerca del capítulo`);
 
   return [
-    `账本摘要：待兑现=${ledger.summary.pendingCount}，紧急=${ledger.summary.urgentCount}，逾期=${ledger.summary.overdueCount}，已兑现=${ledger.summary.paidOffCount}`,
-    `当前未兑现项：${pendingItems.join("；") || "无"}`,
-    `当前逾期项：${overdueItems.join("；") || "无"}`,
-    `本章应触碰项：${touchNowItems.join("；") || "无"}`,
-    `最近一次已兑现项：${recentlyPaidOff.join("；") || "无"}`,
+    `Resumen del libro mayor: Para canjear =${ledger.summary.pendingCount}, urgente =${ledger.summary.urgentCount}, vencido =${ledger.summary.overdueCount}, ha sido cobrado =${ledger.summary.paidOffCount}`,
+    `Artículos pendientes actualmente:${pendingItems.join(";") || "Ninguno"}`,
+    `Artículos vencidos actualmente:${overdueItems.join(";") || "Ninguno"}`,
+    `Elementos que deben abordarse en este capítulo:${touchNowItems.join(";") || "Ninguno"}`,
+    `Último artículo canjeado:${recentlyPaidOff.join(";") || "Ninguno"}`,
   ].join("\n");
 }

@@ -19,28 +19,28 @@ const WORLD_ASSET_BLUEPRINTS: Array<{
 }> = [
   {
     assetType: "map",
-    title: "世界地图",
-    description: "整理区域、路线、势力控制区和故事发生地。",
+    title: "mapa del mundo",
+    description: "Organice áreas, rutas, áreas controladas por energía y ubicaciones de historias.",
   },
   {
     assetType: "faction_diagram",
-    title: "势力图谱",
-    description: "呈现联盟、敌对、附庸和竞争关系。",
+    title: "mapa de poder",
+    description: "Presenta relaciones de alianza, hostilidad, vasallaje y competencia.",
   },
   {
     assetType: "timeline",
-    title: "世界时间线",
-    description: "承载历史事件、当前局势和后续变化。",
+    title: "línea de tiempo mundial",
+    description: "Llevando acontecimientos históricos, situaciones actuales y cambios posteriores.",
   },
   {
     assetType: "character_network",
-    title: "角色关系网",
-    description: "连接角色、阵营归属、立场变化和关系张力。",
+    title: "red de roles",
+    description: "Conecte roles, afiliaciones a campamentos, cambios de posición y tensiones en las relaciones.",
   },
   {
     assetType: "power_system_tree",
-    title: "力量体系树",
-    description: "沉淀等级、资源、代价和禁忌边界。",
+    title: "Árbol del sistema de energía",
+    description: "Niveles de depósito, recursos, costos y límites tabú.",
   },
 ];
 

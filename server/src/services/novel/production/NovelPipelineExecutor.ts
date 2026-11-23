@@ -93,7 +93,7 @@ function clampPipelineMaxRetries(value: number | null | undefined): number {
 }
 
 function buildEmptyChapterDetail(chapter: { order: number; title: string }): string {
-  return `第${chapter.order}章「${chapter.title}」正文生成失败：模型连续未返回可保存正文，已暂停继续。`;
+  return `Cap.${chapter.order}capítulo"${chapter.title}"Error al generar texto: el modelo no ha regresado para guardar el texto y se ha pausado para continuar.`;
 }
 
 export class NovelPipelineExecutor {
@@ -323,7 +323,7 @@ export class NovelPipelineExecutor {
           appliedAction = decision.action;
           if (decision.action === "auto_retry") {
             if (!input.onRetry) {
-              throw new Error("问题策略要求自动重试，但当前执行边界没有安全的重试入口。");
+              throw new Error("La política de problemas requiere un reintento automático, pero el límite de ejecución actual no tiene una entrada de reintento segura.");
             }
             await input.onRetry();
             return;
@@ -385,7 +385,7 @@ export class NovelPipelineExecutor {
           heartbeatAt: new Date(),
           currentStage: "generating_chapters",
         });
-        logPipelineInfo("任务开始执行", {
+        logPipelineInfo("La tarea comienza a ejecutarse", {
           jobId,
           novelId,
           range: `${options.startOrder}-${options.endOrder}`,
@@ -419,7 +419,7 @@ export class NovelPipelineExecutor {
           if (!chapter.content?.trim() || isCurrentV2ChapterProductionCompleted(chapter) || (!edited && !terminal)) continue;
           await checkCancelled();
           await this.updateJobSafe(jobId, {currentStage: "reviewing", currentItemKey: chapter.id,
-            currentItemLabel: "正在同步第" + chapter.order + "章修订后的资料"});
+            currentItemLabel: "Sincronizando el" + chapter.order + "Información revisada del capítulo"});
           try { await manualChapterSyncService.ensureCurrent(novelId, chapter.id, checkCancelled); }
           catch (error) {
             if (error instanceof PipelineExecutionLeaseLostError || (error instanceof Error && error.message === "PIPELINE_CANCELLED")) throw error;
@@ -429,7 +429,7 @@ export class NovelPipelineExecutor {
                 error: error.message, payload: this.stringifyPipelinePayload(runtimePayload)});
               throw new PipelineIssueAppliedError(error.message, "pause_for_manual");
             }
-            throw new PipelineIssueFailure(error instanceof Error ? error.message : "修订正文资料同步失败。",
+            throw new PipelineIssueFailure(error instanceof Error ? error.message : "Error al sincronizar los datos del texto revisado.",
               "runtime.data_integrity", "chapter_artifact_sync", chapter.id, chapter.order);
           }
           const refreshed = await prisma.chapter.findFirstOrThrow({where: {id: chapter.id, novelId}, include: {
@@ -442,10 +442,10 @@ export class NovelPipelineExecutor {
           ? chapterCandidates.filter((chapter) => !(runtimePayload.directorNext ? isCurrentV2ChapterProductionCompleted(chapter) : isCurrentChapterProductionCompleted(chapter)))
           : chapterCandidates;
         if (!novel) {
-          throw new Error("任务执行失败：小说或章节不存在");
+          throw new Error("Error en la ejecución de la tarea: la novela o el capítulo no existe");
         }
 
-        logPipelineInfo("任务加载完成", {
+        logPipelineInfo("Carga de tarea completada", {
           jobId,
           novelId,
           title: novel.title,
@@ -476,7 +476,7 @@ export class NovelPipelineExecutor {
         const chaptersToProcess = chapters.slice(remainingStartIndex);
         const closedOrders = new Set(chapterCandidates.filter(chapter => runtimePayload.directorNext ? isCurrentV2ChapterProductionCompleted(chapter) : isCurrentChapterProductionCompleted(chapter)).map(chapter => chapter.order));
         let pendingManualRecovery = false;
-        let pendingManualRecoveryReason = "章节需要人工确认，后续生成已暂停。";
+        let pendingManualRecoveryReason = "Los capítulos requieren confirmación manual y la generación posterior se ha suspendido.";
 
         if (runtimePayload.directorNext) {
           await this.updateJobRequired(jobId, {
@@ -496,7 +496,7 @@ export class NovelPipelineExecutor {
               completionProfile: buildDirectorCompletionProfile(novel.estimatedChapterCount ?? autopilotTargetEndOrder),
             });
           } catch (error) {
-            throw new PipelineIssueFailure(`滚动规划未能准备第 ${order} 章，已保存正文会保留，请检查后继续。`,
+            throw new PipelineIssueFailure(`La planificación continua no logró preparar el primer ${order} Capítulo, el texto guardado se conservará; compruébelo antes de continuar.`,
               "planning.route_window_unavailable", "route_window", previous?.id, previous?.order);
           }
           if (cached) return cached;
@@ -508,7 +508,7 @@ export class NovelPipelineExecutor {
             } },
           });
           if (!prepared) {
-            throw new PipelineIssueFailure(`滚动规划未能准备第 ${order} 章，已保存正文会保留，请检查后继续。`,
+            throw new PipelineIssueFailure(`La planificación continua no logró preparar el primer ${order} Capítulo, el texto guardado se conservará; compruébelo antes de continuar.`,
               "planning.route_window_unavailable", "route_window", previous?.id, previous?.order);
           }
           return prepared;
@@ -538,13 +538,13 @@ export class NovelPipelineExecutor {
           if (recoveringSavedQuality) {
             try {
               if (savedUsage?.endJobTokens !== undefined) {
-                if (savedUsage.chapterOrder !== chapter.order) throw new Error("章节用量检查点身份不一致。");
+                if (savedUsage.chapterOrder !== chapter.order) throw new Error("La identidad del punto de control de uso del capítulo es inconsistente.");
                 const usage = await prisma.generationJob.findUniqueOrThrow({ where: { id: jobId }, select: { totalTokens: true } });
                 observeChapterUsage(runtimePayload.directorNext!, chapter.id, usage.totalTokens);
               }
               chapterResult = await recoverSavedChapterQuality(novelId, chapter, {manualRevision, provider: runtimePayload.provider, model: runtimePayload.model, temperature: runtimePayload.temperature});
             } catch (error) {
-              throw new PipelineIssueFailure(error instanceof Error ? error.message : "章节保存进度无法核验。",
+              throw new PipelineIssueFailure(error instanceof Error ? error.message : "No se puede verificar el progreso al guardar el capítulo.",
                 error instanceof SavedChapterQualityRecoveryError ? error.issueCode : "runtime.data_integrity",
                 "chapter_usage", chapter.id, chapter.order);
             }
@@ -561,7 +561,7 @@ export class NovelPipelineExecutor {
                 ? finalizeChapterUsage(runtimePayload.directorNext, chapter.id, usage.job, usage.batch)
                 : observeChapterUsage(runtimePayload.directorNext, chapter.id, usage.job, usage.batch);
             } catch (error) {
-              throw new PipelineIssueFailure(error instanceof Error ? error.message : "章节用量记录异常，不能继续生成。",
+              throw new PipelineIssueFailure(error instanceof Error ? error.message : "El registro de uso del capítulo es anormal y no se puede seguir generando.",
                 "runtime.data_integrity", "chapter_usage", chapter.id, chapter.order);
             }
             const row = runtimePayload.directorNext.chapterUsage!.find(item => item.chapterId === chapter.id)!;
@@ -577,16 +577,16 @@ export class NovelPipelineExecutor {
                 });
               } catch (error) {
                 if (error instanceof PipelineExecutionLeaseLostError) throw error;
-                throw new PipelineIssueFailure("章节用量检查点无法确认已保存，生成已停止。",
+                throw new PipelineIssueFailure("El punto de control de uso del capítulo no pudo confirmar que se guardó, la generación se detuvo.",
                   "runtime.persistence_failed", "chapter_usage", chapter.id, chapter.order);
               }
             }
             if (paused) {
               const budget = chapterBudgetView(jobId, row);
-              const unit = budget.metric === "uncached_tokens_v1" ? "有效 Tokens" : "Tokens";
+              const unit = budget.metric === "uncached_tokens_v1" ? "Fichas válidas" : "Tokens";
               const message = observed.exceeded
-                ? `第${chapter.order}章累计 AI 用量达到 ${budget.usedTokens} ${unit}，本章上限 ${budget.tokenLimit}，${closed ? "正文已保存，" : ""}请从导演台调整本章额度后继续。`
-                : `第${chapter.order}章当前已用 ${budget.usedTokens} ${unit}，下一步预留 ${normalizedReserve} Tokens 后将接近本章上限 ${budget.tokenLimit}，${closed ? "正文已保存，" : ""}请从导演台调整本章额度后继续。`;
+                ? `Cap.${chapter.order}El uso acumulado de IA en este capítulo alcanza ${budget.usedTokens} ${unit}, el límite superior de este capítulo ${budget.tokenLimit},${closed ? "El texto ha sido guardado," : ""}Ajuste la cantidad de este capítulo desde el escritorio del director antes de continuar.`
+                : `Cap.${chapter.order}El capítulo se utiliza actualmente. ${budget.usedTokens} ${unit}, reservado para el siguiente paso ${normalizedReserve} Después de los Tokens, estará cerca del límite superior de este capítulo. ${budget.tokenLimit},${closed ? "El texto ha sido guardado," : ""}Ajuste la cantidad de este capítulo desde el escritorio del director antes de continuar.`;
               throw new PipelineIssueFailure(message,
                 "runtime.token_budget_exceeded", "chapter_usage", chapter.id, chapter.order);
             }
@@ -618,7 +618,7 @@ export class NovelPipelineExecutor {
           };
 
           await applyChapterStage(recoveringSavedQuality ? "reviewing" : "generating_chapters");
-          logPipelineInfo("开始处理章节", {
+          logPipelineInfo("Empezar a trabajar en un capítulo.", {
             jobId,
             chapterId: chapter.id,
             order: chapter.order,
@@ -708,13 +708,13 @@ export class NovelPipelineExecutor {
                       source: event.error.details.source,
                     };
                     if (willRetry) {
-                      logPipelineWarn("章节生成未返回正文，正在重试当前章", meta);
+                      logPipelineWarn("La generación del capítulo no devolvió el texto, reintentando el capítulo actual", meta);
                       return;
                     }
                     if (!qualityAlertDetails.includes(detail)) {
                       qualityAlertDetails.push(detail);
                     }
-                    logPipelineError("章节生成连续未返回正文，准备自动重试当前章", meta);
+                    logPipelineError("La generación de capítulos continúa sin volver al texto. Prepárese para volver a intentar automáticamente el capítulo actual.", meta);
                   },
                   },
                 ));
@@ -740,7 +740,7 @@ export class NovelPipelineExecutor {
                 if (error instanceof Error && error.message === "PIPELINE_CANCELLED") {
                   throw error;
                 }
-                const message = error instanceof Error ? error.message : `第${chapter.order}章运行失败。`;
+                const message = error instanceof Error ? error.message : `Cap.${chapter.order}Error al ejecutar el capítulo.`;
                 const canOfferGovernedRetry = !(error instanceof ChapterContentPersistenceError)
                   && isAutopilotMode
                   && chapterRetryCountUsed < chapterRetryBudget;
@@ -754,7 +754,7 @@ export class NovelPipelineExecutor {
                     ? "chapter_persistence"
                     : "chapter_generation",
                   summary: error instanceof ChapterContentPersistenceError
-                    ? `第${chapter.order}章正文无法确认已保存，已停止自动重试。`
+                    ? `Cap.${chapter.order}No se puede confirmar que el texto del capítulo se haya guardado y se ha detenido el reintento automático.`
                     : message,
                   evidence: error instanceof Error ? error.stack : undefined,
                   chapterId: chapter.id,
@@ -765,9 +765,9 @@ export class NovelPipelineExecutor {
                   onRetry: canOfferGovernedRetry
                     ? async () => {
                         if (!(await claimAttempt("runtime_retry"))) {
-                          throw new Error("本章自动处理额度已被使用，请从保存位置继续处理。");
+                          throw new Error("Se ha utilizado la cuota de procesamiento automático para este capítulo. Continúe el procesamiento desde la ubicación guardada.");
                         }
-                        const retryLabel = `第${chapter.order}章遇到临时问题，AI 正在自动修复并重试（${chapterRetryCountUsed}/${chapterRetryBudget}）`;
+                        const retryLabel = `Cap.${chapter.order}El capítulo encontró un problema temporal, la IA lo soluciona automáticamente y lo intenta nuevamente (${chapterRetryCountUsed}/${chapterRetryBudget})`;
                         await this.updateJobRequired(jobId, {
                           heartbeatAt: new Date(),
                           currentStage: "generating_chapters",
@@ -793,7 +793,7 @@ export class NovelPipelineExecutor {
                 if (!action) {
                   if (!(await claimAttempt("runtime_retry"))) throw error;
                 }
-                const retryLabel = `第${chapter.order}章遇到临时问题，AI 正在自动修复并重试（${chapterRetryCountUsed}/${chapterRetryBudget}）`;
+                const retryLabel = `Cap.${chapter.order}El capítulo encontró un problema temporal, la IA lo soluciona automáticamente y lo intenta nuevamente (${chapterRetryCountUsed}/${chapterRetryBudget})`;
                 if (!action) {
                   await this.updateJobSafe(jobId, {
                     heartbeatAt: new Date(),
@@ -802,7 +802,7 @@ export class NovelPipelineExecutor {
                     currentItemLabel: retryLabel,
                   });
                 }
-                logPipelineWarn("章节运行时失败，自动重试当前章", {
+                logPipelineWarn("No se pudo ejecutar el capítulo, vuelva a intentar automáticamente el capítulo actual", {
                   jobId,
                   novelId,
                   chapterId: chapter.id,
@@ -816,7 +816,7 @@ export class NovelPipelineExecutor {
             clearInterval(heartbeatTimer);
           }
           if (!chapterResult) {
-            throw new Error(`第${chapter.order}章在自动重试后仍未生成可用结果。`);
+            throw new Error(`Cap.${chapter.order}El capítulo no pudo producir resultados utilizables después de los reintentos automáticos.`);
           }
 
           totalRetryCount += Math.max(0, chapterRetryCountUsed - previouslyConsumed);
@@ -875,7 +875,7 @@ export class NovelPipelineExecutor {
               recoverableRepairDetails,
             }),
           });
-          logPipelineInfo("任务进度更新", {
+          logPipelineInfo("Actualizaciones del progreso de la tarea", {
             jobId,
             completed,
             total: totalCount,
@@ -883,7 +883,7 @@ export class NovelPipelineExecutor {
             retryCount: totalRetryCount,
           });
           if (chapterStopAction === "fail_task") {
-            const failureMessage = `第${chapter.order}章质量问题已按任务规则结束本次流水线。`;
+            const failureMessage = `Cap.${chapter.order}Los problemas de calidad del capítulo han puesto fin a esta línea de montaje de acuerdo con las reglas de la tarea.`;
             await this.updateJobRequired(jobId, {
               status: "failed",
               pendingManualRecovery: false,
@@ -905,8 +905,8 @@ export class NovelPipelineExecutor {
           }
           if (shouldStopAfterCurrentChapter) {
             pendingManualRecovery = true;
-            if (chapterResult.reviewRetries?.exhausted) pendingManualRecoveryReason = `第${chapter.order}章检查重试已用 ${chapterResult.reviewRetries.used}/${chapterResult.reviewRetries.maxRetries} 次，正文已保留，请从小说工作台确认后继续。`;
-            logPipelineWarn("章节需要人工处理，已暂停后续章节流水线", {
+            if (chapterResult.reviewRetries?.exhausted) pendingManualRecoveryReason = `Cap.${chapter.order}Reintento de verificación de capítulo utilizado ${chapterResult.reviewRetries.used}/${chapterResult.reviewRetries.maxRetries} veces, el texto principal ha sido reservado, confírmelo desde el banco de trabajo novedoso antes de continuar.`;
+            logPipelineWarn("Los capítulos requieren procesamiento manual y la tramitación de capítulos posteriores se ha suspendido.", {
               jobId,
               order: chapter.order,
               remaining: Math.max(0, totalCount - completed),
@@ -941,7 +941,7 @@ export class NovelPipelineExecutor {
           heartbeatAt: new Date(),
           currentStage: "finalizing",
           currentItemKey: null,
-          currentItemLabel: "正在收尾章节流水线任务",
+          currentItemLabel: "Finalizando las tareas del canal de capítulos",
           progress: buildPipelineStageProgress({
             completedCount: completed,
             totalCount,
@@ -965,7 +965,7 @@ export class NovelPipelineExecutor {
             recoverableRepairDetails,
           }),
         });
-        logPipelineInfo("任务执行结束", {
+        logPipelineInfo("Finaliza la ejecución de la tarea", {
           jobId,
           status: finalStatus,
           qualityAlertCount: qualityAlertDetails.length,
@@ -977,12 +977,12 @@ export class NovelPipelineExecutor {
       });
     } catch (error) {
       if (error instanceof PipelineExecutionLeaseLostError) {
-        logPipelineWarn("任务执行租约已转移，旧执行者停止写入", { jobId, novelId });
+        logPipelineWarn("El contrato de arrendamiento de ejecución de tareas se transfirió y el antiguo ejecutor dejó de escribir", { jobId, novelId });
         return;
       }
       if (error instanceof PipelineIssueAppliedError) {
         const log = runtimePayload.directorNext?.pendingCharacterReviewId ? logPipelineInfo : logPipelineError;
-        log(runtimePayload.directorNext?.pendingCharacterReviewId ? "等待用户确认本章人物" : "任务已按问题策略结束当前执行", {
+        log(runtimePayload.directorNext?.pendingCharacterReviewId ? "Esperando que el usuario confirme el personaje en este capítulo." : "La tarea ha finalizado su ejecución actual según la política del problema.", {
           jobId,
           novelId,
           action: error.action,
@@ -1025,9 +1025,9 @@ export class NovelPipelineExecutor {
           error: error.message, payload: this.stringifyPipelinePayload(runtimePayload)});
         return;
       }
-      const message = error instanceof Error ? error.message : "流水线执行失败";
+      const message = error instanceof Error ? error.message : "La ejecución de la canalización falló";
       if (isChapterEmptyContentError(error)) {
-        logPipelineError("任务因章节空正文失败", {
+        logPipelineError("La misión falló debido al texto del capítulo vacío", {
           jobId,
           novelId,
           provider: runtimePayload.provider,
@@ -1061,7 +1061,7 @@ export class NovelPipelineExecutor {
         attempt: issueGovernance?.policy.maxAutomaticRetries ?? maxRetries,
       });
       if (governedAction) {
-        logPipelineError("任务已按问题策略收束", {
+        logPipelineError("La tarea se ha completado de acuerdo con la estrategia del problema.", {
           jobId,
           novelId,
           action: governedAction,
@@ -1086,7 +1086,7 @@ export class NovelPipelineExecutor {
           recoverableRepairDetails,
         }),
       });
-      logPipelineError("任务执行异常", {
+      logPipelineError("Excepción de ejecución de tarea", {
         jobId,
         novelId,
         message,

@@ -33,7 +33,7 @@ export default function NovelBookDeliveryActions({
       anchor.remove();
       URL.revokeObjectURL(url);
     },
-    onError: () => toast.error("导出失败，请稍后重试。"),
+    onError: () => toast.error("Error al exportar. Vuelva a intentarlo más tarde."),
   });
   const firstChapterId = completion?.status === "completed" ? completion.firstChapterId : null;
   if (!firstChapterId && !allowDraftExport) return null;
@@ -41,16 +41,16 @@ export default function NovelBookDeliveryActions({
   return (
     <div className="flex flex-wrap items-center gap-2">
       {firstChapterId ? (
-        <span role="status" className="text-sm font-medium text-success">全书已写完 · {completion?.completedChapters} 章</span>
+        <span role="status" className="text-sm font-medium text-success">Todo el libro ha sido escrito · {completion?.completedChapters} Cap.</span>
       ) : null}
-      {firstChapterId && onFinalReview ? <Button size="sm" onClick={onFinalReview}>全书完稿检查</Button> : firstChapterId && completion?.finalReviewRoute ? <Button asChild size="sm"><Link to={completion.finalReviewRoute}>全书完稿检查</Link></Button> : <Button variant={firstChapterId ? "default" : "outline"} size="sm" onClick={() => download.mutate()} disabled={download.isPending}>
+      {firstChapterId && onFinalReview ? <Button size="sm" onClick={onFinalReview}>Reseña completa del libro</Button> : firstChapterId && completion?.finalReviewRoute ? <Button asChild size="sm"><Link to={completion.finalReviewRoute}>Reseña completa del libro</Link></Button> : <Button variant={firstChapterId ? "default" : "outline"} size="sm" onClick={() => download.mutate()} disabled={download.isPending}>
         <Download className="h-4 w-4" aria-hidden="true" />
-        {download.isPending ? "正在导出…" : firstChapterId ? "导出全书" : "导出当前稿件"}
+        {download.isPending ? "Exportando…" : firstChapterId ? "Exportar el libro completo" : "Exportar manuscrito actual"}
       </Button>}
       {firstChapterId ? (
         <Button asChild variant="outline" size="sm">
           <Link to={`/novels/${encodeURIComponent(novelId)}/preview?${new URLSearchParams({ chapterId: firstChapterId })}`}>
-            <BookOpen className="h-4 w-4" aria-hidden="true" /> 从第一章阅读
+            <BookOpen className="h-4 w-4" aria-hidden="true" /> Leer del Capítulo 1
           </Link>
         </Button>
       ) : null}

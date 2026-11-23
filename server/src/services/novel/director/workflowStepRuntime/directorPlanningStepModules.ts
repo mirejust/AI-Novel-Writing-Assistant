@@ -94,13 +94,13 @@ function createStoryMacroExecutableModule(
           ? buildSimpleProgress({
             status: "completed",
             ratio: 1,
-            label: "故事宏观规划已完成",
+            label: "Se ha completado la macroplanificación de la historia.",
             evidence: { artifactType: "story_macro" },
           })
           : buildSimpleProgress({
             status: "not_started",
             ratio: 0,
-            label: "等待生成故事宏观规划",
+            label: "Esperando generar macroplan de historia.",
             nextAction: "run_story_macro",
           });
       },
@@ -185,13 +185,13 @@ function createBookContractExecutableModule(
           ? buildSimpleProgress({
             status: "completed",
             ratio: 1,
-            label: "书级创作约定已完成",
+            label: "Se ha completado el acuerdo de creación a nivel de libro.",
             evidence: { artifactType: "book_contract" },
           })
           : buildSimpleProgress({
             status: "not_started",
             ratio: 0,
-            label: "等待生成书级创作约定",
+            label: "Esperando la generación de una convención de autoría a nivel de libro",
             nextAction: "run_book_contract",
           });
         },
@@ -236,14 +236,14 @@ function buildPowerSystemConstraint(request: DirectorConfirmRequest): string {
     return "";
   }
   const rule = mode === "none"
-    ? "本书不采用战力等级、境界或升级线；冲突由人物选择、关系、信息、资源与现实条件推动。"
+    ? "Este libro no utiliza niveles de poder de combate, reinos ni líneas de mejora; Los conflictos están impulsados ​​por elecciones de personajes, relaciones, información, recursos y condiciones del mundo real."
     : mode === "soft"
-      ? "本书只采用定性强弱、能力代价与克制关系，不建立等级表或境界序列。"
-      : "本书采用明确等级体系；等级必须有稳定顺序、能力边界、跨级条件与成长代价。";
+      ? "Este libro sólo utiliza la relación cualitativa entre fortaleza y debilidad, costo de habilidad y moderación, y no establece una jerarquía o secuencia de ámbitos."
+      : "Este libro adopta un sistema de calificaciones claro; los grados deben tener una secuencia estable, límites de capacidad, condiciones entre niveles y costos de crecimiento.";
   return [
-    `战力体系决策：${mode}`,
-    `战力体系约束：${rule}`,
-    recommendation?.reason ? `决策原因：${recommendation.reason}` : "",
+    `Decisiones sobre el sistema de energía de combate:${mode}`,
+    `Restricciones del sistema de energía de combate:${rule}`,
+    recommendation?.reason ? `Motivo de la decisión:${recommendation.reason}` : "",
   ].filter(Boolean).join("\n");
 }
 
@@ -367,7 +367,7 @@ function createWorldSetupExecutableModule(
           return buildSimpleProgress({
             status: "completed",
             ratio: 1,
-            label: "本书世界处理已跳过",
+            label: "Se ha omitido el procesamiento mundial en este libro.",
             evidence: { artifactType: "world_skeleton", mode, skipped: true },
           });
         }
@@ -376,13 +376,13 @@ function createWorldSetupExecutableModule(
           ? buildSimpleProgress({
             status: "completed",
             ratio: 1,
-            label: "本书世界已准备完成",
+            label: "El mundo de este libro está listo.",
             evidence: { artifactType: "world_skeleton", hasActiveWorld },
           })
           : buildSimpleProgress({
             status: "not_started",
             ratio: 0,
-            label: "等待准备本书世界",
+            label: "Esperando preparar el mundo del libro.",
             nextAction: "run_world_setup",
           });
       },
@@ -469,13 +469,13 @@ function createCharacterSetupExecutableModule(
           ? buildSimpleProgress({
             status: "completed",
             ratio: 1,
-            label: "角色准备已完成",
+            label: "La preparación del rol está completa.",
             evidence: { artifactType: "character_cast", characterCount },
           })
           : buildSimpleProgress({
             status: "not_started",
             ratio: 0,
-            label: "等待补齐角色阵容",
+            label: "Esperando completar el elenco de personajes.",
             nextAction: "run_character_setup",
           });
       },
@@ -582,13 +582,13 @@ function createVolumeStrategyExecutableModule(
           ? buildSimpleProgress({
             status: "completed",
             ratio: 1,
-            label: "分卷策略已完成",
+            label: "Estrategia de volumen completada",
             evidence: { artifactType: "volume_strategy", volumeCount: workspace.volumes.length },
           })
           : buildSimpleProgress({
             status: "not_started",
             ratio: 0,
-            label: "等待生成分卷策略",
+            label: "Esperando generación de política de volumen",
             nextAction: "run_volume_strategy",
           });
       },
@@ -640,11 +640,11 @@ export const DIRECTOR_PLANNING_STEP_MODULES: Record<
     descriptor: buildStructuredOutlineStepDescriptor({
       id: DIRECTOR_PLANNING_STEP_IDS.structured_outline,
       nodeKey: "volume_beat_sheet_generate",
-      label: "生成目标卷节奏板",
+      label: "Generar tablero de ritmo de volumen objetivo",
       defaultWaitingState: {
         stage: "structured_outline",
         itemKey: "beat_sheet",
-        itemLabel: "等待卷节奏板准备完成",
+        itemLabel: "Espere a que el tablero de ritmo esté listo.",
         progress: 0.72,
       },
     }),

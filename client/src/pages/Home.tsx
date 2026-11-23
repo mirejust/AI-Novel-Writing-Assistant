@@ -65,12 +65,12 @@ export default function Home() {
     const href = getHomeNovelActionHref(novel);
     const size = options?.size ?? "sm";
     if (!href) {
-      return <Button size={size} onClick={() => void novelQuery.refetch()}>重新读取创作入口</Button>;
+      return <Button size={size} onClick={() => void novelQuery.refetch()}>Vuelva a leer la entrada de creación.</Button>;
     }
     return (
       <Button asChild size={size}>
         <Link to={href} onClick={options?.stopPropagation ? (event) => event.stopPropagation() : undefined}>
-          {isHomeV2Novel(novel) ? "打开导演台" : "打开作品"}
+          {isHomeV2Novel(novel) ? "Abre el escritorio del director." : "Trabajo abierto"}
         </Link>
       </Button>
     );

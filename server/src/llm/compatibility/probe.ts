@@ -118,7 +118,7 @@ export async function probeModel(input: ModelIdentity, options: { allowNetwork: 
       const invalidResult = error instanceof SyntaxError || error instanceof z.ZodError;
       if (status && status >= 500 || !invalidResult && ![400, 422].includes(status ?? 0) && !implicatesStructuredMode({ category,
         message: error instanceof Error ? error.message : String(error), httpStatus: status })) {
-        throw new Error("探测请求未完成，请检查连接或稍后重试。");
+        throw new Error("La solicitud de sonda no se completó. Verifique la conexión o vuelva a intentarlo más tarde.");
       }
       failed.push(mode);
     }
@@ -148,14 +148,14 @@ export async function startProbe(input: ModelIdentity, allowNetwork: boolean): P
   statuses.set(id, { state: "running" });
   const task = (async () => {
     let status: ProbeStatus;
-    try { await probeModel(input, { allowNetwork }); status = { state: "succeeded", checkedAt: new Date().toISOString(), message: "探测完成" }; }
-    catch { status = { state: "failed", checkedAt: new Date().toISOString(), message: "探测未完成，请检查连接后重试。" }; }
+    try { await probeModel(input, { allowNetwork }); status = { state: "succeeded", checkedAt: new Date().toISOString(), message: "Detección completada" }; }
+    catch { status = { state: "failed", checkedAt: new Date().toISOString(), message: "La detección no se completa, verifique la conexión y vuelva a intentarlo." }; }
     statuses.set(id, status);
     const key = statusKey(input);
     await prisma.appSetting.upsert({ where: { key }, create: { key, value: JSON.stringify(status) }, update: { value: JSON.stringify(status) } });
   })().finally(() => running.delete(id));
   running.set(id, task);
-  void task.catch(() => { statuses.set(id, { state: "failed", message: "探测结果保存失败，请重试。" }); });
+  void task.catch(() => { statuses.set(id, { state: "failed", message: "No se pudieron guardar los resultados de la detección. Inténtelo de nuevo." }); });
 }
 export async function probeIfEnabled(input: ModelIdentity): Promise<void> {
   if (await autoProbeEnabled(input.provider)) {

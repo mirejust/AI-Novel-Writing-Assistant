@@ -120,18 +120,18 @@ export function registerGenerationWorldRoutes(router: Router): void {
         const failure = summarizeStructuredOutputFailure({ error, fallbackAvailable: false });
         if (["incomplete_json", "malformed_json", "schema_mismatch"].includes(failure.category)) {
           next(new AppError(
-            "世界骨架未能完整生成，请降低世界规模后重试。",
+            "El esqueleto del mundo no se pudo generar por completo. Reduzca el tamaño mundial e inténtelo de nuevo.",
             422,
-            "本次没有保存不完整内容。可先选择较小规模；仍失败时请切换模型后重新生成。",
+            "El contenido incompleto no se guarda esta vez. Puedes elegir primero una escala más pequeña; Si aún falla, cambie el modelo y regénelo.",
           ));
           return;
         }
         const message = error instanceof Error ? error.message : String(error);
         if (/timed?\s*out|timeout|超时/i.test(message)) {
           next(new AppError(
-            "世界骨架生成超时，请降低世界规模后重试。",
+            "Se agotó el tiempo de espera para la generación del esqueleto mundial. Reduzca el tamaño del mundo y vuelva a intentarlo.",
             504,
-            "本次没有保存未完成内容；仍超时时请切换模型后重新生成。",
+            "Esta vez no se ha guardado ningún contenido sin terminar; Si aún se agota el tiempo de espera, cambie el modelo y regénelo.",
           ));
           return;
         }
@@ -155,7 +155,7 @@ export function registerGenerationWorldRoutes(router: Router): void {
           type: "run_status",
           runId,
           status: "queued",
-          message: isReferenceMode ? "已开始分析参考作品" : "已开始分析世界灵感",
+          message: isReferenceMode ? "Se ha iniciado el análisis de obras de referencia." : "Comenzó a analizar la inspiración mundial.",
         });
 
         const data = await worldService.analyzeInspiration(
@@ -174,14 +174,14 @@ export function registerGenerationWorldRoutes(router: Router): void {
           type: "run_status",
           runId,
           status: "succeeded",
-          message: isReferenceMode ? "原作锚点与架空方向已生成" : "概念卡与属性选项已生成",
+          message: isReferenceMode ? "Se han generado el punto de anclaje original y la dirección aérea." : "Se han generado opciones de atributos y tarjetas conceptuales.",
         });
         writeSSEFrame(res, {
           type: "done",
           fullContent: JSON.stringify(data),
         });
       } catch (error) {
-        const message = error instanceof Error ? error.message : "世界灵感分析失败。";
+        const message = error instanceof Error ? error.message : "El análisis de la inspiración mundial falló.";
         writeSSEFrame(res, {
           type: "run_status",
           runId,

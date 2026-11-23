@@ -97,7 +97,7 @@ function assertCurrentOpeningCandidates(current: DirectorTaskState, incoming: Di
       if (!isSelected && !submittedBatches?.length) continue;
       const submitted = isSelected ? confirm.candidate : submittedBatch?.candidates.find(item => item.id === candidate.id);
       if (submitted?.reviewRevision !== candidate.reviewRevision || candidateStoryFields.some(field => submitted[field] !== candidate[field])) {
-        throw new AppError("候选方向有新修改，请刷新后再继续。", 409);
+        throw new AppError("Hay nuevos cambios en las instrucciones de los candidatos; actualice antes de continuar.", 409);
       }
     }
   }

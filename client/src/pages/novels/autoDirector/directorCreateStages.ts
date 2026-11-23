@@ -16,11 +16,11 @@ export const AUTO_DIRECTOR_CREATE_STAGES: Array<{
   order: number;
   label: string;
 }> = [
-  { key: "idea", order: 0, label: "起始想法" },
-  { key: "basic", order: 1, label: "导演起始设置" },
-  { key: "world_style", order: 2, label: "世界与写法" },
-  { key: "model_run", order: 3, label: "模型与生产准备" },
-  { key: "candidates", order: 4, label: "方向与自动准备" },
+  { key: "idea", order: 0, label: "Idea inicial" },
+  { key: "basic", order: 1, label: "Configuración inicial del director" },
+  { key: "world_style", order: 2, label: "El mundo y la escritura." },
+  { key: "model_run", order: 3, label: "Preparación del modelo y la producción." },
+  { key: "candidates", order: 4, label: "Orientación y preparación automática." },
 ];
 
 function findLabel(options: Array<{ value: string; label: string }>, value: string): string {
@@ -33,7 +33,7 @@ export function summarizeIdea(idea: string, foundation?: {
 }): string {
   const normalized = idea.trim().replace(/\s+/g, " ");
   if (!normalized) {
-    return "等待填写起始想法";
+    return "Esperando completar la idea inicial.";
   }
   const ideaSummary = normalized.length > 30 ? `${normalized.slice(0, 30)}...` : normalized;
   const foundationSummary = [foundation?.genre, foundation?.storyMode].filter(Boolean).join(" · ");
@@ -46,8 +46,8 @@ export function summarizeBasicStage(basicForm: NovelBasicFormState): string {
     findLabel(POV_OPTIONS, basicForm.narrativePov),
     findLabel(PACE_OPTIONS, basicForm.pacePreference),
     findLabel(EMOTION_OPTIONS, basicForm.emotionIntensity),
-    basicForm.estimatedChapterCountSource === "default" ? "章节数由 AI 推荐" : `约 ${basicForm.estimatedChapterCount} 章`,
-    basicForm.userPreferredVolumeCount === undefined ? "卷数由 AI 推荐" : `固定 ${basicForm.userPreferredVolumeCount} 卷`,
+    basicForm.estimatedChapterCountSource === "default" ? "Número de capítulos recomendados por AI" : `aprox. ${basicForm.estimatedChapterCount}`,
+    basicForm.userPreferredVolumeCount === undefined ? "Volumen recomendado por la IA" : `fijado ${basicForm.userPreferredVolumeCount} volumen`,
   ].join(" · ");
 }
 
@@ -61,14 +61,14 @@ export function summarizeWorldStyleStage(input: {
 }): string {
   const selectedWorld = input.worldOptions.find((world) => world.id === input.basicForm.worldId);
   const worldLabel = selectedWorld
-    ? `参考世界：${selectedWorld.name}`
+    ? `Mundo de referencia:${selectedWorld.name}`
     : input.worldSetupMode === "skip"
-      ? "暂不使用世界观"
-      : "自动生成本书世界";
+      ? "Aún no uso la visión del mundo"
+      : "Generar automáticamente el mundo de este libro.";
   const styleProfile = input.styleProfiles.find((profile) => profile.id === input.styleProfileId);
   const styleLabel = styleProfile?.name
     ?? input.selectedStyleSummary?.headline
-    ?? (input.basicForm.styleTone.trim() ? `文风：${input.basicForm.styleTone.trim()}` : "默认写法");
+    ?? (input.basicForm.styleTone.trim() ? `Estilo de escritura:${input.basicForm.styleTone.trim()}` : "Método de escritura predeterminado");
   return `${worldLabel} · ${styleLabel}`;
 }
 
@@ -78,5 +78,5 @@ export function summarizeModelRunStage(input: {
   postGenerationStyleReviewEnabled: boolean;
 }): string {
   const runModeLabel = input.runModeOptions.find((option) => option.value === input.runMode)?.label ?? input.runMode;
-  return `${runModeLabel} · ${input.postGenerationStyleReviewEnabled ? "正文后检测 AI 味" : "不做正文后 AI 味检测"}`;
+  return `${runModeLabel} · ${input.postGenerationStyleReviewEnabled ? "Detectar el sabor de la IA después del texto" : "Sin detección de sabor de IA posterior al texto"}`;
 }

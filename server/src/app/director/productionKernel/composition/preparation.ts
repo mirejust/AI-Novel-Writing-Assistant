@@ -61,7 +61,7 @@ export function nativePreparation(deps: NativeStageDependencies) {
       return JSON.parse(JSON.stringify(configuration)) as ProductionJson;
     },
     withContextReadScope: (run, steps, assertSources, input, operation) => {
-      if (!input) throw new Error("正文准备缺少检索配置快照。");
+      if (!input) throw new Error("Falta la preparación del cuerpo para recuperar la instantánea de configuración.");
       return withKernelRagContext({run, runId: context.runId, steps, configuration: input as unknown as KernelRagConfiguration,
         readConfiguration: readKernelRagConfiguration, readSources: readKernelRagSources, assertIndex: assertKernelRagIndex,
         fence: async () => {await deps.fence(run); await assertSources();}, budget: deps.budget, recordUsage: record => usage.record(record)}, operation);
@@ -78,11 +78,11 @@ export function nativePreparation(deps: NativeStageDependencies) {
   });
   async function guarded<T>(operation: () => Promise<T>): Promise<T> {
     let rejected = false;
-    const unregistered = async (): Promise<never> => {throw new Error("正文准备包含未登记的检索请求。");};
+    const unregistered = async (): Promise<never> => {throw new Error("La preparación del texto contiene solicitudes de búsqueda no registradas.");};
     const result = await withRagExecutionScope({retrieve: unregistered, request: unregistered}, () => withModelRequestBudget({ remaining: () => 0, beforeRequest: async () => {
-      rejected = true; throw new Error("正文准备包含未登记的模型请求。");
+      rejected = true; throw new Error("La preparación de la carrocería contiene una solicitud de modelo no registrado.");
     } }, () => withPayoffLedgerReadScope(() => withStoryWorldSliceReadScope(operation))));
-    if (rejected) throw new Error("正文准备包含未登记的模型请求。");
+    if (rejected) throw new Error("La preparación de la carrocería contiene una solicitud de modelo no registrado.");
     return result;
   }
   return createKernelPreparationStage({ ...planning, readInput: run => guarded(() => planning.readInput(run)),

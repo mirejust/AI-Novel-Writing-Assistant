@@ -32,7 +32,7 @@ interface RecoveryServiceDeps {
 
 export class ChapterArtifactRecoveryPendingError extends Error {
   constructor(readonly artifactType: string) {
-    super(`章节资产步骤仍在运行：${artifactType}`);
+    super(`El paso de activos del capítulo aún se está ejecutando:${artifactType}`);
     this.name = "ChapterArtifactRecoveryPendingError";
   }
 }
@@ -154,7 +154,7 @@ export class ChapterArtifactRecoveryService {
     try {
       const extraction = await this.deps.deltaService.extractChapterArtifacts(input);
       if (extraction.contentHash !== contentHash) {
-        throw new Error("资产抽取结果与当前正文版本不匹配。");
+        throw new Error("Los resultados de la extracción de activos no coinciden con la versión actual del cuerpo.");
       }
       await this.assertCurrentContent(input.novelId, input.chapterId, contentHash, input.revisionGuard);
       await this.deps.checkpoints.succeed(identity, {
@@ -171,7 +171,7 @@ export class ChapterArtifactRecoveryService {
   private readExtraction(metadataJson: string | null, contentHash: string): ChapterArtifactExtractionResult {
     const metadata = this.parseMetadata(metadataJson);
     if (metadata.schemaVersion !== EXTRACTION_SCHEMA_VERSION) {
-      throw new Error("章节资产抽取检查点版本不受支持。");
+      throw new Error("No se admiten las versiones del punto de control de extracción de recursos del capítulo.");
     }
     return {
       contentHash,
@@ -182,18 +182,18 @@ export class ChapterArtifactRecoveryService {
   private readConsumerResult(metadataJson: string | null): ChapterArtifactConsumerResult {
     const metadata = this.parseMetadata(metadataJson);
     if (metadata.schemaVersion !== EXTRACTION_SCHEMA_VERSION || !metadata.result || typeof metadata.result !== "object") {
-      throw new Error("章节资产消费者检查点缺少可恢复结果。");
+      throw new Error("Al punto de control del consumidor de activos del capítulo le faltan resultados recuperables.");
     }
     return metadata.result as ChapterArtifactConsumerResult;
   }
 
   private parseMetadata(metadataJson: string | null): Record<string, unknown> {
     if (!metadataJson) {
-      throw new Error("章节资产检查点缺少恢复数据。");
+      throw new Error("Al punto de control de activos del capítulo le faltan datos de recuperación.");
     }
     const parsed: unknown = JSON.parse(metadataJson);
     if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
-      throw new Error("章节资产检查点恢复数据格式无效。");
+      throw new Error("El formato de datos de recuperación del punto de control de activos del capítulo no es válido.");
     }
     return parsed as Record<string, unknown>;
   }
@@ -215,11 +215,11 @@ export class ChapterArtifactRecoveryService {
   private async assertCurrentContent(novelId: string, chapterId: string, contentHash: string,
     revisionGuard?: {id: string; metadataJson: string | null; novel?: {directorEpoch: number; directorVersion: string | null}}): Promise<void> {
     if (revisionGuard && !await prisma.chapterArtifactSyncCheckpoint.findFirst({where: {...revisionGuard, status: "running"}})) {
-      throw new ChapterArtifactContentVersionError("修订版本已变化，已停止过期资料同步。");
+      throw new ChapterArtifactContentVersionError("La revisión ha cambiado y se ha detenido la sincronización de datos caducados.");
     }
     const content = await this.deps.readCurrentContent(novelId, chapterId);
     if (content === null || buildContentHash(content) !== contentHash) {
-      throw new ChapterArtifactContentVersionError("章节正文版本已变化，已拒绝过期资产恢复。");
+      throw new ChapterArtifactContentVersionError("Se ha modificado la versión del texto del capítulo y se ha rechazado la recuperación de activos caducados.");
     }
   }
 }

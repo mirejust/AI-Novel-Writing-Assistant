@@ -59,7 +59,7 @@ export async function reportPipelineIssue(input: {
       applyAction: input.applyAction,
     });
   } catch (error) {
-    logPipelineWarn("章节流水线问题治理失败", {
+    logPipelineWarn("Fallo en la gestión de problemas de canalización de capítulos", {
       jobId: input.jobId,
       issueCode: input.issueCode,
       error: error instanceof Error ? error.message : String(error),

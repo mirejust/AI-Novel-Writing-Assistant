@@ -3,7 +3,7 @@ import { ChevronRight } from "lucide-react";
 import type { AgentThinkingStep } from "@ai-novel/shared/types/agentConversation/turn";
 
 function usageNote(tokens: number) {
-  return `模型报告了 ${tokens} 个思考 token，未提供可展示的思考文字。`;
+  return `La modelo informó ${tokens} Ficha de pensamiento, no se proporciona ningún texto de pensamiento que se pueda mostrar.`;
 }
 
 export function AgentThinking({ steps, running }: { steps?: AgentThinkingStep[]; running: boolean }) {
@@ -15,13 +15,13 @@ export function AgentThinking({ steps, running }: { steps?: AgentThinkingStep[];
     if (tokens > 0) return <p className="agent-thinking-note">{usageNote(tokens)}</p>;
     if (running) return null;
     return <p className="agent-thinking-note">{steps.every(step => step.enabled === false)
-      ? "本轮使用关闭思考的请求设置，模型未返回思考文字。"
-      : "模型未返回可展示的思考文字。"}</p>;
+      ? "Esta ronda utiliza la configuración de solicitud para desactivar el pensamiento y el modelo no devuelve el texto del pensamiento."
+      : "El modelo no devolvió texto de pensamiento visualizable."}</p>;
   }
   const expanded = choice ?? running;
   return <div className="agent-thinking">
     <button type="button" aria-controls={id} aria-expanded={expanded} onClick={() => setChoice(!expanded)}>
-      <ChevronRight size={14} aria-hidden="true" />思考过程
+      <ChevronRight size={14} aria-hidden="true" />proceso de pensamiento
     </button>
     <div id={id} hidden={!expanded} className="agent-thinking-content">
       {steps.filter(step => step.text.trim() || step.reasoningTokens).map(step => <div key={step.stage}>

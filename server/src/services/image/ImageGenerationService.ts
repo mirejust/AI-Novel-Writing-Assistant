@@ -69,20 +69,20 @@ function buildBookAnalysisCharacterPrompt(
 ): string {
   const profile = parseBookAnalysisCharacterProfile(character.profileJson);
   const background = [
-    readProfileText(profile, "outerGoal") ? `外在目标：${readProfileText(profile, "outerGoal")}` : "",
-    readProfileText(profile, "innerNeed") ? `内在需求：${readProfileText(profile, "innerNeed")}` : "",
-    readProfileText(profile, "growthTrajectory") ? `成长轨迹：${readProfileText(profile, "growthTrajectory")}` : "",
-  ].filter(Boolean).join("\n") || "来自拆书角色档案。";
+    readProfileText(profile, "outerGoal") ? `Metas externas:${readProfileText(profile, "outerGoal")}` : "",
+    readProfileText(profile, "innerNeed") ? `Necesidades internas:${readProfileText(profile, "innerNeed")}` : "",
+    readProfileText(profile, "growthTrajectory") ? `Trayectoria de crecimiento:${readProfileText(profile, "growthTrajectory")}` : "",
+  ].filter(Boolean).join("\n") || "De los archivos de personajes del libro dividido.";
   return buildCharacterPrompt(prompt, stylePreset, {
     name: readProfileText(profile, "name") || character.name,
     role: readProfileText(profile, "role") || character.role,
-    personality: readProfileText(profile, "personality") || readProfileText(profile, "values") || "未明确",
+    personality: readProfileText(profile, "personality") || readProfileText(profile, "values") || "No claro",
     appearance: [
       readProfileText(profile, "appearance"),
       readProfileText(profile, "physique"),
       readProfileText(profile, "attireStyle"),
       readProfileText(profile, "signatureDetail"),
-    ].filter(Boolean).join("；") || null,
+    ].filter(Boolean).join(";") || null,
     background,
   });
 }
@@ -98,7 +98,7 @@ function mergeNovelCoverNegativePrompt(
   }
   return normalized.includes(defaultNegativePrompt)
     ? normalized
-    : `${normalized}，${defaultNegativePrompt}`;
+    : `${normalized},${defaultNegativePrompt}`;
 }
 
 function resolveTaskOwnerKey(task: {
@@ -544,7 +544,7 @@ export class ImageGenerationService {
           data: {
             status: "queued",
             pendingManualRecovery: true,
-            error: "服务重启后任务已暂停，等待手动恢复。",
+            error: "Una vez reiniciado el servicio, la tarea se suspendió y está esperando la recuperación manual.",
             heartbeatAt: null,
             currentStage: "queued",
             currentItemKey: null,
@@ -559,7 +559,7 @@ export class ImageGenerationService {
           where: { id: { in: queuedIds } },
           data: {
             pendingManualRecovery: true,
-            error: "服务重启后任务已暂停，等待手动恢复。",
+            error: "Una vez reiniciado el servicio, la tarea se suspendió y está esperando la recuperación manual.",
             heartbeatAt: null,
             cancelRequestedAt: null,
           },

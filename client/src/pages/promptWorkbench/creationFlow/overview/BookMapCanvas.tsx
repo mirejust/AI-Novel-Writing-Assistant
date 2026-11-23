@@ -22,13 +22,13 @@ type ReferenceEdge = Edge<ReturnType<typeof layoutBookMap>["promptLinks"][number
 function Cover({ data: { cover: { stage, order }, enter, locateScope, lit } }: NodeProps<CoverNode>) {
   return <div className="atlas-cover-stack" data-stage={stage.id}>
     <button type="button" data-stage={stage.id} className={`book-map-cover nodrag nopan ${lit ? "lit" : ""}`} onClick={() => enter(stage)}
-      aria-label={`单独查看${stage.title}阶段`}>
+      aria-label={`Ver solo${stage.title}Escenario`}>
       <StageImprint stage={stage.id} />
       <span className="book-cover-number">{String(order + 1).padStart(2, "0")}</span>
       <span className="book-cover-title"><strong>{stage.title}</strong><ArrowUpRight size={14} /></span>
     </button>
     <button type="button" className="atlas-cover-related nodrag nopan" onClick={() => locateScope(stage.id)}
-      aria-label={`查看${stage.title}的阶段提示词`}><LibraryBig size={13} />阶段提示词<ArrowUpRight size={13} /></button>
+      aria-label={`Controlar${stage.title}Palabras del escenario`}><LibraryBig size={13} />Palabras del escenario<ArrowUpRight size={13} /></button>
   </div>;
 }
 
@@ -156,10 +156,10 @@ export function BookMapCanvas({ layout, selected, touring, enter, jump, locateSc
     return { id: `use-${link.stepId}-${link.promptId}`, source: link.stepId, target: "references-" + link.scope,
       type: "reference", sourceHandle: link.sourceHandle, targetHandle: link.promptId, data: link,
       selectable: false, zIndex: active ? 1 : 0, className: `book-reference-link ${link.kind}${active ? " is-current" : ""}`,
-      ariaLabel: `${link.stepTitle} · ${link.kind === "uses" ? "本步使用" : "配套工具"} · ${link.promptTitle}` };
+      ariaLabel: `${link.stepTitle} · ${link.kind === "uses" ? "Utilice este paso" : "Herramientas de apoyo"} · ${link.promptTitle}` };
   })], [layout, byId, trace, focus]);
   return <div className={`flow-canvas book-map-canvas ${trace || highlighted.size ? "is-tracing" : ""}`} style={{ "--spine-x": `${spineX}px` } as CSSProperties}
-    role="region" aria-label="从开书到整本正文的连续流程图">
+    role="region" aria-label="Un diagrama de flujo continuo desde la apertura del libro hasta el texto completo.">
     <ReactFlow<BookNode, RouteEdge | ReferenceEdge> nodes={nodes} edges={edges} nodeTypes={nodeTypes} edgeTypes={edgeTypes}
       minZoom={0.08} maxZoom={2.5} nodesDraggable={false} nodesConnectable={false} elementsSelectable={false} edgesFocusable={false}
       onMoveStart={event => { if (event) { pause(); preview(null); } }} zoomOnDoubleClick={false} zoomOnScroll={false} panOnScroll preventScrolling proOptions={{ hideAttribution: true }}>

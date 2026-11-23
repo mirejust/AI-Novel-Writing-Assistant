@@ -10,7 +10,7 @@ import { buildChapterArtifactContentHash } from "../ChapterArtifactContentVersio
 
 function shortLines(values: Array<string | null | undefined>): string | null {
   const lines = [...new Set(values.map(value => compactText(value)).filter(Boolean))].slice(0, 3);
-  return lines.join("；") || null;
+  return lines.join(";") || null;
 }
 
 /** Finalized summary/fact persistence; no model calls and no director orchestration. */
@@ -19,7 +19,7 @@ export class ChapterArtifactFactWriter {
 
   async persist(input: {novelId: string; chapterId: string; chapterOrder: number; content: string;
     output: ChapterArtifactDeltaOutput; expectedContentHash: string; artifactSyncPolicy?: "director_v2"}): Promise<number> {
-    const summary = compactText(input.output.summary) || "暂无可总结正文";
+    const summary = compactText(input.output.summary) || "Aún no hay texto resumido disponible";
     const legacy = input.artifactSyncPolicy === "director_v2" ? [] : extractFacts(input.content || summary);
     const keyEvents = shortLines(input.artifactSyncPolicy === "director_v2"
       ? input.output.concreteFacts.filter(fact => fact.category !== "state_changed").map(fact => fact.text)
@@ -30,7 +30,7 @@ export class ChapterArtifactFactWriter {
     await prisma.$transaction(async tx => {
       const current = await tx.chapter.findFirst({where: {id: input.chapterId, novelId: input.novelId}, select: {content: true}});
       if (!current || buildChapterArtifactContentHash(current.content ?? "") !== input.expectedContentHash) {
-        throw new ChapterArtifactContentVersionError("章节正文版本已变化，已拒绝写入过期摘要与事实。");
+        throw new ChapterArtifactContentVersionError("La versión de texto del capítulo ha cambiado y se ha rechazado la redacción de resúmenes y hechos obsoletos.");
       }
       await tx.chapter.update({where: {id: input.chapterId}, data: {expectation: summary}});
       await tx.chapterSummary.upsert({where: {chapterId: input.chapterId},

@@ -28,7 +28,7 @@ export async function evaluateExecutionContract(prepared: PreparedChapterExecuti
     if (readiness?.canReuse && !continuityGuidance) {
       if (reviewedPrevious) {
         const source = await (ports?.db ?? prisma).chapter.findFirst({ where: { novelId, order: reviewedPrevious.order }, select: { content: true } });
-        if (source?.content !== reviewedPrevious.content) throw new Error("前章正文在规划核对期间发生变化，请重新准备本章。");
+        if (source?.content !== reviewedPrevious.content) throw new Error("El texto del capítulo anterior ha cambiado durante el período de planificación y verificación. Por favor prepare este capítulo nuevamente.");
       }
       const styleContract = ports ? prepared.preparedStyleContract : await resolveStyleContract(deps, novelId, chapterId, options.taskStyleProfileId);
       return { kind: "reuse" as const, styleContract, reviewedPrevious };
@@ -39,7 +39,7 @@ export async function evaluateExecutionContract(prepared: PreparedChapterExecuti
       options: {
         ...options,
         ...(continuityGuidance ? { forceRegenerate: true,
-          guidance: [options.guidance, "上一章实际正文与本章规划需要协调，保留本章目标并按以下核对结果修订入口、场景和收尾：", continuityGuidance].filter(Boolean).join("\n") } : {}),
+          guidance: [options.guidance, "El texto actual del capítulo anterior debe coordinarse con la planificación de este capítulo. Los objetivos de este capítulo deben mantenerse y la entrada, la escena y el final deben revisarse de acuerdo con los siguientes resultados de verificación:", continuityGuidance].filter(Boolean).join("\n") } : {}),
         scope: "chapter_detail",
         detailMode: "task_sheet",
         targetVolumeId: matched.volumeId,
@@ -53,14 +53,14 @@ export async function evaluateExecutionContract(prepared: PreparedChapterExecuti
     const targetVolume = generatedDocument.volumes.find((volume) => volume.id === matched.volumeId);
     const targetChapter = targetVolume?.chapters.find((item) => item.id === matched.volumeChapterId);
     if (!targetChapter?.taskSheet?.trim() || !targetChapter.sceneCards?.trim()) {
-      throw new Error("AI 未返回完整的章节执行合同。");
+      throw new Error("AI no devolvió el contrato de ejecución del capítulo completo.");
     }
     const taskSheet = targetChapter.taskSheet.trim();
     const scenePlan = parseChapterScenePlan(targetChapter.sceneCards, {
       targetWordCount: targetChapter.targetWordCount ?? chapter.targetWordCount ?? undefined,
     });
     if (!scenePlan) {
-      throw new Error("章节执行合同中的场景预算无效。");
+      throw new Error("El presupuesto de escena en el contrato de ejecución del capítulo no es válido.");
     }
     const finalQuality = assessChapterExecutionContractShape({
       novelId,

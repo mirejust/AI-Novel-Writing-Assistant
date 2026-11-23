@@ -33,7 +33,7 @@ export function TensionCurveBeatContextStrip(props: TensionCurveBeatContextStrip
             className="h-8 shrink-0 px-3 text-xs"
             onClick={() => onBeatChange("all")}
           >
-            整卷
+            volumen entero
           </Button>
           {beats.map((beat) => (
             <Button
@@ -58,11 +58,11 @@ export function TensionCurveBeatContextStrip(props: TensionCurveBeatContextStrip
               {selectedBeat.chapterSpanHint ? <Badge variant="outline">{selectedBeat.chapterSpanHint}</Badge> : null}
             </div>
             <div className="mt-2 text-sm leading-6 text-foreground">
-              {selectedBeat.summary?.trim() || "这一段还没有节奏说明，建议先回到节奏板补齐交付目标。"}
+              {selectedBeat.summary?.trim() || "Aún no hay una explicación del ritmo para esta sección, por lo que se recomienda volver al tablero de ritmo para completar el objetivo de entrega."}
             </div>
           </div>
           <div className="rounded-lg border border-border/70 bg-muted/20 p-3">
-            <div className="text-sm font-medium text-foreground">本段必须交付</div>
+            <div className="text-sm font-medium text-foreground">Este párrafo debe ser entregado.</div>
             {selectedBeat.mustDeliver && selectedBeat.mustDeliver.length > 0 ? (
               <ol className="mt-2 space-y-1.5">
                 {selectedBeat.mustDeliver.slice(0, 4).map((item, index) => (
@@ -75,13 +75,13 @@ export function TensionCurveBeatContextStrip(props: TensionCurveBeatContextStrip
                 ))}
               </ol>
             ) : (
-              <div className="mt-2 text-xs leading-5 text-muted-foreground">这一段还没有明确交付项。</div>
+              <div className="mt-2 text-xs leading-5 text-muted-foreground">No hay resultados claros en esta sección.</div>
             )}
           </div>
         </div>
       ) : (
         <div className={cn("rounded-lg border border-dashed p-3 text-sm text-muted-foreground", beats.length === 0 ? "bg-amber-50 text-amber-800" : "")}>
-          {beats.length > 0 ? "当前查看整卷走势。切到具体节奏段后，可对照该段摘要和必须交付项调整强度。" : "当前卷还没有节奏段，先生成节奏板后再按段检查曲线。"}
+          {beats.length > 0 ? "Actualmente vea la tendencia de todo el volumen. Una vez que corte a un segmento de ritmo específico, puede ajustar la intensidad según el resumen del segmento y los resultados requeridos." : "No hay ninguna sección rítmica en el volumen actual. Primero genera el tablero de ritmo y luego revisa la curva por sección."}
         </div>
       )}
     </div>

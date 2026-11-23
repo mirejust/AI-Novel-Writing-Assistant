@@ -47,14 +47,14 @@ const generateTitleSchema = z.object({
     context.addIssue({
       code: z.ZodIssueCode.custom,
       path: ["brief"],
-      message: "自由标题工坊需要创作简报。",
+      message: "El Taller de Títulos Freelance requiere la creación de un resumen.",
     });
   }
   if (value.mode === "adapt" && !(value.referenceTitle ?? "").trim()) {
     context.addIssue({
       code: z.ZodIssueCode.custom,
       path: ["referenceTitle"],
-      message: "改编模式需要参考标题。",
+      message: "Los patrones de adaptación requieren referencia al título.",
     });
   }
 });
@@ -68,7 +68,7 @@ router.get("/", async (req, res, next) => {
     res.status(200).json({
       success: true,
       data,
-      message: "标题库加载成功。",
+      message: "La biblioteca de títulos se cargó correctamente.",
     } satisfies ApiResponse<typeof data>);
   } catch (error) {
     next(error);
@@ -81,7 +81,7 @@ router.post("/", validate({ body: createTitleSchema }), async (req, res, next) =
     res.status(201).json({
       success: true,
       data,
-      message: "标题已加入标题库。",
+      message: "El título se ha agregado a la biblioteca de títulos.",
     } satisfies ApiResponse<typeof data>);
   } catch (error) {
     next(error);
@@ -94,7 +94,7 @@ router.post("/generate", validate({ body: generateTitleSchema }), async (req, re
     res.status(200).json({
       success: true,
       data,
-      message: "标题工坊生成成功。",
+      message: "El taller de título se generó exitosamente.",
     } satisfies ApiResponse<typeof data>);
   } catch (error) {
     next(error);
@@ -108,7 +108,7 @@ router.post("/:id/use", validate({ params: idParamsSchema }), async (req, res, n
     res.status(200).json({
       success: true,
       data,
-      message: "标题使用次数已更新。",
+      message: "Se actualizó el recuento de uso del título.",
     } satisfies ApiResponse<typeof data>);
   } catch (error) {
     next(error);
@@ -121,7 +121,7 @@ router.delete("/:id", validate({ params: idParamsSchema }), async (req, res, nex
     await titleLibraryService.delete(id);
     res.status(200).json({
       success: true,
-      message: "标题已删除。",
+      message: "Título eliminado.",
     } satisfies ApiResponse<null>);
   } catch (error) {
     next(error);

@@ -135,7 +135,7 @@ export function recordUsageAnomalySignal(input: {
     return input.previous ?? null;
   }
   const usageAnomalyCount = previousCount + 1;
-  const message = `单步骤 AI 用量达到 ${input.totalTokens} Tokens，已暂停以避免继续异常消耗。`;
+  const message = `El uso de la IA en un solo paso alcanza ${input.totalTokens} Tokens, que han sido pausados ​​para evitar un consumo anormal continuo.`;
   if (usageAnomalyCount >= DIRECTOR_CIRCUIT_BREAKER_THRESHOLDS.usageAnomalyOpenAt) {
     return openDirectorCircuitBreaker({
       reason: "usage_anomaly",
@@ -176,7 +176,7 @@ export function recordChapterUsageBudgetExceededSignal(input: {
   }
   return openDirectorCircuitBreaker({
     reason: "usage_anomaly",
-    message: `单章 AI 用量达到 ${input.totalTokens} Tokens，已暂停以避免继续异常消耗。`,
+    message: `El uso de la IA en un solo capítulo alcanza ${input.totalTokens} Tokens, que han sido pausados ​​para evitar un consumo anormal continuo.`,
     previous: input.previous,
     chapterId: input.chapterId,
     chapterOrder: input.chapterOrder,

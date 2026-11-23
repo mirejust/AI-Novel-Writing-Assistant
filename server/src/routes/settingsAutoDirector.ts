@@ -64,7 +64,7 @@ router.get("/issue-policy", async (_req, res, next) => {
     res.status(200).json({
       success: true,
       data,
-      message: "自动导演问题处理规则已加载。",
+      message: "Se han cargado reglas automáticas de manejo de problemas del director.",
     } satisfies ApiResponse<typeof data>);
   } catch (error) {
     next(error);
@@ -80,7 +80,7 @@ router.put(
       res.status(200).json({
         success: true,
         data,
-        message: "自动导演问题处理规则已保存。",
+        message: "Se guardaron las reglas de manejo de problemas de Autodirector.",
       } satisfies ApiResponse<typeof data>);
     } catch (error) {
       next(error);
@@ -156,7 +156,7 @@ router.get("/pending-review-auto-promotion", async (_req, res, next) => {
     res.status(200).json({
       success: true,
       data,
-      message: "待确认状态自动放行设置已加载。",
+      message: "Se han cargado las configuraciones de liberación automática para el estado pendiente de confirmación.",
     } satisfies ApiResponse<typeof data>);
   } catch (error) {
     next(error);
@@ -173,7 +173,7 @@ router.put(
       res.status(200).json({
         success: true,
         data,
-        message: data.enabled ? "待确认状态自动放行已开启。" : "待确认状态自动放行已关闭。",
+        message: data.enabled ? "La liberación automática del estado de confirmación pendiente está activada." : "El estado de confirmación pendiente de liberación automática está desactivado.",
       } satisfies ApiResponse<typeof data>);
     } catch (error) {
       next(error);

@@ -166,7 +166,7 @@ export class StateService {
       .map((item) => `${item.title}(${item.status})`)
       .slice(0, 4);
     return [
-      `State snapshot summary: ${snapshot.summary ?? "暂无摘要"}`,
+      `State snapshot summary: ${snapshot.summary ?? "Aún no hay resumen"}`,
       characterLines.length > 0 ? `Character states:\n- ${characterLines.join("\n- ")}` : "",
       relationLines.length > 0 ? `Relations:\n- ${relationLines.join("\n- ")}` : "",
       infoLines.length > 0 ? `Knowledge:\n- ${infoLines.join("\n- ")}` : "",
@@ -202,7 +202,7 @@ export class StateService {
       }),
     ]);
     if (!chapter) {
-      throw new Error("章节不存在。");
+      throw new Error("El capítulo no existe.");
     }
     const previousSnapshot = await this.getLatestSnapshotBeforeChapter(novelId, chapter.order);
     const extracted = await extractSnapshotWithAI({
@@ -250,7 +250,7 @@ export class StateService {
       }),
     ]);
     if (!chapter) {
-      throw new Error("章节不存在。");
+      throw new Error("El capítulo no existe.");
     }
     const previousSnapshot = await this.getLatestSnapshotBeforeChapter(input.novelId, chapter.order);
     return this.persistSnapshot({
@@ -390,7 +390,7 @@ export class StateService {
       informationStates: normalizedInformationStates,
       foreshadowStates: normalizedForeshadowStates,
     });
-    const summary = input.extracted.summary?.trim() || `第${input.chapterOrder}章状态快照`;
+    const summary = input.extracted.summary?.trim() || `Cap.${input.chapterOrder}Instantánea del estado del capítulo`;
     const existing = await prisma.storyStateSnapshot.findFirst({
       where: { novelId: input.novelId, sourceChapterId: input.chapterId },
       select: { id: true },
@@ -407,7 +407,7 @@ export class StateService {
           select: { id: true },
         });
         if (!chapter) {
-          throw new ChapterArtifactContentVersionError("章节正文版本已变化，已拒绝写入过期状态快照。");
+          throw new ChapterArtifactContentVersionError("La versión del texto del capítulo ha cambiado y se ha rechazado escribir en la instantánea del estado caducado.");
         }
       }
       const snapshot = existing

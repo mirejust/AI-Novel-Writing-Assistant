@@ -154,7 +154,7 @@ export const outlineEditProposalPrompt: PromptAsset<{ request: string; baseVersi
     "新增章节必须使用 kind=add_node、nodeType=chapter，并在 fields.volumeNodeId 中给出所属卷：已有卷用其 nodeId，同提案新建卷用该卷 add_node 的 clientRef。",
     "禁止通过 update_fields 修改卷的 chapterNodeIds 来表达新增或重排章节；移动章节用 move_node + parentNodeId。",
     "说明每项理由、影响、依赖和风险；只输出结构化操作。",
-    "reason、risks 等面向用户的文字必须使用中文字段名（如主题、基调、不可违背），用节点标题描述关联修改，不得夹带 theme、immutable=false、operationId 等内部字段名、操作 ID 或节点 ID；结构化字段和引用仍按 schema 输出。",
+    "reason、risks 等面向用户的文字必须使用西班牙语字段名（如主题、基调、不可违背），用节点标题描述关联修改，不得夹带 theme、immutable=false、operationId 等内部字段名、操作 ID 或节点 ID；结构化字段和引用仍按 schema 输出。",
   ].join("")), new HumanMessage(JSON.stringify(input))],
 };
 export const outlineImportParsePrompt: PromptAsset<{ text: string; format: "markdown" | "text"; chunkIndex: number; chunkCount: number }, z.infer<typeof importSchema>> = {

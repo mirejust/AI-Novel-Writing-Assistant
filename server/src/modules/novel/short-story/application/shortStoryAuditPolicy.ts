@@ -59,13 +59,13 @@ export function evaluateShortStoryFullAuditBudget(input: {
     return {
       ok: false,
       reason: "unknown_context_window",
-      summary: "当前模型的上下文大小尚未配置，请联系维护人员补齐模型能力信息后继续全篇检查。",
+      summary: "El tamaño del contexto del modelo actual aún no se ha configurado. Comuníquese con el mantenedor para completar la información de capacidad del modelo y continuar con la revisión completa.",
     };
   }
   return {
     ok: false,
     reason: "context_budget_exceeded",
-    summary: "这篇成稿超过当前模型一次能读完的范围。请更换上下文更大的模型后再继续全篇检查。",
+    summary: "Este manuscrito terminado excede el alcance del modelo actual que se puede leer de una sola vez. Cambie a un modelo con un contexto más amplio antes de continuar con la revisión completa.",
   };
 }
 
@@ -82,10 +82,10 @@ export async function withShortStoryAuditBudget<T>(readWindow: (provider: string
       beforeRequest: async () => {
         if (denied) throw denied;
         const request = currentModelRequestDescription();
-        if (!request?.configuration) throw new Error("全篇检查缺少实际模型请求。");
+        if (!request?.configuration) throw new Error("En la inspección de texto completo faltan solicitudes de modelos reales.");
         const configuration = request.configuration;
         if (!Number.isSafeInteger(configuration.maxTokens) || configuration.maxTokens! < 1) {
-          denied = new ShortStoryAuditBudgetError("全篇检查缺少有效的单次输出上限，请检查模型设置。");
+          denied = new ShortStoryAuditBudgetError("La verificación del artículo completo carece de un límite superior de salida único válido; verifique la configuración del modelo.");
           throw denied;
         }
         const budget = evaluateShortStoryFullAuditBudget({

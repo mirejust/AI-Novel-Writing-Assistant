@@ -7,13 +7,13 @@ export default function WorldSetupTab(props: BasicTabProps) {
   return (
     <div className="space-y-5">
       <DirectorTakeoverEntryPanel
-        title="让 AI 完成本书世界观"
-        description="先确定世界规则、势力和关键约束，再让角色、卷规划与章节生产围绕同一份世界观继续推进。"
+        title="Deje que la IA complete la visión del mundo de este libro."
+        description="Primero determine las reglas, fuerzas y limitaciones clave del mundo, y luego continúe avanzando con los personajes, la planificación del volumen y la producción de capítulos en torno a la misma visión del mundo."
         entry={props.directorTakeoverEntry}
       />
       <SectionBlock
-        title="世界观准备"
-        description="这里维护本书实际使用的世界观。生成、检查和确认世界观时，AI 会以这些资产为依据。"
+        title="Preparación de la cosmovisión"
+        description="Aquí se mantiene la cosmovisión en la que realmente se utiliza este libro. La IA se basa en estos activos al generar, examinar y validar su visión del mundo."
       >
         <NovelWorldManagerCard
           view={props.novelWorldView}

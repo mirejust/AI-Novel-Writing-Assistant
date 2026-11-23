@@ -93,8 +93,8 @@ export class AgentRuntime {
     const blockingRun = activeRuns.find((item) => item.status === "running" || item.status === "waiting_approval");
     if (blockingRun && blockingRun.id !== input.runId) {
       const message = blockingRun.status === "waiting_approval"
-        ? "当前已有运行在等待审批，请先处理审批。"
-        : "当前已有运行仍在执行中。";
+        ? "Actualmente hay ejecuciones esperando aprobación; procese la aprobación primero."
+        : "Actualmente hay ejecuciones que aún se están ejecutando.";
       return this.executor.getRunDetailOrThrow(blockingRun.id, message);
     }
 
@@ -103,9 +103,9 @@ export class AgentRuntime {
       const existing = await this.store.getRun(input.runId);
       if (existing && !TERMINAL_STATUSES.has(existing.status)) {
         if (existing.status === "waiting_approval") {
-          return this.executor.getRunDetailOrThrow(existing.id, "当前运行正等待审批，请先处理审批。");
+          return this.executor.getRunDetailOrThrow(existing.id, "La ejecución actual está esperando aprobación. Procese la aprobación primero.");
         }
-        return this.executor.getRunDetailOrThrow(existing.id, "当前运行仍在执行中。");
+        return this.executor.getRunDetailOrThrow(existing.id, "La ejecución actual aún se está ejecutando.");
       }
     }
 
@@ -113,7 +113,7 @@ export class AgentRuntime {
     callbacks?.onRunStatus?.({
       runId: run.id,
       status: "queued",
-      message: "已创建运行",
+      message: "Ejecución creada",
     });
 
     return this.withRunLock(run.id, async () => {
@@ -126,7 +126,7 @@ export class AgentRuntime {
       callbacks?.onRunStatus?.({
         runId: run.id,
         status: "running",
-        message: "开始规划",
+        message: "Empezar a planificar",
       });
 
       const planningStep = await this.store.addStep({
@@ -158,7 +158,7 @@ export class AgentRuntime {
           currentStep: "planning",
         });
       } catch (error) {
-        const message = error instanceof Error ? error.message : "LLM 意图识别失败。";
+        const message = error instanceof Error ? error.message : "Falló el reconocimiento de la intención de LLM.";
         await this.store.addStep({
           runId: run.id,
           agentName: "Planner",
@@ -257,7 +257,7 @@ export class AgentRuntime {
       };
       replayActions.push({
         agent: normalizeAgent(step.agentName),
-        reasoning: "从历史步骤重放",
+        reasoning: "Repetición de pasos históricos.",
         calls: [call],
       });
     }
@@ -357,7 +357,7 @@ export class AgentRuntime {
   async createChapterGenRun(novelId: string, chapterId: string, chapterOrder: number): Promise<string> {
     const run = await this.store.createRun({
       sessionId: `chapter-gen-${chapterId}-${Date.now()}`,
-      goal: `章节 ${chapterOrder} 生成`,
+      goal: `capítulo ${chapterOrder} generar`,
       novelId,
       chapterId,
       entryAgent: "Writer",
@@ -371,7 +371,7 @@ export class AgentRuntime {
     await this.store.updateRun(runId, {
       status: "succeeded",
       finishedAt: new Date(),
-      currentStep: "章节生成完成",
+      currentStep: "Generación de capítulos completada",
     });
     await this.store.addStep({
       runId,

@@ -99,14 +99,14 @@ export class StateCommitService {
 
   private async commitReviewedResourceProposals(input: CommitExistingProposalsInput): Promise<StateCommitResult> {
     const review = input.automaticResourceReview!;
-    if (!input.chapterId) throw new Error("自动资源确认必须绑定已保存章节。");
+    if (!input.chapterId) throw new Error("La confirmación automática de recursos debe estar vinculada a los capítulos guardados.");
     const committed: StateChangeProposal[] = [];
     const pendingReview: StateChangeProposal[] = [];
     const rejected: StateChangeProposal[] = [];
     return stateProposalStore.transaction(async tx => {
       await review.assertExecutionOwnership(tx);
       const chapter = await stateProposalStore.findSavedChapter(input.novelId, input.chapterId!, review.expectedChapterContent, tx);
-      if (!chapter) throw new ChapterArtifactContentVersionError("章节正文版本已变化，已拒绝自动资源确认。");
+      if (!chapter) throw new ChapterArtifactContentVersionError("La versión del texto del capítulo ha cambiado y se ha rechazado la confirmación automática de recursos.");
       const rows = await stateProposalStore.findReviewedResources(input.novelId, chapter.id, input.proposalIds, tx);
       for (const row of rows) {
         const proposal = toStateProposal(row);

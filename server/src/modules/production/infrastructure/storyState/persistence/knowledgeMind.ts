@@ -9,7 +9,7 @@ export const writeKnowledge: ConsumerWriter = async ({ tx, context, output }) =>
     const id = exactCharacter(characters, { name: update.characterName });
     if (!id) { unresolvedIdentityCount++; continue; }
     if (!update.knownFacts.length && !update.hiddenFacts.length) continue;
-    const boundary = `【信息边界】已知：${update.knownFacts.join("；") || "无新增"}未知/不应超前知情：${update.hiddenFacts.join("；") || "无"}`.slice(0, 1200);
+    const boundary = `[Límite de información] Conocido:${update.knownFacts.join(";") || "Sin nuevas incorporaciones"}Desconocido/no debe saberse de antemano:${update.hiddenFacts.join(";") || "Ninguno"}`.slice(0, 1200);
     const original = characters.find(character => character.id === id)?.currentState ?? "";
     const base = original.replace(/\n?【信息边界】[^\n]*/g, "").trim();
     const currentState = [base.slice(0, Math.max(0, 1199 - boundary.length)).trim(), boundary].filter(Boolean).join("\n");

@@ -18,6 +18,6 @@ export async function inspectKernelModels(contract: RunContract, sources?: Kerne
   catch (error) {
     if (error instanceof MissingTaskOutputBudgetError) return {ready:false, issues:[outputBudgetReadinessIssue(error)]};
     return {ready:false, issues:[{code:"production_model_capability_missing",
-      message:"正文模型配置未就绪，请检查主备模型的上下文窗口和输出上限。"}]};
+      message:"La configuración del modelo principal no está lista. Verifique la ventana contextual y el límite superior de salida de los modelos activo y en espera."}]};
   }
 }

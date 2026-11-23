@@ -184,7 +184,7 @@ export class NovelWorkflowStoreService {
           data: {
             status: stepStatus,
             finishedAt: new Date(),
-            ...(stepStatus === "failed" ? { error: next.lastError ?? "自动导演任务执行失败。" } : {}),
+            ...(stepStatus === "failed" ? { error: next.lastError ?? "La ejecución de la tarea del director automático falló." } : {}),
           },
         }),
         { label: "directorStepRun.finalizeRunning" },

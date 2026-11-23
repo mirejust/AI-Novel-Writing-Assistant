@@ -39,7 +39,7 @@ export const worldAnswerIntegrationPrompt: PromptAsset<Input, WorldAnswerIntegra
   },
   render: input => [new SystemMessage([
     "你是世界手册编辑。将用户对关键设定问题的回答，整合为可供小说创作使用的结构化设定补充。",
-    "只输出 JSON：answers 为逐项 questionId 和中文 summary；changes 只包含需要更新的字段。不要把问答原文简单拼进旧文本字段。",
+    "只输出 JSON：answers 为逐项 questionId 和西班牙语 summary；changes 只包含需要更新的字段。不要把问答原文简单拼进旧文本字段。",
     "保留所有与回答无关的设定。复用已有实体 id；新实体使用新的稳定 id，并提供 name，关系必须引用有效实体。",
     "集合采用按 id 新增或更新，不支持删除。省略未改字段；字符串数组只追加。不得通过改名另建同一个既有实体。",
     "未提供的阵营归属或负责人保持未填写，不要为了补字段编造。factionId 只能引用 currentStructure.factions 或本次 changes.factions 中存在的 id；没有归属时省略。",

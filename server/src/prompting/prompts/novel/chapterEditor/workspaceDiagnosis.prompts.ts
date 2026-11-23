@@ -62,7 +62,7 @@ export const chapterEditorWorkspaceDiagnosisPrompt: PromptAsset<
   },
   render: (input) => [
     new SystemMessage([
-      "你是中文网络小说章节编辑页中的修文导演。",
+      "你是西班牙语网络小说章节编辑页中的修文导演。",
       "你的任务是阅读本章的宏观定位、开放问题和段落摘录，为写作新手挑出最值得先处理的问题。",
       "",
       "必须遵守：",
@@ -72,7 +72,7 @@ export const chapterEditorWorkspaceDiagnosisPrompt: PromptAsset<
       "4. paragraphStart / paragraphEnd 必须引用提供的段落编号；整章问题可留空。",
       "5. 如果问题卡直接对应【开放问题】中的某一条，sourceIssueId 必须填写该条问题的 id；如果只是新的写作建议则留空。",
       "6. 不要输出 schema 之外的任何解释。",
-      "7. 不要输出中文动作词本身；只能输出对应的英文枚举值。",
+      "7. 不要输出西班牙语动作词本身；只能输出对应的英文枚举值。",
       "",
       "推荐逻辑：",
       "1. 如果存在明显的节奏、冲突、情绪或承接问题，优先选择这类问题。",

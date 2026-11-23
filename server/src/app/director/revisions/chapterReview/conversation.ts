@@ -19,10 +19,10 @@ import { readChapterReviewPlans } from "./plans";
 async function read(db: Prisma.TransactionClient, address: Address, contract: RunContract) {
   const rows = await readChapterReviewPlans(db, contract);
   const row = rows.find((chapter) => chapter.id === address.resourceId);
-  if (!row) throw new AppError("请选择本次待确认范围内的章节。", 404);
+  if (!row) throw new AppError("Seleccione los capítulos que se confirmarán esta vez.", 404);
   const version = await getActiveVersionRow(contract.novelId, db);
   if (!version || version.id !== address.planVersionId)
-    throw new AppError("卷规划版本有变化，请重新打开章节确认页。", 409);
+    throw new AppError("La versión del plan de volumen ha cambiado; vuelva a abrir la página de confirmación del capítulo.", 409);
   const document = JSON.parse(version.contentJson) as VolumePlanDocument;
   const matches =
     document.volumes
@@ -32,10 +32,10 @@ async function read(db: Prisma.TransactionClient, address: Address, contract: Ru
           .filter((c) => c.id === row.id && c.chapterOrder === row.chapterOrder)
           .map((c) => ({ chapter: c, volumeTitle: v.title })),
       ) ?? [];
-  if (matches.length !== 1) throw new AppError("无法定位当前规划中的章节。", 409);
+  if (matches.length !== 1) throw new AppError("No se puede localizar el capítulo actualmente planeado.", 409);
   const { chapter, volumeTitle } = matches[0];
   const { fields, scenePlan } = chapterReviewForm(row);
-  if (!scenePlan) throw new AppError("场景内容无法逐项核对，请返回导演台重新生成本阶段。", 409);
+  if (!scenePlan) throw new AppError("El contenido de la escena no se puede comprobar elemento por elemento. Regrese al escritorio del director para regenerar esta etapa.", 409);
   const scenes = scenePlan.scenes.map(({ key, title, mustAdvance, mustPreserve, forbiddenExpansion }) => ({
     key,
     title,
@@ -66,7 +66,7 @@ export function chapterConversationRouter() {
       artifact: "chapter_task_sheet",
       scope: "director-chapter",
       stage: "chapter_detail_bundle",
-      progress: "正在读本章任务和场景安排…",
+      progress: "Leyendo este capítulo tareas y arreglos de escena...",
       draft: chapterDraftSchema,
       reply: chapterReplySchema,
       changes: chapterProposalChanges,

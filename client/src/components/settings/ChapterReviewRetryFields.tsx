@@ -8,7 +8,7 @@ export function ChapterReviewRetryFields({ value, onChange }: {
     <div className="space-y-3 border-t pt-4">
       <div className="grid gap-3 sm:grid-cols-2">
         <label className="space-y-2 text-sm">
-          <span className="font-medium">正文检查最大重试次数</span>
+          <span className="font-medium">Número máximo de reintentos para la verificación de texto</span>
           <input type="number" min={0} max={MAX_CHAPTER_REVIEW_RETRIES} step={1}
             className="h-10 w-full rounded-md border bg-background px-3 text-sm" value={value.maxRetries}
             onChange={event => {
@@ -17,17 +17,16 @@ export function ChapterReviewRetryFields({ value, onChange }: {
             }} />
         </label>
         <label className="space-y-2 text-sm">
-          <span className="font-medium">次数耗尽后</span>
+          <span className="font-medium">Después de que se agote el número de veces.</span>
           <select className="h-10 w-full rounded-md border bg-background px-3 text-sm" value={value.onExhausted}
             onChange={event => onChange({ ...value, onExhausted: event.target.value as ChapterReviewRetryPolicy["onExhausted"] })}>
-            <option value="continue_with_warning">跳过检查并继续</option>
-            <option value="pause_for_manual">暂停等待处理</option>
+            <option value="continue_with_warning">Saltar el cheque y continuar</option>
+            <option value="pause_for_manual">En pausa para procesamiento</option>
           </select>
         </label>
       </div>
       <p className="text-xs leading-5 text-muted-foreground">
-        可设 0–{MAX_CHAPTER_REVIEW_RETRIES} 次，不含首次正文检查和修文后的首次复验。同一章的正文检查纠错共用次数；设为 0 时不自动重试。
-        跳过会保留可用正文并标记检查未完成；暂停后从小说工作台继续处理。正文不可用或保存失败时会停止。
+        Se puede configurar en 0–{MAX_CHAPTER_REVIEW_RETRIES} veces, excluyendo la primera inspección del texto y el primer reexamen después de la revisión. El número de verificaciones y correcciones de texto compartido para el mismo capítulo; cuando se establece en 0, no se producirá el reintento automático. Saltar deja el texto disponible y marca el cheque como incompleto; reanudar el procesamiento desde el nuevo banco de trabajo después de una pausa. Se detiene cuando el texto no está disponible o falla al guardar.
       </p>
     </div>
   );

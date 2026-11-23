@@ -89,7 +89,7 @@ export class ChapterStreamGenerationOrchestrator {
             runId: runStatusId,
             status: "running",
             phase: "finalizing",
-            message: "正文已生成，正在整理章节文本并保存草稿。",
+            message: "Se ha generado el texto principal, se está organizando el texto del capítulo y se está guardando el borrador.",
           });
           const normalized = await this.resolveWriterResultWithEmptyRetry({
             novelId,
@@ -105,7 +105,7 @@ export class ChapterStreamGenerationOrchestrator {
             runId: runStatusId,
             status: "running",
             phase: "finalizing",
-            message: "正在完成正文接收检查并同步章节状态。",
+            message: "Completar la verificación de recepción de texto y sincronizar el estado del capítulo.",
           });
           const finalized = await this.finalizeChapterContent({
             novelId,
@@ -124,8 +124,8 @@ export class ChapterStreamGenerationOrchestrator {
             status: "succeeded",
             phase: "completed",
             message: finalized.runtimePackage.audit.hasBlockingIssues
-              ? "章节已保存，但检测到待修复问题。"
-              : "章节已保存，可继续审校。",
+              ? "El capítulo se guardó, pero se detectó un problema que debe solucionarse."
+              : "El capítulo se ha guardado y se puede revisar más a fondo.",
           });
 
           return {

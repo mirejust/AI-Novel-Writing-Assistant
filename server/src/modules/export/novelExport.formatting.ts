@@ -85,31 +85,31 @@ export function buildNovelTxtExport(novel: NovelTxtRecord) {
 
 export function buildTxtContent(novel: NovelTxtRecord): string {
   const lines: string[] = [];
-  lines.push(`《${novel.title}》`);
+  lines.push(`«${novel.title}»`);
   lines.push("");
 
   const description = novel.confirmedManuscript ? novel.description : normalizeText(novel.description);
   if (description) {
-    lines.push("【简介】");
+    lines.push("[Introducción]");
     lines.push(description);
     lines.push("");
   }
 
   if (novel.narrativeForm === "short_story") {
-    lines.push(normalizeText(novel.shortStoryContent) || "（暂无正文）");
+    lines.push(normalizeText(novel.shortStoryContent) || "(Aún no hay texto)");
     return lines.join("\n");
   }
 
   if (novel.chapters.length === 0) {
-    lines.push("（暂无章节内容）");
+    lines.push("(Aún no hay contenido del capítulo)");
     return lines.join("\n");
   }
 
   for (const chapter of novel.chapters) {
     lines.push("=".repeat(48));
-    lines.push(`第${chapter.order}章 ${chapter.title}`);
+    lines.push(`Cap.${chapter.order}capítulo ${chapter.title}`);
     lines.push("-".repeat(48));
-    lines.push(chapterExportText(chapter.content, novel.confirmedManuscript) || "（本章暂无内容）");
+    lines.push(chapterExportText(chapter.content, novel.confirmedManuscript) || "(Este capítulo aún no tiene contenido)");
     lines.push("");
   }
 
@@ -124,7 +124,7 @@ function addBullet(lines: string[], label: string, value: string | number | null
   if (!text) {
     return;
   }
-  lines.push(`- ${label}：${text}`);
+  lines.push(`- ${label}:${text}`);
 }
 
 function addParagraph(lines: string[], title: string, value: string | null | undefined, level = 3): void {
@@ -149,40 +149,40 @@ function addJsonBlock(lines: string[], title: string, value: unknown): void {
 
 function buildBasicSummary(section: NovelExportBasicSection): string[] {
   const lines: string[] = [];
-  addBullet(lines, "标题", section.novel.title);
-  addBullet(lines, "写作模式", section.novel.writingMode);
-  addBullet(lines, "项目模式", section.novel.projectMode ?? null);
-  addBullet(lines, "题材", section.novel.genre?.name ?? null);
-  addBullet(lines, "主流派", section.novel.primaryStoryMode?.name ?? null);
-  addBullet(lines, "副流派", section.novel.secondaryStoryMode?.name ?? null);
-  addBullet(lines, "绑定世界", section.novel.world?.name ?? null);
-  addBullet(lines, "预计章节数", section.novel.estimatedChapterCount ?? null);
+  addBullet(lines, "título", section.novel.title);
+  addBullet(lines, "modo de escritura", section.novel.writingMode);
+  addBullet(lines, "modo proyecto", section.novel.projectMode ?? null);
+  addBullet(lines, "tema", section.novel.genre?.name ?? null);
+  addBullet(lines, "Corriente principal", section.novel.primaryStoryMode?.name ?? null);
+  addBullet(lines, "subgénero", section.novel.secondaryStoryMode?.name ?? null);
+  addBullet(lines, "mundo atado", section.novel.world?.name ?? null);
+  addBullet(lines, "Número estimado de capítulos", section.novel.estimatedChapterCount ?? null);
   if ((section.novel.commercialTags ?? []).length > 0) {
-    addBullet(lines, "商业标签", section.novel.commercialTags.join(" / "));
+    addBullet(lines, "etiqueta comercial", section.novel.commercialTags.join(" / "));
   }
-  addParagraph(lines, "一句话简介", section.novel.description);
-  addParagraph(lines, "目标读者", section.novel.targetAudience);
-  addParagraph(lines, "核心卖点", section.novel.bookSellingPoint);
-  addParagraph(lines, "对标感受", section.novel.competingFeel);
-  addParagraph(lines, "前 30 章承诺", section.novel.first30ChapterPromise);
-  addParagraph(lines, "世界切片核心框架", section.worldSlice?.slice?.coreWorldFrame ?? null);
+  addParagraph(lines, "Introducción de una frase", section.novel.description);
+  addParagraph(lines, "público objetivo", section.novel.targetAudience);
+  addParagraph(lines, "punto de venta principal", section.novel.bookSellingPoint);
+  addParagraph(lines, "Sentimientos de evaluación comparativa", section.novel.competingFeel);
+  addParagraph(lines, "Promesa de los primeros 30 capítulos", section.novel.first30ChapterPromise);
+  addParagraph(lines, "Marco central de corte mundial", section.worldSlice?.slice?.coreWorldFrame ?? null);
   return lines;
 }
 
 function buildStoryMacroSummary(section: NovelExportStoryMacroSection): string[] {
   const lines: string[] = [];
-  addParagraph(lines, "故事输入", section.storyMacroPlan?.storyInput);
-  addParagraph(lines, "展开前提", section.storyMacroPlan?.expansion?.expanded_premise ?? null);
-  addParagraph(lines, "主角核心", section.storyMacroPlan?.expansion?.protagonist_core ?? null);
-  addParagraph(lines, "冲突引擎", section.storyMacroPlan?.expansion?.conflict_engine ?? null);
-  addParagraph(lines, "核心冲突", section.storyMacroPlan?.decomposition?.core_conflict ?? null);
-  addParagraph(lines, "主钩子", section.storyMacroPlan?.decomposition?.main_hook ?? null);
-  addParagraph(lines, "推进循环", section.storyMacroPlan?.decomposition?.progression_loop ?? null);
-  addParagraph(lines, "书级阅读承诺", section.bookContract?.readingPromise ?? null);
-  addParagraph(lines, "核心售卖点", section.bookContract?.coreSellingPoint ?? null);
-  addParagraph(lines, "升级阶梯", section.bookContract?.escalationLadder ?? null);
+  addParagraph(lines, "entrada de la historia", section.storyMacroPlan?.storyInput);
+  addParagraph(lines, "Premisa de expansión", section.storyMacroPlan?.expansion?.expanded_premise ?? null);
+  addParagraph(lines, "Núcleo protagonista", section.storyMacroPlan?.expansion?.protagonist_core ?? null);
+  addParagraph(lines, "motor de conflicto", section.storyMacroPlan?.expansion?.conflict_engine ?? null);
+  addParagraph(lines, "Conflicto central", section.storyMacroPlan?.decomposition?.core_conflict ?? null);
+  addParagraph(lines, "gancho principal", section.storyMacroPlan?.decomposition?.main_hook ?? null);
+  addParagraph(lines, "ciclo de avance", section.storyMacroPlan?.decomposition?.progression_loop ?? null);
+  addParagraph(lines, "Compromiso de lectura a nivel de libro", section.bookContract?.readingPromise ?? null);
+  addParagraph(lines, "punto de venta principal", section.bookContract?.coreSellingPoint ?? null);
+  addParagraph(lines, "Escalera de mejora", section.bookContract?.escalationLadder ?? null);
   if ((section.bookContract?.absoluteRedLines ?? []).length > 0) {
-    lines.push("### 绝对红线");
+    lines.push("### Línea roja absoluta");
     lines.push("");
     for (const item of section.bookContract?.absoluteRedLines ?? []) {
       lines.push(`- ${item}`);
@@ -194,11 +194,11 @@ function buildStoryMacroSummary(section: NovelExportStoryMacroSection): string[]
 
 function buildCharacterSummary(section: NovelExportCharacterSection): string[] {
   const lines: string[] = [];
-  addBullet(lines, "角色数", section.characters.length);
-  addBullet(lines, "关系数", section.relations.length);
-  addBullet(lines, "候选阵容数", section.castOptions.length);
+  addBullet(lines, "Número de caracteres", section.characters.length);
+  addBullet(lines, "número de relación", section.relations.length);
+  addBullet(lines, "Número de alineaciones de candidatos", section.castOptions.length);
   if (section.characters.length > 0) {
-    lines.push("### 当前角色");
+    lines.push("### Rol actual");
     lines.push("");
     for (const character of section.characters) {
       const parts = [character.name, character.role, character.castRole].filter((item): item is string => Boolean(item?.trim()));
@@ -211,14 +211,14 @@ function buildCharacterSummary(section: NovelExportCharacterSection): string[] {
 
 function buildOutlineSummary(section: NovelExportOutlineSection): string[] {
   const lines: string[] = [];
-  addBullet(lines, "卷来源", section.workspace?.source ?? null);
-  addBullet(lines, "卷数", section.workspace?.volumes.length ?? 0);
-  addBullet(lines, "推荐卷数", section.workspace?.strategyPlan?.recommendedVolumeCount ?? null);
-  addParagraph(lines, "卷级导出大纲", section.workspace?.derivedOutline ?? null);
-  addParagraph(lines, "读者奖励阶梯", section.workspace?.strategyPlan?.readerRewardLadder ?? null);
-  addParagraph(lines, "升级阶梯", section.workspace?.strategyPlan?.escalationLadder ?? null);
-  addParagraph(lines, "策略备注", section.workspace?.strategyPlan?.notes ?? null);
-  addParagraph(lines, "批判总结", section.workspace?.critiqueReport?.summary ?? null);
+  addBullet(lines, "fuente de volumen", section.workspace?.source ?? null);
+  addBullet(lines, "Número de volúmenes", section.workspace?.volumes.length ?? 0);
+  addBullet(lines, "Número de volúmenes recomendado", section.workspace?.strategyPlan?.recommendedVolumeCount ?? null);
+  addParagraph(lines, "Esquema de exportación a nivel de volumen", section.workspace?.derivedOutline ?? null);
+  addParagraph(lines, "Escalera de recompensas del lector", section.workspace?.strategyPlan?.readerRewardLadder ?? null);
+  addParagraph(lines, "Escalera de mejora", section.workspace?.strategyPlan?.escalationLadder ?? null);
+  addParagraph(lines, "Notas de estrategia", section.workspace?.strategyPlan?.notes ?? null);
+  addParagraph(lines, "Resumen crítico", section.workspace?.critiqueReport?.summary ?? null);
   return lines;
 }
 
@@ -226,24 +226,24 @@ function buildStructuredSummary(section: NovelExportStructuredSection): string[]
   const lines: string[] = [];
   const beatCount = (section.workspace?.beatSheets ?? []).reduce((sum, item) => sum + item.beats.length, 0);
   const chapterCount = (section.workspace?.volumes ?? []).reduce((sum, item) => sum + item.chapters.length, 0);
-  addBullet(lines, "节拍卡数量", beatCount);
-  addBullet(lines, "章节规划数", chapterCount);
-  addBullet(lines, "重平衡决策数", section.workspace?.rebalanceDecisions.length ?? 0);
-  addParagraph(lines, "结构化大纲", section.workspace?.derivedStructuredOutline ?? null);
+  addBullet(lines, "Número de cartas de ritmo", beatCount);
+  addBullet(lines, "Número de capítulos previstos", chapterCount);
+  addBullet(lines, "Número de decisiones de reequilibrio", section.workspace?.rebalanceDecisions.length ?? 0);
+  addParagraph(lines, "esquema estructurado", section.workspace?.derivedStructuredOutline ?? null);
   return lines;
 }
 
 function buildChapterSummary(section: NovelExportChapterSection): string[] {
   const lines: string[] = [];
   const generatedCount = section.chapters.filter((chapter) => hasMeaningfulText(chapter.content)).length;
-  addBullet(lines, "章节总数", section.chapters.length);
-  addBullet(lines, "已有正文章节", generatedCount);
-  addBullet(lines, "章节计划数", section.chapterPlans.length);
+  addBullet(lines, "Número total de capítulos", section.chapters.length);
+  addBullet(lines, "Ya existe una sección de texto.", generatedCount);
+  addBullet(lines, "Número de plan del capítulo", section.chapterPlans.length);
   if (section.chapters.length > 0) {
-    lines.push("### 章节列表");
+    lines.push("### Lista de capítulos");
     lines.push("");
     for (const chapter of section.chapters) {
-      lines.push(`- 第 ${chapter.order} 章：${chapter.title}`);
+      lines.push(`- No. ${chapter.order} capítulo:${chapter.title}`);
     }
     lines.push("");
   }
@@ -252,13 +252,13 @@ function buildChapterSummary(section: NovelExportChapterSection): string[] {
 
 function buildPipelineSummary(section: NovelExportPipelineSection): string[] {
   const lines: string[] = [];
-  addBullet(lines, "总体质量分", section.qualityReport.summary.overall);
-  addBullet(lines, "质量报告数", section.qualityReport.totalReports ?? section.qualityReport.chapterReports.length);
-  addBullet(lines, "审计报告数", section.chapterAuditReports.length);
-  addBullet(lines, "情节点数", section.plotBeats.length);
-  addBullet(lines, "伏笔账本项数", section.payoffLedger?.items.length ?? 0);
-  addBullet(lines, "最近流水线状态", section.latestPipelineJob?.status ?? null);
-  addParagraph(lines, "小说圣经原始内容", section.bible?.rawContent ?? null);
+  addBullet(lines, "puntuación de calidad general", section.qualityReport.summary.overall);
+  addBullet(lines, "Número de informes de calidad", section.qualityReport.totalReports ?? section.qualityReport.chapterReports.length);
+  addBullet(lines, "Número de informes de auditoría", section.chapterAuditReports.length);
+  addBullet(lines, "puntos de la trama", section.plotBeats.length);
+  addBullet(lines, "Número de elementos del libro mayor de presagios", section.payoffLedger?.items.length ?? 0);
+  addBullet(lines, "Estado reciente del oleoducto", section.latestPipelineJob?.status ?? null);
+  addParagraph(lines, "Nuevo contenido original de la Biblia.", section.bible?.rawContent ?? null);
   return lines;
 }
 
@@ -308,11 +308,11 @@ export function buildMarkdownExportContent(bundle: NovelExportBundle, scope: Nov
   const scopeLabel = NOVEL_EXPORT_SCOPE_LABELS[scope];
   const sectionScopes = scope === "full" ? FULL_SECTION_ORDER : [scope];
 
-  lines.push(`# ${bundle.metadata.novelTitle} 导出`);
+  lines.push(`# ${bundle.metadata.novelTitle} Exportar`);
   lines.push("");
-  lines.push(`- 导出范围：${scopeLabel}`);
-  lines.push(`- 导出时间：${bundle.metadata.exportedAt}`);
-  lines.push(`- 小说 ID：${bundle.metadata.novelId}`);
+  lines.push(`- Rango de exportación:${scopeLabel}`);
+  lines.push(`- Tiempo de exportación:${bundle.metadata.exportedAt}`);
+  lines.push(`- ID de novela:${bundle.metadata.novelId}`);
   lines.push("");
 
   for (const sectionScope of sectionScopes) {
@@ -323,10 +323,10 @@ export function buildMarkdownExportContent(bundle: NovelExportBundle, scope: Nov
     if (summaryLines.length > 0) {
       lines.push(...summaryLines);
     } else {
-      lines.push("（当前没有可总结的结构化内容）");
+      lines.push("(Actualmente no hay contenido estructurado para resumir)");
       lines.push("");
     }
-    addJsonBlock(lines, "完整数据", section);
+    addJsonBlock(lines, "datos completos", section);
   }
 
   return lines.join("\n");

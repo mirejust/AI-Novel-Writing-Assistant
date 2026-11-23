@@ -249,7 +249,7 @@ export function createApp() {
   app.use((_req, res) => {
     const response: ApiResponse<null> = {
       success: false,
-      error: "接口不存在。",
+      error: "La interfaz no existe.",
     };
     res.status(404).json(response);
   });
@@ -374,7 +374,7 @@ function initializeBackgroundServices(): BackgroundServicesHandle {
   });
 
   void loadProviderApiKeys().catch((error) => {
-    console.warn("数据库中的模型密钥加载失败，已回退到环境变量。", error);
+    console.warn("La carga de claves de modelo desde la base de datos falló y recurrió a variables de entorno.", error);
   });
 
   void ensureSystemResourceStarterData()
@@ -467,7 +467,12 @@ async function bootstrap(): Promise<void> {
   await startServer();
 }
 
-if (require.main === module) {
+// The desktop build starts this file inside an Electron utility process, where
+// `require.main` is not set to the forked module. Without the parentPort check the
+// bootstrap never runs, the event loop drains and the process exits with code 0.
+const isUtilityProcessEntry = typeof (process as unknown as { parentPort?: unknown }).parentPort !== "undefined";
+
+if (require.main === module || isUtilityProcessEntry) {
   void bootstrap().catch((error) => {
     console.error("[server] bootstrap failed.", error);
     process.exit(1);

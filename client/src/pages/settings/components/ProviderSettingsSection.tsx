@@ -91,17 +91,17 @@ export default function ProviderSettingsSection(props: {
           </div>
           <div className="min-w-0 space-y-1">
             <div className="flex flex-wrap items-center gap-2">
-              <CardTitle>模型厂商</CardTitle>
-              <Badge variant={visibleViewModels.length ? "default" : "outline"}>{visibleViewModels.length} 个可用连接</Badge>
+              <CardTitle>Proveedor de modelos</CardTitle>
+              <Badge variant={visibleViewModels.length ? "default" : "outline"}>{visibleViewModels.length} Conexiones disponibles</Badge>
             </div>
           <CardDescription className={AUTO_DIRECTOR_MOBILE_CLASSES.wrapText}>
-              添加一个可用文本模型后就能开始创作；路由和高级参数可按需再设置。
+              Simplemente agregue un modelo de texto funcional y comience a crear; el enrutamiento y los parámetros avanzados se pueden configurar según sea necesario.
           </CardDescription>
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
           <Button className={AUTO_DIRECTOR_MOBILE_CLASSES.fullWidthAction} onClick={() => setIsAddProviderOpen(true)}>
-            <Plus className="h-4 w-4" /> 添加厂商
+            <Plus className="h-4 w-4" /> Agregar proveedor
           </Button>
         </div>
       </CardHeader>
@@ -124,15 +124,15 @@ export default function ProviderSettingsSection(props: {
         {!visibleViewModels.length ? (
           <div className="rounded-xl border border-dashed bg-background/70 p-6 text-center text-sm text-muted-foreground md:col-span-2">
             <PlugZap className="mx-auto mb-3 h-6 w-6 text-primary" />
-            <div className="font-medium text-foreground">还没有可用的模型连接</div>
-            <div className="mt-1">添加内置厂商或自定义服务后，即可配置第一个文本模型。</div>
+            <div className="font-medium text-foreground">Aún no hay conexiones de modelo disponibles</div>
+            <div className="mt-1">Después de agregar un proveedor integrado o un servicio personalizado, puede configurar su primer modelo de texto.</div>
           </div>
         ) : null}
       </CardContent>
       <Dialog open={isAddProviderOpen} onOpenChange={setIsAddProviderOpen}>
         <AppDialogContent
-          title="添加模型厂商"
-          description="选择一个内置厂商模板，或添加你自己的 OpenAI 兼容服务。"
+          title="Agregar proveedor de modelo"
+          description="Elija entre una de las plantillas de proveedores integradas o agregue sus propios servicios compatibles con OpenAI."
           className="max-w-2xl"
         >
           <div className="grid gap-3 sm:grid-cols-2">
@@ -147,7 +147,7 @@ export default function ProviderSettingsSection(props: {
                 }}
               >
                 <div className="flex items-center gap-2 font-medium"><PlugZap className="h-4 w-4 text-primary" /> {provider.name}</div>
-                <div className="mt-2 text-xs text-muted-foreground">推荐模型：{provider.defaultModel}</div>
+                <div className="mt-2 text-xs text-muted-foreground">Modelo recomendado:{provider.defaultModel}</div>
               </button>
             ))}
             <button
@@ -158,12 +158,12 @@ export default function ProviderSettingsSection(props: {
                 onCreateCustomProvider();
               }}
             >
-              <div className="flex items-center gap-2 font-medium"><ServerCog className="h-4 w-4 text-primary" /> 自定义厂商</div>
-              <div className="mt-2 text-xs text-muted-foreground">连接任意 OpenAI 兼容服务。</div>
+              <div className="flex items-center gap-2 font-medium"><ServerCog className="h-4 w-4 text-primary" /> Fabricante personalizado</div>
+              <div className="mt-2 text-xs text-muted-foreground">Conéctese a cualquier servicio compatible con OpenAI.</div>
             </button>
           </div>
           {!addableBuiltIns.length ? (
-            <div className="mt-3 text-sm text-muted-foreground">所有内置厂商都已添加；你仍可以添加自定义厂商。</div>
+            <div className="mt-3 text-sm text-muted-foreground">Se han agregado todos los proveedores integrados; aún puede agregar proveedores personalizados.</div>
           ) : null}
         </AppDialogContent>
       </Dialog>

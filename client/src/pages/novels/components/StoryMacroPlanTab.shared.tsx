@@ -8,12 +8,12 @@ export const ENGINE_TEXT_FIELDS: Array<{
   placeholder: string;
   multiline?: boolean;
 }> = [
-  { field: "expanded_premise", label: "强化前提", placeholder: "先写出被强化后的故事前提，让压迫感和悬念成立。", multiline: true },
-  { field: "protagonist_core", label: "主角核心处境", placeholder: "写主角被困住的处境、裂缝和可变化空间。", multiline: true },
-  { field: "conflict_engine", label: "冲突引擎", placeholder: "写清楚故事为什么能持续升级，而不是只写一个冲突。", multiline: true },
-  { field: "mystery_box", label: "核心未知", placeholder: "写读者最想知道、但暂时拿不到答案的问题。", multiline: true },
-  { field: "emotional_line", label: "情绪推进", placeholder: "写情绪如何逐层加深，而不是简单变强。", multiline: true },
-  { field: "tone_reference", label: "叙事气质", placeholder: "写法风格、叙事姿态、控制方式。", multiline: true },
+  { field: "expanded_premise", label: "Fortalecer la premisa", placeholder: "Primero escriba la premisa reforzada de la historia para que se pueda establecer la sensación de opresión y suspenso.", multiline: true },
+  { field: "protagonist_core", label: "La situación central del protagonista", placeholder: "Escribe sobre la situación, las grietas y los espacios cambiantes en los que se encuentra atrapado el protagonista.", multiline: true },
+  { field: "conflict_engine", label: "Motor de conflicto", placeholder: "Escriba por qué la historia continúa escalando, en lugar de simplemente escribir sobre un conflicto.", multiline: true },
+  { field: "mystery_box", label: "Núcleo desconocido", placeholder: "Escriba sobre las preguntas que los lectores más quieren saber pero que aún no tienen respuestas.", multiline: true },
+  { field: "emotional_line", label: "Empuje emocional", placeholder: "Escribe sobre cómo las emociones se profundizan gradualmente, en lugar de simplemente volverse más fuertes.", multiline: true },
+  { field: "tone_reference", label: "Temperamento narrativo", placeholder: "Estilo de escritura, postura narrativa, método de control.", multiline: true },
 ];
 
 export const SUMMARY_FIELDS: Array<{
@@ -22,12 +22,12 @@ export const SUMMARY_FIELDS: Array<{
   placeholder: string;
   multiline?: boolean;
 }> = [
-  { field: "selling_point", label: "一句话卖点", placeholder: "一句话说明这部作品最能吸引读者的地方。" },
-  { field: "core_conflict", label: "长期对立", placeholder: "写长期不可调和的对立。" },
-  { field: "main_hook", label: "主线钩子", placeholder: "写带未知的主线问题。" },
-  { field: "progression_loop", label: "推进回路", placeholder: "写清发现 -> 升级 -> 反转如何循环。", multiline: true },
-  { field: "growth_path", label: "成长路径", placeholder: "写主角认知如何阶段性变化。", multiline: true },
-  { field: "ending_flavor", label: "结局味道", placeholder: "例如崩塌、留白、反转、冷静压抑。" },
+  { field: "selling_point", label: "Punto de venta en una frase.", placeholder: "En una frase, explique qué es lo más atractivo para los lectores de este trabajo." },
+  { field: "core_conflict", label: "Antagonismo a largo plazo", placeholder: "Escribe sobre una oposición irreconciliable a largo plazo." },
+  { field: "main_hook", label: "Gancho de línea principal", placeholder: "Escribe una pregunta de línea principal desconocida." },
+  { field: "progression_loop", label: "Circuito de propulsión", placeholder: "Escriba cómo descubrir -> actualizar -> invertir el ciclo.", multiline: true },
+  { field: "growth_path", label: "Camino de crecimiento", placeholder: "Escribe sobre cómo cambia la cognición del protagonista por etapas.", multiline: true },
+  { field: "ending_flavor", label: "El sabor del final", placeholder: "Por ejemplo, colapso, vacío, inversión, calma y depresión." },
 ];
 
 export function listToText(value: string[]): string {
@@ -54,7 +54,7 @@ export function FieldActions(props: {
         variant={isLocked ? "secondary" : "outline"}
         onClick={() => props.onToggleLock(props.field)}
       >
-        {isLocked ? "已锁定" : "锁定"}
+        {isLocked ? "Bloqueado" : "Bloquear"}
       </Button>
       <AiButton
         size="sm"
@@ -62,7 +62,7 @@ export function FieldActions(props: {
         onClick={() => props.onRegenerateField(props.field)}
         disabled={props.regeneratingField === props.field || isLocked || !props.storyInput.trim()}
       >
-        {props.regeneratingField === props.field ? "重生成中..." : "重生成"}
+        {props.regeneratingField === props.field ? "Renacimiento en progreso..." : "Renacer"}
       </AiButton>
     </div>
   );

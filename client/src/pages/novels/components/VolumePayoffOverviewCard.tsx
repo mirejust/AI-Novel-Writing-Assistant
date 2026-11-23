@@ -29,7 +29,7 @@ export default function VolumePayoffOverviewCard(props: VolumePayoffOverviewCard
     .map((chapter) => ({
       chapterId: chapter.id,
       chapterOrder: chapter.chapterOrder,
-      chapterTitle: chapter.title?.trim() || "未命名章节",
+      chapterTitle: chapter.title?.trim() || "Capítulo sin título",
       refs: chapter.payoffRefs.map((item) => item.trim()).filter(Boolean),
     }))
     .filter((chapter) => chapter.refs.length > 0);
@@ -58,19 +58,19 @@ export default function VolumePayoffOverviewCard(props: VolumePayoffOverviewCard
       <CardHeader className="pb-3">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
           <div>
-            <CardTitle className="text-base">当前卷伏笔 / 回收参考</CardTitle>
+            <CardTitle className="text-base">Volumen actual presagio/referencia de reciclaje</CardTitle>
             <div className="text-sm text-muted-foreground">
-              这里只看当前选中卷，用来核对本卷待兑现事项和章节兑现安排是否一致。全书级 canonical 账本已经挪到上方的独立模块。
+              Aquí solo se muestra el volumen seleccionado actualmente para verificar si los asuntos que se canjearán en este volumen son consistentes con los acuerdos de canje del capítulo. El libro mayor canónico a nivel de libro completo se ha trasladado a un módulo independiente arriba.
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Badge variant="outline">第 {selectedVolume.sortOrder} 卷</Badge>
-            <Badge variant="outline">待兑现 {openPayoffRows.length}</Badge>
-            <Badge variant="outline">已挂章节 {linkedOpenPayoffCount}</Badge>
+            <Badge variant="outline">Cap. {selectedVolume.sortOrder} Rollo</Badge>
+            <Badge variant="outline">para ser cobrado {openPayoffRows.length}</Badge>
+            <Badge variant="outline">El capítulo ha sido suspendido. {linkedOpenPayoffCount}</Badge>
             <Badge variant={unplannedOpenPayoffs.length > 0 ? "secondary" : "outline"}>
-              待补关联 {unplannedOpenPayoffs.length}
+              Asociación pendiente {unplannedOpenPayoffs.length}
             </Badge>
-            <Badge variant="outline">章节安排 {chapterPayoffGroups.length}</Badge>
+            <Badge variant="outline">Disposición del capítulo {chapterPayoffGroups.length}</Badge>
           </div>
         </div>
       </CardHeader>
@@ -78,11 +78,11 @@ export default function VolumePayoffOverviewCard(props: VolumePayoffOverviewCard
         <div className="grid gap-3 xl:grid-cols-[minmax(280px,0.9fr)_minmax(0,1.35fr)]">
           <div className="rounded-xl border border-border/70 bg-muted/20 p-4">
             <div className="flex items-center justify-between gap-2">
-              <div className="font-medium text-foreground">本卷待兑现事项</div>
+              <div className="font-medium text-foreground">Artículos a canjear en este volumen</div>
               <Badge variant="outline">{openPayoffRows.length}</Badge>
             </div>
             <div className="mt-1 text-xs text-muted-foreground">
-              这里是卷战略里声明的待兑现事项，用来看这一卷到底有哪些坑要埋、哪些点要回收。
+              Estos son los elementos a cumplir establecidos en la estrategia de volumen, que se pueden utilizar para ver qué obstáculos deben enterrar y qué puntos deben recuperarse en este volumen.
             </div>
             <div className="mt-3 space-y-2 text-sm">
               {openPayoffRows.length > 0 ? (
@@ -94,7 +94,7 @@ export default function VolumePayoffOverviewCard(props: VolumePayoffOverviewCard
                     <div className="flex flex-wrap items-center gap-2">
                       <div className="font-medium text-foreground">{item.item}</div>
                       <Badge variant={item.linkedChapters.length > 0 ? "default" : "secondary"}>
-                        {item.linkedChapters.length > 0 ? "已安排章节触碰" : "未安排具体章节"}
+                        {item.linkedChapters.length > 0 ? "Toque del capítulo arreglado" : "No se han organizado capítulos específicos."}
                       </Badge>
                     </div>
                     {item.linkedChapters.length > 0 ? (
@@ -104,20 +104,20 @@ export default function VolumePayoffOverviewCard(props: VolumePayoffOverviewCard
                             key={`${item.item}-${entry.chapterOrder}-${entry.ref}`}
                             className="rounded-full border border-border/70 px-2 py-1"
                           >
-                            第{entry.chapterOrder}章 {entry.chapterTitle}
+                            Cap.{entry.chapterOrder}capitulo {entry.chapterTitle}
                           </span>
                         ))}
                       </div>
                     ) : (
                       <div className="mt-2 text-xs text-muted-foreground">
-                        这条待兑现事项还没有挂到本卷具体章节，建议在拆章时补上兑现关联。
+                        Este artículo a canjear aún no se ha vinculado a ningún capítulo específico de este volumen. Se recomienda crear el enlace de canje al abrir el capítulo.
                       </div>
                     )}
                   </div>
                 ))
               ) : (
                 <div className="rounded-lg border border-dashed border-border/70 bg-background p-3 text-xs text-muted-foreground">
-                  当前卷还没有填写待兑现事项。
+                  El volumen actual no se ha llenado con artículos para canjear.
                 </div>
               )}
             </div>
@@ -125,11 +125,11 @@ export default function VolumePayoffOverviewCard(props: VolumePayoffOverviewCard
 
           <div className="rounded-xl border border-border/70 bg-muted/20 p-4">
             <div className="flex items-center justify-between gap-2">
-              <div className="font-medium text-foreground">本卷章节兑现安排</div>
+              <div className="font-medium text-foreground">Disposiciones para el canje de capítulos de este volumen.</div>
               <Badge variant="outline">{chapterPayoffGroups.length}</Badge>
             </div>
             <div className="mt-1 text-xs text-muted-foreground">
-              这里看的是当前卷已经挂到章节里的兑现关联，用来检查拆章是否真正落到了章节级执行。
+              Lo que vemos aquí es la asociación de canje de que el volumen actual se ha vinculado al capítulo, que se utiliza para verificar si la división del capítulo realmente se ha ejecutado a nivel de capítulo.
             </div>
             <div className="mt-3 space-y-2 text-sm">
               {chapterPayoffGroups.length > 0 ? (
@@ -139,7 +139,7 @@ export default function VolumePayoffOverviewCard(props: VolumePayoffOverviewCard
                     className="rounded-lg border border-border/70 bg-background p-3"
                   >
                     <div className="font-medium text-foreground">
-                      第{chapter.chapterOrder}章 {chapter.chapterTitle}
+                      Cap.{chapter.chapterOrder}capitulo {chapter.chapterTitle}
                     </div>
                     <div className="mt-2 flex flex-wrap gap-2 text-xs text-muted-foreground">
                       {chapter.refs.map((ref) => (
@@ -155,7 +155,7 @@ export default function VolumePayoffOverviewCard(props: VolumePayoffOverviewCard
                 ))
               ) : (
                 <div className="rounded-lg border border-dashed border-border/70 bg-background p-3 text-xs text-muted-foreground">
-                  当前卷章节还没有填写兑现关联，后续拆章时会更难核对哪些铺垫该回收。
+                  La relación de canje no se ha completado para los capítulos del volumen actual. Será más difícil comprobar qué presagios deben reciclarse cuando se abra el capítulo más tarde.
                 </div>
               )}
             </div>

@@ -56,8 +56,8 @@ export interface DesktopDataImportResult {
 const DEFAULT_BOOTSTRAP_SNAPSHOT: DesktopBootstrapSnapshot = {
   state: "launching",
   stage: "launching",
-  title: "正在启动桌面工作区",
-  detail: "正在准备桌面本地运行时。",
+  title: "Iniciar el espacio de trabajo del escritorio",
+  detail: "Preparando el tiempo de ejecución local del escritorio.",
   logDir: "",
   logFile: "",
   updatedAt: "",
@@ -66,7 +66,7 @@ const DEFAULT_BOOTSTRAP_SNAPSHOT: DesktopBootstrapSnapshot = {
 
 const DEFAULT_UPDATER_SNAPSHOT: DesktopUpdaterSnapshot = {
   status: "disabled",
-  message: "当前运行环境无法使用桌面版更新。",
+  message: "El entorno operativo actual no puede utilizar actualizaciones de la versión de escritorio.",
   currentVersion: "0.0.0",
   availableVersion: null,
   progressPercent: null,

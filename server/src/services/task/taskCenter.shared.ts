@@ -28,57 +28,57 @@ export const STATUS_RANK: Record<TaskStatus, number> = {
 };
 
 export const BOOK_ANALYSIS_STEPS = [
-  { key: "queued", label: "排队" },
-  { key: "preparing_notes", label: "提取笔记" },
-  { key: "generating_sections", label: "生成章节" },
-  { key: "finalizing", label: "收尾" },
+  { key: "queued", label: "cola" },
+  { key: "preparing_notes", label: "Extraer notas" },
+  { key: "generating_sections", label: "Generar capítulos" },
+  { key: "finalizing", label: "final" },
 ] as const;
 
 export const NOVEL_PIPELINE_STEPS = [
-  { key: "queued", label: "排队" },
-  { key: "generating_chapters", label: "生成章节" },
-  { key: "reviewing", label: "审校" },
-  { key: "repairing", label: "修复" },
-  { key: "finalizing", label: "收尾" },
+  { key: "queued", label: "cola" },
+  { key: "generating_chapters", label: "Generar capítulos" },
+  { key: "reviewing", label: "Revisar" },
+  { key: "repairing", label: "reparar" },
+  { key: "finalizing", label: "final" },
 ] as const;
 
 export const KNOWLEDGE_DOCUMENT_STEPS = [
-  { key: "queued", label: "排队" },
-  { key: "loading_source", label: "读取文档" },
-  { key: "chunking", label: "切分分块" },
-  { key: "embedding", label: "生成向量" },
-  { key: "ensuring_collection", label: "校验集合" },
-  { key: "deleting_existing", label: "清理旧索引" },
-  { key: "upserting_vectors", label: "写入向量库" },
-  { key: "writing_metadata", label: "写入元数据" },
-  { key: "completed", label: "完成" },
+  { key: "queued", label: "cola" },
+  { key: "loading_source", label: "Leer documento" },
+  { key: "chunking", label: "Cortar en trozos" },
+  { key: "embedding", label: "Generar vector" },
+  { key: "ensuring_collection", label: "conjunto de verificación" },
+  { key: "deleting_existing", label: "Limpiar índices antiguos" },
+  { key: "upserting_vectors", label: "Escribir en la biblioteca de vectores" },
+  { key: "writing_metadata", label: "Escribir metadatos" },
+  { key: "completed", label: "Finalizar" },
 ] as const;
 
 export const IMAGE_TASK_STEPS = [
-  { key: "queued", label: "排队" },
-  { key: "submitting", label: "提交请求" },
-  { key: "generating", label: "生成图片" },
-  { key: "saving_assets", label: "保存素材" },
-  { key: "finalizing", label: "收尾" },
+  { key: "queued", label: "cola" },
+  { key: "submitting", label: "Enviar una solicitud" },
+  { key: "generating", label: "Generar imágenes" },
+  { key: "saving_assets", label: "Guardar metraje" },
+  { key: "finalizing", label: "final" },
 ] as const;
 
 export const STYLE_EXTRACTION_TASK_STEPS = [
-  { key: "queued", label: "排队" },
-  { key: "extracting_features", label: "提取写法特征" },
-  { key: "building_profile", label: "整理保留策略" },
-  { key: "saving_profile", label: "自动保存写法" },
-  { key: "finalizing", label: "收尾" },
+  { key: "queued", label: "cola" },
+  { key: "extracting_features", label: "Extraer funciones de escritura" },
+  { key: "building_profile", label: "Organizar políticas de retención" },
+  { key: "saving_profile", label: "Guardar automáticamente el método de escritura" },
+  { key: "finalizing", label: "final" },
 ] as const;
 
 export const NOVEL_WORKFLOW_STAGE_STEPS = [
-  { key: "project_setup", label: "项目设定" },
-  { key: "auto_director", label: "自动导演" },
-  { key: "story_macro", label: "故事宏观规划" },
-  { key: "character_setup", label: "角色准备" },
-  { key: "volume_strategy", label: "卷战略 / 卷骨架" },
-  { key: "structured_outline", label: "节奏 / 拆章" },
-  { key: "chapter_execution", label: "章节执行" },
-  { key: "quality_repair", label: "质量修复" },
+  { key: "project_setup", label: "Configuración del proyecto" },
+  { key: "auto_director", label: "Director automático" },
+  { key: "story_macro", label: "gran plan de historia" },
+  { key: "character_setup", label: "Preparación de personajes" },
+  { key: "volume_strategy", label: "Estrategia de volumen/esqueleto de volumen" },
+  { key: "structured_outline", label: "Ritmo / Capítulo de ruptura" },
+  { key: "chapter_execution", label: "Ejecución del capítulo" },
+  { key: "quality_repair", label: "arreglo de calidad" },
 ] as const;
 
 export function normalizeKeyword(value: string | undefined): string | undefined {

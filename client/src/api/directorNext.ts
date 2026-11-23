@@ -44,7 +44,7 @@ export async function annotateVolumeSummaries(novelId: string, volumeIds: string
   const { data } = await apiClient.post<ApiResponse<import("@ai-novel/shared/types/director/volumeEmphasis").AnchoredVolumeEmphasis[]>>(
     `/director-next/novels/${encodeURIComponent(novelId)}/volume-summary-emphasis`, {volumeIds}, {errorPresentation:"inline"},
   );
-  if (!data.data) throw new Error(data.error || "卷纲重点标注不可用。");
+  if (!data.data) throw new Error(data.error || "Los aspectos destacados del esquema no están disponibles.");
   return data.data;
 }
 
@@ -136,8 +136,8 @@ export async function getDirectorSummary(novelId: string): Promise<ApiResponse<D
   } catch (error) {
     const httpError = error as ApiHttpError;
     const details = httpError.details as { error?: string } | undefined;
-    if (httpError.status === 404 && details?.error === "这本小说没有创作记录。") {
-      return { success: true, data: null, message: "当前没有进行中的创作。" };
+    if (httpError.status === 404 && details?.error === "No hay ningún registro de escritura para esta novela.") {
+      return { success: true, data: null, message: "Actualmente no hay creaciones en progreso." };
     }
     throw error;
   }

@@ -83,7 +83,7 @@ function buildAutoCastMemberRosterText(parsed: CharacterCastAutoMembersResponseP
       `${index + 1}. ${member.name}`,
       `castRole=${member.castRole}`,
       `role=${member.role}`,
-      `relationToProtagonist=${member.relationToProtagonist || "未写"}`,
+      `relationToProtagonist=${member.relationToProtagonist || "No escrito"}`,
       `storyFunction=${member.storyFunction}`,
       member.identityLabel ? `identity=${member.identityLabel}` : "",
       member.factionLabel ? `faction=${member.factionLabel}` : "",
@@ -185,7 +185,7 @@ async function loadCastGenerationContext(
   const contextBlocks = buildCharacterCastContextBlocks({
     projectTitle: novel.title,
     estimatedChapterCount: novel.estimatedChapterCount,
-    storyInput: storyInput || "暂无直接故事输入，请结合书级约束补齐真实可入戏角色。",
+    storyInput: storyInput || "Aún no hay información directa sobre la historia; combine las limitaciones del nivel del libro para completar los personajes jugables reales.",
     genreName: novel.genre?.name ?? null,
     storyModeBlock,
     styleTone: novel.styleTone ?? null,

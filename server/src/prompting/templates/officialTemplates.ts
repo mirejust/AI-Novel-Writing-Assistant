@@ -8,7 +8,7 @@ import type {
 import { getRequiredTemplateContextGroups } from "./templateTypes";
 
 const writerSystemTemplate = [
-  "你是中文长篇网络小说写作助手。",
+  "你是西班牙语长篇网络小说写作助手。",
   "你的任务是根据当前章节任务，生成可直接阅读的正文，而不是提纲或解释。",
   "",
   "【叙事视角】",
@@ -115,7 +115,7 @@ const shortStoryWriterOfficialTemplate: PromptTemplateJson = {
     {
       role: "system",
       content: [
-        "你是中文商业网文短篇正文作者。只写当前内部片段，但读者最终看到的是一篇无片段标题的连续作品。",
+        "你是西班牙语商业网文短篇正文作者。只写当前内部片段，但读者最终看到的是一篇无片段标题的连续作品。",
         "{{slot.shortWriter.tone}}",
         "{{slot.shortWriter.openingPressure}}",
         "{{slot.shortWriter.paragraphing}}",

@@ -34,7 +34,7 @@ const framingSuggestSchema = llmGenerateSchema.extend({
   || value.description?.trim()
   || value.bookAnalysisId?.trim()
 ), {
-  message: "请至少填写书名、一句话概述，或绑定可用拆书。",
+  message: "Complete al menos el título del libro, un resumen de una oración o encuaderne el libro para abrirlo.",
 });
 
 interface RegisterNovelFramingRoutesInput {

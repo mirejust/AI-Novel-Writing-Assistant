@@ -30,9 +30,9 @@ export class ComicEpisodePlanService {
       where: { id: projectId },
       include: { sourceBundle: true },
     });
-    if (!project) throw new Error(`未找到漫画项目：${projectId}`);
+    if (!project) throw new Error(`Elemento cómico no encontrado:${projectId}`);
     if (!project.sourceBundle) {
-      throw new Error("请先导入内容源（importSourceBundle）再生成分话大纲。");
+      throw new Error("Primero importe la fuente del contenido (importSourceBundle) para regenerar el esquema de la conversación.");
     }
 
     const bundle = JSON.parse(project.sourceBundle.bundleJson);
@@ -51,8 +51,8 @@ export class ComicEpisodePlanService {
 
     const beatsDigest = beats
       .slice(0, 60)
-      .map((beat) => `${beat.order}：${beat.summary}`)
-      .join("\n") || "（无结构化节拍，按梗概自由分话）";
+      .map((beat) => `${beat.order}:${beat.summary}`)
+      .join("\n") || "(Sin ritmo estructurado, libre de dividir las palabras según el esquema)";
 
     // 付费卡点（有赛道策略时才计算）
     const paywallOrders: number[] = [];
@@ -70,7 +70,7 @@ export class ComicEpisodePlanService {
 
     const hookLibrary = rhythmEngine
       .listHooks()
-      .map((hook) => `${hook.id}：${hook.label} — ${hook.description}`)
+      .map((hook) => `${hook.id}:${hook.label} — ${hook.description}`)
       .join("\n");
 
     const result = await runStructuredPrompt({

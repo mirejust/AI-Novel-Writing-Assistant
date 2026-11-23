@@ -19,7 +19,7 @@ import {
 import type { DirectorTakeoverResolvedPlan } from "./novelDirectorTakeover";
 import type { DirectorWorkflowSeedPayload } from "./novelDirectorHelpers";
 
-export const CONTINUE_EXISTING_REPLACEMENT_REASON = "由本任务替代";
+export const CONTINUE_EXISTING_REPLACEMENT_REASON = "Reemplazado por esta tarea";
 
 interface ChapterOrderRange {
   startOrder: number;
@@ -180,7 +180,7 @@ function scopesOverlap(
 }
 
 function buildReplacementSummary(replacementTaskId: string): string {
-  return `${CONTINUE_EXISTING_REPLACEMENT_REASON}：${replacementTaskId}`;
+  return `${CONTINUE_EXISTING_REPLACEMENT_REASON}:${replacementTaskId}`;
 }
 
 function resolveVolumeRangeFromWorkspace(
@@ -261,7 +261,7 @@ export async function cancelContinueExistingReplacedRuns(input: {
       finishedAt: now,
       heartbeatAt: now,
       lastError: replacementSummary,
-      currentItemLabel: "已由新的自动导演任务接管",
+      currentItemLabel: "Asumido por una nueva tarea de director automático",
     });
   }));
 

@@ -288,7 +288,7 @@ export const novelExamples: Record<string, unknown> = {
   "novel.chapter_editor.rewrite_candidates@v3": {
     operationLabel: "〈操作名称〉",
     scope: "chapter",
-    selectedText: "〈选中文本〉",
+    selectedText: "〈选西班牙语本〉",
     beforeParagraphs: ["〈修改前段落〉"],
     afterParagraphs: ["〈修改后段落〉"],
     macroContextSummary: "〈宏观设定摘要〉",
@@ -319,7 +319,7 @@ export const novelExamples: Record<string, unknown> = {
     worldContext: "〈世界背景〉",
     before: "〈修改前〉",
     after: "〈修改后〉",
-    selectedText: "〈选中文本〉",
+    selectedText: "〈选西班牙语本〉",
   },
   "novel.draft_optimize.full@v1": {
     target: "outline",

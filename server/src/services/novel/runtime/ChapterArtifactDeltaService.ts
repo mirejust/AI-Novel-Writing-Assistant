@@ -211,9 +211,9 @@ function buildKnowledgeBoundaryLine(state: ChapterArtifactKnowledgeState): strin
     return null;
   }
   return [
-    "【信息边界】",
-    knownFacts.length > 0 ? `已知：${knownFacts.join("；")}` : "已知：无新增",
-    hiddenFacts.length > 0 ? `未知/不应超前知情：${hiddenFacts.join("；")}` : "未知/不应超前知情：无",
+    "[Límite de información]",
+    knownFacts.length > 0 ? `Conocido:${knownFacts.join(";")}` : "Conocido: nada nuevo",
+    hiddenFacts.length > 0 ? `Desconocido/no debe saberse de antemano:${hiddenFacts.join(";")}` : "Desconocido/no debe saberse de antemano: Ninguno",
   ].join("");
 }
 
@@ -242,12 +242,12 @@ function normalizeLedgerKey(title: string, fallback: string): string {
 function stringifyActiveCharacterDialogueInfluenceText(items: ActiveCharacterDialogueInfluence[]): string {
   return items.slice(0, 8).map((item) => [
     `- influenceId=${item.id}`,
-    `角色=${item.characterName}`,
-    `对话沉淀=${item.summary}`,
-    `窗口=${item.targetStartChapterOrder}-${item.targetEndChapterOrder}`,
-    `行动倾向=${item.behaviorGuidance}`,
-    item.emotionalGuidance ? `情绪倾向=${item.emotionalGuidance}` : "",
-    item.relationTension ? `关系张力=${item.relationTension}` : "",
+    `rol=${item.characterName}`,
+    `Precipitación del diálogo=${item.summary}`,
+    `ventana =${item.targetStartChapterOrder}-${item.targetEndChapterOrder}`,
+    `tendencia de acción =${item.behaviorGuidance}`,
+    item.emotionalGuidance ? `Tendencias emocionales =${item.emotionalGuidance}` : "",
+    item.relationTension ? `tensión en la relación =${item.relationTension}` : "",
   ].filter(Boolean).join(" | ")).join("\n");
 }
 
@@ -270,11 +270,11 @@ function stringifyPreviousState(snapshot: Awaited<ReturnType<typeof stateService
     .map((item) => `${item.title}(${item.status})`)
     .slice(0, 6);
   return [
-    snapshot.summary ? `摘要：${snapshot.summary}` : "",
-    characterLines.length > 0 ? `角色：\n${characterLines.map((item) => `- ${item}`).join("\n")}` : "",
-    relationLines.length > 0 ? `关系：\n${relationLines.map((item) => `- ${item}`).join("\n")}` : "",
-    infoLines.length > 0 ? `信息：\n${infoLines.map((item) => `- ${item}`).join("\n")}` : "",
-    foreshadowLines.length > 0 ? `伏笔：\n${foreshadowLines.map((item) => `- ${item}`).join("\n")}` : "",
+    snapshot.summary ? `resumen:${snapshot.summary}` : "",
+    characterLines.length > 0 ? `Rol: \\n${characterLines.map((item) => `- ${item}`).join("\n")}` : "",
+    relationLines.length > 0 ? `Relación: \\n${relationLines.map((item) => `- ${item}`).join("\n")}` : "",
+    infoLines.length > 0 ? `Información: \\n${infoLines.map((item) => `- ${item}`).join("\n")}` : "",
+    foreshadowLines.length > 0 ? `Presagio: \\n${foreshadowLines.map((item) => `- ${item}`).join("\n")}` : "",
   ].filter(Boolean).join("\n\n");
 }
 
@@ -297,7 +297,7 @@ export class ChapterArtifactDeltaService {
   async extractChapterArtifacts(input: ChapterArtifactDeltaSyncInput): Promise<ChapterArtifactExtractionResult> {
     const content = compactText(input.content);
     if (!content) {
-      throw new Error("章节正文为空，无法提取资产 delta。");
+      throw new Error("El cuerpo del capítulo está vacío, no se puede extraer el delta de activos.");
     }
 
     const [novel, chapter, rawCharacters, existingResources, payoffRows] = await Promise.all([
@@ -343,7 +343,7 @@ export class ChapterArtifactDeltaService {
     ]);
 
     if (!novel || !chapter) {
-      throw new Error("小说或章节不存在，无法提取资产 delta。");
+      throw new Error("La novela o capítulo no existe y no se puede extraer el delta de activos.");
     }
     const adjustments = input.artifactSyncPolicy === "director_v2"
       ? await readChapterCharacterAdjustments(prisma, input.novelId, chapter.order) : null;
@@ -368,7 +368,7 @@ export class ChapterArtifactDeltaService {
         novelTitle: novel.title,
         chapterOrder: chapter.order,
         chapterTitle: chapter.title,
-        chapterGoal: chapter.taskSheet?.trim() || chapter.expectation?.trim() || "无明确章节目标",
+        chapterGoal: chapter.taskSheet?.trim() || chapter.expectation?.trim() || "No hay objetivos claros del capítulo",
         ...ledgerContext,
         locationTrackingEnabled: Boolean(locationStates),
         characterCandidateResolutionEnabled: input.artifactSyncPolicy === "director_v2" && !!input.directorRunId,
@@ -406,12 +406,12 @@ export class ChapterArtifactDeltaService {
     const sourceStage = input.sourceStage ?? ARTIFACT_DELTA_SOURCE_STAGE;
     const sourceQuality = normalizeContentProvenance(input.contentProvenance);
     if (input.consumer === "character_appearances") {
-      if (input.artifactSyncPolicy !== "director_v2") throw new Error("角色出场回填需要导演 V2 授权。");
+      if (input.artifactSyncPolicy !== "director_v2") throw new Error("El reabastecimiento de apariciones de personajes requiere la autorización del director V2.");
       await characterAppearanceService.applyFinalChapter({...input, appearances: input.output.characterAppearances});
       return {};
     }
     if (input.consumer === "character_locations") {
-      if (input.artifactSyncPolicy !== "director_v2") throw new Error("角色位置回填需要导演 V2 授权。");
+      if (input.artifactSyncPolicy !== "director_v2") throw new Error("El reabastecimiento de puestos de personajes requiere autorización de Director V2.");
       await characterLocationService.applyFinalChapter({...input, deltas: input.output.characterLocationDeltas});
       return {};
     }
@@ -597,7 +597,7 @@ export class ChapterArtifactDeltaService {
       select: { id: true, order: true, title: true, content: true },
     });
     if (!chapter || buildContentHash(chapter.content ?? "") !== expectedHash) {
-      throw new ChapterArtifactContentVersionError("章节正文版本已变化，已拒绝应用过期资产结果。");
+      throw new ChapterArtifactContentVersionError("Se modificó la versión del texto del capítulo y se rechazó la aplicación de resultados de activos vencidos.");
     }
     return chapter;
   }
@@ -940,7 +940,7 @@ export class ChapterArtifactDeltaService {
           : [{
             kind: "chapter_payoff_ref" as const,
             refId: null,
-            refLabel: `第${input.chapterOrder}章《${input.chapterTitle}》`,
+            refLabel: `Cap.${input.chapterOrder}capítulo"${input.chapterTitle}»`,
             chapterId: input.chapterId,
             chapterOrder: input.chapterOrder,
             volumeId: null,
@@ -1225,7 +1225,7 @@ export class ChapterArtifactDeltaService {
       select: { id: true },
     });
     if (!current) {
-      throw new ChapterArtifactContentVersionError("章节正文版本已变化，已拒绝写入过期章节资产。");
+      throw new ChapterArtifactContentVersionError("La versión del texto del capítulo ha cambiado y se ha rechazado la escritura de los contenidos del capítulo vencidos.");
     }
   }
 

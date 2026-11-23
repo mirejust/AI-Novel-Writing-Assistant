@@ -44,115 +44,115 @@ export const INTENT_NAMES = [
 const WORKFLOW_RECIPES = [
   {
     intent: "produce_novel",
-    when: "用户要求创建并启动整本生成，或继续/完成当前小说的整本生产。",
+    when: "El usuario solicita crear e iniciar la producción en volumen completo, o continuar/completar la producción en volumen completo de la novela actual.",
     examples: [
-      "创建一本20章小说《抗日奇侠传》，并开始整本生成",
-      "继续生成当前小说",
-      "完成这本小说",
-      "把这本书写完",
+      "Crea una novela de 20 capítulos \"La leyenda de los héroes antijaponeses\" y comienza a generar el libro completo.",
+      "Continuar generando la novela actual.",
+      "terminar esta novela",
+      "terminar este libro",
     ],
   },
   {
     intent: "query_novel_production_status",
-    when: "用户查看已绑定小说的整体情况，或询问整本生成卡在哪一步、是否启动、资产是否准备完成。",
+    when: "El usuario puede ver la situación general de la novela encuadernada o preguntar en qué paso está estancada toda la generación del libro, si se ha iniciado y si los activos están listos para completarse.",
     examples: [
-      "查看一下这本小说",
-      "这本书整体什么情况",
-      "整本生成到哪一步了",
-      "为什么整本生成没有启动",
-      "当前资产准备完成了吗",
+      "Mira esta novela",
+      "¿Cuál es la situación general de este libro?",
+      "Estado de la generación del libro",
+      "¿Por qué no se inicia toda la compilación?",
+      "¿Se han completado los preparativos de los activos actuales?",
     ],
   },
   {
     intent: "query_director_status",
-    when: "用户在问自动导演运行到哪、是否等待确认、当前节点或最近事件。",
+    when: "El usuario pregunta dónde se está ejecutando AutoDirector, si debe esperar la confirmación, el nodo actual o el evento más reciente.",
     examples: [
-      "自动导演现在到哪一步了",
-      "当前导演任务是不是卡住了",
-      "这条自动导演任务状态如何",
+      "¿Dónde está ahora el director automático?",
+      "¿Está estancada la tarea del director actual?",
+      "¿Cuál es el estado de esta tarea automática del director?",
     ],
   },
   {
     intent: "explain_director_next_action",
-    when: "用户询问当前小说下一步该做什么、为什么这样推进、是否能继续自动导演。",
+    when: "El usuario pregunta qué hacer a continuación en la novela actual, por qué avanza de esta manera y si puede continuar dirigiéndose automáticamente.",
     examples: [
-      "这本书现在该做什么",
-      "下一步怎么推进",
-      "自动导演建议我接下来做什么",
+      "¿Qué hacer ahora con este libro?",
+      "Cómo proceder a continuación",
+      "AutoDirector sugiere lo que debo hacer a continuación",
     ],
   },
   {
     intent: "evaluate_manual_edit_impact",
-    when: "用户说自己改了正文、动机、伏笔或设定，并希望判断后续影响。",
+    when: "Los usuarios dicen que han cambiado el texto, la motivación, el presagio o la configuración y quieren determinar el impacto posterior.",
     examples: [
-      "我改了第三章，看看影响什么",
-      "我改了主角动机，后续要不要重算",
-      "我删了一个伏笔，会影响哪些章节",
+      "Cambié el Capítulo 3 para ver cuál es el impacto.",
+      "Cambié la motivación del protagonista, ¿tengo que volver a calcularla más tarde?",
+      "Eliminé un presagio, ¿qué capítulos se verán afectados?",
     ],
   },
   {
     intent: "run_director_next_step",
-    when: "用户明确要求创作中枢继续自动导演下一步。",
+    when: "El usuario solicita explícitamente al centro creativo que continúe dirigiendo automáticamente el siguiente paso.",
     examples: [
-      "继续自动导演下一步",
-      "让导演继续推进一步",
+      "Continuar para dirigir automáticamente el siguiente paso.",
+      "Que el director siga avanzando.",
     ],
   },
   {
     intent: "run_director_until_gate",
-    when: "用户明确要求自动导演持续推进到下一个检查点或确认点。",
+    when: "El usuario solicita explícitamente al AutoDirector que continúe avanzando hasta el siguiente punto de control o punto de confirmación.",
     examples: [
-      "继续自动导演到检查点",
-      "让导演推进到需要我确认的地方",
+      "Continuar con la dirección automática hasta el punto de control",
+      "Deja que el director avance al lugar donde necesito confirmar.",
     ],
   },
   {
     intent: "switch_director_policy",
-    when: "用户明确要求调整自动导演推进方式或自动化强度。",
+    when: "El usuario solicitó explícitamente ajustes en el avance de AutoDirector o la intensidad de la automatización.",
     examples: [
-      "把自动导演切到只给建议",
-      "改成推进到检查点",
-      "允许安全范围自动推进",
+      "Cambiar el director automático para dar solo sugerencias",
+      "Cambiar para avanzar al punto de control",
+      "Permitir que los límites seguros avancen automáticamente",
     ],
   },
   {
     intent: "query_chapter_content",
-    when: "用户要查看某章或某段章节范围的正文/摘要。",
+    when: "El usuario desea ver el texto/resumen de un determinado capítulo o de un determinado rango de capítulos.",
     examples: [
-      "返回给我第1章的内容",
-      "前两章都写了什么",
+      "Devuélveme el contenido del Capítulo 1.",
+      "¿Qué se escribió en los dos primeros capítulos?",
     ],
   },
   {
     intent: "inspect_failure_reason",
-    when: "用户在问生成失败、章节失败或阻塞原因。",
+    when: "Los usuarios preguntan sobre los motivos del error de generación, del capítulo o del bloqueo.",
     examples: [
-      "第三章为什么失败",
-      "生成第三章失败的原因是什么",
+      "Capítulo 3 ¿Por qué falló?",
+      "¿Cuál es el motivo por el que no se pudo generar el Capítulo 3?",
     ],
   },
   {
     intent: "write_chapter",
-    when: "用户要求推进某章写作。",
+    when: "Las solicitudes de los usuarios adelantan la redacción de un determinado capítulo.",
     examples: [
-      "写第三章",
-      "继续写第5章",
+      "Escribe el capítulo 3.",
+      "Continuar escribiendo el Capítulo 5",
     ],
   },
   {
     intent: "rewrite_chapter",
-    when: "用户明确要求重写、改写某章。",
+    when: "El usuario solicitó explícitamente que se reescribiera o reescribiera un determinado capítulo.",
     examples: [
-      "重写第三章",
-      "把第6章改写一版",
+      "Reescribir el capítulo 3",
+      "Reescribir el capítulo 6",
     ],
   },
   {
     intent: "query_progress",
-    when: "用户在问当前已经写完几章、进度到哪。",
+    when: "El usuario pregunta cuántos capítulos se han escrito y dónde está el progreso.",
     examples: [
-      "当前写完了几章",
-      "现在进度到哪了",
+      "¿Cuántos capítulos se han escrito hasta ahora?",
+      "¿Dónde está el progreso ahora?",
     ],
   },
 ];
@@ -164,8 +164,8 @@ export const intentSchema: z.ZodType<StructuredIntent> = z.object({
   requiresNovelContext: z.boolean().default(false),
   interactionMode: z.enum(["co_create", "review", "query", "plan", "execute"]).default("execute"),
   assistantResponse: z.enum(["ask_followup", "offer_options", "explain", "execute"]).default("explain"),
-  shouldAskFollowup: z.boolean().default(false).describe("仅当缺少完成请求所必需的信息时追问；已绑定小说的笼统总览查询可直接查询。"),
-  missingInfo: z.array(z.string().trim().min(1)).max(4).default([]).describe("必须由用户补充的具体缺失信息；当前小说总览不要求用户选择查看维度。"),
+  shouldAskFollowup: z.boolean().default(false).describe("Se le pregunta solo si falta la información necesaria para completar la solicitud; Las consultas de descripción general de novelas encuadernadas se pueden consultar directamente."),
+  missingInfo: z.array(z.string().trim().min(1)).max(4).default([]).describe("Información faltante específica que debe ser completada por el usuario; La descripción general de la novela actual no requiere que el usuario seleccione una dimensión de visualización."),
   novelTitle: z.string().trim().min(1).optional(),
   worldName: z.string().trim().min(1).optional(),
   description: z.string().trim().min(1).optional(),
@@ -240,23 +240,23 @@ export function summarizeIntentValidationFailure(
       const rawIntent = typeof payload.intent === "string" && payload.intent.trim()
         ? payload.intent.trim()
         : "unknown";
-      return `intent 不受支持: ${rawIntent}`;
+      return `La intención no es compatible: ${rawIntent}`;
     }
     if (issue.code === "invalid_type") {
-      return `字段 ${path} 类型不正确`;
+      return `Campo ${path} tipo incorrecto`;
     }
     if (issue.code === "invalid_value") {
-      return `字段 ${path} 的值不在允许范围内`;
+      return `Campo ${path} El valor no está dentro del rango permitido.`;
     }
     if (issue.code === "too_small") {
-      return `字段 ${path} 缺少有效内容`;
+      return `Campo ${path} Falta contenido válido`;
     }
     if (issue.code === "too_big") {
-      return `字段 ${path} 超出允许范围`;
+      return `Campo ${path} más allá del rango permitido`;
     }
-    return `字段 ${path} 不符合要求`;
+    return `Campo ${path} No cumple con los requisitos`;
   });
-  return `LLM 返回的意图 JSON 无效: ${details.join("；")}`;
+  return `El intent JSON devuelto por LLM no es válido: ${details.join(";")}`;
 }
 
 export function buildPlannerIntentPromptParts(input: PlannerInput): { systemPrompt: string; userPrompt: string } {
@@ -264,7 +264,7 @@ export function buildPlannerIntentPromptParts(input: PlannerInput): { systemProm
   const recentMessages = input.messages.slice(-12).map((item) => `${item.role}: ${item.content}`).join("\n");
   const readonly = input.profile === "creative_hub_readonly";
   const semanticCatalog = buildSemanticCatalog();
-  const workflowRecipes = readonly ? "只提供查询、诊断、解释和导航，不提供生产 workflow。" : buildWorkflowRecipeCatalog();
+  const workflowRecipes = readonly ? "Solo proporciona consultas, diagnósticos, explicaciones y navegación, pero no proporciona un flujo de trabajo de producción." : buildWorkflowRecipeCatalog();
   const toolCatalog = readonly
     ? listAgentToolDefinitions()
       .filter((item) => ["read", "inspect"].includes(item.category) && !["preview_pipeline_run", "diff_chapter_patch"].includes(item.name))
@@ -275,55 +275,55 @@ export function buildPlannerIntentPromptParts(input: PlannerInput): { systemProm
   return {
     systemPrompt: [
       readonly
-        ? "当前是创作中枢只读模式：只能查询小说状态、诊断问题、查看执行记录、解释下一步并推荐正式入口。不得创建、生成、写作、保存、修改、恢复、重试、取消或启动任何任务。"
-        : "创作中枢默认是协作式创作搭档，不是命令路由器。",
-      "你必须在 JSON 中显式返回 interactionMode、assistantResponse、shouldAskFollowup、missingInfo。",
-      "如果用户还在探索方向、比较方案、表达不满、寻求诊断，优先把 interactionMode 设为 co_create 或 review；仅当缺少完成请求所必需的信息时把 shouldAskFollowup 设为 true。",
-      "只有当用户明确要求立即创建、绑定、保存、启动任务或直接写内容时，才把 interactionMode 设为 execute。",
-      "当下一步更适合追问澄清时，assistantResponse 用 ask_followup；当下一步更适合给方案备选时，assistantResponse 用 offer_options。",
-      "如果用户只是寒暄、打招呼、简单问候，且还没有进入具体创作任务，intent 应优先使用 social_opening，而不是 general_chat。",
-      "你是小说创作 Agent 的意图解析器，只能返回一个 JSON 对象。",
-      "你的任务不是直接规划所有工具，而是先识别用户真实意图和章节槽位。",
-      `intent 必须是以下枚举之一：${(readonly ? INTENT_NAMES.filter((intent) => !["create_novel", "select_novel_workspace", "bind_world_to_novel", "unbind_world_from_novel", "produce_novel", "run_director_next_step", "run_director_until_gate", "switch_director_policy", "write_chapter", "rewrite_chapter", "save_chapter_draft", "start_pipeline", "ideate_novel_setup"].includes(intent)) : INTENT_NAMES).join(", ")}。`,
+        ? "Actualmente, el centro de creación está en modo de solo lectura: solo puede consultar el estado de la novela, diagnosticar problemas, ver registros de ejecución, explicar el siguiente paso y recomendar la entrada oficial. No se pueden crear, generar, escribir, guardar, modificar, restaurar, reintentar, cancelar o iniciar tareas."
+        : "El centro de creación es un socio de creación colaborativo de forma predeterminada, no un enrutador de comandos.",
+      "Debe devolver el modo de interacción, la respuesta del asistente, la respuesta del asistente y la información faltante de forma explícita en JSON.",
+      "Si el usuario todavía está explorando direcciones, comparando opciones, expresando insatisfacción y buscando un diagnóstico, configure el modo de interacción para co_crear o revisar primero; establezca mustAskFollowup en verdadero solo cuando falte la información necesaria para completar la solicitud.",
+      "Configure el modo de interacción para que se ejecute solo cuando el usuario solicite explícitamente crear, vincular, guardar, iniciar una tarea o escribir contenido directamente de inmediato.",
+      "Cuando el siguiente paso es más adecuado para pedir una aclaración, AssistantResponse utiliza Ask_followup; cuando el siguiente paso es más adecuado para dar opciones, asistenteResponse usa oferta_opciones.",
+      "Si el usuario simplemente está chateando, saludando o simplemente saludando y aún no ha ingresado a una tarea creativa específica, la intención debe dar prioridad a social_opening en lugar de general_chat.",
+      "Usted es el analizador de intenciones del agente de creación de novelas y solo puede devolver un objeto JSON.",
+      "Su tarea no es planificar todas las herramientas directamente, sino identificar primero las intenciones reales del usuario y los espacios para capítulos.",
+      `La intención debe ser una de las siguientes enumeraciones:${(readonly ? INTENT_NAMES.filter((intent) => !["create_novel", "select_novel_workspace", "bind_world_to_novel", "unbind_world_from_novel", "produce_novel", "run_director_next_step", "run_director_until_gate", "switch_director_policy", "write_chapter", "rewrite_chapter", "save_chapter_draft", "start_pipeline", "ideate_novel_setup"].includes(intent)) : INTENT_NAMES).join(", ")}.`,
       ...(readonly ? [
-        "用户要求创建、生成、写作、修改、保存、启动、继续、恢复、重试、取消或审批时，统一返回 workflow_handoff，并在 note 中说明应该进入对应的正式小说工作台、自动导演、章节页面或模型设置；任务中心只用于查询运行记录，不承接操作。",
-        "不要用 preview_pipeline_run 或任何只读工具替代正式执行。",
+        "Cuando el usuario solicita crear, generar, escribir, modificar, guardar, iniciar, continuar, reanudar, reintentar, cancelar o aprobar, el flujo de trabajo_handoff se devolverá uniformemente y una nota indicará que se debe ingresar el correspondiente banco de trabajo novedoso formal, director automático, página de capítulo o configuración del modelo; el centro de tareas solo se utiliza para consultar registros en ejecución y no realiza operaciones.",
+        "No utilice vista previa_pipeline_run ni ninguna herramienta de solo lectura como sustituto de la ejecución formal.",
       ] : []),
-      "优先使用原子意图语义目录识别列表、查询、检索、绑定这类单一意图。",
-      "只有在用户请求明显属于整本生产、章节写作、失败诊断等复合流程时，才使用 workflow intent。",
-      "如果用户表达命中目录中的 aliases 或 phrases，请返回对应的 canonical intent，不要返回别名或 tool 名。",
-      "如果用户明确提到小说标题，可以放入 novelTitle。",
-      "如果用户明确提到世界观名称，可以放入 worldName。",
-      "如果用户是在描述一本完整新书的生产任务，请使用 produce_novel，并尽量提取 description、targetChapterCount、genre、worldType、styleTone、projectMode、pacePreference、narrativePov、emotionIntensity、aiFreedom、defaultChapterLength。",
-      "当上下文模式为 novel 且已绑定 novelId，用户泛泛询问这本小说的情况、想查看作品总览时，使用 query_novel_production_status、requiresNovelContext=true、interactionMode=query、assistantResponse=execute、shouldAskFollowup=false、missingInfo=[]；总览本身是完整查询，不需要用户指定进度或章节等维度。",
-      "结合最近对话理解省略和追问；若用户实际在比较方案、寻求某种诊断或指代不明，应保留对应意图并只追问必需信息，不要因为句中提到当前小说就改成总览。无法确定意图时可返回 unknown 并追问。",
-      "如果用户围绕自动导演询问当前状态、下一步、继续推进、推进到检查点、切换推进方式或手动改文影响，应优先使用对应 director intent，而不是普通任务状态或整本生产状态。",
-      "切换自动导演策略时，如果用户指定只给建议、推进下一步、推进到检查点或安全范围自动推进，应分别填 directorPolicyMode 为 suggest_only、run_next_step、run_until_gate、auto_safe_scope。",
-      "如果用户明确允许覆盖手写内容，mayOverwriteUserContent 可设为 true；否则不要猜测。",
-      "如果用户在问某个关键词、关系模式、题材、设定或世界观原型是否存在于知识库、已索引的拆书资料或世界观中，或者想找类似于 X 的设定或参考案例，优先使用 search_knowledge，不要误判成 general_chat。",
-      "如果用户是在取消或解绑当前小说的世界观，例如不要这个世界观了、取消世界观绑定、先不用某某世界观，优先使用 unbind_world_from_novel，不要误判成 bind_world_to_novel。",
-      "如果用户想基于当前标题、已有设定或当前工作区信息生成几套备选方案，例如给我备选、给几个方向、提供 3 套核心设定或故事承诺或题材风格方案，优先使用 ideate_novel_setup，不要误判成 general_chat。",
-      "projectMode 只能是 ai_led、co_pilot、draft_mode、auto_pipeline；pacePreference 只能是 fast、balanced、slow；narrativePov 只能是 first_person、third_person、mixed。",
-      "emotionIntensity 和 aiFreedom 只能是 low、medium、high；defaultChapterLength 是 500 到 10000 的整数。",
-      "chapterSelectors 可包含：chapterId、orders、range{startOrder,endOrder}、relative{type,count}。",
-      "如果信息不足，不要猜测不存在的 chapterId，可以只返回 orders、range 或 relative。",
-      "如果用户问的是基础角色模板库，应该偏向 list_base_characters；如果用户问的是当前小说中的角色状态，应该偏向 inspect_characters，并要求小说上下文。",
-      "confidence 必须保守评估，范围 0 到 1。",
-      "只返回 JSON，不要解释。",
+      "Priorice el uso de catálogos semánticos de intenciones atómicas para identificar intenciones únicas, como listas, consultas, recuperaciones y enlaces.",
+      "Utilice la intención del flujo de trabajo solo cuando la solicitud del usuario pertenece claramente a un proceso compuesto, como producción completa, redacción de capítulos, diagnóstico de fallas, etc.",
+      "Si la expresión del usuario encuentra alias o frases en el directorio, devuelva la intención canónica correspondiente, no el alias o el nombre de la herramienta.",
+      "Si el usuario mencionó explícitamente el título de la novela, puedes poner novelTitle.",
+      "Si el usuario menciona explícitamente el nombre de la visión del mundo, puede poner worldName.",
+      "Si el usuario describe la tarea de producción de un libro nuevo completo, utilice produce_novel e intente extraer descripción, targetChapterCount, género, worldType, styleTone, projectMode, pacePreference, narrativaPov,emotionIntensity, aiFreedom, defaultChapterLength.",
+      "Cuando el modo contextual es novela y el ID de novela ha sido vinculado, y el usuario generalmente pregunta sobre la novela y quiere ver una descripción general del trabajo, use query_novel_production_status, requireNovelContext=true, interactMode=query, asistenteResponse=execute, deberíaAskFollowup=false, missInfo=[]; la descripción general en sí es una consulta completa y no requiere que el usuario especifique dimensiones como el progreso o los capítulos.",
+      "Comprender omisiones y cuestionamientos basados ​​en conversaciones recientes; Si el usuario realmente está comparando planes, buscando un diagnóstico determinado o la referencia no está clara, se debe conservar la intención correspondiente y solicitar sólo la información necesaria. No lo cambies a una descripción general sólo porque la novela actual se menciona en la oración. Si no se puede determinar la intención, se puede devolver y preguntar lo desconocido.",
+      "Si el usuario pregunta sobre el estado actual, el siguiente paso, continuar con el avance, avanzar al punto de control, cambiar el modo de avance o modificar manualmente el texto alrededor del director automático, primero se debe usar la intención del director correspondiente en lugar del estado normal de la tarea o el estado de producción completo.",
+      "Al cambiar la política de director automático, si el usuario especifica solo dar sugerencias, avanzar al siguiente paso, avanzar al punto de control o avanzar automáticamente en un rango seguro, directorPolicyMode debe completarse como sugerencia_solo, ejecutar_siguiente_paso, ejecutar_until_gate y auto_safe_scope respectivamente.",
+      "mayOverwriteUserContent se puede establecer en verdadero si el usuario permite explícitamente que se sobrescriba la escritura a mano; De lo contrario, no lo adivines.",
+      "Si el usuario pregunta si existe una determinada palabra clave, patrón de relación, tema, escenario o prototipo de visión del mundo en la base de conocimientos, materiales de libros abiertos indexados o visión del mundo, o quiere encontrar un escenario o caso de referencia similar a X, use search_knowledge primero y no juzgue mal general_chat.",
+      "Si el usuario cancela o desvincula la visión del mundo de la novela actual, por ejemplo, no desea esta visión del mundo, cancela la vinculación de la visión del mundo o no usa una determinada visión del mundo primero, use unbind_world_from_novel primero y no lo juzgue erróneamente como bind_world_to_novel.",
+      "Si el usuario desea generar varios conjuntos de alternativas en función del título actual, la configuración existente o la información del espacio de trabajo actual, como darme alternativas, dar varias direcciones, proporcionar 3 conjuntos de configuraciones principales o compromisos de historia o planes de estilo de tema, use ideate_novel_setup primero y no juzgue mal general_chat.",
+      "projectMode solo puede ser ai_led, co_pilot, draft_mode, auto_pipeline; pacePreference sólo puede ser rápido, equilibrado y lento; NarrativaPov solo puede ser primera_persona, tercera_persona o mixta.",
+      "La intensidad de la emoción y la libertad de ai solo pueden ser bajas, medias y altas; defaultChapterLength es un número entero de 500 a 10000.",
+      "Los selectores de capítulos pueden contener: ID de capítulo, pedidos, rango {orden inicial, orden final}, relativo {tipo, recuento}.",
+      "Si no hay información suficiente, no adivine un ID de capítulo inexistente y simplemente devuelva pedidos, rango o relativo.",
+      "Si el usuario pregunta sobre la biblioteca de plantillas de caracteres básicos, debería preferir list_base_characters; Si el usuario pregunta sobre el estado del personaje en la novela actual, debería preferir inspect_characters y preguntar por el contexto de la novela.",
+      "La confianza debe evaluarse de forma conservadora y oscila entre 0 y 1.",
+      "Simplemente devuelva JSON, no lo interprete.",
     ].join("\n"),
     userPrompt: [
-      `当前目标: ${input.goal}`,
-      `上下文模式: ${input.contextMode}`,
+      `Objetivos actuales: ${input.goal}`,
+      `Modo contexto: ${input.contextMode}`,
       `novelId: ${input.novelId ?? "none"}`,
       `currentRunId: ${input.currentRunId ?? "none"}`,
-      `当前 run 状态: ${input.currentRunStatus ?? "queued"}`,
-      `当前 run 步骤: ${input.currentStep ?? "planning"}`,
-      `最近消息:\n${recentMessages || "none"}`,
-      `原子意图语义目录:\n${semanticCatalog}`,
-      `复合 workflow recipes:\n${workflowRecipes}`,
-      `可用工具总览:\n${toolCatalog}`,
-      `权限摘要:\n${permissionSummary}`,
-      "请输出一个合法 JSON 对象。",
+      `Estado de ejecución actual: ${input.currentRunStatus ?? "queued"}`,
+      `Pasos de ejecución actuales: ${input.currentStep ?? "planning"}`,
+      `Últimas noticias:\\n${recentMessages || "none"}`,
+      `Catálogo semántico de intención atómica:\\n${semanticCatalog}`,
+      `Recetas de flujo de trabajo compuesto:\\n${workflowRecipes}`,
+      `Descripción general de las herramientas disponibles:\\n${toolCatalog}`,
+      `Resumen de permisos:\\n${permissionSummary}`,
+      "Genere un objeto JSON válido.",
     ].join("\n\n"),
   };
 }

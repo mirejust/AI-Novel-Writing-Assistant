@@ -101,7 +101,7 @@ export function DirectorProseReview({
       else onClose();
     }
   }
-  const nextLabel = next && (next.from === next.to ? `第 ${next.from} 章` : `第 ${next.from}–${next.to} 章`);
+  const nextLabel = next && (next.from === next.to ? `Cap. ${next.from}` : `Cap. ${next.from}–${next.to}`);
   return (
     <Dialog
       open
@@ -110,33 +110,33 @@ export function DirectorProseReview({
       }}
     >
       <AppDialogContent
-        title="讨论与确认本批正文"
-        description="选一章阅读和讨论。采纳的段落会显示在正文中，可以切换章节后一起确认。"
+        title="Discutir y confirmar el texto de este lote."
+        description="Elija un capítulo para leer y discutir. Los párrafos adoptados se mostrarán en el texto y podrá cambiar de capítulo y confirmarlos juntos."
         className="lg:h-[min(48rem,90dvh)] lg:max-w-6xl"
         bodyClassName="grid gap-5 lg:grid-cols-2 lg:overflow-hidden"
         footer={
           discard ? (
             <>
-              <span className="mr-auto text-sm">放弃本次编辑稿？</span>
+              <span className="mr-auto text-sm">¿Abandonar este manuscrito editado?</span>
               <Button variant="ghost" onClick={() => setDiscard(false)}>
-                继续核对
+                Continuar comprobando
               </Button>
               <Button variant="outline" onClick={onClose}>
-                放弃并关闭
+                rendirse y cerrar
               </Button>
             </>
           ) : (
             <>
               <Button variant="ghost" disabled={busy} onClick={close}>
-                返回
+                devolver
               </Button>
               {next && (
                 <Button variant="outline" disabled={busy || needsCharacters} onClick={() => mutation.mutate(false)}>
-                  只确认本批
+                  Solo confirma este lote
                 </Button>
               )}
               <Button disabled={busy || needsCharacters} onClick={() => mutation.mutate(Boolean(next))}>
-                {busy ? "正在保存并同步正文…" : nextLabel ? `确认并继续写${nextLabel}` : "确认本批正文"}
+                {busy ? "Guardando y sincronizando texto..." : nextLabel ? `Confirma y continúa escribiendo${nextLabel}` : "Confirmar el texto de este lote"}
               </Button>
             </>
           )
@@ -156,7 +156,7 @@ export function DirectorProseReview({
           )}
           {opened.length > 1 ? (
             <label className="grid gap-1 text-sm">
-              选择章节
+              Seleccionar capítulo
               <select
                 className="rounded-md border border-input bg-background px-3 py-2"
                 value={selected}
@@ -165,14 +165,14 @@ export function DirectorProseReview({
               >
                 {opened.map(({ chapter }) => (
                   <option key={chapter.id} value={chapter.id}>
-                    第 {chapter.order} 章 · {chapter.title}
+                    Cap. {chapter.order} capítulo · {chapter.title}
                   </option>
                 ))}
               </select>
             </label>
           ) : (
             <h3 className="font-medium">
-              第 {current.chapter.order} 章 · {current.chapter.title}
+              Cap. {current.chapter.order} capítulo · {current.chapter.title}
             </h3>
           )}
           {Object.entries(draft).map(([key, value]) => (
@@ -190,7 +190,7 @@ export function DirectorProseReview({
                     }))
                   }
                 >
-                  撤回第 {key} 段修改
+                  retirar el primero {key} Modificación de sección
                 </Button>
               )}
             </div>
@@ -202,7 +202,7 @@ export function DirectorProseReview({
           runId={runId}
           version={expectedVersion}
           scope={{ type: "chapter_batch_closed", bodyHash: current.hash }}
-          subject={{ id: selected, title: `第 ${current.chapter.order} 章 · ${current.chapter.title}` }}
+          subject={{ id: selected, title: `Cap. ${current.chapter.order} Capítulo · ${current.chapter.title}` }}
           fieldLabels={current.form.labels}
           base={current.form.fields}
           draft={draft}

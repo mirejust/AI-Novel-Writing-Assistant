@@ -2,47 +2,47 @@ import type { ModelRouteTaskType } from "@ai-novel/shared/types/novel";
 
 export const MODEL_ROUTE_LABELS: Record<ModelRouteTaskType, { title: string; description: string }> = {
   planner: {
-    title: "大纲策划",
-    description: "先理解创作目标，再安排这一段创作该怎样推进。",
+    title: "Esquema de planificación",
+    description: "Primero comprenda la meta creativa y luego planifique cómo proceder con este período de creación.",
   },
   writer: {
-    title: "主笔写作",
-    description: "生成章节正文，把章节内容完整写出来。",
+    title: "Redacción principal",
+    description: "Genere el texto del capítulo y escriba el contenido del capítulo por completo.",
   },
   review: {
-    title: "通用审校",
-    description: "检查剧情、节奏和文风，找出草稿里的质量问题。",
+    title: "Revisión general",
+    description: "Verifique la trama, el ritmo y el estilo para identificar problemas de calidad en su borrador.",
   },
   light_review: {
-    title: "基础快审",
-    description: "快速判断章节是否能继续推进，用于正文后的轻量质量检查。",
+    title: "Repaso rápido básico",
+    description: "Determine rápidamente si un capítulo se puede avanzar y utilizar para controles de calidad ligeros después del texto principal.",
   },
   critical_review: {
-    title: "严格审校",
-    description: "处理会影响整本连续性的质量检查，适合高风险审校和复检。",
+    title: "Revisión estricta",
+    description: "Maneja controles de calidad que afectan la continuidad de todo el libro, adecuado para revisiones y reverificaciones de alto riesgo.",
   },
   repair: {
-    title: "章节修复",
-    description: "根据审校问题修正文稿，让章节回到可继续推进的状态。",
+    title: "Correcciones del capítulo",
+    description: "Corrija el manuscrito de acuerdo con los problemas de revisión y devuelva el capítulo a un estado en el que pueda avanzar.",
   },
   replan: {
-    title: "窗口重规划",
-    description: "当局部修复不能收敛时，重新安排受影响章节的目标和衔接。",
+    title: "Replanificación de ventanas",
+    description: "Cuando la reparación local no logra converger, se reorganizan los objetivos y conexiones de los capítulos afectados.",
   },
   state_resolution: {
-    title: "状态解析",
-    description: "判断章节状态提案是否可信，帮助自动导演减少人工确认。",
+    title: "Análisis de estado",
+    description: "Determine si la propuesta de estado del capítulo es creíble y ayude a los directores automáticos a reducir la confirmación manual.",
   },
   summary: {
-    title: "剧情摘要",
-    description: "把长章节整理成回顾、摘要和关键变化。",
+    title: "Resumen de la trama",
+    description: "Organice capítulos largos en revisiones, resúmenes y cambios clave.",
   },
   fact_extraction: {
-    title: "设定考据",
-    description: "整理设定、时间线和关键事实，减少前后矛盾。",
+    title: "Configuración de testimonios",
+    description: "Organice entornos, cronogramas y hechos clave para reducir las inconsistencias.",
   },
   chat: {
-    title: "灵感陪写",
-    description: "处理日常对话，并把结果整理成创作时能直接理解的内容。",
+    title: "Inspiración para acompañar la escritura",
+    description: "Tome conversaciones cotidianas y organice los resultados en contenido que pueda entenderse directamente en el momento de la creación.",
   },
 };

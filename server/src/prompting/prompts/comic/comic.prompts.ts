@@ -286,7 +286,7 @@ export const comicVisualAnchorRewriteOutputSchema = z.object({
   appearance: z.string().trim().min(10).max(2000),
   /** 可选：建议的"脸型强覆盖"片段（当用户要求与现有描述存在难以调和的冲突时） */
   faceShapeOverride: z.string().trim().max(500).optional(),
-  /** 给用户看的、简短的修改说明（中文，1-3 句） */
+  /** 给用户看的、简短的修改说明（西班牙语，1-3 句） */
   rationale: z.string().trim().min(1).max(300),
 });
 
@@ -322,12 +322,12 @@ export const comicVisualAnchorRewritePrompt: PromptAsset<
 【硬性规则】
 1. 保留角色的标志性人设亮点（标志特征、伤疤、配饰、气质氛围等），只修改与用户期望冲突的具体五官/脸型描述
 2. 优先用具体、可视化的骨相级词汇（脸型/眼型/眉骨/鼻型/嘴型/年龄段/体格），避免空泛氛围词
-3. 关键词中英混写效果最好——重要外貌特征同时给出中文 + 英文 anatomy 词
+3. 关键词中英混写效果最好——重要外貌特征同时给出西班牙语 + 英文 anatomy 词
 4. 输出的 appearance 是完整可独立使用的描述，约 60-250 字，自然语句而不是关键词堆砌
 5. 如果用户期望与原描述存在严重冲突（如原文"五官锐利如刀刻"vs 用户要"圆脸"），有两种处理：
    a. 优先方案：在 appearance 中**直接改写矛盾词**（推荐，最干净）
    b. 备选方案：当矛盾词构成了人设关键（如反派的凶相眼神），保留眼神/气质层面的"锐利"，但把"脸型/下颌/颧骨"改成用户期望，并在 faceShapeOverride 输出额外的脸型强压片段
-6. rationale 用中文 1-3 句说明你做了什么修改、为什么；不要复述原文`,
+6. rationale 用西班牙语 1-3 句说明你做了什么修改、为什么；不要复述原文`,
       ),
       new HumanMessage(
         `角色：${input.characterName}${input.persona ? `（人设：${input.persona}）` : ""}

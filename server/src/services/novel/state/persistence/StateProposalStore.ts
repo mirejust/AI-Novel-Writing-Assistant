@@ -121,12 +121,12 @@ export const stateProposalStore = {
     if (integrity.artifactResourceReview) {
       const novel = await tx.novel.findUnique({ where: { id: integrity.novelId }, select: { directorVersion: true } });
       if (novel?.directorVersion !== "v2" || !integrity.chapterId || integrity.expectedChapterContent === undefined) {
-        throw new Error("统一抽取资源确认必须绑定 V2 小说与已保存正文。");
+        throw new Error("La extracción unificada de confirmación de recursos debe vincular la novela V2 y el texto guardado.");
       }
     }
     if (integrity.expectedChapterContent !== undefined && integrity.chapterId
       && !await this.findSavedChapter(integrity.novelId, integrity.chapterId, integrity.expectedChapterContent, tx)) {
-      throw new ChapterArtifactContentVersionError("章节正文版本已变化，已拒绝写入过期角色资源状态。");
+      throw new ChapterArtifactContentVersionError("La versión del texto del capítulo ha cambiado y se ha rechazado escribir en el estado de recurso de personaje caducado.");
     }
   },
 };

@@ -58,7 +58,7 @@ interface RunChapterDetailBatchGenerationArgs {
 }
 
 function describeChapterTarget(target: ChapterDetailTarget): string {
-  return `第${target.chapterOrder}章《${target.title || "未命名章节"}》`;
+  return `Cap.${target.chapterOrder}Capítulo"${target.title || "Capítulo sin título"}»`;
 }
 
 function buildFallbackLabel(targets: ChapterDetailTarget[]): string {
@@ -68,9 +68,9 @@ function buildFallbackLabel(targets: ChapterDetailTarget[]): string {
   const first = targets[0];
   const last = targets[targets.length - 1];
   if (!first || !last) {
-    return "当前章节范围";
+    return "Alcance del capítulo actual";
   }
-  return `第${first.chapterOrder}-${last.chapterOrder}章（共 ${targets.length} 章）`;
+  return `Cap.${first.chapterOrder}-${last.chapterOrder}capítulos (total ${targets.length} capítulo)`;
 }
 
 function resolveMissingChapterDetailModes(
@@ -125,13 +125,13 @@ export function buildChapterDetailBatchConfirmationMessage(
 ): string {
   return [
     batch.targets.length === 1
-      ? `将基于当前内容为${batch.label} AI 补齐章节目标、执行边界和任务单。`
-      : `将基于当前内容为${batch.label}连续补齐章节目标、执行边界和任务单。`,
+      ? `se basará en el contenido actual como${batch.label} La IA completa los objetivos de los capítulos, los límites de ejecución y las órdenes de tareas.`
+      : `se basará en el contenido actual como${batch.label}Complete continuamente los objetivos del capítulo, los límites de ejecución y las listas de tareas.`,
     batch.hasExistingDrafts
-      ? "会优先沿用各章已填写结果，只修正空缺、模糊和不够可执行的部分。"
-      : "当前这些章节还是空白，AI 会先补出首版，再按现有标题和摘要逐章收束。",
-    "不会改动章节标题和摘要。",
-    batch.missingCount > 0 ? `有 ${batch.missingCount} 章已不在当前卷草稿中，会自动跳过。` : "",
+      ? "Se dará prioridad al uso de los resultados cumplimentados de cada capítulo, y sólo se corregirán las partes en blanco, vagas e insuficientemente ejecutables."
+      : "Actualmente, estos capítulos todavía están en blanco. AI primero creará la primera edición y luego la completará capítulo por capítulo de acuerdo con los títulos y resúmenes existentes.",
+    "Los títulos de los capítulos y los resúmenes no se modificarán.",
+    batch.missingCount > 0 ? `tener ${batch.missingCount} El capítulo ya no está en el borrador del volumen actual y se omitirá automáticamente.` : "",
   ].filter(Boolean).join("\n\n");
 }
 
@@ -153,7 +153,7 @@ export async function runChapterDetailBatchGeneration({
   setFailure(null);
   setCurrentMode("");
   setCurrentChapterId(targets[0]?.chapterId ?? "");
-  setStructuredMessage(`正在为${label}补齐缺失的章节目标、执行边界和任务单...`);
+  setStructuredMessage(`Trabajando en${label}Completar los objetivos de los capítulos faltantes, los límites de ejecución y las órdenes de tareas...`);
 
   try {
     for (const [targetIndex, target] of targets.entries()) {
@@ -175,7 +175,7 @@ export async function runChapterDetailBatchGeneration({
           workingDraft = result.nextDocument.volumes;
           processedModeCount += 1;
         } catch (error) {
-          const message = error instanceof Error ? error.message : "AI 暂时没有完成这一项细化。";
+          const message = error instanceof Error ? error.message : "La IA aún no ha completado este refinamiento.";
           setFailure({
             targetVolumeId,
             targets: targets.slice(targetIndex),
@@ -185,15 +185,15 @@ export async function runChapterDetailBatchGeneration({
             mode,
             message,
           });
-          setStructuredMessage(`第${target.chapterOrder}章的${mode === "purpose" ? "章节目标" : mode === "boundary" ? "执行边界" : "任务单"}暂未完成，可从这里继续细化。`);
+          setStructuredMessage(`Cap.${target.chapterOrder}Capítulo${mode === "purpose" ? "Objetivo del capítulo" : mode === "boundary" ? "Límite de ejecución" : "Hoja de tareas"}Aún no está completo, puedes continuar perfeccionándolo desde aquí.`);
           return;
         }
       }
     }
     setStructuredMessage(
       processedModeCount > 0
-        ? `${label}的章节目标、执行边界和任务单已补齐并自动保存。`
-        : `${label}当前已经完整，无需重复生成章节细化。`,
+        ? `${label}Los objetivos del capítulo, los límites de ejecución y las órdenes de tareas se han completado y guardado automáticamente.`
+        : `${label}Ahora está completo y no es necesario generar refinamientos de capítulos repetidamente.`,
     );
   } finally {
     setIsGenerating(false);

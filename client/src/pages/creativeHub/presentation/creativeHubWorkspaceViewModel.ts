@@ -39,17 +39,17 @@ export interface CreativeHubWorkspacePresentation {
 export function formatCreativeHubThreadStatus(
   status: CreativeHubThread["status"] | undefined,
 ): string {
-  if (status === "busy") return "执行中";
-  if (status === "interrupted") return "等待确认";
-  if (status === "error") return "运行异常";
-  if (status === "idle") return "等待指令";
-  return "正在初始化";
+  if (status === "busy") return "Ejecutando";
+  if (status === "interrupted") return "Esperando confirmación";
+  if (status === "error") return "Operación anormal";
+  if (status === "idle") return "Esperando instrucciones";
+  return "Inicializando";
 }
 
 function formatSetupStage(stage: CreativeHubNovelSetupStatus["stage"] | undefined): string | null {
-  if (stage === "setup_in_progress") return "补齐开书信息";
-  if (stage === "ready_for_planning") return "准备故事规划";
-  if (stage === "ready_for_production") return "准备整本生产";
+  if (stage === "setup_in_progress") return "Información completa sobre la apertura del libro.";
+  if (stage === "ready_for_planning") return "preparar el plan de la historia";
+  if (stage === "ready_for_production") return "Prepárese para la producción completa";
   return null;
 }
 
@@ -78,14 +78,14 @@ export function resolveCreativeHubWorkspacePresentation(input: {
   const objectTitle = input.currentNovelTitle?.trim()
     || input.productionStatus?.title?.trim()
     || input.novelSetup?.title?.trim()
-    || "未绑定小说";
+    || "Novela sin encuadernar";
   const stageLabel = input.latestTurnSummary?.currentStage?.trim()
     || input.productionStatus?.currentStage?.trim()
     || formatSetupStage(input.novelSetup?.stage)
-    || "等待创作目标";
+    || "Esperando objetivo de creación";
   const threadStatusLabel = formatCreativeHubThreadStatus(input.thread?.status);
 
-  const threadsError = errorText(input.threadsError, "创作线程加载失败。");
+  const threadsError = errorText(input.threadsError, "No se pudo cargar el hilo de creación.");
   if (threadsError) {
     return {
       objectTitle,
@@ -93,15 +93,15 @@ export function resolveCreativeHubWorkspacePresentation(input: {
       threadStatusLabel,
       recommendation: {
         tone: "danger",
-        title: "重新加载创作线程",
-        description: `${threadsError} 已保存的小说和线程内容不会被修改。`,
+        title: "Recargar el hilo de creación",
+        description: `${threadsError} Las historias guardadas y el contenido de los hilos no se modificarán.`,
         action: "retry_threads",
-        actionLabel: "重新加载线程",
+        actionLabel: "Recargar hilo",
       },
     };
   }
 
-  const createThreadError = errorText(input.createThreadError, "创作线程创建失败。");
+  const createThreadError = errorText(input.createThreadError, "Error al crear el hilo de creación.");
   if (createThreadError) {
     return {
       objectTitle,
@@ -109,16 +109,16 @@ export function resolveCreativeHubWorkspacePresentation(input: {
       threadStatusLabel,
       recommendation: {
         tone: "danger",
-        title: "重新创建创作线程",
-        description: `${createThreadError} 已有小说和创作资料不会被修改。`,
+        title: "Recrear el hilo de creación.",
+        description: `${createThreadError} No se modificarán las novelas ni los materiales creativos existentes.`,
         action: "retry_create_thread",
-        actionLabel: "重新创建线程",
+        actionLabel: "Vuelva a crear el hilo",
       },
     };
   }
 
-  const stateError = errorText(input.stateError, "线程状态加载失败。")
-    || errorText(input.threadLoadError, "线程内容加载失败。");
+  const stateError = errorText(input.stateError, "Error al cargar el estado del hilo.")
+    || errorText(input.threadLoadError, "Error al cargar el contenido del hilo.");
   if (stateError) {
     return {
       objectTitle,
@@ -126,15 +126,15 @@ export function resolveCreativeHubWorkspacePresentation(input: {
       threadStatusLabel,
       recommendation: {
         tone: "danger",
-        title: "重新加载当前创作现场",
-        description: `${stateError} 为避免混淆，旧线程内容不会继续显示。`,
+        title: "Recargar la escena de creación actual.",
+        description: `${stateError} Para evitar confusiones, ya no se mostrará el contenido de los hilos antiguos.`,
         action: input.threadLoadError ? "retry_thread" : "retry_state",
-        actionLabel: "重新加载当前线程",
+        actionLabel: "Recargar el hilo actual",
       },
     };
   }
 
-  const novelsError = errorText(input.novelsError, "小说列表加载失败。");
+  const novelsError = errorText(input.novelsError, "La lista de novelas no se pudo cargar.");
   if (novelsError) {
     return {
       objectTitle,
@@ -142,10 +142,10 @@ export function resolveCreativeHubWorkspacePresentation(input: {
       threadStatusLabel,
       recommendation: {
         tone: "danger",
-        title: "重新加载小说列表",
-        description: `${novelsError} 当前线程内容仍会保留。`,
+        title: "Recargar lista de novelas",
+        description: `${novelsError} El contenido del hilo actual aún se conservará.`,
         action: "retry_novels",
-        actionLabel: "重新加载小说",
+        actionLabel: "Recargar novela",
       },
     };
   }
@@ -157,10 +157,10 @@ export function resolveCreativeHubWorkspacePresentation(input: {
       threadStatusLabel,
       recommendation: {
         tone: "warning",
-        title: input.interrupt.title || "处理待确认的创作操作",
-        description: input.interrupt.summary || "本轮执行正在等待你的确认，处理后才能继续当前动作。",
+        title: input.interrupt.title || "Manejar operaciones de creación pendientes",
+        description: input.interrupt.summary || "Esta ronda de ejecución está esperando su confirmación antes de poder continuar con la acción actual.",
         action: "review_interrupt",
-        actionLabel: "查看待确认项",
+        actionLabel: "Ver elementos pendientes",
       },
     };
   }
@@ -172,11 +172,11 @@ export function resolveCreativeHubWorkspacePresentation(input: {
       threadStatusLabel,
       recommendation: {
         tone: "warning",
-        title: "查看待确认的创作操作",
+        title: "Ver acciones de creación pendientes",
         description: input.latestTurnSummary?.nextSuggestion?.trim()
-          || "当前线程仍在等待确认，请先处理待确认项。",
+          || "El hilo actual todavía está esperando confirmación. Procese primero los elementos pendientes.",
         action: "view_activity",
-        actionLabel: "查看待确认项",
+        actionLabel: "Ver elementos pendientes",
       },
     };
   }
@@ -188,10 +188,10 @@ export function resolveCreativeHubWorkspacePresentation(input: {
       threadStatusLabel,
       recommendation: {
         tone: "info",
-        title: "AI 正在推进当前创作目标",
-        description: `当前阶段：${stageLabel}。系统会持续更新状态，并在需要时提示你处理。`,
+        title: "La IA está avanzando en los objetivos creativos actuales",
+        description: `Etapa actual:${stageLabel}. El sistema actualizará continuamente el estado y le pedirá que lo maneje cuando sea necesario.`,
         action: "view_activity",
-        actionLabel: "查看当前状态",
+        actionLabel: "Ver estado actual",
       },
     };
   }
@@ -203,23 +203,23 @@ export function resolveCreativeHubWorkspacePresentation(input: {
     || input.productionStatus?.failureSummary?.trim()
     || input.thread?.latestError?.trim()
     || failedTurn?.impactSummary?.trim()
-    || (input.thread?.status === "error" ? "当前创作线程处于异常状态。" : null);
+    || (input.thread?.status === "error" ? "El hilo de creación actual se encuentra en un estado anormal." : null);
   if (failureSummary) {
     const recoveryHint = input.diagnostics?.recoveryHint?.trim()
       || input.productionStatus?.recoveryHint?.trim()
       || failedTurn?.nextSuggestion?.trim()
-      || "分析当前失败原因并给出安全恢复步骤";
+      || "Analice los motivos de falla actuales y proporcione pasos de recuperación seguros";
     return {
       objectTitle,
       stageLabel,
       threadStatusLabel,
       recommendation: {
         tone: "danger",
-        title: "查看当前状态异常",
-        description: `${failureSummary} 恢复操作会继续使用现有小说资产和任务记录。`,
+        title: "Verifique la excepción de estado actual",
+        description: `${failureSummary} Las operaciones de restauración continúan utilizando activos novedosos y registros de misión existentes.`,
         action: "send_prompt",
-        actionLabel: "查看失败原因",
-        prompt: `请解释失败原因、执行记录和正式处理入口：${recoveryHint}`,
+        actionLabel: "Verifique el motivo del fallo",
+        prompt: `Explique el motivo del error, el registro de ejecución y la entrada de procesamiento formal:${recoveryHint}`,
       },
     };
   }
@@ -233,11 +233,11 @@ export function resolveCreativeHubWorkspacePresentation(input: {
       threadStatusLabel,
       recommendation: {
         tone: "warning",
-        title: "继续补齐开书信息",
+        title: "Continúe para completar la información de apertura del libro.",
         description: input.novelSetup.nextQuestion?.trim()
-          || "先补齐影响后续规划的关键信息，再进入整本生产。",
+          || "Primero complete la información clave que afecta la planificación posterior antes de ingresar a toda la producción.",
         action: prompt ? "send_prompt" : "open_production",
-        actionLabel: prompt ? "按 AI 建议继续" : "查看开书准备",
+        actionLabel: prompt ? "Continuar con sugerencias de IA" : "Ver los preparativos para la apertura del libro.",
         ...(prompt ? { prompt } : {}),
       },
     };
@@ -251,26 +251,26 @@ export function resolveCreativeHubWorkspacePresentation(input: {
       threadStatusLabel,
       recommendation: {
         tone: "info",
-        title: "查看当前诊断结果",
+        title: "Ver los resultados del diagnóstico actual",
         description: nextSuggestion,
         action: "send_prompt",
-        actionLabel: "查看建议",
-        prompt: `请解释当前状态、执行记录和建议入口：${nextSuggestion}`,
+        actionLabel: "Ver sugerencias",
+        prompt: `Explique el estado actual, el registro de ejecución y la entrada sugerida:${nextSuggestion}`,
       },
     };
   }
 
-  if (objectTitle === "未绑定小说") {
+  if (objectTitle === "Novela sin encuadernar") {
     return {
       objectTitle,
       stageLabel,
       threadStatusLabel,
       recommendation: {
         tone: "info",
-        title: "选择本轮要推进的小说",
-        description: "绑定小说后，AI 才能读取对应的章节、世界、角色和生产状态。",
+        title: "Elige la novela para avanzar en esta ronda.",
+        description: "Sólo después de vincular la novela, la IA puede leer los capítulos, mundos, personajes y estados de producción correspondientes.",
         action: "select_novel",
-        actionLabel: "选择小说",
+        actionLabel: "Seleccionar novela",
       },
     };
   }
@@ -281,10 +281,10 @@ export function resolveCreativeHubWorkspacePresentation(input: {
     threadStatusLabel,
     recommendation: {
       tone: "neutral",
-      title: "说明本轮要推进的创作目标",
-      description: "可以补充作品问题、调整要求，或打开整本生产设置继续现有小说。",
+      title: "Explicar los objetivos creativos a promover en esta ronda.",
+      description: "Puede agregar preguntas de trabajo, ajustar requisitos o abrir toda la configuración de producción para continuar con una novela existente.",
       action: "open_production",
-      actionLabel: "查看生产入口",
+      actionLabel: "Ver entrada de producción",
     },
   };
 }

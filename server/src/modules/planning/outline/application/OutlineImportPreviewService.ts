@@ -151,11 +151,11 @@ export class OutlineImportPreviewService {
   }
   async confirm(userId: string, token: string, target: { projectId?: string; expectedVersion?: number; document?: unknown }) {
     const preview = previews.get(token);
-    if (!preview || preview.userId !== userId || preview.expiresAt < Date.now()) throw new Error("导入预览已失效，请重新解析");
+    if (!preview || preview.userId !== userId || preview.expiresAt < Date.now()) throw new Error("La vista previa de la importación no es válida; analícela nuevamente");
     const document = applyOutlineImportEdits(preview.document, target.document ?? preview.document);
     previews.delete(token);
     if (target.projectId) {
-      if (target.expectedVersion === undefined) throw new Error("缺少大纲版本号");
+      if (target.expectedVersion === undefined) throw new Error("Falta el número de versión del esquema");
       return this.repository.saveImport(target.projectId, target.expectedVersion, document, preview.sourceText);
     }
     return this.repository.createImport(document.story.title, document, preview.sourceText);
@@ -163,7 +163,7 @@ export class OutlineImportPreviewService {
   async importJson(input: string, target: { projectId?: string; expectedVersion?: number }) {
     const { title, document } = importOutlineJson(input);
     if (target.projectId) {
-      if (target.expectedVersion === undefined) throw new Error("缺少大纲版本号");
+      if (target.expectedVersion === undefined) throw new Error("Falta el número de versión del esquema");
       return this.repository.saveImport(target.projectId, target.expectedVersion, document, input);
     }
     return this.repository.createImport(title, document, input);

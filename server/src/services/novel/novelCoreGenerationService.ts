@@ -81,7 +81,7 @@ export class NovelCoreGenerationService {
       model: input.model,
       temperature: input.temperature,
     });
-    return block?.promptBlock ?? "本书世界上下文：暂无。请根据小说基础信息推进，不要凭空新增复杂世界规则。";
+    return block?.promptBlock ?? "Contexto mundial de este libro: Ninguno. Continúe basándose en la información básica de la novela y no agregue reglas mundiales complejas de la nada.";
   }
 
   async createOutlineStream(novelId: string, options: OutlineGenerateOptions = {}) {
@@ -91,7 +91,7 @@ export class NovelCoreGenerationService {
       include: { world: true, characters: true },
     });
     if (!novel) {
-      throw new Error("小说不存在");
+      throw new Error("La novela no existe.");
     }
 
     const [worldContext, referenceContext] = await Promise.all([
@@ -107,9 +107,9 @@ export class NovelCoreGenerationService {
 
     const charactersText = novel.characters.length > 0
       ? novel.characters
-        .map((character) => `- ${character.name}（${character.role}）${character.personality ? `：${character.personality.slice(0, 80)}` : ""}`)
+        .map((character) => `- ${character.name}(${character.role})${character.personality ? `:${character.personality.slice(0, 80)}` : ""}`)
         .join("\n")
-      : "暂无";
+      : "Sin datos";
     const initialPrompt = options.initialPrompt?.trim() ?? "";
     const streamed = await streamTextPrompt({
       asset: novelOutlinePrompt,
@@ -148,12 +148,12 @@ export class NovelCoreGenerationService {
       include: { world: true, characters: true },
     });
     if (!novel) {
-      throw new Error("小说不存在");
+      throw new Error("La novela no existe.");
     }
 
-    await ensureNovelCharacters(novelId, "生成结构化大纲");
+    await ensureNovelCharacters(novelId, "Generar esquema estructurado");
     if (!novel.outline) {
-      throw new Error("请先生成小说发展走向");
+      throw new Error("Por favor dime la tendencia de desarrollo de la novela.");
     }
 
     const [worldContext, referenceContext] = await Promise.all([
@@ -169,9 +169,9 @@ export class NovelCoreGenerationService {
 
     const charactersText = novel.characters.length > 0
       ? novel.characters
-        .map((character) => `- ${character.name}（${character.role}）${character.personality ? `：${character.personality.slice(0, 80)}` : ""}`)
+        .map((character) => `- ${character.name}(${character.role})${character.personality ? `:${character.personality.slice(0, 80)}` : ""}`)
         .join("\n")
-      : "暂无";
+      : "Sin datos";
     const totalChapters = options.totalChapters
       ?? novel.estimatedChapterCount
       ?? DEFAULT_ESTIMATED_CHAPTER_COUNT;
@@ -291,10 +291,10 @@ export class NovelCoreGenerationService {
       include: { characters: true, genre: true, world: true },
     });
     if (!novel) {
-      throw new Error("小说不存在");
+      throw new Error("La novela no existe.");
     }
 
-    await ensureNovelCharacters(novelId, "生成作品圣经");
+    await ensureNovelCharacters(novelId, "Generar Biblia de Obras");
     const [worldContext, referenceContext] = await Promise.all([
       this.getWorldContextText(novelId, {
         purpose: "bible",
@@ -310,9 +310,9 @@ export class NovelCoreGenerationService {
       asset: novelBiblePrompt,
       promptInput: {
         title: novel.title,
-        genreName: novel.genre?.name ?? "未分类",
+        genreName: novel.genre?.name ?? "Sin categoría",
         description: novel.description ?? "",
-        charactersText: novel.characters.map((item) => `${item.name}（${item.role}）`).join("、") || "暂无",
+        charactersText: novel.characters.map((item) => `${item.name}(${item.role})`).join(",") || "Sin datos",
         worldContext,
         referenceContext: referenceContext.trim() || undefined,
       },
@@ -359,10 +359,10 @@ export class NovelCoreGenerationService {
       include: { bible: true, chapters: true, world: true },
     });
     if (!novel) {
-      throw new Error("小说不存在");
+      throw new Error("La novela no existe.");
     }
 
-    await ensureNovelCharacters(novelId, "生成剧情拍点");
+    await ensureNovelCharacters(novelId, "Generar puntos de trama");
     const [worldContext, referenceContext] = await Promise.all([
       this.getWorldContextText(novelId, {
         purpose: "outline",
@@ -387,7 +387,7 @@ export class NovelCoreGenerationService {
         title: novel.title,
         description: novel.description ?? "",
         worldContext,
-        bibleRawContent: novel.bible?.rawContent ?? "暂无",
+        bibleRawContent: novel.bible?.rawContent ?? "Sin datos",
         targetChapters,
         referenceContext: referenceContext.trim() || undefined,
       },
@@ -406,7 +406,7 @@ export class NovelCoreGenerationService {
           novelId,
           chapterOrder: normalizeBeatOrder(item.chapterOrder, index + 1),
           beatType: String(item.beatType ?? "main").slice(0, 120),
-          title: String(item.title ?? `拍点 ${index + 1}`).slice(0, 200),
+          title: String(item.title ?? `Toma algunas fotos ${index + 1}`).slice(0, 200),
           content: String(item.content ?? ""),
           status: normalizeBeatStatus(item.status),
         }));
@@ -426,7 +426,7 @@ export class NovelCoreGenerationService {
       ? await prisma.chapter.findFirst({ where: { id: options.chapterId, novelId } })
       : await prisma.chapter.findFirst({ where: { novelId }, orderBy: { order: "desc" } });
     if (!chapter) {
-      throw new Error("未找到可生成钩子的章节");
+      throw new Error("No se encontró ningún capítulo para generar gancho.");
     }
 
     const result = await runStructuredPrompt({

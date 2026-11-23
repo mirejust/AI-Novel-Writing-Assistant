@@ -33,7 +33,7 @@ async function applyLedger(input: ConsumerWriteInput, payload: CharacterResource
   const key = { novelId, resourceKey: payload.resourceKey! };
   const existing = await tx.characterResourceLedgerItem.findUnique({ where: { novelId_resourceKey: key } });
   const riskSignals: CharacterResourceRiskSignal[] = proposal.riskLevel === "low" ? [] : [{ code: `resource_${proposal.riskLevel}_risk_commit`,
-    severity: proposal.riskLevel === "high" ? "high" : "medium", summary: proposal.validationNotes[0] || `${payload.resourceName} 的资源变更需要后续写作谨慎处理。` }];
+    severity: proposal.riskLevel === "high" ? "high" : "medium", summary: proposal.validationNotes[0] || `${payload.resourceName} Los cambios de recursos requieren un manejo cuidadoso en escritos posteriores.` }];
   const data = { name: payload.resourceName, summary: compact(payload.summary) || payload.narrativeImpact,
     resourceType: payload.resourceType, narrativeFunction: payload.narrativeFunction, ownerType: payload.ownerType,
     ownerId: payload.ownerId ?? (payload.ownerType === "character" ? payload.holderCharacterId ?? null : null),
@@ -46,7 +46,7 @@ async function applyLedger(input: ConsumerWriteInput, payload: CharacterResource
     lastTouchedChapterId: chapterId, lastTouchedChapterOrder: order,
     expectedUseStartChapterOrder: payload.expectedUseStartChapterOrder ?? null, expectedUseEndChapterOrder: payload.expectedUseEndChapterOrder ?? null,
     constraintsJson: JSON.stringify(payload.constraints), riskSignalsJson: JSON.stringify(riskSignals),
-    sourceRefsJson: JSON.stringify([{ kind: "chapter_content", refId: chapterId, refLabel: `第${order}章`, chapterId, chapterOrder: order }]),
+    sourceRefsJson: JSON.stringify([{ kind: "chapter_content", refId: chapterId, refLabel: `Cap.${order}cap.`, chapterId, chapterOrder: order }]),
     evidenceJson: JSON.stringify(proposal.evidence.map(summary => ({ summary, chapterId, chapterOrder: order }))), confidence: payload.confidence ?? null };
   const row = await tx.characterResourceLedgerItem.upsert({ where: { novelId_resourceKey: key }, create: { ...key, ...data }, update: data });
   await tx.characterResourceEvent.create({ data: { novelId, resourceId: row.id, chapterId, chapterOrder: order, eventType: payload.updateType,
@@ -62,7 +62,7 @@ async function scanStale({ tx, context }: ConsumerWriteInput): Promise<number> {
     const overdue = row.expectedUseEndChapterOrder != null && row.expectedUseEndChapterOrder < order;
     if (!overdue && !(row.lastTouchedChapterOrder != null && row.lastTouchedChapterOrder <= order - 10)) continue;
     const signals = parseJsonArray<CharacterResourceRiskSignal>(row.riskSignalsJson);
-    const summary = overdue ? `资源已超过预计使用窗口（第${row.expectedUseEndChapterOrder}章）。` : "资源已超过 10 章未被触碰。";
+    const summary = overdue ? `El recurso ha excedido la ventana de uso esperado (sección${row.expectedUseEndChapterOrder}capítulo).` : "El recurso ha permanecido intacto durante más de 10 capítulos.";
     if (!signals.some(signal => signal.code === "resource_stale")) signals.push({ code: "resource_stale", severity: overdue ? "high" : "medium", summary, stale: true });
     await tx.characterResourceLedgerItem.update({ where: { id: row.id }, data: { status: "stale", riskSignalsJson: JSON.stringify(signals) } });
     await tx.characterResourceEvent.create({ data: { novelId, resourceId: row.id, chapterId, chapterOrder: order, eventType: "stale_marked", actorCharacterId: row.holderCharacterId,

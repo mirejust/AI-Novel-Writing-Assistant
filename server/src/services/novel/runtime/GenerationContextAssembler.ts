@@ -143,7 +143,7 @@ export class GenerationContextAssembler {
     }
     const activeManuscriptChapters = await readActiveManuscriptChapters(prisma as never, novelId);
     const manuscriptChapter = activeManuscriptChapters?.find(item => item.id === chapterId);
-    if (activeManuscriptChapters && !manuscriptChapter) throw new AppError("本章已停用，请从原稿修订工作区恢复后再操作。", 409);
+    if (activeManuscriptChapters && !manuscriptChapter) throw new AppError("Este capítulo ha sido deshabilitado. Restáurelo desde el espacio de trabajo de revisión original antes de continuar.", 409);
     const effectiveOrder = manuscriptChapter?.order ?? chapter.order;
 
     // Context assembly is a read boundary. Planning and contract writes must
@@ -360,9 +360,9 @@ export class GenerationContextAssembler {
     });
     const macroConstraints = buildMacroConstraintContext(storyMacroPlan);
     const productionFoundationPrompt = [
-      novel.genre?.name ? `题材基底：${novel.genre.name}` : "",
-      novel.genre?.description ? `题材定位：${novel.genre.description}` : "",
-      novel.genre?.template ? `题材使用倾向：${novel.genre.template}` : "",
+      novel.genre?.name ? `Base temática:${novel.genre.name}` : "",
+      novel.genre?.description ? `Posicionamiento del tema:${novel.genre.description}` : "",
+      novel.genre?.template ? `Tendencia de uso del tema:${novel.genre.template}` : "",
       buildStoryModePromptBlock({
         primary: novel.primaryStoryMode ? normalizeStoryModeOutput(novel.primaryStoryMode) : null,
         secondary: novel.secondaryStoryMode ? normalizeStoryModeOutput(novel.secondaryStoryMode) : null,

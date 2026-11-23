@@ -12,9 +12,9 @@ export function requireLaunch(contract: RunContract) {
   const input = contract.launchInput;
   if (!input?.storyInput.trim() || !Number.isSafeInteger(input.estimatedChapterCount) || input.estimatedChapterCount < 1
     || !contract.modelConfig.route.trim() || contract.modelConfig.route === "default"
-    || !contract.modelConfig.model.trim() || contract.modelConfig.model === "default") throw new Error("创作运行缺少故事、章数或模型快照。");
+    || !contract.modelConfig.model.trim() || contract.modelConfig.model === "default") throw new Error("Al proceso de creación le faltan historias, capítulos o instantáneas de modelos.");
   if (contract.chapterRange && (contract.chapterRange.from < 1 || contract.chapterRange.to < contract.chapterRange.from
-    || contract.chapterRange.to > input.estimatedChapterCount)) throw new Error("正文授权范围与目标章节数不一致。");
+    || contract.chapterRange.to > input.estimatedChapterCount)) throw new Error("El alcance autorizado del texto principal no coincide con el número de capítulos previsto.");
   if (input.chapterTokenLimit !== undefined) directorChapterTokenLimitSchema.parse(input.chapterTokenLimit);
   return input;
 }
@@ -26,7 +26,7 @@ export async function bookContractInput(context: StepContext, macroService: Stor
   const input = requireLaunch(context.contract);
   const novel = await prisma.novel.findUniqueOrThrow({where: {id: context.contract.novelId}});
   const macro = await macroService.getPlan(novel.id);
-  if (!macro?.decomposition) throw new Error("缺少已保存的故事宏观规划。");
+  if (!macro?.decomposition) throw new Error("Falta el plan macro de la historia guardada.");
   const decomposition = macro.decomposition;
   return {idea: input.storyInput, targetChapterCount: input.estimatedChapterCount, storyMacroPlan: macro,
     context: {title: novel.title, description: novel.description ?? undefined, targetAudience: novel.targetAudience ?? undefined,
@@ -41,10 +41,10 @@ export async function bookContractInput(context: StepContext, macroService: Stor
 export function findTargetVolume(context: Pick<StepContext,"contract">, workspace: VolumePlanDocument): string | null {
   const input = requireLaunch(context.contract);
   if (input.targetVolumeId) {
-    if (!workspace.volumes.some(volume => volume.id === input.targetVolumeId)) throw new Error("指定卷不属于当前小说。");
+    if (!workspace.volumes.some(volume => volume.id === input.targetVolumeId)) throw new Error("El volumen especificado no pertenece a la novela actual.");
     return input.targetVolumeId;
   }
-  if (input.targetMode !== "opening") throw new Error("启动创作需要明确选择开篇或目标卷。");
+  if (input.targetMode !== "opening") throw new Error("Iniciar una composición requiere una elección explícita del capítulo inicial o del volumen objetivo.");
   const from = context.contract.chapterRange?.from ?? (input.outlineBinding ? 1 : undefined);
   const state = currentOutlinePlanning();
   const slot = state && [...state.mapping.volumes, ...(state.mapping.runtimeVolumes ?? [])].find(s => from != null && from >= s.from && from <= s.to);
@@ -61,17 +61,17 @@ export function findTargetVolume(context: Pick<StepContext,"contract">, workspac
 
 export function targetVolume(context: Pick<StepContext,"contract">, workspace: VolumePlanDocument): string {
   const target = findTargetVolume(context, workspace);
-  if (!target) throw new Error("授权章节尚未对应到卷，请先准备目标卷路线。");
+  if (!target) throw new Error("El capítulo autorizado aún no se ha asignado al volumen; primero prepare la ruta del volumen de destino.");
   return target;
 }
 export function executionWindow(context: StepContext, workspace: VolumePlanDocument) {
   const range = context.contract.chapterRange;
-  if (!range) throw new AppError("准备正文需要明确章节授权范围。", 400);
-  if (!Number.isSafeInteger(range.from) || !Number.isSafeInteger(range.to) || range.from < 1 || range.to < range.from) throw new AppError("章节授权范围无效。", 422);
+  if (!range) throw new AppError("La preparación del texto principal requiere aclarar el alcance de la autoridad del capítulo.", 400);
+  if (!Number.isSafeInteger(range.from) || !Number.isSafeInteger(range.to) || range.from < 1 || range.to < range.from) throw new AppError("El alcance de la autorización del capítulo no es válido.", 422);
   const matches = workspace.volumes.flatMap(volume => volume.chapters.filter(chapter => chapter.chapterOrder >= range.from && chapter.chapterOrder <= range.to)
     .map(chapter => ({volumeId: volume.id, chapterId: chapter.id, chapterOrder: chapter.chapterOrder})));
   const expected = range.to - range.from + 1;
-  if (matches.length !== expected || new Set(matches.map(match => match.chapterOrder)).size !== expected) throw new AppError("授权范围缺少唯一的章节路线。", 422);
+  if (matches.length !== expected || new Set(matches.map(match => match.chapterOrder)).size !== expected) throw new AppError("Al alcance de la autoridad le falta una ruta de capítulo única.", 422);
   matches.sort((a, b) => a.chapterOrder - b.chapterOrder);
   return {targets: matches.map(({volumeId, chapterId}) => ({volumeId, chapterId})), executionRange: {startOrder: range.from, endOrder: range.to}};
 }
@@ -99,14 +99,14 @@ export async function readExecutionWindow(context: StepContext, workspace: Volum
     const candidates = rows.filter(row => row.id === target.chapterId && row.volumeId === target.volumeId);
     const saved = candidates[0];
     if (candidates.length !== 1 || (launchInput?.targetVolumeId && saved.volumeId !== launchInput.targetVolumeId)) {
-      throw new AppError(`无法定位第 ${order} 章的已保存计划，请重新读取本书。`, 409);
+      throw new AppError(`No se puede localizar el ${order} Plan guardado del capítulo, lea este libro nuevamente.`, 409);
     }
     matched.add(saved.id);
     hydrated = applySavedChapterPlanFields(hydrated, saved);
   }
   if (matched.size !== rows.length) {
     const extra = rows.find(row => !matched.has(row.id));
-    throw new AppError(`第 ${extra?.chapterOrder ?? executionRange.startOrder} 章的已保存计划不唯一，请重新读取本书。`, 409);
+    throw new AppError(`Cap. ${extra?.chapterOrder ?? executionRange.startOrder} El plan guardado del capítulo no es único; lea este libro nuevamente.`, 409);
   }
   return {workspace: hydrated, executionRange};
 }

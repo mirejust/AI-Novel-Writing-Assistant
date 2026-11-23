@@ -55,19 +55,19 @@ export class NovelSideEffectJobHandlers {
       case "chapter.manualSync": {
         const payload = parsePayload<ManualChapterSyncPayload>(job);
         if (payload.novelId !== job.novelId || !payload.chapterId || !payload.contentHash || !payload.revision) {
-          throw new UnsupportedNovelSideEffectPayloadError("正文同步任务缺少归属或版本。");
+          throw new UnsupportedNovelSideEffectPayloadError("A la tarea de sincronización del cuerpo le falta atribución o versión.");
         }
         const result = await manualChapterSyncService.run(payload);
         // An identity review is resumed only by the author's explicit command.
         if (result.characterReviewId) return;
         if (result.status === "pending") return {deferUntil: new Date(Date.now() + 5_000)};
-        if (result.status === "failed") throw new Error(result.reason || "正文已保存，章节资料同步失败。");
+        if (result.status === "failed") throw new Error(result.reason || "El texto principal se guardó, pero falló la sincronización de los datos del capítulo.");
         return;
       }
       case "chapter.timelineFinalization": {
         const payload = parsePayload<ChapterTimelineFinalizationPayload>(job);
         if (payload.novelId !== job.novelId || !payload.chapterId || !payload.contentHash) {
-          throw new UnsupportedNovelSideEffectPayloadError("章节时间线任务的归属或正文版本不完整。");
+          throw new UnsupportedNovelSideEffectPayloadError("La atribución o la versión de texto de las tareas de la línea de tiempo del capítulo están incompletas.");
         }
         const chapter = await prisma.chapter.findFirst({
           where: { id: payload.chapterId, novelId: payload.novelId }, select: { content: true },
@@ -106,14 +106,14 @@ export class NovelSideEffectJobHandlers {
           select: { id: true },
         });
         if (activeProduction) {
-          throw new Error("正文生产仍在运行，延迟角色增强等待低优先级重试。");
+          throw new Error("La producción de texto aún está en ejecución, lo que retrasa las mejoras de funciones en espera de reintentos de baja prioridad.");
         }
         await getSharedNovelServices().runDeferredCharacterEnhancements(payload.novelId);
         return;
       }
       case "character.v2DeferredEnrichment": {
         const payload = parsePayload<DirectorV2CharacterEnrichmentPayload>(job);
-        if (payload.novelId !== job.novelId) throw new UnsupportedNovelSideEffectPayloadError("角色补全任务的小说归属不一致。");
+        if (payload.novelId !== job.novelId) throw new UnsupportedNovelSideEffectPayloadError("La nueva atribución de tareas de finalización de personajes es inconsistente.");
         const result = await directorV2CharacterEnrichmentService.execute(payload, {id: job.id, leaseOwner: job.leaseOwner});
         return result === "deferred" ? {deferUntil: new Date(Date.now() + 60_000)} : undefined;
       }

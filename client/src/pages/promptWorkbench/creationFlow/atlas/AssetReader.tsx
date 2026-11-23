@@ -10,11 +10,11 @@ export function RegisteredAssetReader({ id, title, topicTitle, onOpenCatalog, ch
   const catalog = usePromptCatalog("");
   const prompt = useMemo(() => indexAtlasPrompts(catalog.prompts).find(item => item.id === id), [id, catalog.prompts]);
   if (prompt) return <AssetReader key={id} prompt={prompt} onOpenCatalog={onOpenCatalog} {...controls}>{children}</AssetReader>;
-  return <ReaderFrame title={title} breadcrumb={topicTitle} kind="提示词" {...controls}>
+  return <ReaderFrame title={title} breadcrumb={topicTitle} kind="Palabra rápida" {...controls}>
     {children}
-    {catalog.query.isPending ? <p className="reader-status" role="status">正在读取提示词版本…</p> :
-      <div className="reader-status" role="alert"><p>{catalog.query.isError ? "提示词目录读取失败。" : "目录中没有找到此提示词。"}</p>
-        <button type="button" className="reader-copy" onClick={() => void catalog.refetch()}>重新读取目录</button>
+    {catalog.query.isPending ? <p className="reader-status" role="status">Leyendo la versión de la palabra indicada...</p> :
+      <div className="reader-status" role="alert"><p>{catalog.query.isError ? "Error al leer el directorio de palabras." : "Esta palabra rápida no se encontró en el directorio."}</p>
+        <button type="button" className="reader-copy" onClick={() => void catalog.refetch()}>Releer el directorio</button>
       </div>}
   </ReaderFrame>;
 }
@@ -22,10 +22,10 @@ export function RegisteredAssetReader({ id, title, topicTitle, onOpenCatalog, ch
 export function AssetReader({ prompt, onOpenCatalog, children, ...controls }: ReadingControls & { prompt: AtlasPrompt; onOpenCatalog: OpenCatalog; children?: ReactNode }) {
   const [versionKey, setVersionKey] = useState(prompt.versions[0].key);
   const version = prompt.versions.find(v => v.key === versionKey) ?? prompt.versions[0];
-  return <ReaderFrame title={prompt.title} breadcrumb={prompt.topicTitle} kind="提示词" {...controls}>
+  return <ReaderFrame title={prompt.title} breadcrumb={prompt.topicTitle} kind="Palabra rápida" {...controls}>
     {children}
     <div className="atlas-asset-reference"><code>{prompt.id}</code>
-      {prompt.versions.length > 1 && <label className="atlas-version">阅读版本
+      {prompt.versions.length > 1 && <label className="atlas-version">Leer versión
       <select value={version.key} onChange={e => setVersionKey(e.target.value)}>{prompt.versions.map(v =>
         <option key={v.key} value={v.key}>{v.version}</option>)}</select>
       </label>}

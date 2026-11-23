@@ -95,25 +95,25 @@ export function buildPlanTaskSheet(input: PersistPlanInput): string | undefined 
   const riskNotes = input.riskNotes.map((item) => sanitizePlanText(item)).filter(Boolean);
 
   if (objective) {
-    lines.push(`章节目标：${objective}`);
+    lines.push(`Objetivos del capítulo:${objective}`);
   }
   if (participants.length > 0) {
-    lines.push(`关键角色：${participants.join("、")}`);
+    lines.push(`Funciones clave:${participants.join(",")}`);
   }
   if (mustAdvance.length > 0) {
-    lines.push("必须推进：");
+    lines.push("Debe avanzar:");
     lines.push(...mustAdvance.map((item) => `- ${item}`));
   }
   if (mustPreserve.length > 0) {
-    lines.push("必须保留：");
+    lines.push("Debe conservarse:");
     lines.push(...mustPreserve.map((item) => `- ${item}`));
   }
   if (riskNotes.length > 0) {
-    lines.push("风险提醒：");
+    lines.push("Recordatorio de riesgo:");
     lines.push(...riskNotes.map((item) => `- ${item}`));
   }
   if (hookTarget) {
-    lines.push(`收尾钩子：${hookTarget}`);
+    lines.push(`Gancho de cierre:${hookTarget}`);
   }
 
   return lines.length > 0 ? lines.join("\n") : undefined;
@@ -137,11 +137,11 @@ export function buildPlanSceneCards(input: PersistPlanInput): string | undefined
     const emotionBeat = sanitizePlanText(scene.emotionBeat);
     const previousScene = index > 0 ? input.scenes[index - 1] : null;
     const entryState = index === 0
-      ? sanitizePlanText(input.objective) || `进入${input.title}`
+      ? sanitizePlanText(input.objective) || `Ingresar${input.title}`
       : sanitizePlanText(previousScene?.reveal)
         || sanitizePlanText(previousScene?.objective)
-        || `承接上一场进入${title}`;
-    const exitState = reveal || emotionBeat || objective || `完成${title}`;
+        || `Tomar el control de la entrada anterior${title}`;
+    const exitState = reveal || emotionBeat || objective || `Finalizar${title}`;
     return {
       key: `plan_scene_${index + 1}`,
       title,

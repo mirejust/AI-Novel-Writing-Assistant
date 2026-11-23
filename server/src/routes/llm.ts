@@ -20,7 +20,7 @@ const llmTestSchema = z.object({
   provider: llmProviderSchema,
   apiKey: z.string().trim().optional(),
   model: z.string().trim().optional(),
-  baseURL: z.string().trim().url("API URL 格式不正确。").optional(),
+  baseURL: z.string().trim().url("La URL de la API no tiene el formato correcto.").optional(),
   authMode: z.enum(PROVIDER_AUTH_MODES).optional(),
   probeMode: z.enum(["plain", "structured", "both"]).optional(),
 });
@@ -85,7 +85,7 @@ router.get("/providers", async (_req, res, next) => {
     const response: ApiResponse<typeof data> = {
       success: true,
       data,
-      message: "获取模型配置成功。",
+      message: "Obtenga la configuración del modelo con éxito.",
     };
     res.status(200).json(response);
   } catch (error) {
@@ -102,7 +102,7 @@ router.get("/model-routes", async (_req, res, next) => {
     res.status(200).json({
       success: true,
       data,
-      message: "模型路由配置已加载。",
+      message: "Configuración de enrutamiento del modelo cargada.",
     } satisfies ApiResponse<typeof data>);
   } catch (error) {
     next(error);
@@ -112,7 +112,7 @@ router.get("/model-routes", async (_req, res, next) => {
 router.get("/model-routes/connectivity", async (_req, res, next) => {
   try {
     const data = await llmConnectivityService.getModelRouteReport();
-    res.json({ success: true, data, message: "读取上次模型检测结果。" } satisfies ApiResponse<typeof data>);
+    res.json({ success: true, data, message: "Lea los resultados de la detección del último modelo." } satisfies ApiResponse<typeof data>);
   } catch (error) {
     next(error);
   }
@@ -124,7 +124,7 @@ router.post("/model-routes/connectivity", async (_req, res, next) => {
     res.status(200).json({
       success: true,
       data,
-      message: "模型路由连通性检测完成。",
+      message: "Se completa la prueba de conectividad de enrutamiento del modelo.",
     } satisfies ApiResponse<typeof data>);
   } catch (error) {
     next(error);
@@ -137,7 +137,7 @@ router.get("/structured-fallback", async (_req, res, next) => {
     res.status(200).json({
       success: true,
       data,
-      message: "结构化备用模型配置已加载。",
+      message: "Configuración del modelo de respaldo estructurado cargada.",
     } satisfies ApiResponse<typeof data>);
   } catch (error) {
     next(error);
@@ -151,13 +151,13 @@ router.put(
     try {
       const body = req.body as z.infer<typeof structuredFallbackSchema>;
       if ((body.enabled ?? false) && (!body.provider || !body.model)) {
-        throw new AppError("启用结构化备用模型时，provider 和 model 不能为空。", 400);
+        throw new AppError("Al habilitar modelos de respaldo estructurados, el proveedor y el modelo no pueden estar vacíos.", 400);
       }
       const data = await saveStructuredFallbackSettings(body);
       res.status(200).json({
         success: true,
         data,
-        message: "结构化备用模型配置已更新。",
+        message: "Se actualizó la configuración del modelo de espera estructurado.",
       } satisfies ApiResponse<typeof data>);
     } catch (error) {
       next(error);
@@ -192,7 +192,7 @@ router.put(
       void probeIfEnabled({ provider: body.provider, model: body.model, requestProtocol: body.requestProtocol }).catch(() => undefined);
       res.status(200).json({
         success: true,
-        message: "模型路由已更新。",
+        message: "Ruta del modelo actualizada.",
       } satisfies ApiResponse<null>);
     } catch (error) {
       next(error);
@@ -215,10 +215,10 @@ router.post(
             : result.plain?.ok === false && result.structured?.ok === false;
       if (shouldFail) {
         if (/API Key|未配置/.test(result.error ?? "")) {
-          next(new AppError(result.error ?? "未配置可用的模型连接。", 400));
+          next(new AppError(result.error ?? "No hay conexiones de modelo disponibles configuradas.", 400));
           return;
         }
-        next(new AppError(result.error ?? "模型连通性测试失败。", 400));
+        next(new AppError(result.error ?? "La prueba de conectividad del modelo falló.", 400));
         return;
       }
       const response: ApiResponse<{
@@ -236,7 +236,7 @@ router.post(
           plain: result.plain,
           structured: result.structured,
         },
-        message: "模型连通性与结构化兼容性测试已完成。",
+        message: "Se han completado las pruebas de conectividad del modelo y compatibilidad estructural.",
       };
       res.status(200).json(response);
     } catch (error) {

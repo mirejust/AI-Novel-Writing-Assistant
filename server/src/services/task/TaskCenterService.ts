@@ -406,9 +406,9 @@ export class TaskCenterService {
       : kind === "novel_workflow"
         ? await prisma.novelWorkflowTask.findUnique({ where: { id }, select: { status: true } })
         : await this.getTaskDetail(kind, id);
-    if (!detail) throw new AppError("记录不存在或已删除。", 404);
+    if (!detail) throw new AppError("El registro no existe o ha sido eliminado.", 404);
     if (!["draft", "archived", "succeeded", "failed", "cancelled"].includes(detail.status)) {
-      throw new AppError("任务尚未结束，请先到来源页面停止任务，再删除记录。", 409);
+      throw new AppError("La tarea aún no ha terminado. Vaya a la página de origen para detener la tarea antes de eliminar el registro.", 409);
     }
     // Keep the resource graph intact: deletion is a durable list tombstone.
     await removeTaskRecord(kind, id);

@@ -245,14 +245,14 @@ function buildAutoExecutionRunningState(plan: DirectorTakeoverResolvedPlan): {
     return {
       stage: "quality_repair",
       itemKey: "quality_repair",
-      itemLabel: plan.usesCurrentBatch ? "正在恢复当前质量修复批次" : "正在启动新的质量修复批次",
+      itemLabel: plan.usesCurrentBatch ? "Restaurar el lote de reparación de calidad actual" : "Iniciar un nuevo lote de corrección de calidad",
       progress: 0.975,
     };
   }
   return {
     stage: "chapter_execution",
     itemKey: "chapter_execution",
-    itemLabel: plan.usesCurrentBatch ? "正在恢复当前章节批次" : "正在启动新的章节批次",
+    itemLabel: plan.usesCurrentBatch ? "Restaurando el lote de capítulos actual" : "Comenzando un nuevo lote de capítulos",
     progress: 0.93,
   };
 }
@@ -278,16 +278,16 @@ function buildTakeoverInitialState(input: {
 }
 
 function getErrorMessage(error: unknown): string {
-  return error instanceof Error ? error.message : "自动导演接管启动失败。";
+  return error instanceof Error ? error.message : "Falló el inicio automático de la toma de control del director.";
 }
 
-const REWRITE_SNAPSHOT_LABEL = "自动导演重写前备份";
+const REWRITE_SNAPSHOT_LABEL = "Copia de seguridad automática del director antes de reescribir";
 
 async function createRewriteSnapshotForRestart(
   input: StartDirectorTakeoverExecutionInput,
 ): Promise<RewriteSnapshotReference> {
   if (!input.createRewriteSnapshot) {
-    throw new Error("无法创建自动导演重写前备份：快照服务未配置");
+    throw new Error("No se puede crear una copia de seguridad automática previa a la reescritura del director: el servicio de instantáneas no está configurado");
   }
   try {
     const snapshot = await input.createRewriteSnapshot({
@@ -300,8 +300,8 @@ async function createRewriteSnapshotForRestart(
       restoreEntry: "version_history",
     };
   } catch (error) {
-    const cause = error instanceof Error && error.message ? `：${error.message}` : "";
-    throw new Error(`无法创建自动导演重写前备份${cause}`);
+    const cause = error instanceof Error && error.message ? `:${error.message}` : "";
+    throw new Error(`No se puede crear una copia de seguridad automática previa a la reescritura del director${cause}`);
   }
 }
 
@@ -391,7 +391,7 @@ export async function startDirectorTakeoverExecution(
       await input.recordRewriteSnapshotMilestone?.({
         taskId: workflowTask.id,
         snapshot: rewriteSnapshot,
-        summary: `${rewriteSnapshot.label}已创建：${rewriteSnapshot.snapshotId}`,
+        summary: `${rewriteSnapshot.label}Creado:${rewriteSnapshot.snapshotId}`,
       });
     }
 
@@ -451,8 +451,8 @@ export async function startDirectorTakeoverExecution(
       await stateWriter.persistCheckpoint(workflowTask.id, {
         stage: "chapter_execution",
         checkpointType: "production_experience_required",
-        checkpointSummary: "自动导演已确认现有章节执行资源可用，请选择正文生产方式。",
-        itemLabel: "项目已可开写，等待选择生产方式",
+        checkpointSummary: "Auto Director ha confirmado que los recursos de ejecución de capítulos existentes están disponibles; seleccione el método de producción de texto.",
+        itemLabel: "El proyecto está listo para ser escrito, a la espera de seleccionar el método de producción.",
         chapterId: input.takeoverState.latestCheckpoint?.chapterId ?? null,
         volumeId: input.takeoverState.latestCheckpoint?.volumeId ?? input.takeoverState.snapshot.firstVolumeId ?? null,
         progress: 0.9,

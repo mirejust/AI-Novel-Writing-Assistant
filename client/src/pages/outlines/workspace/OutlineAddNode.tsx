@@ -4,7 +4,7 @@ import type { OutlineDocument } from "@ai-novel/shared/types/outline";
 import { createOutlineId } from "../outlineNodes";
 import { Button } from "@/components/ui/button";
 
-const kinds = { volume: "卷", chapter: "章节", character: "人物", payoff: "伏笔", fact: "固定设定" };
+const kinds = { volume: "Rollo", chapter: "Capítulos", character: "Personajes", payoff: "Presagio", fact: "Ajustes fijos" };
 type Kind = keyof typeof kinds;
 
 export function OutlineAddNode({ document, selectedId, disabled, onAdd, onCancel }: {
@@ -55,23 +55,23 @@ export function OutlineAddNode({ document, selectedId, disabled, onAdd, onCancel
     onAdd(next, nodeId);
   }
   return <form className="mb-4 space-y-3 bg-muted/45 p-3" onSubmit={event => { event.preventDefault(); add(); }}>
-    <select className="outline-field" value={kind} aria-label="添加类型" onChange={event => setKind(event.target.value as Kind)}>
+    <select className="outline-field" value={kind} aria-label="Agregar tipo" onChange={event => setKind(event.target.value as Kind)}>
       {Object.entries(kinds).map(([key, label]) => <option key={key} value={key} disabled={key === "chapter" && !document.volumes.length}>{label}</option>)}
     </select>
-    {kind === "chapter" && <label className="block text-xs">所属卷
+    {kind === "chapter" && <label className="block text-xs">Volumen al que pertenece
       <select className="outline-field mt-1" value={parentId} onChange={event => {setParentId(event.target.value); setBeatKey("");}}>
         {document.volumes.map(item => <option value={item.nodeId} key={item.nodeId}>{item.title}</option>)}
       </select>
     </label>}
-    {kind === "chapter" && volume?.beats && <label className="block text-xs">所属节奏段
+    {kind === "chapter" && volume?.beats && <label className="block text-xs">La sección rítmica a la que pertenece.
       <select className="outline-field mt-1" value={beatKey} onChange={event => setBeatKey(event.target.value)}>
-        <option value="">暂未关联</option>{volume.beats.map(beat => <option key={beat.key} value={beat.key}>{formatVolumeBeatDisplayLabel(beat)}</option>)}
+        <option value="">Aún no asociado</option>{volume.beats.map(beat => <option key={beat.key} value={beat.key}>{formatVolumeBeatDisplayLabel(beat)}</option>)}
       </select>
     </label>}
-    <label className="block text-xs">{kind === "character" ? "人物姓名" : "标题"}
+    <label className="block text-xs">{kind === "character" ? "Nombre del personaje" : "Título"}
       <input autoFocus className="outline-field mt-1" value={title} onChange={event => setTitle(event.target.value)} />
     </label>
-    <div className="flex flex-wrap gap-1"><Button type="submit" size="sm" disabled={!eligible}>添加{kinds[kind]}</Button>
-      <Button type="button" variant="ghost" size="sm" onClick={onCancel}>取消</Button></div>
+    <div className="flex flex-wrap gap-1"><Button type="submit" size="sm" disabled={!eligible}>Agregar{kinds[kind]}</Button>
+      <Button type="button" variant="ghost" size="sm" onClick={onCancel}>Cancelar</Button></div>
   </form>;
 }

@@ -318,10 +318,10 @@ export class NovelDirectorPipelineRuntime {
     await stateWriter.markWaitingCheckpoint(input.taskId, {
       stage,
       itemKey: module.defaultWaitingState?.itemKey ?? module.id,
-      itemLabel: `${module.label}已完成，请检查后继续`,
+      itemLabel: `${module.label}Completado, por favor verifíquelo antes de continuar.`,
       progress,
       checkpointType: "step_review_required",
-      checkpointSummary: `${module.label}已生成。你可以检查、AI 完善或重新生成当前步骤，确认后再继续下一步。`,
+      checkpointSummary: `${module.label}Generado. Puede verificar, la IA mejora o regenera el paso actual, confírmelo antes de continuar con el siguiente paso.`,
     });
   }
 

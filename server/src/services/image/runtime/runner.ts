@@ -59,7 +59,7 @@ export async function runImageGeneration<TState extends GeneratedImageState>(
   // 1. provider 解析 + 校验
   const provider = (opts.provider as LLMProvider | undefined) ?? DEFAULT_RUNTIME_PROVIDER;
   if (!isImageProviderSupported(provider)) {
-    throw new AppError(`图片 Provider ${provider} 暂不支持。`, 400);
+    throw new AppError(`Proveedor de imágenes ${provider} Aún no es compatible.`, 400);
   }
 
   // 2. model 解析
@@ -103,7 +103,7 @@ export async function runImageGeneration<TState extends GeneratedImageState>(
     });
 
     const imageUrl = result.images?.[0]?.url;
-    if (!imageUrl) throw new Error("图片生成结果为空");
+    if (!imageUrl) throw new Error("El resultado de la generación de imágenes está vacío.");
 
     const ext = inferExtension(imageUrl);
     const destPath = adapter.diskPath(ext);

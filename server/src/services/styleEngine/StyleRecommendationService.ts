@@ -77,12 +77,12 @@ function collectRuleHighlights(profile: StyleProfile): string[] {
 
 function buildProfileSummary(profile: StyleProfile): string {
   const parts = [
-    profile.category?.trim() ? `分类：${profile.category.trim()}` : "",
-    profile.tags.length > 0 ? `标签：${profile.tags.slice(0, 5).join("、")}` : "",
-    profile.applicableGenres.length > 0 ? `适配题材：${profile.applicableGenres.slice(0, 4).join("、")}` : "",
+    profile.category?.trim() ? `Clasificación:${profile.category.trim()}` : "",
+    profile.tags.length > 0 ? `Etiqueta:${profile.tags.slice(0, 5).join(",")}` : "",
+    profile.applicableGenres.length > 0 ? `Temas adecuados:${profile.applicableGenres.slice(0, 4).join(",")}` : "",
     truncateText(profile.description, 120),
     truncateText(profile.analysisMarkdown, 160),
-    collectRuleHighlights(profile).join("；"),
+    collectRuleHighlights(profile).join(";"),
   ].filter(Boolean);
   return parts.join(" | ");
 }
@@ -108,20 +108,20 @@ function buildNovelSummary(novel: {
 }, chapterCount: number): string {
   const bookFramingSummary = buildBookFramingSummary(novel);
   return [
-    `标题：${novel.title}`,
-    novel.genre?.name ? `题材：${novel.genre.name}` : "",
-    novel.description?.trim() ? `简介：${truncateText(novel.description, 220)}` : "",
-    bookFramingSummary ? `书级 framing：\n${bookFramingSummary}` : "",
-    novel.styleTone?.trim() ? `文风关键词：${novel.styleTone.trim()}` : "",
-    novel.narrativePov ? `叙事视角：${novel.narrativePov}` : "",
-    novel.pacePreference ? `节奏偏好：${novel.pacePreference}` : "",
-    novel.emotionIntensity ? `情绪强度：${novel.emotionIntensity}` : "",
-    novel.aiFreedom ? `AI 自由度：${novel.aiFreedom}` : "",
-    novel.estimatedChapterCount ? `预计章节数：${novel.estimatedChapterCount}` : "",
-    chapterCount > 0 ? `当前章节数：${chapterCount}` : "",
-    novel.world?.name ? `世界观：${novel.world.name}${novel.world.worldType ? `（${novel.world.worldType}）` : ""}` : "",
-    novel.outline?.trim() ? `发展走向：${truncateText(novel.outline, 260)}` : "",
-    novel.structuredOutline?.trim() ? `结构化大纲摘录：${truncateText(novel.structuredOutline, 260)}` : "",
+    `título:${novel.title}`,
+    novel.genre?.name ? `tema:${novel.genre.name}` : "",
+    novel.description?.trim() ? `Introducción:${truncateText(novel.description, 220)}` : "",
+    bookFramingSummary ? `Encuadre a nivel de libro: \\n${bookFramingSummary}` : "",
+    novel.styleTone?.trim() ? `Palabras clave para el estilo de escritura:${novel.styleTone.trim()}` : "",
+    novel.narrativePov ? `Perspectiva narrativa:${novel.narrativePov}` : "",
+    novel.pacePreference ? `Preferencia de ritmo:${novel.pacePreference}` : "",
+    novel.emotionIntensity ? `Intensidad emocional:${novel.emotionIntensity}` : "",
+    novel.aiFreedom ? `Grados de libertad de la IA:${novel.aiFreedom}` : "",
+    novel.estimatedChapterCount ? `Número estimado de capítulos:${novel.estimatedChapterCount}` : "",
+    chapterCount > 0 ? `Número actual de capítulos:${chapterCount}` : "",
+    novel.world?.name ? `Visión del mundo:${novel.world.name}${novel.world.worldType ? `(${novel.world.worldType})` : ""}` : "",
+    novel.outline?.trim() ? `Tendencia de desarrollo:${truncateText(novel.outline, 260)}` : "",
+    novel.structuredOutline?.trim() ? `Extracto del esquema estructurado:${truncateText(novel.structuredOutline, 260)}` : "",
   ].filter(Boolean).join("\n");
 }
 
@@ -183,14 +183,14 @@ export class StyleRecommendationService {
     ]);
 
     if (!novel) {
-      throw new Error("小说不存在。");
+      throw new Error("La novela no existe.");
     }
 
     const profiles = profileRows.map((row) => mapStyleProfileRow(row));
     if (profiles.length === 0) {
       return {
         novelId: input.novelId,
-        summary: "当前还没有可推荐的写法资产。建议先去写法引擎创建或沉淀 1-2 套写法资产，再回来让系统推荐。",
+        summary: "Actualmente no hay activos de escritura para recomendar. Se recomienda ir primero al motor de escritura para crear o precipitar 1 o 2 conjuntos de recursos de escritura y luego regresar y dejar que el sistema los recomiende.",
         candidates: [],
         recommendedAt: new Date().toISOString(),
       };
@@ -200,7 +200,7 @@ export class StyleRecommendationService {
     const targetCount = profiles.length === 1 ? 1 : 2;
     const catalogText = profiles
       .map((profile, index) => (
-        `${index + 1}. ID=${profile.id}\n名称：${profile.name}\n摘要：${buildProfileSummary(profile)}`
+        `${index + 1}. ID=${profile.id}Nombre \\n:${profile.name}Resumen de \\n:${buildProfileSummary(profile)}`
       ))
       .join("\n\n");
     const novelSummary = buildNovelSummary(novel, chapterCount);

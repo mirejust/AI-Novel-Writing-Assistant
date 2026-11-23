@@ -90,7 +90,7 @@ function tryParseStructuredJsonValue(source: string): { parsed: unknown } | { er
     if (fixed === source) {
       return {
         error: [
-          "JSON 解析失败：",
+          "Error al analizar JSON:",
           error instanceof Error ? error.message : String(error),
         ].join("\n"),
       };
@@ -103,9 +103,9 @@ function tryParseStructuredJsonValue(source: string): { parsed: unknown } | { er
     } catch (fixedError) {
       return {
         error: [
-          "JSON 解析失败：",
+          "Error al analizar JSON:",
           error instanceof Error ? error.message : String(error),
-          "截断修复后仍失败：",
+          "Todavía falla después de la reparación del truncamiento:",
           fixedError instanceof Error ? fixedError.message : String(fixedError),
         ].join("\n"),
       };
@@ -426,7 +426,7 @@ export async function parseStructuredLlmRawContentDetailed<T>(
         if (repairError instanceof StructuredOutputError && terminalResponseReason(repairError.diagnostics.response?.failureReason)) throw repairError;
         if (attempt >= maxRepairAttempts) {
           throw buildStructuredError({
-            message: `[${input.label}] JSON 解析失败且修复未成功。错误：${repairError instanceof Error ? repairError.message : String(repairError)}`,
+            message: `[${input.label}] El análisis de JSON falló y la reparación no tuvo éxito. error:${repairError instanceof Error ? repairError.message : String(repairError)}`,
             cause: repairError,
             category: classifyStructuredOutputFailure({
               error: repairError,
@@ -442,7 +442,7 @@ export async function parseStructuredLlmRawContentDetailed<T>(
       }
     }
     throw buildStructuredError({
-      message: `[${input.label}] JSON 解析未通过。`,
+      message: `[${input.label}] Error al analizar JSON.`,
       category: classifyStructuredOutputFailure({ error: parseErrorMessage }) === "incomplete_json" ? "incomplete_json" : "malformed_json",
       strategy: input.strategy, profile: input.profile,
       reasoningForcedOff: input.reasoningForcedOff, fallbackAvailable: input.fallbackAvailable, fallbackUsed: input.fallbackUsed,
@@ -510,7 +510,7 @@ export async function parseStructuredLlmRawContentDetailed<T>(
         data: await repairWithLlm<T>({
           ...input,
           schema: runtimeSchema,
-        }, input.rawContent, `Zod 校验错误：\n${formatZodErrors(zodError)}`, attempt, getRepairHelpers<T>()),
+        }, input.rawContent, `Error de suma de comprobación de Zod: \\n${formatZodErrors(zodError)}`, attempt, getRepairHelpers<T>()),
         repairUsed: true,
         repairAttempts: attempt,
         diagnostics,
@@ -520,7 +520,7 @@ export async function parseStructuredLlmRawContentDetailed<T>(
       if (error instanceof StructuredOutputError && terminalResponseReason(error.diagnostics.response?.failureReason)) throw error;
       if (attempt >= maxRepairAttempts) {
         throw buildStructuredError({
-          message: `[${input.label}] LLM 输出经修复后仍未通过 Schema 校验。错误：${error instanceof Error ? error.message : String(error)}`,
+          message: `[${input.label}] La salida de LLM aún falla en la validación del esquema después de ser reparada. error:${error instanceof Error ? error.message : String(error)}`,
           category: "schema_mismatch",
           cause: error,
           strategy: input.strategy,
@@ -537,7 +537,7 @@ export async function parseStructuredLlmRawContentDetailed<T>(
   }
 
   throw buildStructuredError({
-    message: `[${input.label}] LLM 输出经修复后仍未通过 Schema 校验。错误：${formatZodErrors(zodError)}`,
+    message: `[${input.label}] La salida de LLM aún falla en la validación del esquema después de ser reparada. error:${formatZodErrors(zodError)}`,
     category: "schema_mismatch",
     strategy: input.strategy,
     profile: input.profile,

@@ -82,8 +82,8 @@ export async function extractSnapshotWithAI(input: StateSnapshotExtractionInput)
     })
     .join("\n");
   const previousSummary = input.previousSnapshot?.summary
-    ? `上一状态快照：${input.previousSnapshot.summary}`
-    : "上一状态快照：无";
+    ? `Instantánea del estado anterior:${input.previousSnapshot.summary}`
+    : "Instantánea de estado anterior: Ninguna";
   try {
     const result = await runStructuredPrompt({
       asset: stateSnapshotPrompt,
@@ -91,11 +91,11 @@ export async function extractSnapshotWithAI(input: StateSnapshotExtractionInput)
         novelId: input.novelId,
         chapterOrder: input.chapter.order,
         chapterTitle: input.chapter.title,
-        chapterGoal: input.chapter.expectation ?? "无",
+        chapterGoal: input.chapter.expectation ?? "Ninguno",
         charactersText: input.characters.map((item) => `- ${item.id} | ${item.name} | ${item.role} | goal=${item.currentGoal ?? ""} | state=${item.currentState ?? ""}`).join("\n"),
         summaryText: input.summaryRow?.summary ?? briefSummary(input.content),
-        factsText: chapterFacts || "无",
-        timelineText: timelineBlock || "无",
+        factsText: chapterFacts || "Ninguno",
+        timelineText: timelineBlock || "Ninguno",
         previousSummary,
         content: input.content,
       },
@@ -129,7 +129,7 @@ function buildFallbackSnapshot(input: Pick<
       secretExposure: "unknown",
       knownFacts: relevantFacts.slice(0, 3),
       misbeliefs: [],
-      summary: [timeline[0], relevantFacts[0], character.currentState].filter(Boolean).join("；") || `${character.name}在第${input.chapter.order}章继续推进主线。`,
+      summary: [timeline[0], relevantFacts[0], character.currentState].filter(Boolean).join(";") || `${character.name}en el primero${input.chapter.order}El capítulo continúa avanzando en la línea principal.`,
     };
   });
   const relationStates = input.characters.slice(0, 4).flatMap((source) => {
@@ -143,7 +143,7 @@ function buildFallbackSnapshot(input: Pick<
         intimacyScore: 40,
         conflictScore: 50,
         dependencyScore: 35,
-        summary: `${source.name}与${target.name}在本章发生直接互动。`,
+        summary: `${source.name}y${target.name}La interacción directa ocurre en este capítulo.`,
       }));
   });
   const informationStates = facts.slice(0, 6).map((item) => ({

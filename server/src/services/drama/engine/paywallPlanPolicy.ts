@@ -39,7 +39,7 @@ function normalizeIntensityCurve(value: unknown, targetEpisodes: number): DramaP
       const toEpisode = clampInt(record.toEpisode, fromEpisode, fromEpisode, targetEpisodes);
       const goal = typeof record.goal === "string" && record.goal.trim()
         ? record.goal.trim()
-        : "保持付费短剧钩子和情绪推进";
+        : "Mantenga el gancho de la parodia paga y el estado de ánimo propulsor";
       return {
         fromEpisode,
         toEpisode,
@@ -82,15 +82,15 @@ export function resolveDramaPaywallPlan(strategyJson: string | null | undefined,
 export function describeDramaPaywallPlan(plan: DramaPaywallPlan): string {
   const curve = plan.intensityCurve.length
     ? plan.intensityCurve
-      .map((segment) => `E${segment.fromEpisode}-${segment.toEpisode}：${segment.goal}（情绪目标 ${segment.targetEmotionNet}）`)
+      .map((segment) => `E${segment.fromEpisode}-${segment.toEpisode}:${segment.goal}(metas emocionales ${segment.targetEmotionNet})`)
       .join("\n")
-    : "按赛道默认节奏推进。";
+    : "Avanza al ritmo predeterminado de la pista.";
   return [
-    `首付费集：第 ${plan.firstPaywallAt} 集`,
-    `免费引流：前 ${plan.freeEpisodes} 集`,
-    `付费卡点间隔：${plan.paywallCadence} 集`,
-    `付费集卡点强度阈值：${plan.cliffhangerStrengthThreshold}`,
-    plan.buildupBeforePaywall ? `付费前蓄势：${plan.buildupBeforePaywall}` : "",
-    `强度曲线：\n${curve}`,
+    `Primer set pagado: No. ${plan.firstPaywallAt} colocar`,
+    `Tráfico libre: ex ${plan.freeEpisodes} colocar`,
+    `Intervalo de puntos de la tarjeta de pago:${plan.paywallCadence} colocar`,
+    `Umbral de intensidad de puntos de la tarjeta establecida de pago:${plan.cliffhangerStrengthThreshold}`,
+    plan.buildupBeforePaywall ? `Prepárese antes de pagar:${plan.buildupBeforePaywall}` : "",
+    `Curva de fuerza: \\n${curve}`,
   ].filter(Boolean).join("\n");
 }

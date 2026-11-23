@@ -76,13 +76,13 @@ export function runNovelThemeWorldGeneration(
         const rateLimited = error.category === "transport_error"
           && (response?.failureReason === "rate_limited" || response?.httpStatus === 429);
         const model = target?.model ?? options.model;
-        const modelLabel = model ? `模型「${model}」` : "模型";
+        const modelLabel = model ? `Modelo"${model}»` : "Modelo";
         const requestLimit = response?.maxTokens ?? requestedMaxTokens;
-        const limit = `本次实际申请上限为 ${requestLimit.toLocaleString("zh-CN")} Token。`;
+        const limit = `El límite de solicitud real esta vez es ${requestLimit.toLocaleString("zh-CN")} Simbólico.`;
         if (rateLimited) {
           // A reservation-based 429 cannot clear by retrying the same allowance.
           throw new NovelThemeWorldGenerationError(
-            `${modelLabel}触发了限流（429）。${limit}请稍后重试，或换用配额支持本次请求的模型。`,
+            `${modelLabel}Se activa la limitación de corriente (429).${limit}Vuelva a intentarlo más tarde o cambie a un modelo cuya cuota admita esta solicitud.`,
             429,
             error,
           );
@@ -101,21 +101,21 @@ export function runNovelThemeWorldGeneration(
         }
 
         if (timedOut) {
-          const waited = response?.durationMs == null ? "" : `（本次等待 ${(response.durationMs / 1000).toFixed(1)} 秒）`;
+          const waited = response?.durationMs == null ? "" : `(Esta vez esperando ${(response.durationMs / 1000).toFixed(1)} Segundo)`;
           throw new NovelThemeWorldGenerationError(
-            `${modelLabel}生成世界设定超时${waited}。${limit}请在「设置 → 模型与厂商 → 单次生成最长等待」调高等待时间，或更换模型后重试。`,
+            `${modelLabel}Generar tiempo de espera de configuración mundial${waited}.${limit}Aumente el tiempo de espera en "Configuración → Modelo y fabricante → Espera máxima para una sola generación", o cambie el modelo e inténtelo nuevamente.`,
             504,
             error,
           );
         }
         const reason = error.category === "reasoning_budget_exhausted"
-          ? "用完输出额度仍未返回世界设定" : "在世界设定完整返回前耗尽了输出额度";
+          ? "Después de agotar la cuota de salida, todavía no has regresado a la configuración mundial." : "La cuota de producción se agotó antes de que se restableciera por completo el entorno mundial.";
         const routeLimited = response?.maxTokens === worldRouteLimit(response?.budgetTrace?.routeMaxTokens);
         const settingsHint = routeLimited
-          ? "请在「设置 → 模型路由管理 → 大纲策划」核对最大输出长度，或更换模型后重试。"
-          : "请在「设置 → 模型与厂商 → 模型兼容性」核对模型输出上限，或更换模型后重试。";
+          ? "Verifique la longitud máxima de salida en \"Configuración → Gestión de enrutamiento de modelos → Planificación de esquemas\", o cambie el modelo e inténtelo nuevamente."
+          : "Verifique el límite superior de salida del modelo en \"Configuración → Modelo y fabricante → Compatibilidad del modelo\", o cambie el modelo e inténtelo nuevamente.";
         throw new NovelThemeWorldGenerationError(
-          `${modelLabel}${reason}。${limit}${settingsHint}`,
+          `${modelLabel}${reason}.${limit}${settingsHint}`,
           502,
           error,
           routeLimited ? "/settings/model-routes" : "/settings/models",

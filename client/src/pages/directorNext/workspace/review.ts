@@ -1,7 +1,7 @@
 import type {VolumeChapterPlan} from "@ai-novel/shared/types/novel";
 import type {WorkspaceBook, WorkspaceChapter} from "./model";
 
-const labels: Record<string,string> = {story_macro:"故事规划",book_contract:"创作约定",world_skeleton:"世界设定",volume_beat_sheet:"本卷节奏",volume_chapter_list:"本卷章节路线",character_cast:"角色阵容",volume_strategy:"卷纲",chapter_task_sheet:"章节任务与场景",chapter_execution_contract:"正文执行计划",chapter_batch_closed:"本批次正文"};
+const labels: Record<string,string> = {story_macro:"Planificación de la historia",book_contract:"Acuerdo creativo",world_skeleton:"Ambientación del mundo",volume_beat_sheet:"Ritmo de este volumen.",volume_chapter_list:"Ruta capitular de este volumen",character_cast:"Reparto de personajes",volume_strategy:"Esquema",chapter_task_sheet:"Tareas y escenas del capítulo.",chapter_execution_contract:"Plan de ejecución de texto",chapter_batch_closed:"Texto de este lote"};
 export interface SavedReview {
   type:string; label:string; ready:boolean; error?:string; notice?:string;
   canRegenerate?:boolean;
@@ -17,12 +17,12 @@ export interface SavedReview {
 export function resolveSavedReview(book:WorkspaceBook, params:URLSearchParams): SavedReview | null {
   const type=params.get("review");
   if (!type) return null;
-  const result:SavedReview={type,label:labels[type] ?? "创作结果",ready:false};
-  const missing=()=>({...result,error:"无法定位完整的本阶段结果，请重新读取本书或返回导演台查看确认入口。"});
+  const result:SavedReview={type,label:labels[type] ?? "Resultados creativos",ready:false};
+  const missing=()=>({...result,error:"Si no puede localizar los resultados completos de esta etapa, vuelva a leer este libro o regrese al escritorio del director para ver la entrada de confirmación."});
   if (book.reviewContextError) return {...result,error:book.reviewContextError};
   if (!labels[type]) return missing();
   const contexts=book.reviewContexts?.filter(row=>row.type===type) ?? [];
-  if (!contexts.length) return {...result,notice:"本阶段没有待确认的结果。可从左侧目录查看已保存内容，并在导演台查看下一步。"};
+  if (!contexts.length) return {...result,notice:"No hay resultados pendientes en esta etapa. El contenido guardado se puede ver desde el catálogo de la izquierda y los siguientes pasos se pueden ver en la consola del director."};
   if (contexts.length!==1 || contexts[0].novelId!==book.novel.id) return missing();
   const context=contexts[0];
   result.runId=context.runId;result.controlVersion=context.controlVersion;
@@ -57,8 +57,8 @@ export function resolveSavedReview(book:WorkspaceBook, params:URLSearchParams): 
         .flatMap(v => v.chapters.filter(c => c.chapterOrder === target.chapterOrder));
       if (target.chapterOrder !== from + index || matches.length !== 1 || matches[0].id !== target.id) return missing();
       const chapter = matches[0];
-      const missingFields = [!hasText(chapter.taskSheet) && "章节任务", !hasText(chapter.sceneCards) && "场景安排"].filter(Boolean);
-      if (missingFields.length) return {...result,canRegenerate:true,error:`第 ${target.chapterOrder} 章缺少已保存的${missingFields.join("和")}，请在导演台处理当前阶段。`};
+      const missingFields = [!hasText(chapter.taskSheet) && "Tareas del capítulo", !hasText(chapter.sceneCards) && "Arreglo de escena"].filter(Boolean);
+      if (missingFields.length) return {...result,canRegenerate:true,error:`Cap. ${target.chapterOrder} Falta el capitulo guardado${missingFields.join("y")}, maneje la etapa actual en el escritorio del director.`};
       selected.push(chapter);
     }
     return {...result,ready:true,plan,plans:selected};

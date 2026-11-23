@@ -4,10 +4,10 @@ export default function AstrologyPage() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>占星灵感</CardTitle>
-        <CardDescription>占星模块占位页。</CardDescription>
+        <CardTitle>Inspiración astrológica</CardTitle>
+        <CardDescription>Página de marcador de posición del módulo de astrología.</CardDescription>
       </CardHeader>
-      <CardContent>后续将在此接入题材化灵感生成与设定扩展能力。</CardContent>
+      <CardContent>En el futuro, se accederá aquí a la generación de inspiración temática y a las capacidades de expansión de configuración.</CardContent>
     </Card>
   );
 }

@@ -66,7 +66,7 @@ function extractRawTitlesFromPayload(payload: unknown): unknown[] {
   if (payload && typeof payload === "object" && Array.isArray((payload as { titles?: unknown }).titles)) {
     return (payload as { titles: unknown[] }).titles;
   }
-  throw new Error("模型输出缺少 titles 数组。");
+  throw new Error("A la salida del modelo le falta la matriz de títulos.");
 }
 
 function buildNovelBrief(novel: {
@@ -75,15 +75,15 @@ function buildNovelBrief(novel: {
   genre?: { name: string; description: string | null } | null;
 }): string {
   const parts = [
-    novel.description?.trim() ? `作品简介：${novel.description.trim()}` : "",
-    novel.genre?.name ? `题材基底：${novel.genre.name}` : "",
-    novel.genre?.description?.trim() ? `题材补充：${novel.genre.description.trim()}` : "",
+    novel.description?.trim() ? `Introducción a la obra:${novel.description.trim()}` : "",
+    novel.genre?.name ? `Base temática:${novel.genre.name}` : "",
+    novel.genre?.description?.trim() ? `Suplemento temático:${novel.genre.description.trim()}` : "",
   ].filter(Boolean);
 
   if (parts.length > 0) {
     return parts.join("\n");
   }
-  return `项目标题：${novel.title}`;
+  return `Título del proyecto:${novel.title}`;
 }
 
 function batchScore(titles: TitleFactorySuggestion[]): number {
@@ -104,13 +104,13 @@ function isBetterBatch(current: TitleFactorySuggestion[], challenger: TitleFacto
 
 function ensureGenerationQuality(titles: TitleFactorySuggestion[], targetCount: number): void {
   if (titles.length < targetCount) {
-    throw new Error(`标题数量不足，目标 ${targetCount} 个，实际仅有 ${titles.length} 个可用标题。`);
+    throw new Error(`Número insuficiente de títulos, objetivo ${targetCount} , en realidad sólo ${titles.length} títulos disponibles.`);
   }
   if (!hasEnoughStyleVariety(titles, targetCount)) {
-    throw new Error("标题风格分布过窄，未达到最低风格覆盖要求。");
+    throw new Error("La distribución de estilos del título es demasiado estrecha y no cumple con los requisitos mínimos de cobertura de estilo.");
   }
   if (!hasEnoughStructuralVariety(titles, targetCount)) {
-    throw new Error("标题句式框架过于集中，缺少足够的结构多样性。");
+    throw new Error("La estructura oracional del título está demasiado concentrada y carece de suficiente diversidad estructural.");
   }
 }
 
@@ -122,10 +122,10 @@ export class TitleGenerationService {
     const count = normalizeRequestedCount(input.count, DEFAULT_TITLE_COUNT);
 
     if (mode === "brief" && !brief) {
-      throw new Error("自由标题工坊需要提供创作简报。");
+      throw new Error("El Taller de títulos independiente requiere un resumen creativo.");
     }
     if (mode === "adapt" && !referenceTitle) {
-      throw new Error("参考标题改写模式需要提供参考标题。");
+      throw new Error("El modo de reescritura del título de referencia requiere un título de referencia.");
     }
 
     const genre = input.genreId
@@ -139,7 +139,7 @@ export class TitleGenerationService {
       mode,
       selectionMode: input.selectionMode ?? "pool",
       count,
-      brief: brief || `请围绕参考标题《${referenceTitle}》做结构学习式改写，产出原创标题。`,
+      brief: brief || `Consulte el título "${referenceTitle}»Realizar reescritura de estilo de aprendizaje estructural para producir títulos originales.`,
       referenceTitle,
       novelTitle: "",
       currentTitle: "",
@@ -174,7 +174,7 @@ export class TitleGenerationService {
     });
 
     if (!novel) {
-      throw new Error("小说不存在。");
+      throw new Error("La novela no existe.");
     }
 
     const brief = buildNovelBrief(novel);
@@ -241,7 +241,7 @@ export class TitleGenerationService {
 
         if (primarySelection) {
           if (titles.length < count) {
-            throw new Error(`标题数量不足，目标 ${count} 个，实际仅有 ${titles.length} 个可用标题。`);
+            throw new Error(`Número insuficiente de títulos, objetivo ${count} , en realidad sólo ${titles.length} títulos disponibles.`);
           }
         } else {
           ensureGenerationQuality(titles, count);
@@ -249,7 +249,7 @@ export class TitleGenerationService {
         return { titles };
       } catch (error) {
         lastError = error;
-        retryReason = resolveRetryReason(error, "输出不符合 JSON 或标题质量要求。");
+        retryReason = resolveRetryReason(error, "La salida no cumple con los requisitos de calidad JSON o del encabezado.");
       }
     }
 
@@ -263,9 +263,9 @@ export class TitleGenerationService {
     }
 
     if (lastError instanceof Error) {
-      throw new Error(`标题生成失败：${lastError.message}`);
+      throw new Error(`Error al generar el título:${lastError.message}`);
     }
-    throw new Error("标题生成失败。");
+    throw new Error("Error al generar el título.");
   }
 }
 

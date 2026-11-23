@@ -156,10 +156,10 @@ function compactStructuredValue(value: unknown): string[] {
     const nodeLabel = typeof record.label === "string" ? record.label.trim() : "";
     if (nodeLabel) {
       const meta = [
-        typeof record.phase === "string" && record.phase.trim() ? `阶段=${record.phase.trim()}` : "",
-        typeof record.timeHint === "string" && record.timeHint.trim() ? `时间=${record.timeHint.trim()}` : "",
-      ].filter(Boolean).join("；");
-      return [meta ? `${nodeLabel}（${meta}）` : nodeLabel];
+        typeof record.phase === "string" && record.phase.trim() ? `etapa =${record.phase.trim()}` : "",
+        typeof record.timeHint === "string" && record.timeHint.trim() ? `tiempo =${record.timeHint.trim()}` : "",
+      ].filter(Boolean).join(";");
+      return [meta ? `${nodeLabel}(${meta})` : nodeLabel];
     }
     return [];
   }
@@ -181,7 +181,7 @@ function extractAnalysisSectionLines(section: ContinuationAnalysisSection, limit
         continue;
       }
       const label = BOOK_ANALYSIS_STRUCTURED_FIELD_LABELS[key] ?? key;
-      lines.push(`${section.title}/${label}: ${values.slice(0, 4).join("；")}`);
+      lines.push(`${section.title}/${label}: ${values.slice(0, 4).join(";")}`);
       if (lines.length >= limit) {
         break;
       }
@@ -222,21 +222,21 @@ function buildAnalysisHumanBlock(input: {
   const factLines = selectAnalysisLines(sections, ["overview", "worldbuilding", "themes"], 6);
   const unresolvedLines = selectAnalysisLines(sections, ["plot_structure", "timeline", "market_highlights"], 6);
 
-  return `续写模式已开启，请承接前作并避免复刻。
-续写来源：${input.sourceType === "novel" ? "站内小说" : "知识库小说"}
-前作标题：${input.sourceTitle || input.analysis.documentTitle}
-拆书分析：${input.analysis.title}
-前作核心角色状态：
-${characterLines.map((item) => `- ${item}`).join("\n") || "暂无"}
+  return `El modo de continuación está activado. Continúe con el trabajo anterior y evite duplicarlo.
+Fuente de continuación:${input.sourceType === "novel" ? "Novelas de sitio" : "novela de base de conocimientos"}
+Título del trabajo anterior:${input.sourceTitle || input.analysis.documentTitle}
+Análisis de división de libros:${input.analysis.title}
+El estado de los personajes principales del juego anterior:
+${characterLines.map((item) => `- ${item}`).join("\n") || "Sin datos"}
 
-前作终局章节摘要：
-${endingLines.map((item) => `- ${item}`).join("\n") || "暂无"}
+Resumen de los capítulos finales del juego anterior:
+${endingLines.map((item) => `- ${item}`).join("\n") || "Sin datos"}
 
-前作关键事实（用于承接因果）：
-${factLines.map((item) => `- ${item}`).join("\n") || "暂无"}
+Datos clave del trabajo anterior (usados ​​para conectar causa y efecto):
+${factLines.map((item) => `- ${item}`).join("\n") || "Sin datos"}
 
-前作未完线索（可推进，不可照抄桥段）：
-${unresolvedLines.map((item) => `- ${item}`).join("\n") || "暂无"}`;
+Pistas inacabadas del trabajo anterior (se pueden avanzar, pero no se pueden copiar):
+${unresolvedLines.map((item) => `- ${item}`).join("\n") || "Sin datos"}`;
 }
 
 interface ContinuationContextPack {
@@ -432,7 +432,7 @@ export class NovelContinuationService {
       sourceType: input.sourceType,
       sourceId: input.sourceId,
       sourceTitle: input.sourceTitle || input.analysis.documentTitle,
-      systemRule: "若为续写模式：必须承接前作因果与角色弧线，但禁止复刻前作关键桥段顺序、标志性台词和句式。",
+      systemRule: "Si es un modo de continuación: se deben heredar la causa y efecto y los arcos de personajes del trabajo anterior, pero la secuencia de escenas clave, líneas icónicas y patrones de oraciones del trabajo anterior están prohibidas.",
       humanBlock,
       antiCopyCorpus,
     };
@@ -467,43 +467,43 @@ export class NovelContinuationService {
     const characterText = sourceNovel.characters.length > 0
       ? sourceNovel.characters
         .map((item) => {
-          const state = item.currentState?.trim() ? ` | 当前状态: ${item.currentState.slice(0, 80)}` : "";
+          const state = item.currentState?.trim() ? ` | Estado actual: ${item.currentState.slice(0, 80)}` : "";
           return `- ${item.name} (${item.role})${state}`;
         })
         .join("\n")
-      : "暂无";
+      : "Sin datos";
 
     const endingSummaryText = sourceNovel.chapterSummaries.length > 0
       ? sourceNovel.chapterSummaries
         .sort((a, b) => b.chapter.order - a.chapter.order)
         .slice(0, 4)
-        .map((item) => `- 第${item.chapter.order}章《${item.chapter.title}》: ${item.summary.slice(0, 140)}`)
+        .map((item) => `- No.${item.chapter.order}capítulo"${item.chapter.title}》: ${item.summary.slice(0, 140)}`)
         .join("\n")
-      : "暂无";
+      : "Sin datos";
 
     const factText = sourceNovel.facts.length > 0
       ? sourceNovel.facts.map((item) => `- [${item.category}] ${item.content.slice(0, 120)}`).join("\n")
-      : "暂无";
+      : "Sin datos";
 
     const unresolvedBeatText = sourceNovel.plotBeats.length > 0
       ? sourceNovel.plotBeats
         .map((item) => `- ${item.title}: ${item.content.slice(0, 100)}`)
         .join("\n")
-      : "暂无";
+      : "Sin datos";
 
-    const humanBlock = `续写模式已开启，请承接前作并避免复刻。
-续写来源：站内小说
-前作标题：${sourceNovel.title}
-前作核心角色状态：
+    const humanBlock = `El modo de continuación está activado. Continúe con el trabajo anterior y evite duplicarlo.
+Fuente de continuación: Novela en el sitio.
+Título del trabajo anterior:${sourceNovel.title}
+El estado de los personajes principales del juego anterior:
 ${characterText}
 
-前作终局章节摘要：
+Resumen de los capítulos finales del juego anterior:
 ${endingSummaryText}
 
-前作关键事实（用于承接因果）：
+Datos clave del trabajo anterior (usados ​​para conectar causa y efecto):
 ${factText}
 
-前作未完线索（可推进，不可照抄桥段）：
+Pistas inacabadas del trabajo anterior (se pueden avanzar, pero no se pueden copiar):
 ${unresolvedBeatText}`;
 
     const antiCopyCorpus = dedupeNonEmpty([
@@ -519,7 +519,7 @@ ${unresolvedBeatText}`;
       sourceType: "novel",
       sourceId: sourceNovel.id,
       sourceTitle: sourceNovel.title,
-      systemRule: "若为续写模式：必须承接前作因果与角色弧线，但禁止复刻前作关键桥段顺序、标志性台词和句式。",
+      systemRule: "Si es un modo de continuación: se deben heredar la causa y efecto y los arcos de personajes del trabajo anterior, pero la secuencia de escenas clave, líneas icónicas y patrones de oraciones del trabajo anterior están prohibidas.",
       humanBlock,
       antiCopyCorpus,
     };
@@ -543,18 +543,18 @@ ${unresolvedBeatText}`;
       knowledgeContent.slice(0, 1000),
     ]);
 
-    const humanBlock = `续写模式已开启，请承接前作并避免复刻。
-续写来源：知识库小说
-知识库文档标题：${knowledgeDoc.title}
-可承接信息摘要：
-${summaryBlock || "暂无"}`;
+    const humanBlock = `El modo de continuación está activado. Continúe con el trabajo anterior y evite duplicarlo.
+Fuente de continuación: Novelas de la base de conocimientos
+Título del documento de la base de conocimientos:${knowledgeDoc.title}
+Resumen de información aceptable:
+${summaryBlock || "Sin datos"}`;
 
     return {
       enabled: true,
       sourceType: "knowledge_document",
       sourceId: knowledgeDoc.id,
       sourceTitle: knowledgeDoc.title,
-      systemRule: "若为续写模式：必须承接前作因果与角色弧线，但禁止复刻前作关键桥段顺序、标志性台词和句式。",
+      systemRule: "Si es un modo de continuación: se deben heredar la causa y efecto y los arcos de personajes del trabajo anterior, pero la secuencia de escenas clave, líneas icónicas y patrones de oraciones del trabajo anterior están prohibidas.",
       humanBlock,
       antiCopyCorpus,
     };

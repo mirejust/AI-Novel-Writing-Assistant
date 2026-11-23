@@ -161,7 +161,7 @@ export class ChapterQualityLoopService {
       },
     });
     if (!chapter) {
-      throw new Error("章节不存在，无法记录质量闭环状态。");
+      throw new Error("El capítulo no existe y el estado del circuito cerrado de calidad no se puede registrar.");
     }
 
     const assessment = buildChapterQualityLoopAssessment({

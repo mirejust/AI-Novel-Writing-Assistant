@@ -161,26 +161,26 @@ function normalizeOptions(raw: unknown, limit: number): WorldPropertyOption[] {
 
 function buildPrompt(input: GenerateWorldPropertyOptionsInput, optionsCount: number): string {
   return [
-    `世界类型：${input.worldType}`,
-    `模板：${input.templateName}`,
-    `模板说明：${input.templateDescription}`,
-    input.classicElements.length > 0 ? `可参考的经典元素：${input.classicElements.join("、")}` : "",
-    input.pitfalls.length > 0 ? `需要避开的常见坑点：${input.pitfalls.join("、")}` : "",
-    `世界概念摘要：${input.conceptSummary}`,
-    input.coreImagery.length > 0 ? `核心意象：${input.coreImagery.join("、")}` : "",
-    input.keywords.length > 0 ? `关键词：${input.keywords.join("、")}` : "",
-    input.tone.trim() ? `整体基调：${input.tone.trim()}` : "",
-    input.sourcePrompt.trim() ? `用户原始灵感：${input.sourcePrompt.trim()}` : "",
-    input.ragContext?.trim() ? `可参考素材：${input.ragContext.trim()}` : "",
-    `请生成 ${optionsCount} 个“适合在正式生成世界前先做决定”的关键世界属性选项。`,
-    "这些选项需要延续旧版 V2 世界生成器里“先选属性、再补细节”的思路。",
-    "要求：",
-    "1. 每个属性都必须是具体、可选择、会影响后续世界构建方向的前置决策。",
-    "2. 属性之间尽量独立，但组合起来能形成连贯世界。",
-    "3. 优先覆盖真正重要的分歧点，而不是世界名称、世界简介这类宽泛项。",
-    "4. 属性描述要明确，让用户一眼知道自己在决定什么。",
-    "5. 尽量兼顾基础层、力量层、社会层、文化层、历史层、冲突层，不要全部挤在同一层。",
-    "6. 可以参考经典网文世界搭建逻辑，但不要陈词滥调，要有辨识度。",
+    `Tipo de mundo:${input.worldType}`,
+    `plantilla:${input.templateName}`,
+    `Descripción de la plantilla:${input.templateDescription}`,
+    input.classicElements.length > 0 ? `Elementos clásicos de referencia:${input.classicElements.join(",")}` : "",
+    input.pitfalls.length > 0 ? `Errores comunes que se deben evitar:${input.pitfalls.join(",")}` : "",
+    `Resumen del concepto mundial:${input.conceptSummary}`,
+    input.coreImagery.length > 0 ? `Imágenes centrales:${input.coreImagery.join(",")}` : "",
+    input.keywords.length > 0 ? `Palabras clave:${input.keywords.join(",")}` : "",
+    input.tone.trim() ? `Tono general:${input.tone.trim()}` : "",
+    input.sourcePrompt.trim() ? `Inspiración original del usuario:${input.sourcePrompt.trim()}` : "",
+    input.ragContext?.trim() ? `Materiales de referencia:${input.ragContext.trim()}` : "",
+    `Por favor genera ${optionsCount} Una opción de atributo mundial clave "adecuada para tomar decisiones antes de generar oficialmente el mundo".`,
+    "Estas opciones deben continuar con la idea de \"seleccionar atributos primero y luego completar los detalles\" en la versión anterior del generador mundial V2.",
+    "Requerir:",
+    "1. Cada atributo debe ser específico, opcional y una decisión previa que afectará la dirección de la construcción mundial posterior.",
+    "2. Los atributos deben ser lo más independientes posible, pero combinados para formar un mundo coherente.",
+    "3. Priorizar la cobertura de puntos de desacuerdo verdaderamente importantes, en lugar de temas amplios como nombres mundiales y presentaciones mundiales.",
+    "4. La descripción del atributo debe ser clara para que los usuarios sepan de un vistazo lo que están decidiendo.",
+    "5. Trate de tener en cuenta la capa básica, la capa de poder, la capa social, la capa cultural, la capa histórica y la capa de conflicto, y no las amontone a todas en la misma capa.",
+    "6. Puedes consultar el mundo web clásico para generar lógica, pero no seas cliché y sé reconocible.",
   ]
     .filter(Boolean)
     .join("\n");
@@ -227,5 +227,5 @@ export async function generateWorldPropertyOptions(
     }
   }
 
-  throw new Error("世界属性选项生成失败，模型未返回足够的有效结构。");
+  throw new Error("La generación de opciones de atributos mundiales falló, el modelo no devolvió suficientes estructuras válidas.");
 }

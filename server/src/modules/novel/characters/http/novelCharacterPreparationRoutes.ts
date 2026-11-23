@@ -60,7 +60,7 @@ export function registerNovelCharacterPreparationRoutes(
       res.status(200).json({
         success: true,
         data,
-        message: "角色关系列表已加载。",
+        message: "Lista de relaciones de roles cargada.",
       } satisfies ApiResponse<typeof data>);
     } catch (error) {
       next(error);
@@ -74,7 +74,7 @@ export function registerNovelCharacterPreparationRoutes(
       res.status(200).json({
         success: true,
         data,
-        message: "角色阵容方案已加载。",
+        message: "Se ha cargado el plan de alineación de personajes.",
       } satisfies ApiResponse<typeof data>);
     } catch (error) {
       next(error);
@@ -92,7 +92,7 @@ export function registerNovelCharacterPreparationRoutes(
         res.status(200).json({
           success: true,
           data,
-          message: "角色阵容方案已生成。",
+          message: "Se ha generado el plan de alineación de personajes.",
         } satisfies ApiResponse<typeof data>);
       } catch (error) {
         next(error);
@@ -119,7 +119,7 @@ export function registerNovelCharacterPreparationRoutes(
         res.status(200).json({
           success: true,
           data,
-          message: "角色阵容方案已应用。",
+          message: "Se ha aplicado el esquema de alineación de personajes.",
         } satisfies ApiResponse<typeof data>);
       } catch (error) {
         next(error);
@@ -137,7 +137,7 @@ export function registerNovelCharacterPreparationRoutes(
         res.status(200).json({
           success: true,
           data,
-          message: "补充角色候选已生成。",
+          message: "Se han generado candidatos para el puesto suplementario.",
         } satisfies ApiResponse<typeof data>);
       } catch (error) {
         next(error);
@@ -155,7 +155,7 @@ export function registerNovelCharacterPreparationRoutes(
         res.status(200).json({
           success: true,
           data,
-          message: "补充角色已创建。",
+          message: "Rol suplementario creado.",
         } satisfies ApiResponse<typeof data>);
       } catch (error) {
         next(error);
@@ -173,7 +173,7 @@ export function registerNovelCharacterPreparationRoutes(
         res.status(200).json({
           success: true,
           data,
-          message: "角色阵容方案已删除。",
+          message: "El plan de alineación de personajes ha sido eliminado.",
         } satisfies ApiResponse<typeof data>);
       } catch (error) {
         next(error);
@@ -188,7 +188,7 @@ export function registerNovelCharacterPreparationRoutes(
       res.status(200).json({
         success: true,
         data,
-        message: "角色阵容方案已清空。",
+        message: "El plan de alineación de personajes ha sido aclarado.",
       } satisfies ApiResponse<typeof data>);
     } catch (error) {
       next(error);

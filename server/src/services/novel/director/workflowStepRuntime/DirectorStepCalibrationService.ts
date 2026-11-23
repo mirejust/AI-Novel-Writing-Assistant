@@ -20,10 +20,10 @@ export class DirectorStepCalibrationService {
 
   async calibrate(taskId: string, input: DirectorStepCalibrationRequest): Promise<unknown> {
     const task = await this.workflowService.getTaskById(taskId);
-    if (!task?.novelId) throw new AppError("步骤校准需要关联到小说导演任务。", 404);
+    if (!task?.novelId) throw new AppError("La calibración de pasos debe estar vinculada a la nueva tarea del director.", 404);
     const module = directorWorkflowStepModuleRegistry.maybeGet(input.stepId.trim());
     if (!module || !isExecutableWorkflowStepModule(module)) {
-      throw new AppError(`不支持校准导演步骤：${input.stepId}`, 400);
+      throw new AppError(`No se admiten los pasos del director de calibración:${input.stepId}`, 400);
     }
     const context = {
       taskId,
@@ -39,7 +39,7 @@ export class DirectorStepCalibrationService {
     const directorTaskData = storedState ? toDirectorTaskDataView(storedState) : {};
     const directorInput = getDirectorInputFromSeedPayload(directorTaskData);
     if (!directorInput) {
-      throw new AppError("当前导演任务缺少可复用的生成输入，请从项目接管入口继续。", 409);
+      throw new AppError("La tarea actual del director carece de información de generación reutilizable; continúe desde la entrada de adquisición del proyecto.", 409);
     }
     const instruction = input.instruction?.trim() || null;
     if (input.action === "regenerate") {
@@ -75,9 +75,9 @@ export class DirectorStepCalibrationService {
     await stateWriter.markWaitingCheckpoint(taskId, {
       stage: "auto_director",
       itemKey: module.id,
-      itemLabel: `${module.label}已校准，请检查后继续`,
+      itemLabel: `${module.label}Ya calibrado, por favor verifique antes de continuar.`,
       checkpointType: "step_review_required",
-      checkpointSummary: `${module.label}已完成${input.action === "improve" ? "完善" : "重新生成"}。请确认当前内容后再继续导演。`,
+      checkpointSummary: `${module.label}Completado${input.action === "improve" ? "Completo" : "Regenerado"}. Confirme el contenido actual antes de continuar con la dirección.`,
     });
     return { action: input.action, stepId: module.id, instruction, status: "waiting_review" };
   }

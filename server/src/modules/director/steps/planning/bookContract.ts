@@ -19,7 +19,7 @@ export function createBookContractStepHandler<Input extends {novelId: string; ta
     });
     const saved = await dependencies.bookContractService.upsert(novelId, draft);
     if (!saved.id || saved.novelId !== novelId) {
-      throw new Error("书级创作约定未正确保存到当前小说。");
+      throw new Error("Las convenciones de escritura a nivel de libro no se guardan correctamente en la novela actual.");
     }
     return {
       artifact: {

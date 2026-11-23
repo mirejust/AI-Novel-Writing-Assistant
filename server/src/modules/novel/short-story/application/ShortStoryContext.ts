@@ -9,10 +9,10 @@ export async function loadRevisionContext(novelId: string) {
   const imported = await prisma.manuscriptProject.findUnique({where:{novelId},include:{novel:true}});
   if(imported?.narrativeForm==="short_story"){
     const planRow=await prisma.shortStoryPlan.findUnique({where:{novelId},include:{segments:{orderBy:{order:"asc"}}}});
-    if(!planRow)throw new AppError("导入短篇缺少分节方案。",409);
+    if(!planRow)throw new AppError("El cuento importado carece de plano de sección.",409);
     const plan=parseJson<ShortStoryPlanContract>(planRow.structureJson,{title:imported.novel?.title??"",targetWordCount:planRow.targetWordCount,endingPromise:planRow.endingPromise,segments:[]});
-    const importedInterpretation={understanding:"从已导入原稿分节形成的工作上下文；没有确认的原始创作意图。",recommendedNarrativeForm:"short_story" as const,recommendedTargetWordCount:planRow.targetWordCount,confidence:1,recommendationReason:"来自用户导入的原稿。",recommendedWritingPlatform:"none" as const,writingPlatformConfidence:1,writingPlatformReason:"导入内容沿用原稿。",directions:[{id:"imported",title:"导入原稿修订",premise:"",coreExperience:"",protagonist:"",centralConflict:"",endingPromise:"",styleKeywords:[]},{id:"imported-unused",title:"未选择新方向",premise:"",coreExperience:"",protagonist:"",centralConflict:"",endingPromise:"",styleKeywords:[]}] as const};
-    return {novel:imported.novel!,planRow,plan,segments:planRow.segments,activeIntent:null,interpretation:importedInterpretation,direction:importedInterpretation.directions[0],task:null,productionFoundation:"导入短篇修订上下文；不启动生成工作流。",reference:referenceContract(parseShortStoryReference(imported.novel?.shortStoryReferenceJson??null,Boolean(imported.novel?.referenceBookAnalysisId))),imported:true as const};
+    const importedInterpretation={understanding:"Contexto de trabajo formado a partir de secciones de manuscritos importados; no hay confirmación de la intención creativa original.",recommendedNarrativeForm:"short_story" as const,recommendedTargetWordCount:planRow.targetWordCount,confidence:1,recommendationReason:"De originales importados por el usuario.",recommendedWritingPlatform:"none" as const,writingPlatformConfidence:1,writingPlatformReason:"El contenido importado hereda del original.",directions:[{id:"imported",title:"Importar revisiones de manuscritos",premise:"",coreExperience:"",protagonist:"",centralConflict:"",endingPromise:"",styleKeywords:[]},{id:"imported-unused",title:"No se seleccionó ninguna nueva dirección",premise:"",coreExperience:"",protagonist:"",centralConflict:"",endingPromise:"",styleKeywords:[]}] as const};
+    return {novel:imported.novel!,planRow,plan,segments:planRow.segments,activeIntent:null,interpretation:importedInterpretation,direction:importedInterpretation.directions[0],task:null,productionFoundation:"Importa contexto de revisión breve; no inicia el flujo de trabajo de compilación.",reference:referenceContract(parseShortStoryReference(imported.novel?.shortStoryReferenceJson??null,Boolean(imported.novel?.referenceBookAnalysisId))),imported:true as const};
   }
   const novel = await prisma.novel.findUnique({
     where: { id: novelId },
@@ -36,18 +36,18 @@ export async function loadRevisionContext(novelId: string) {
     },
   });
   if (!novel || novel.narrativeForm !== "short_story" || !novel.shortStoryPlan) {
-    throw new AppError("短篇作品尚未准备好。", 409);
+    throw new AppError("La pieza corta aún no está lista.", 409);
   }
   const activeIntent = novel.intentVersions[0];
   const task = novel.workflowTasks[0];
   if (!activeIntent || !task) {
-    throw new AppError("短篇作品缺少可恢复的创作上下文。", 409);
+    throw new AppError("Las obras breves carecen de un contexto creativo recuperable.", 409);
   }
   const interpretation = parseJson<CreationIntentInterpretation | null>(activeIntent.structuredIntentJson, null);
   const selected = parseJson<{ selectedDirectionId?: string }>(activeIntent.impactScopeJson, {});
   const direction = interpretation?.directions.find((item) => item.id === selected.selectedDirectionId);
   if (!interpretation || !direction) {
-    throw new AppError("短篇作品缺少生效中的创作方向。", 409);
+    throw new AppError("Las obras breves carecen de una dirección creativa eficaz.", 409);
   }
   return {
     novel,
@@ -90,7 +90,7 @@ export function captureBaseline(context: ShortStoryContext, affectedIds: string[
 }
 
 export class RevisionConflict extends AppError {
-  constructor(message = "正文或故事方案已更新，请重新预览并确认修改。") { super(message, 409); }
+  constructor(message = "El texto o el plan de la historia se han actualizado, obtenga una vista previa nuevamente y confirme la modificación.") { super(message, 409); }
 }
 
 export function assertBaseline(context: ShortStoryContext, baseline: RevisionBaseline): void {

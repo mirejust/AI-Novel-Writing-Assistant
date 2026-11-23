@@ -14,8 +14,8 @@ export const knowledgeToolDefinitions: Partial<
 > = {
   list_knowledge_documents: {
     name: "list_knowledge_documents",
-    title: "列出知识文档",
-    description: "读取知识库文档、索引状态和最近一次索引错误。",
+    title: "Listar documentos de conocimiento",
+    description: "Lea el documento de la base de conocimientos, el estado del índice y el último error del índice.",
     category: "read",
     riskLevel: "low",
     domainAgent: "KnowledgeAgent",
@@ -57,14 +57,14 @@ export const knowledgeToolDefinitions: Partial<
           lastIndexedAt: row.lastIndexedAt?.toISOString() ?? null,
           latestIndexError: latestJobMap.get(row.id)?.lastError ?? null,
         })),
-        summary: `已读取 ${rows.length} 个知识文档。`,
+        summary: `Leer ${rows.length} documento de conocimiento.`,
       });
     },
   },
   get_knowledge_document_detail: {
     name: "get_knowledge_document_detail",
-    title: "读取知识文档详情",
-    description: "读取知识文档详情、版本数、绑定数和索引状态。",
+    title: "Leer los detalles del documento de conocimiento",
+    description: "Lea los detalles del documento de conocimientos, el número de versión, el número de enlace y el estado del índice.",
     category: "read",
     riskLevel: "low",
     domainAgent: "KnowledgeAgent",
@@ -107,14 +107,14 @@ export const knowledgeToolDefinitions: Partial<
         latestIndexError: latestJob?.lastError ?? null,
         versionCount: row.versions.length,
         bindingCount: row.bindings.length,
-        summary: `文档《${row.title}》当前索引状态为 ${row.latestIndexStatus}。`,
+        summary: `documento"${row.title}»El estado actual del índice es ${row.latestIndexStatus}.`,
       });
     },
   },
   get_index_failure_reason: {
     name: "get_index_failure_reason",
-    title: "解释索引失败原因",
-    description: "解释知识文档索引失败、排队或未完成的原因。",
+    title: "Explicar por qué falló el índice",
+    description: "Explique por qué la indexación de documentos de conocimiento falló, estaba en cola o estaba incompleta.",
     category: "inspect",
     riskLevel: "low",
     domainAgent: "KnowledgeAgent",
@@ -137,17 +137,17 @@ export const knowledgeToolDefinitions: Partial<
         orderBy: [{ updatedAt: "desc" }, { id: "desc" }],
       });
       const failureSummary = row.latestIndexStatus === "failed"
-        ? (latestJob?.lastError?.trim() || "索引任务失败，但未记录明确错误。")
+        ? (latestJob?.lastError?.trim() || "La tarea de indexación falló, pero no se registró ningún error explícito.")
         : row.latestIndexStatus === "running"
-          ? "索引任务仍在执行中，并未失败。"
+          ? "La tarea de indexación aún se está ejecutando y no ha fallado."
           : row.latestIndexStatus === "queued"
-            ? "索引任务仍在排队。"
-            : "当前没有索引失败记录。";
+            ? "Las tareas de indexación todavía están en cola."
+            : "Actualmente no se han registrado errores de índice.";
       const recoveryHint = row.latestIndexStatus === "failed"
-        ? "建议检查文档内容、向量化配置和最近一次重建任务日志后再重试。"
+        ? "Se recomienda verificar el contenido del documento, la configuración de vectorización y el último registro de tareas de reconstrucción antes de volver a intentarlo."
         : row.latestIndexStatus === "queued"
-          ? "建议检查索引工作线程是否正常运行。"
-          : "当前无需恢复操作。";
+          ? "Se recomienda comprobar si el subproceso del trabajador del índice se está ejecutando normalmente."
+          : "Actualmente no se requieren operaciones de recuperación.";
       return getIndexFailureReasonOutputSchema.parse({
         documentId: row.id,
         status: row.latestIndexStatus,

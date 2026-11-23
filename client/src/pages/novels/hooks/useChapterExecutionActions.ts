@@ -63,7 +63,7 @@ export function useChapterExecutionActions({
       await invalidateNovelDetail();
     },
     onError: (error) => {
-      const message = error instanceof Error ? error.message : "章节更新失败。";
+      const message = error instanceof Error ? error.message : "La actualización del capítulo falló.";
       onMessage(message);
     },
   });
@@ -75,14 +75,14 @@ export function useChapterExecutionActions({
       await syncNovelWorkflowStageSilently({
         novelId,
         stage: "chapter_execution",
-        itemLabel: "章节摘要已生成",
+        itemLabel: "Resumen del capítulo generado",
         chapterId: selectedChapterId || undefined,
         status: "waiting_approval",
       });
-      onMessage("已通过 AI 生成本章摘要。");
+      onMessage("El resumen de este capítulo se ha generado mediante IA.");
     },
     onError: (error) => {
-      const message = error instanceof Error ? error.message : "章节摘要生成失败。";
+      const message = error instanceof Error ? error.message : "Error al generar el resumen del capítulo.";
       onMessage(message);
     },
   });
@@ -93,7 +93,7 @@ export function useChapterExecutionActions({
       await invalidateNovelDetail();
     },
     onError: (error) => {
-      const message = error instanceof Error ? error.message : "章节执行合同生成失败。";
+      const message = error instanceof Error ? error.message : "Error en la generación del contrato de ejecución del capítulo.";
       onMessage(message);
     },
     onSettled: () => {
@@ -115,7 +115,7 @@ export function useChapterExecutionActions({
 
   const ensureChapter = (): Chapter | null => {
     if (!selectedChapterId || !selectedChapter) {
-      onMessage("请先选择章节。");
+      onMessage("Por favor seleccione un capítulo primero.");
       return null;
     }
     return selectedChapter;
@@ -137,11 +137,11 @@ export function useChapterExecutionActions({
     void syncNovelWorkflowStageSilently({
       novelId,
       stage: "chapter_execution",
-      itemLabel: "章节执行策略已应用",
+      itemLabel: "Se ha aplicado la política de ejecución del capítulo.",
       chapterId: chapter.id,
       status: "waiting_approval",
     });
-    onMessage("生成策略已应用到当前章节。");
+    onMessage("La política de generación ha sido aplicada al presente capítulo.");
   };
 
   const rewriteChapter = () => {
@@ -158,12 +158,12 @@ export function useChapterExecutionActions({
     void syncNovelWorkflowStageSilently({
       novelId,
       stage: "chapter_execution",
-      itemLabel: "本章已重置并准备重写",
+      itemLabel: "Este capítulo ha sido reiniciado y listo para ser reescrito.",
       chapterId: chapter.id,
       status: "waiting_approval",
     });
     onGenerateChapter();
-    onMessage("已触发重写流程。");
+    onMessage("El proceso de reescritura se ha desencadenado.");
   };
 
   const expandChapter = () => {
@@ -172,9 +172,9 @@ export function useChapterExecutionActions({
     }
     setRepairActionKind("expand");
     onStartRepair([
-      buildRepairIssue("engagement", "在不改动主线事件的前提下扩写场景细节和情绪反应，适度拉长文本。", "用户要求扩写章节"),
+      buildRepairIssue("engagement", "Amplíe los detalles de la escena y las reacciones emocionales sin cambiar los eventos principales y alargue el texto adecuadamente.", "Solicitudes de usuarios para ampliar capítulos."),
     ]);
-    onMessage("已提交扩写任务。");
+    onMessage("La tarea de expansión ha sido enviada.");
   };
 
   const compressChapter = () => {
@@ -183,9 +183,9 @@ export function useChapterExecutionActions({
     }
     setRepairActionKind("compress");
     onStartRepair([
-      buildRepairIssue("repetition", "压缩重复表达，保留关键事件与冲突节点，控制篇幅更紧凑。", "用户要求压缩章节"),
+      buildRepairIssue("repetition", "Comprima expresiones repetidas, conserve eventos clave y nodos de conflicto y controle el espacio para que sea más compacto.", "El usuario solicita capítulos comprimidos"),
     ]);
-    onMessage("已提交压缩任务。");
+    onMessage("Tarea de compresión enviada.");
   };
 
   const summarizeChapter = () => {
@@ -207,11 +207,11 @@ export function useChapterExecutionActions({
         void syncNovelWorkflowStageSilently({
           novelId,
           stage: "chapter_execution",
-          itemLabel: "章节任务单已刷新",
+          itemLabel: "La lista de tareas del capítulo se ha actualizado.",
           chapterId,
           status: "waiting_approval",
         });
-        onMessage("已通过后端 AI 刷新本章任务单。");
+        onMessage("Los tickets de tareas de este capítulo se actualizaron mediante IA de backend.");
       },
     });
   };
@@ -228,11 +228,11 @@ export function useChapterExecutionActions({
         void syncNovelWorkflowStageSilently({
           novelId,
           stage: "chapter_execution",
-          itemLabel: "场景拆解已生成",
+          itemLabel: "Se ha generado el desmontaje de la escena.",
           chapterId,
           status: "waiting_approval",
         });
-        onMessage("已通过后端 AI 生成场景拆解。");
+        onMessage("Los desmontajes de escenarios se han generado mediante IA de backend.");
       },
     });
   };
@@ -242,7 +242,7 @@ export function useChapterExecutionActions({
       return;
     }
     onReviewChapter("continuity");
-    onMessage("已执行连续性检查。");
+    onMessage("Se realizó la verificación de continuidad.");
   };
 
   const checkCharacterConsistency = () => {
@@ -250,7 +250,7 @@ export function useChapterExecutionActions({
       return;
     }
     onReviewChapter("character_consistency");
-    onMessage("已执行人设一致性检查。");
+    onMessage("Se ha realizado una verificación de coherencia de la persona.");
   };
 
   const checkPacing = () => {
@@ -258,7 +258,7 @@ export function useChapterExecutionActions({
       return;
     }
     onReviewChapter("pacing");
-    onMessage("已执行节奏检查。");
+    onMessage("Comprobación de cadencia realizada.");
   };
 
   const autoRepair = () => {
@@ -268,9 +268,9 @@ export function useChapterExecutionActions({
     setRepairActionKind("autoRepair");
     const issues = reviewIssues.length > 0
       ? reviewIssues
-      : [buildRepairIssue("coherence", "修复章节逻辑与叙事衔接问题，补足关键动机和因果。", "自动修复默认规则")];
+      : [buildRepairIssue("coherence", "Repare los problemas de conexión narrativa y lógica del capítulo, y complemente las motivaciones clave y la causa y efecto.", "Reparar automáticamente las reglas predeterminadas")];
     onStartRepair(issues);
-    onMessage("已触发自动修复。");
+    onMessage("Se ha activado la reparación automática.");
   };
 
   const strengthenConflict = () => {
@@ -279,9 +279,9 @@ export function useChapterExecutionActions({
     }
     setRepairActionKind("strengthenConflict");
     onStartRepair([
-      buildRepairIssue("pacing", "提升对抗密度，让冲突更早出现并持续施压。", "用户要求强化冲突"),
+      buildRepairIssue("pacing", "Incrementar la densidad del enfrentamiento, permitir que los conflictos surjan antes y mantener la presión.", "Conflicto de refuerzo de solicitud de usuario"),
     ]);
-    onMessage("已触发冲突强化。");
+    onMessage("Se ha desencadenado un refuerzo del conflicto.");
   };
 
   const enhanceEmotion = () => {
@@ -290,9 +290,9 @@ export function useChapterExecutionActions({
     }
     setRepairActionKind("enhanceEmotion");
     onStartRepair([
-      buildRepairIssue("engagement", "增强角色情绪层次与张力，突出内外部情感变化。", "用户要求增强情绪"),
+      buildRepairIssue("engagement", "Realza el nivel emocional y la tensión del personaje, y resalta los cambios emocionales internos y externos.", "Los usuarios solicitan una mejora del estado de ánimo"),
     ]);
-    onMessage("已触发情绪增强。");
+    onMessage("Se ha desencadenado una mejora emocional.");
   };
 
   const unifyStyle = () => {
@@ -301,9 +301,9 @@ export function useChapterExecutionActions({
     }
     setRepairActionKind("unifyStyle");
     onStartRepair([
-      buildRepairIssue("voice", "统一叙事语气与措辞，保持文风稳定。", "用户要求提升文风一致性"),
+      buildRepairIssue("voice", "Unifica el tono narrativo y la redacción y mantén estable el estilo de escritura.", "Los usuarios solicitan una mayor coherencia en el estilo de escritura"),
     ]);
-    onMessage("已触发文风统一。");
+    onMessage("Se ha desencadenado la unificación del estilo de escritura.");
   };
 
   const addDialogue = () => {
@@ -312,9 +312,9 @@ export function useChapterExecutionActions({
     }
     setRepairActionKind("addDialogue");
     onStartRepair([
-      buildRepairIssue("voice", "增加推动情节的有效对话，减少空泛叙述。", "用户要求增加对话推进"),
+      buildRepairIssue("voice", "Incrementar el diálogo efectivo que promueva la trama y reducir las narrativas vacías.", "Solicitudes de usuarios para aumentar el avance de la conversación"),
     ]);
-    onMessage("已触发对话增强。");
+    onMessage("Se activó la mejora de la conversación.");
   };
 
   const addDescription = () => {
@@ -323,9 +323,9 @@ export function useChapterExecutionActions({
     }
     setRepairActionKind("addDescription");
     onStartRepair([
-      buildRepairIssue("engagement", "补充环境与动作描写，提升画面感与临场感。", "用户要求增加描写"),
+      buildRepairIssue("engagement", "Complementar la descripción del entorno y la acción para mejorar la sensación de imagen y presencia.", "Solicitud del usuario para agregar una descripción"),
     ]);
-    onMessage("已触发描写增强。");
+    onMessage("Se activó la mejora de la descripción.");
   };
 
   return {

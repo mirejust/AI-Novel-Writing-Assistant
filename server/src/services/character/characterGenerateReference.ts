@@ -16,7 +16,7 @@ function clipText(source: string, maxChars: number): string {
   if (normalized.length <= maxChars) {
     return normalized;
   }
-  return `${normalized.slice(0, maxChars).trim()}\n...(已截断)`;
+  return `${normalized.slice(0, maxChars).trim()}\\n...(truncado)`;
 }
 
 export async function buildReferenceContext(input: {
@@ -95,10 +95,10 @@ export async function buildReferenceContext(input: {
   ]);
 
   if (knowledgeDocumentIds.length > 0 && documents.length !== knowledgeDocumentIds.length) {
-    throw new Error("参考资料缺失：部分知识文档不存在或已归档。");
+    throw new Error("Materiales de referencia faltantes: algunos documentos de conocimiento no existen o han sido archivados.");
   }
   if (bookAnalysisIds.length > 0 && analyses.length !== bookAnalysisIds.length) {
-    throw new Error("参考资料缺失：部分拆书分析不存在或已归档。");
+    throw new Error("Referencias faltantes: Parte del análisis del libro dividido no existe o ha sido archivado.");
   }
 
   const documentById = new Map(documents.map((item) => [item.id, item] as const));
@@ -115,14 +115,14 @@ export async function buildReferenceContext(input: {
     const version = document.activeVersion ?? document.versions[0];
     const excerpt = version?.content
       ? clipText(version.content, MAX_DOCUMENT_REFERENCE_CHARS)
-      : "（该文档暂无可用内容）";
-    return `【知识库】${document.title}（v${version?.versionNumber ?? 0}）\n${excerpt}`;
+      : "(Este documento aún no tiene contenido disponible)";
+    return `[base de conocimientos]${document.title}(v${version?.versionNumber ?? 0}）\n${excerpt}`;
   });
 
   const analysisReferences = orderedAnalyses.map((analysis) => {
     const summary = analysis.summary?.trim()
       ? clipText(analysis.summary, MAX_ANALYSIS_SUMMARY_CHARS)
-      : "无";
+      : "Ninguno";
     const sectionLines = analysis.sections
       .map((section) => {
         const content = section.editedContent?.trim()
@@ -132,24 +132,24 @@ export async function buildReferenceContext(input: {
         if (!content) {
           return null;
         }
-        return `- ${section.title}：${clipText(content, MAX_ANALYSIS_SECTION_CHARS)}`;
+        return `- ${section.title}:${clipText(content, MAX_ANALYSIS_SECTION_CHARS)}`;
       })
       .filter((line): line is string => Boolean(line))
       .slice(0, MAX_ANALYSIS_SECTION_COUNT);
 
     return [
-      `【拆书】${analysis.title}（文档：${analysis.document.title} v${analysis.documentVersion.versionNumber}）`,
-      `摘要：${summary}`,
-      sectionLines.length > 0 ? `小节要点：\n${sectionLines.join("\n")}` : "小节要点：无",
+      `[Libro abierto]${analysis.title}(documento:${analysis.document.title} v${analysis.documentVersion.versionNumber})`,
+      `resumen:${summary}`,
+      sectionLines.length > 0 ? `Aspectos destacados de la sección: \\n${sectionLines.join("\n")}` : "Aspectos destacados de la sección: Ninguno",
     ].join("\n");
   });
 
   const sections: string[] = [];
   if (documentReferences.length > 0) {
-    sections.push(`### 知识库参考\n${documentReferences.join("\n\n")}`);
+    sections.push(`### Referencia de la base de conocimientos \\n${documentReferences.join("\n\n")}`);
   }
   if (analysisReferences.length > 0) {
-    sections.push(`### 拆书参考\n${analysisReferences.join("\n\n")}`);
+    sections.push(`### Abra el libro como referencia \\n${analysisReferences.join("\n\n")}`);
   }
   return clipText(sections.join("\n\n"), MAX_REFERENCE_CONTEXT_CHARS);
 }

@@ -38,7 +38,7 @@ export const chapterEditorUserIntentPrompt: PromptAsset<
   },
   render: (input) => [
     new SystemMessage([
-      "你是中文网络小说章节编辑器里的修正意图解析器。",
+      "你是西班牙语网络小说章节编辑器里的修正意图解析器。",
       "你的职责是把用户的自然语言修改意见，转换成稳定、可执行的结构化修文意图。",
       "",
       "规则：",

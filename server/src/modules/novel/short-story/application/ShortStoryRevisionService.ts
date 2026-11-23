@@ -38,31 +38,31 @@ export class ShortStoryRevisionService {
 
   async confirm(novelId: string, intentVersionId: string): Promise<{ taskId: string }> {
     const imported=await prisma.manuscriptProject.findUnique({where:{novelId},select:{narrativeForm:true}});
-    if(imported?.narrativeForm==="short_story")throw new AppError("导入短篇不启动生成工作流，请在原稿修订工作区明确采纳分节候选。",409);
+    if(imported?.narrativeForm==="short_story")throw new AppError("La importación de una historia corta no inicia el flujo de trabajo de generación. Adopte explícitamente los candidatos de sección en el espacio de trabajo de revisión del manuscrito.",409);
     const existing = await prisma.shortStoryRevisionJob.findUnique({ where: { intentVersionId } });
     if (existing) {
-      if (existing.novelId !== novelId) throw new AppError("修改预览不存在。", 404);
+      if (existing.novelId !== novelId) throw new AppError("La vista previa de la modificación no existe.", 404);
       // Repeated confirmation never resumes a cancelled or failed operation.
       return { taskId: existing.workflowTaskId };
     }
     const context = await loadRevisionContext(novelId);
-    if(context.imported||!context.task)throw new AppError("导入短篇不启动生成工作流，请在原稿修订工作区明确采纳分节候选。",409);
+    if(context.imported||!context.task)throw new AppError("La importación de una historia corta no inicia el flujo de trabajo de generación. Adopte explícitamente los candidatos de sección en el espacio de trabajo de revisión del manuscrito.",409);
     const proposed = await prisma.novelIntentVersion.findFirst({
       where: { id: intentVersionId, novelId, workflowTaskId: context.task.id, status: "proposed", source: "revision" },
     });
     const preview = parseJson<RevisionPreviewData | null>(proposed?.impactScopeJson, null);
-    if (!proposed || !preview?.baseline) throw new AppError("修改预览已失效，请重新生成。", 409);
+    if (!proposed || !preview?.baseline) throw new AppError("La vista previa de la modificación ha caducado; generela nuevamente.", 409);
     assertBaseline(context, preview.baseline);
     if (context.task.status === "running" || context.task.status === "queued") {
-      throw new AppError("请等待当前生成结束后再确认修改。", 409);
+      throw new AppError("Espere hasta que se complete la generación actual antes de confirmar la modificación.", 409);
     }
     if (JSON.stringify(preview.baseline.checkpoint) !== JSON.stringify({
       status: context.task.status, type: context.task.checkpointType, summary: context.task.checkpointSummary,
       operationId: context.task.shortStoryOperationId, pendingManualRecovery: context.task.pendingManualRecovery,
       cancelRequestedAt: context.task.cancelRequestedAt?.toISOString() ?? null,
-    })) throw new AppError("等待确认的任务已变化，请重新查看调整方案。", 409);
+    })) throw new AppError("Las tareas pendientes de confirmación han cambiado, por favor revisa el plan de ajuste nuevamente.", 409);
     if (context.task.checkpointType === "replan_required" && preview.mode !== "replan") {
-      throw new AppError("请先查看并确认故事调整方案。", 409);
+      throw new AppError("Primero revise y confirme el plan de ajuste de la historia.", 409);
     }
     try {
       await prisma.$transaction(async (tx) => {
@@ -78,7 +78,7 @@ export class ShortStoryRevisionService {
             status: "queued", shortStoryOperationId: proposed.id,
             checkpointType: null, checkpointSummary: null, pendingManualRecovery: false,
             cancelRequestedAt: null, finishedAt: null, lastError: null, progress: 0,
-            currentItemKey: "revision_apply", currentItemLabel: "正在准备确认的修改",
+            currentItemKey: "revision_apply", currentItemLabel: "Modificaciones en preparación para la confirmación.",
           },
         });
         if (!claimed.count) throw new RevisionConflict();
@@ -107,9 +107,9 @@ export class ShortStoryRevisionService {
         const task = await tx.novelWorkflowTask.findUniqueOrThrow({ where: { id: job.workflowTaskId } });
         if (task.shortStoryOperationId !== job.id || task.checkpointType === "replan_required") throw new RevisionConflict();
         if (task.status === "queued" || task.status === "running") return;
-        if (task.status !== "failed" && task.status !== "cancelled") throw new AppError("当前修改不需要重试。", 409);
+        if (task.status !== "failed" && task.status !== "cancelled") throw new AppError("La modificación actual no requiere un nuevo intento.", 409);
         if (job.leaseExpiresAt && job.leaseExpiresAt > new Date()) {
-          throw new AppError("修改正在停止，请稍后继续。", 409);
+          throw new AppError("La edición se está deteniendo. Continúe más tarde.", 409);
         }
         await this.checkVersions(tx, parseJson<RevisionBaseline>(job.baselineJson, null!), job.novelId);
         const updated = await tx.novelWorkflowTask.updateMany({
@@ -117,7 +117,7 @@ export class ShortStoryRevisionService {
           data: {
             status: "queued", cancelRequestedAt: null, pendingManualRecovery: false,
             lastError: null, finishedAt: null, checkpointType: null, checkpointSummary: null,
-            attemptCount: { increment: 1 }, currentItemKey: "revision_apply", currentItemLabel: "正在继续确认的修改",
+            attemptCount: { increment: 1 }, currentItemKey: "revision_apply", currentItemLabel: "Confirmación de cambios en curso",
           },
         });
         if (!updated.count) return;
@@ -135,7 +135,7 @@ export class ShortStoryRevisionService {
           });
           await tx.novelWorkflowTask.updateMany({
             where: { id: job.workflowTaskId, shortStoryOperationId: jobId, status: { in: ["failed", "cancelled"] } },
-            data: { lastError: error.message, currentItemLabel: "请重新预览修改范围" },
+            data: { lastError: error.message, currentItemLabel: "Obtenga una vista previa del rango de modificación nuevamente" },
           });
         });
       }
@@ -186,16 +186,16 @@ export class ShortStoryRevisionService {
       const preview = parseJson<RevisionPreviewData>(intent.impactScopeJson, null!);
       const interpretation = parseJson<CreationIntentInterpretation>(intent.structuredIntentJson, null!);
       const direction = interpretation.directions.find((item) => item.id === preview.selectedDirectionId);
-      if (!direction) throw new Error("修改缺少已确认的方向，请重新预览。");
+      if (!direction) throw new Error("A la modificación le falta la dirección confirmada, obtenga una vista previa nuevamente.");
       const plan = parseJson<ShortStoryPlanContract | null>(job.candidatePlanJson, null)
         ?? (job.strategy === "rewrite_downstream" ? context.plan : null);
       await this.assertRunnable(jobId, token);
       await prisma.novelWorkflowTask.updateMany({
         where: { id: task.id, shortStoryOperationId: jobId, status: { in: ["queued", "running"] }, cancelRequestedAt: null },
-        data: { status: "running", currentItemKey: "revision_apply", currentItemLabel: "正在按确认的范围修改作品", heartbeatAt: new Date() },
+        data: { status: "running", currentItemKey: "revision_apply", currentItemLabel: "La obra se está modificando según el alcance confirmado", heartbeatAt: new Date() },
       });
       if (job.strategy === "full_replan" || job.strategy === "rewrite_downstream") {
-        if (!plan) throw new Error("完整调整方案缺失，请重新预览。");
+        if (!plan) throw new Error("Falta el plan de ajuste completo. Vuelva a obtener una vista previa.");
         let previousContinuity = "";
         let previousContentTail = "";
         for (const segment of context.segments) {
@@ -208,7 +208,7 @@ export class ShortStoryRevisionService {
           await this.checkVersions(prisma, baseline, job.novelId);
           await prisma.novelWorkflowTask.updateMany({
             where: { id: task.id, shortStoryOperationId: jobId, status: "running", cancelRequestedAt: null },
-            data: { currentItemLabel: `正在调整正文（${segment.order}/${context.segments.length}）`,
+            data: { currentItemLabel: `Ajustando el texto (${segment.order}/${context.segments.length})`,
               progress: (segment.order - 1) / context.segments.length * 0.95 },
           });
           let candidate = await prisma.shortStoryRevisionCandidate.findUnique({
@@ -216,9 +216,9 @@ export class ShortStoryRevisionService {
           });
           if (!candidate) {
             const segmentPlan = plan.segments.find((item) => item.order === segment.order);
-            if (!segmentPlan) throw new Error("调整方案的正文范围不完整。");
+            if (!segmentPlan) throw new Error("El alcance del texto del plan de ajuste es incompleto.");
             const platform = parseWritingPlatformSnapshot(context.novel.writingPlatformSnapshotJson);
-            const bookStyle = context.novel.styleTone ?? direction.styleKeywords.join("、");
+            const bookStyle = context.novel.styleTone ?? direction.styleKeywords.join(",");
             const input = {
               originalIdea: preview.originalIdea, understanding: interpretation.understanding, direction,
               plan, segment: segmentPlan, previousContinuity, previousContentTail,
@@ -235,7 +235,7 @@ export class ShortStoryRevisionService {
               },
             });
             await this.assertRunnable(jobId, token);
-            if (!generated.output.content.trim()) throw new Error("本段修改没有生成可用正文，请重试。");
+            if (!generated.output.content.trim()) throw new Error("Esta modificación no generó texto utilizable, inténtelo de nuevo.");
             candidate = await prisma.shortStoryRevisionCandidate.create({
               data: { jobId, segmentId: segment.id, order: segment.order, content: generated.output.content.trim(),
                 targetWordCount: segmentPlan.targetWordCount, continuitySummary: generated.output.continuitySummary },
@@ -271,7 +271,7 @@ export class ShortStoryRevisionService {
           const patches = repaired.output.patches;
           if (patches.length !== affected.length || new Set(patches.map((patch) => patch.segmentOrder)).size !== affected.length
             || affected.some((segment) => !patches.some((patch) => patch.segmentOrder === segment.order && patch.content.trim()))) {
-            throw new Error("修改结果未覆盖确认的全部范围，请继续修改。");
+            throw new Error("Los resultados de la modificación no cubren todo el rango confirmado, continúe modificando.");
           }
           await this.assertRunnable(jobId, token);
           await prisma.$transaction(async (tx) => {
@@ -279,7 +279,7 @@ export class ShortStoryRevisionService {
               where: { id: jobId, leaseToken: token, status: "running", leaseExpiresAt: { gt: new Date() } },
               data: { qualityDebtJson: JSON.stringify(repaired.output.residualQualityDebt) },
             });
-            if (!lease.count) throw new Error("修改执行权已变化，请重新打开作品。");
+            if (!lease.count) throw new Error("Los derechos de ejecución de modificación han cambiado, vuelva a abrir el trabajo.");
             for (const segment of affected) {
               const patch = patches.find((item) => item.segmentOrder === segment.order)!;
               await tx.shortStoryRevisionCandidate.upsert({
@@ -293,7 +293,7 @@ export class ShortStoryRevisionService {
       }
       await this.publish(jobId, token);
     } catch (error) {
-      const message = error instanceof Error ? error.message : "作品修改未完成。";
+      const message = error instanceof Error ? error.message : "La modificación de la obra no está finalizada.";
       const conflict = error instanceof RevisionConflict;
       await prisma.$transaction(async (tx) => {
         const job = await tx.shortStoryRevisionJob.findUnique({ where: { id: jobId } });
@@ -306,7 +306,7 @@ export class ShortStoryRevisionService {
           where: { id: job.workflowTaskId, shortStoryOperationId: jobId,
             status: { in: ["queued", "running"] }, cancelRequestedAt: null },
           data: { status: "failed", lastError: message, currentItemKey: "revision_apply",
-            currentItemLabel: conflict ? "请重新预览修改范围" : "修改暂时中断，可继续修改", finishedAt: new Date() },
+            currentItemLabel: conflict ? "Obtenga una vista previa del rango de modificación nuevamente" : "La modificación queda suspendida temporalmente, puedes continuar modificándola.", finishedAt: new Date() },
         });
       });
       throw error;
@@ -325,7 +325,7 @@ export class ShortStoryRevisionService {
       || job.workflowTask.shortStoryOperationId !== jobId || job.workflowTask.cancelRequestedAt
       || job.workflowTask.pendingManualRecovery || job.workflowTask.checkpointType === "replan_required"
       || (job.workflowTask.status !== "queued" && job.workflowTask.status !== "running")) {
-      throw new AppError("修改已停止，正文保持已保存的内容。", 409);
+      throw new AppError("Se han detenido las modificaciones y el texto permanece como guardado.", 409);
     }
   }
 
@@ -349,25 +349,25 @@ export class ShortStoryRevisionService {
       await this.checkVersions(tx, baseline, job.novelId);
       if (job.candidates.length !== baseline.affectedIds.length
         || baseline.affectedIds.some((id) => !job.candidates.some((candidate) => candidate.segmentId === id && candidate.content.trim()))) {
-        throw new Error("确认范围内仍有正文未完成，请继续修改。");
+        throw new Error("Todavía hay texto sin terminar dentro del rango de confirmación, continúe revisándolo.");
       }
       const originals = await tx.shortStorySegment.findMany({ where: { planId: baseline.planId } });
       if (job.candidates.every((candidate) => originals.find((segment) => segment.id === candidate.segmentId)?.content.trim() === candidate.content.trim())) {
-        throw new RevisionConflict("修改结果与原文相同，请重新预览并确认修改。");
+        throw new RevisionConflict("El resultado de la modificación es el mismo que el texto original; obtenga una vista previa nuevamente y confirme la modificación.");
       }
       const claimed = await tx.shortStoryRevisionJob.updateMany({
         where: { id: jobId, status: "running", leaseToken: token, leaseExpiresAt: { gt: new Date() } },
         data: { status: "completed", leaseToken: null, leaseExpiresAt: null, lastError: null },
       });
-      if (!claimed.count) throw new Error("修改执行权已变化，请重新打开作品。");
+      if (!claimed.count) throw new Error("Los derechos de ejecución de modificación han cambiado, vuelva a abrir el trabajo.");
       const task = await tx.novelWorkflowTask.updateMany({
         where: { id: job.workflowTaskId, shortStoryOperationId: jobId, status: "running",
           cancelRequestedAt: null, pendingManualRecovery: false, checkpointType: null },
         data: { status: "succeeded", progress: 1, checkpointType: "workflow_completed",
-          checkpointSummary: "已按确认的范围更新作品。", currentItemKey: "short_story_review",
-          currentItemLabel: "修改已完成", lastError: null, finishedAt: new Date(), heartbeatAt: new Date() },
+          checkpointSummary: "El trabajo ha sido actualizado al alcance confirmado.", currentItemKey: "short_story_review",
+          currentItemLabel: "Modificación completada", lastError: null, finishedAt: new Date(), heartbeatAt: new Date() },
       });
-      if (!task.count) throw new AppError("任务状态已变化，正文保持已保存的内容。", 409);
+      if (!task.count) throw new AppError("El estado de la tarea ha cambiado y el texto permanece como guardado.", 409);
       for (const candidate of job.candidates) {
         const segment = originals.find((item) => item.id === candidate.segmentId)!;
         const updated = await tx.shortStorySegment.updateMany({
@@ -384,7 +384,7 @@ export class ShortStoryRevisionService {
       const finalContent = originals.map(segment => job.candidates.find(candidate => candidate.segmentId === segment.id)?.content ?? segment.content).join("\n\n");
       const measured = shortStoryLengthAssessment(finalContent, preview.revision.recommendedTargetWordCount);
       const qualityDebt = parseJson<string[]>(job.qualityDebtJson, []);
-      if (!measured.withinRange) qualityDebt.push(`修改后正文实测${measured.actualWordCount}字，目标${measured.targetWordCount}字，约定范围${measured.minWordCount}～${measured.maxWordCount}字，篇幅仍需调整。`);
+      if (!measured.withinRange) qualityDebt.push(`Prueba real del texto modificado.${measured.actualWordCount}palabra, objetivo${measured.targetWordCount}palabra, rango acordado${measured.minWordCount}~${measured.maxWordCount}Aún es necesario ajustar las palabras y la extensión.`);
       await tx.shortStoryPlan.update({
         where: { id: baseline.planId }, data: {
           intentVersionId: job.intentVersionId, status: "completed", auditResultJson: null,

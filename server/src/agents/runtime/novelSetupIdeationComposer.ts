@@ -61,7 +61,7 @@ function toReadableValue(value: unknown): string | null {
 function pushFact(lines: string[], label: string, value: unknown): void {
   const text = toReadableValue(value);
   if (text) {
-    lines.push(`${label}：${text}`);
+    lines.push(`${label}:${text}`);
   }
 }
 
@@ -73,57 +73,57 @@ function buildIdeationFacts(results: ToolExecutionResult[], structuredIntent?: S
   const lines: string[] = [];
 
   if (novelContext) {
-    pushFact(lines, "小说标题", novelContext.title);
-    pushFact(lines, "已有简介", novelContext.description);
-    pushFact(lines, "题材", novelContext.genre);
-    pushFact(lines, "风格气质", novelContext.styleTone);
-    pushFact(lines, "叙事视角", novelContext.narrativePov);
-    pushFact(lines, "推进节奏", novelContext.pacePreference);
-    pushFact(lines, "协作模式", novelContext.projectMode);
-    pushFact(lines, "情绪强度", novelContext.emotionIntensity);
-    pushFact(lines, "AI 自由度", novelContext.aiFreedom);
-    pushFact(lines, "默认章长", novelContext.defaultChapterLength);
-    pushFact(lines, "绑定世界观", novelContext.worldName);
-    pushFact(lines, "已有大纲", novelContext.outline);
-    pushFact(lines, "结构化大纲", novelContext.structuredOutline);
-    pushFact(lines, "章节数", novelContext.chapterCount);
-    pushFact(lines, "已完成章节数", novelContext.completedChapterCount);
+    pushFact(lines, "Título de la novela", novelContext.title);
+    pushFact(lines, "Ya tienes un perfil", novelContext.description);
+    pushFact(lines, "tema", novelContext.genre);
+    pushFact(lines, "Estilo y temperamento", novelContext.styleTone);
+    pushFact(lines, "perspectiva narrativa", novelContext.narrativePov);
+    pushFact(lines, "Empuja el ritmo", novelContext.pacePreference);
+    pushFact(lines, "Modo de colaboración", novelContext.projectMode);
+    pushFact(lines, "intensidad emocional", novelContext.emotionIntensity);
+    pushFact(lines, "Grados de libertad de la IA", novelContext.aiFreedom);
+    pushFact(lines, "Longitud del capítulo predeterminada", novelContext.defaultChapterLength);
+    pushFact(lines, "Vincular la visión del mundo", novelContext.worldName);
+    pushFact(lines, "Ya tengo un esquema", novelContext.outline);
+    pushFact(lines, "esquema estructurado", novelContext.structuredOutline);
+    pushFact(lines, "Número de capítulos", novelContext.chapterCount);
+    pushFact(lines, "Número de capítulos completados", novelContext.completedChapterCount);
   }
 
   if (storyBible) {
-    pushFact(lines, "核心设定草稿", storyBible.coreSetting);
-    pushFact(lines, "故事承诺", storyBible.mainPromise);
-    pushFact(lines, "角色弧线", storyBible.characterArcs);
-    pushFact(lines, "世界规则", storyBible.worldRules);
-    pushFact(lines, "禁用规则", storyBible.forbiddenRules);
+    pushFact(lines, "Borrador de configuración principal", storyBible.coreSetting);
+    pushFact(lines, "promesa de la historia", storyBible.mainPromise);
+    pushFact(lines, "arco del personaje", storyBible.characterArcs);
+    pushFact(lines, "reglas del mundo", storyBible.worldRules);
+    pushFact(lines, "deshabilitar regla", storyBible.forbiddenRules);
   }
 
   if (world) {
-    pushFact(lines, "世界观名称", world.worldName);
+    pushFact(lines, "nombre de la cosmovisión", world.worldName);
     const constraints = typeof world.constraints === "object" && world.constraints
       ? world.constraints as Record<string, unknown>
       : null;
     if (constraints) {
-      pushFact(lines, "世界公理", constraints.axioms);
-      pushFact(lines, "力量体系", constraints.magicSystem);
-      pushFact(lines, "核心冲突环境", constraints.conflicts);
-      pushFact(lines, "一致性备注", constraints.consistencyReport);
+      pushFact(lines, "axiomas del mundo", constraints.axioms);
+      pushFact(lines, "sistema de energía", constraints.magicSystem);
+      pushFact(lines, "entorno de conflicto central", constraints.conflicts);
+      pushFact(lines, "notas de coherencia", constraints.consistencyReport);
     }
   }
 
   if (knowledge) {
-    pushFact(lines, "知识库命中数", knowledge.hitCount);
-    pushFact(lines, "知识库上下文", knowledge.contextBlock);
+    pushFact(lines, "Visitas a la base de conocimientos", knowledge.hitCount);
+    pushFact(lines, "contexto de la base de conocimientos", knowledge.contextBlock);
   }
 
   if (structuredIntent) {
-    pushFact(lines, "用户显式标题", structuredIntent.novelTitle);
-    pushFact(lines, "用户显式题材", structuredIntent.genre);
-    pushFact(lines, "用户显式设定", structuredIntent.description);
-    pushFact(lines, "用户显式风格", structuredIntent.styleTone);
+    pushFact(lines, "Título explícito del usuario", structuredIntent.novelTitle);
+    pushFact(lines, "Tema explícito del usuario", structuredIntent.genre);
+    pushFact(lines, "Configuración explícita del usuario", structuredIntent.description);
+    pushFact(lines, "estilo explícito del usuario", structuredIntent.styleTone);
   }
 
-  return lines.length > 0 ? lines.join("\n") : "当前还没有可用的小说上下文事实。";
+  return lines.length > 0 ? lines.join("\n") : "Actualmente no hay datos contextuales novedosos disponibles.";
 }
 
 function buildIdeationFallback(results: ToolExecutionResult[], structuredIntent?: StructuredIntent): string {
@@ -135,9 +135,9 @@ function buildIdeationFallback(results: ToolExecutionResult[], structuredIntent?
       : "";
 
   if (title) {
-    return `我可以直接围绕《${title}》给你做几套备选，不过为了更贴近你要的方向，最好再告诉我你最想保留的一个核心元素，比如题材、主角身份，或者最想写的冲突。`;
+    return `Puedo concentrarme directamente en "${title}»Haré varios conjuntos de alternativas para ti, pero para acercarte a la dirección que deseas, es mejor que me digas el elemento central que más deseas retener, como el tema, la identidad del protagonista o el conflicto que más deseas escribir.`;
   }
-  return "我可以直接给你做几套备选，不过先告诉我这本书至少要保留什么：暂定标题、题材，或者一个你最想写的冲突点。";
+  return "Puedo darte algunas opciones directamente, pero primero dime qué deberías conservar al menos en el libro: un título provisional, un tema o un punto de conflicto sobre el que más te gustaría escribir.";
 }
 
 export async function composeNovelSetupIdeationAnswer(

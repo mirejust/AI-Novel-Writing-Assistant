@@ -36,19 +36,19 @@ export default function StageWorldStyle({
     <section className="mx-auto w-full max-w-5xl space-y-7 py-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <div className="text-2xl font-semibold tracking-normal text-foreground">给故事一个世界底色</div>
+          <div className="text-2xl font-semibold tracking-normal text-foreground">Dale a la historia un trasfondo mundial.</div>
           <div className={`mt-2 max-w-2xl text-sm leading-6 text-muted-foreground ${AUTO_DIRECTOR_MOBILE_CLASSES.wrapText}`}>
-            可以选一个世界样本给 AI 参考，也可以让它根据起始想法自动整理本书世界。写法会作为后续规划和正文的默认语气。
+            Puede seleccionar una muestra del mundo para que la IA haga referencia, o puede dejar que organice automáticamente el mundo en este libro según sus ideas iniciales. El método de escritura servirá como tono predeterminado para la planificación y el texto posteriores.
           </div>
         </div>
         <div className="rounded-full bg-muted/55 px-3 py-1 text-xs text-muted-foreground">
-          可保持默认
+          Puede mantener el valor predeterminado
         </div>
       </div>
 
       <div className="space-y-5">
         <div className="space-y-2">
-          <FieldLabel htmlFor="director-basic-world" hint={BASIC_INFO_FIELD_HINTS.worldId}>规划参考世界样本</FieldLabel>
+          <FieldLabel htmlFor="director-basic-world" hint={BASIC_INFO_FIELD_HINTS.worldId}>Muestra mundial de referencia de planificación</FieldLabel>
           <SelectControl
             id="director-basic-world"
             className={controlClassName}
@@ -56,34 +56,34 @@ export default function StageWorldStyle({
             onChange={(event) => onBasicFormChange({ worldId: event.target.value })}
             disabled={worldOptions.length === 0}
           >
-            <option value="">不指定参考世界</option>
+            <option value="">No se especifica ningún mundo de referencia</option>
             {worldOptions.map((world) => (
               <option key={world.id} value={world.id}>{world.name}</option>
             ))}
           </SelectControl>
           <div className={`text-xs leading-5 text-muted-foreground ${AUTO_DIRECTOR_MOBILE_CLASSES.wrapText}`}>
             {worldOptions.length > 0
-              ? "这里只给自动导演提供快速参考。完整导入、生成和同步请在小说页的“本书世界”中完成。"
-              : "没有可选世界样本时，可以先用起始想法开书。"}
+              ? "Esta es sólo una referencia rápida para Auto Director. Complete la importación, generación y sincronización completas en el \"Mundo del libro\" en la página de la novela."
+              : "Cuando no haya muestras de mundos opcionales, puedes empezar el libro con una idea inicial."}
           </div>
         </div>
 
         <div className="space-y-3 pt-2">
-          <div className="text-sm font-medium text-foreground">本书世界处理</div>
+          <div className="text-sm font-medium text-foreground">procesamiento del mundo del libro</div>
           {selectedWorld ? (
             <div className={`text-sm leading-6 text-muted-foreground ${AUTO_DIRECTOR_MOBILE_CLASSES.wrapText}`}>
-              自动导演会参考「{selectedWorld.name}」这个世界样本，并在角色准备前整理可用于本书的世界约束。
+              El director automático se referirá a "{selectedWorld.name}"Muestre el mundo y organice las restricciones del mundo que se pueden utilizar en este libro antes de la preparación del personaje.
             </div>
           ) : (
             <div className="rounded-lg bg-muted/45 px-4 py-3 text-sm leading-6 text-foreground">
-              AI 会根据宏观规划自动整理本书世界，并将其用于后续角色、章节和正文生成。
+              La IA organizará automáticamente el mundo del libro de acuerdo con el plan macro y lo utilizará para la generación posterior de personajes, capítulos y texto.
             </div>
           )}
         </div>
 
         <div className="space-y-2">
-          <FieldLabel htmlFor="director-basic-style-profile" hint="可选。选定后，导演前半段会只读取轻量写法摘要，正文阶段再继续使用完整写法规则。">
-            书级默认写法
+          <FieldLabel htmlFor="director-basic-style-profile" hint="Opcional. Después de la selección, el director solo leerá el resumen de escritura ligero en la primera mitad y continuará usando las reglas de escritura completas en la etapa del texto principal.">
+            Método de escritura predeterminado a nivel de libro
           </FieldLabel>
           <SelectControl
             id="director-basic-style-profile"
@@ -91,25 +91,25 @@ export default function StageWorldStyle({
             value={selectedStyleProfileId}
             onChange={(event) => onStyleProfileChange(event.target.value)}
           >
-            <option value="">先只用文风关键词</option>
+            <option value="">Primero use solo palabras clave de estilo</option>
             {styleProfileOptions.map((option) => (
               <option key={option.id} value={option.id}>{option.name}</option>
             ))}
           </SelectControl>
           <div className={`text-xs leading-5 text-muted-foreground ${AUTO_DIRECTOR_MOBILE_CLASSES.wrapText}`}>
-            {selectedStyleSummary?.stageSummaryLines[0] ?? "有沉淀好的写法资产时，建议直接选一套，帮助你更清楚地预期导演会怎样写。"}
+            {selectedStyleSummary?.stageSummaryLines[0] ?? "Cuando tenga buenos recursos de escritura, se recomienda elegir un conjunto directamente para ayudarlo a anticipar con mayor claridad cómo escribirá el director."}
           </div>
           {selectedStyleSummary?.stageSummaryLines.length ? (
             <div className={`pt-1 text-xs leading-6 text-muted-foreground ${AUTO_DIRECTOR_MOBILE_CLASSES.wrapText}`}>
-              这套写法会影响后续章节的语气和节奏：{selectedStyleSummary.stageSummaryLines.join("；")}
+              Esta forma de escribir afectará el tono y ritmo de los capítulos siguientes:{selectedStyleSummary.stageSummaryLines.join(";")}
             </div>
           ) : null}
         </div>
       </div>
 
       <div className="flex flex-col gap-2 pt-2 sm:flex-row sm:justify-between">
-        <Button type="button" variant="ghost" onClick={onBack}>返回起始设置</Button>
-        <Button type="button" onClick={onConfirm}>确认世界与写法</Button>
+        <Button type="button" variant="ghost" onClick={onBack}>Volver a la configuración inicial</Button>
+        <Button type="button" onClick={onConfirm}>Confirmar el mundo y el método de escritura.</Button>
       </div>
     </section>
   );

@@ -6,8 +6,8 @@ export const DEFAULT_WORLD_GENERATION_TIMEOUT_MS = 120_000;
 export const MIN_WORLD_GENERATION_TIMEOUT_MS = 120_000;
 export const MAX_WORLD_GENERATION_TIMEOUT_MS = 600_000;
 
-const TIMEOUT_RANGE_MESSAGE = "请输入 2 到 10 分钟之间的整数。";
-const TIMEOUT_HINT = "可以在「模型与厂商」里调高单次生成等待后重试。";
+const TIMEOUT_RANGE_MESSAGE = "Por favor ingrese un número entero entre 2 y 10 minutos.";
+const TIMEOUT_HINT = "Puedes aumentar la espera de una sola generación en \"Modelos y Fabricantes\" e intentarlo nuevamente.";
 
 export interface WorldGenerationTimeoutSettings {
   timeoutMs: number;
@@ -95,7 +95,7 @@ export async function saveWorldGenerationTimeoutSettings(input: {
 }
 
 export function rethrowWithWorldGenerationTimeoutHint(error: unknown): never {
-  const message = error instanceof Error ? error.message : "世界观生成失败。";
+  const message = error instanceof Error ? error.message : "La generación de una visión del mundo fracasó.";
   if (message.includes("Request timed out") && !message.includes(TIMEOUT_HINT)) {
     const wrapped = new Error(`${message} ${TIMEOUT_HINT}`);
     wrapped.cause = error;

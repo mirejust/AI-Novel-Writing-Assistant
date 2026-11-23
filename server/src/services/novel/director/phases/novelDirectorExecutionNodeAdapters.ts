@@ -41,14 +41,14 @@ export interface DirectorExecutionNodeAdapter {
 const CHAPTER_EXECUTION_WAITING_STATE: DirectorExecutionNodeAdapter["waitingState"] = {
   stage: "chapter_execution",
   itemKey: "chapter_execution",
-  itemLabel: "等待确认章节执行",
+  itemLabel: "Esperando confirmación de ejecución del capítulo.",
   progress: 0.93,
 };
 
 const QUALITY_REPAIR_WAITING_STATE: DirectorExecutionNodeAdapter["waitingState"] = {
   stage: "quality_repair",
   itemKey: "quality_repair",
-  itemLabel: "等待确认章节修复",
+  itemLabel: "Esperando confirmación de reparación del capítulo.",
   progress: 0.975,
 };
 
@@ -58,7 +58,7 @@ export const DIRECTOR_EXECUTION_NODE_ADAPTERS: Record<
 > = {
   chapter_execution: {
     nodeKey: "chapter_execution_node",
-    label: "执行章节生成批次",
+    label: "Ejecutar lote de generación de capítulos",
     targetType: "novel",
     reads: [
       "chapter_task_sheet",
@@ -74,7 +74,7 @@ export const DIRECTOR_EXECUTION_NODE_ADAPTERS: Record<
   },
   chapter_quality_review: {
     nodeKey: "chapter_quality_review_node",
-    label: "检查章节质量",
+    label: "Comprobar la calidad del capítulo",
     targetType: "novel",
     reads: [
       "chapter_draft",
@@ -90,7 +90,7 @@ export const DIRECTOR_EXECUTION_NODE_ADAPTERS: Record<
   },
   chapter_repair: {
     nodeKey: "chapter_repair_node",
-    label: "修复章节问题",
+    label: "Solucionar problemas de capítulos",
     targetType: "novel",
     reads: [
       "chapter_draft",
@@ -107,7 +107,7 @@ export const DIRECTOR_EXECUTION_NODE_ADAPTERS: Record<
   },
   chapter_state_commit: {
     nodeKey: "chapter_state_commit_node",
-    label: "提交章节连续性状态",
+    label: "Enviar estado de continuidad del capítulo",
     targetType: "novel",
     reads: ["chapter_draft", "audit_report", "rolling_window_review"],
     writes: ["continuity_state", "character_governance_state"],
@@ -118,7 +118,7 @@ export const DIRECTOR_EXECUTION_NODE_ADAPTERS: Record<
   },
   payoff_ledger_sync: {
     nodeKey: "payoff_ledger_sync_node",
-    label: "同步读者承诺与伏笔",
+    label: "Sincronizar el compromiso del lector y el presagio",
     targetType: "novel",
     reads: ["chapter_draft", "audit_report", "reader_promise"],
     writes: ["reader_promise", "repair_ticket"],
@@ -129,7 +129,7 @@ export const DIRECTOR_EXECUTION_NODE_ADAPTERS: Record<
   },
   character_resource_sync: {
     nodeKey: "character_resource_sync_node",
-    label: "同步角色资源状态",
+    label: "Sincronizar el estado de los recursos de rol",
     targetType: "novel",
     reads: ["chapter_draft", "character_governance_state", "continuity_state"],
     writes: ["character_governance_state", "continuity_state"],
@@ -140,7 +140,7 @@ export const DIRECTOR_EXECUTION_NODE_ADAPTERS: Record<
   },
   quality_repair: {
     nodeKey: "chapter_repair_node",
-    label: "执行章节质量修复",
+    label: "Realizar correcciones de calidad del capítulo",
     targetType: "novel",
     reads: [
       "chapter_draft",

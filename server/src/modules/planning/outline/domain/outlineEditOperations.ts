@@ -34,10 +34,10 @@ function assertUniqueOperationIds(operations: OutlineEditOperation[]): void {
   const seen = new Set<string>();
   for (const operation of operations) {
     if (!operation.operationId?.trim()) {
-      throw recoverable("提案操作缺少有效的操作编号，请重新生成提案。");
+      throw recoverable("A la acción de propuesta le falta un número de acción válido; vuelva a generar la propuesta.");
     }
     if (seen.has(operation.operationId)) {
-      throw recoverable(`提案中存在重复的操作编号「${operation.operationId}」，请重新生成提案。`);
+      throw recoverable(`Hay números de operación duplicados en la propuesta"${operation.operationId}”, por favor regenerar la propuesta.`);
     }
     seen.add(operation.operationId);
   }
@@ -49,12 +49,12 @@ function assertDependsOnAreOperationIds(operations: OutlineEditOperation[]): voi
     for (const dependencyId of operation.dependsOn ?? []) {
       if (!operationIds.has(dependencyId)) {
         throw recoverable(
-          `操作「${operation.operationId}」的依赖必须是同一提案里的其他操作编号，不能填写卷/章节等节点编号。请重新生成提案。`,
+          `funcionar"${operation.operationId}"La dependencia debe ser otros números de operación en la misma propuesta, y los números de nodo como volumen/capítulo no se pueden completar". Por favor regenera la propuesta.`,
           { operationId: operation.operationId, dependencyId },
         );
       }
       if (dependencyId === operation.operationId) {
-        throw recoverable(`操作「${operation.operationId}」不能依赖自己，请重新生成提案。`);
+        throw recoverable(`funcionar"${operation.operationId}"No puedes confiar en ti mismo, por favor regenera la propuesta".`);
       }
     }
   }
@@ -67,7 +67,7 @@ function assertNoDependencyCycles(operations: OutlineEditOperation[]): void {
   const visit = (operationId: string, stack: string[]) => {
     if (visited.has(operationId)) return;
     if (visiting.has(operationId)) {
-      throw recoverable(`提案操作依赖形成循环（${[...stack, operationId].join(" → ")}），请重新生成提案。`);
+      throw recoverable(`Las dependencias de operación de la propuesta forman un ciclo (${[...stack, operationId].join(" → ")}), por favor regenera la propuesta.`);
     }
     visiting.add(operationId);
     for (const dependencyId of byId.get(operationId)?.dependsOn ?? []) {
@@ -110,7 +110,7 @@ export function assertValidOutlineEditOperations(
   options: { document?: OutlineEditDocumentView; selectedOperationIds?: string[] } = {},
 ): void {
   if (!Array.isArray(operations) || operations.length < 1) {
-    throw recoverable("提案中没有可采纳的操作，请重新生成提案。");
+    throw recoverable("No hay acciones adoptables en la propuesta. Por favor regenera la propuesta.");
   }
   assertUniqueOperationIds(operations);
   assertDependsOnAreOperationIds(operations);
@@ -122,18 +122,18 @@ export function assertValidOutlineEditOperations(
       : operations.map((operation) => operation.operationId),
   );
   if (selected.size < 1) {
-    throw recoverable("请至少选择一项操作后再采纳。");
+    throw recoverable("Seleccione al menos una acción antes de adoptarla.");
   }
   for (const operationId of selected) {
     if (!operations.some((operation) => operation.operationId === operationId)) {
-      throw recoverable(`所选操作「${operationId}」不在当前提案中。`);
+      throw recoverable(`Operación seleccionada "${operationId}”no está en la propuesta actual.`);
     }
   }
   for (const operation of operations.filter((item) => selected.has(item.operationId))) {
     for (const dependencyId of operation.dependsOn ?? []) {
       if (!selected.has(dependencyId)) {
         throw recoverable(
-          `所选操作「${operation.operationId}」还依赖未勾选的操作「${dependencyId}」。请一并勾选依赖项，或重新生成提案。`,
+          `Operación seleccionada "${operation.operationId}"También depende de operaciones no controladas"${dependencyId}". Verifique también las dependencias o regenere la propuesta.`,
           { operationId: operation.operationId, dependencyId },
         );
       }
@@ -152,36 +152,36 @@ export function assertValidOutlineEditOperations(
         : "";
       if (!volumeNodeId) {
         throw recoverable(
-          "新增章节必须指定所属卷（fields.volumeNodeId）。请不要只改卷的章节列表来表达新增章节，请重新生成提案。",
+          "Los nuevos capítulos deben especificar el volumen al que pertenecen (fields.volumeNodeId). No se limite a cambiar la lista de capítulos del volumen para expresar los nuevos capítulos, regenere la propuesta.",
           { operationId: operation.operationId },
         );
       }
       if (!volumeIds.has(volumeNodeId) && !volumeClientRefs.has(volumeNodeId)) {
         throw recoverable(
-          `新增章节的所属卷「${volumeNodeId}」不存在，也不是本次提案中新建卷的临时编号。请重新生成提案。`,
+          `El volumen al que pertenece el nuevo capítulo"${volumeNodeId}" no existe ni es un número temporal para el nuevo volumen de esta propuesta. Regenere la propuesta.`,
           { operationId: operation.operationId, volumeNodeId },
         );
       }
       if (!operation.clientRef?.trim()) {
-        throw recoverable(`新增章节操作「${operation.operationId}」缺少临时编号 clientRef，请重新生成提案。`);
+        throw recoverable(`Agregar operación de capítulo "${operation.operationId}"Falta el número temporal clientRef, vuelva a generar la propuesta".`);
       }
     }
 
     if (operation.kind === "update_fields") {
       if (!operation.nodeId?.trim()) {
-        throw recoverable(`更新操作「${operation.operationId}」缺少目标节点，请重新生成提案。`);
+        throw recoverable(`Operación de actualización "${operation.operationId}"Falta el nodo de destino. Regenere la propuesta".`);
       }
       if (operation.nodeId === options.document?.story?.nodeId) {
         if (!operation.fields || !Object.keys(operation.fields).length || !storyChanges.safeParse(operation.fields).success) {
-          throw recoverable("总纲提案含有无法编辑的字段，请重新生成建议。");
+          throw recoverable("La propuesta general contiene campos que no se pueden editar. Por favor regenera la propuesta.");
         }
       } else if (options.document && !nodeIds.has(operation.nodeId) && !volumeClientRefs.has(operation.nodeId)) {
         // allow update only on existing nodes at apply-time; generation may still emit updates for existing ids
-        throw recoverable(`要更新的节点不存在，请刷新大纲后重新生成提案。`, { operationId: operation.operationId, nodeId: operation.nodeId });
+        throw recoverable(`El nodo a actualizar no existe, actualice el esquema y regenere la propuesta.`, { operationId: operation.operationId, nodeId: operation.nodeId });
       }
       if (operation.fields && Object.prototype.hasOwnProperty.call(operation.fields, "chapterNodeIds")) {
         throw recoverable(
-          "不能通过直接修改卷的章节列表来新增或调整章节。请使用「新增章节」或「移动章节」操作，请重新生成提案。",
+          "Los capítulos no se pueden agregar ni ajustar modificando directamente la lista de capítulos del volumen. Utilice la operación \"Agregar capítulo\" o \"Mover capítulo\" y vuelva a generar la propuesta.",
           { operationId: operation.operationId },
         );
       }
@@ -189,19 +189,19 @@ export function assertValidOutlineEditOperations(
 
     if (operation.kind === "remove_node" || operation.kind === "move_node") {
       if (!operation.nodeId?.trim()) {
-        throw recoverable(`操作「${operation.operationId}」缺少目标节点，请重新生成提案。`);
+        throw recoverable(`funcionar"${operation.operationId}"Falta el nodo de destino. Regenere la propuesta".`);
       }
       if (options.document && !nodeIds.has(operation.nodeId)) {
-        throw recoverable(`目标节点不存在，请刷新大纲后重新生成提案。`, { operationId: operation.operationId, nodeId: operation.nodeId });
+        throw recoverable(`El nodo de destino no existe. Actualice el esquema y vuelva a generar la propuesta.`, { operationId: operation.operationId, nodeId: operation.nodeId });
       }
     }
     if (operation.kind === "move_node") {
       const parent = operation.parentNodeId?.trim() ?? "";
       if (!parent) {
-        throw recoverable(`移动章节操作「${operation.operationId}」必须指定目标卷，请重新生成提案。`);
+        throw recoverable(`Operación de mover capítulo "${operation.operationId}"Se debe especificar el volumen objetivo; vuelva a generar la propuesta.`);
       }
       if (options.document && !volumeIds.has(parent) && !volumeClientRefs.has(parent)) {
-        throw recoverable(`移动章节的目标卷不存在，请重新生成提案。`, { operationId: operation.operationId, parentNodeId: parent });
+        throw recoverable(`El volumen objetivo para mover el capítulo no existe, vuelva a generar la propuesta.`, { operationId: operation.operationId, parentNodeId: parent });
       }
     }
   }
@@ -210,17 +210,17 @@ export function assertValidOutlineEditOperations(
 export function mapOutlineApplyFailure(error: unknown): never {
   if (error instanceof AppError) throw error;
   const message = error instanceof Error ? error.message : String(error);
-  if (message === "所选操作缺少依赖项") {
-    throw recoverable("所选操作还缺少依赖项。请勾选全部依赖的操作后再采纳，或重新生成提案。");
+  if (message === "A la operación seleccionada le falta una dependencia") {
+    throw recoverable("A la operación seleccionada también le faltan dependencias. Verifique todas las operaciones dependientes antes de adoptar o regenerar la propuesta.");
   }
-  if (message === "提案目标节点不存在" || message === "当前仅支持移动章节") {
-    throw recoverable("提案指向的节点已不存在或类型不匹配，请刷新大纲后重新生成提案。");
+  if (message === "El nodo de destino de la propuesta no existe" || message === "Actualmente solo se admiten capítulos móviles") {
+    throw recoverable("El nodo al que apunta la propuesta ya no existe o el tipo no coincide. Actualice el esquema y regenere la propuesta.");
   }
-  if (message.includes("大纲节点 ID 必须唯一") || message.includes("大纲引用不存在的节点")) {
-    throw recoverable("采纳后的大纲引用不完整或节点编号冲突，请重新生成提案。");
+  if (message.includes("El ID del nodo del esquema debe ser único") || message.includes("El esquema se refiere a un nodo que no existe.")) {
+    throw recoverable("El esquema adoptado tiene referencias incompletas o números de nodos contradictorios. Por favor regenera la propuesta.");
   }
   if (message.startsWith("OUTLINE_")) {
-    throw new AppError("大纲已更新，请重新生成提案。", 409);
+    throw new AppError("El esquema ha sido actualizado, por favor regenere la propuesta.", 409);
   }
   throw error;
 }

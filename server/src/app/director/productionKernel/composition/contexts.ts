@@ -12,10 +12,10 @@ export function nativeWriterContext({ db }: NativeStageDependencies): Registered
     const chapterWriteContext = prepared.contextPackage.chapterWriteContext;
     if (!chapterWriteContext) throw new Error("Chapter runtime context is required before chapter generation.");
     const novel = await db.novel.findUniqueOrThrow({ where: { id: run.progress.unit.novelId }, select: { writingPlatformSnapshotJson: true } });
-    let content = "沿用通用中文商业网文写法，保持情节推进、人物主动、因果清晰和章节回报。";
+    let content = "Siga el método general de redacción web de negocios chinos para mantener el avance de la trama, la iniciativa de los personajes, la causa y efecto claros y las recompensas de los capítulos.";
     if (novel.writingPlatformSnapshotJson) {
       try { const snapshot = JSON.parse(novel.writingPlatformSnapshotJson) as WritingPlatformSnapshot;
-        content = `${snapshot.label}（配置版本 ${snapshot.profileVersion}）：${snapshot.guidance.drafting}`;
+        content = `${snapshot.label}(Versión de configuración ${snapshot.profileVersion}):${snapshot.guidance.drafting}`;
       } catch { /* Native compatibility for pre-snapshot books. */ }
     }
     const sanitized = sanitizeWriterContextBlocks([createContextBlock({ id: "writing_platform", group: "writing_platform",

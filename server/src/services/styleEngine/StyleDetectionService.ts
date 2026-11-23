@@ -56,7 +56,7 @@ export class StyleDetectionService {
     if (!styleContractText && antiRules.length === 0) {
       return {
         riskScore: 0,
-        summary: "当前没有可执行的写法检测约束，未执行写法违规检测。",
+        summary: "Actualmente no existen restricciones de detección de escritura ejecutable y no se realiza la detección de violaciones de escritura.",
         violations: [],
         canAutoRewrite: false,
         appliedRuleIds,

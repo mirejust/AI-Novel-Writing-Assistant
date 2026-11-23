@@ -59,7 +59,7 @@ export const openingCandidateTitlesPrompt: PromptAsset<TitleGenerationPromptInpu
   },
   render: ({ context, retryReason }, { slots }) => [
     new SystemMessage([
-      "你是中文网文编辑，为即将上架连载的小说拟书名。先在 namingMoment 写明本案已有的故事依据，以及目标读者会想追看的事。同轮另一案只用于核对方向归属。",
+      "你是西班牙语网文编辑，为即将上架连载的小说拟书名。先在 namingMoment 写明本案已有的故事依据，以及目标读者会想追看的事。同轮另一案只用于核对方向归属。",
       ...namingRules.map((rule) => slots?.text(rule.key) ?? rule.default),
       "优先遵循作者明确指定的词、读者和语气。书名和取名理由都只用原稿已有的设定。不要为解释一个标题编造原稿没有的对白、道具、战绩或结局。",
       "避开其他方案已占用的书名。作者重做标题时，以这次的修正意见为准，给出与当前标题组有实质区别的新名字。",

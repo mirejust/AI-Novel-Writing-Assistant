@@ -47,14 +47,14 @@ export function CandidateReviewWorkspace({ taskId, selection, disabled, nextRoun
   }, [active?.key, pane, showNextRound, pendingAnchor]);
 
   return <div className="candidate-workspace" data-next-round={showNextRound || undefined}>
-    <div className="candidate-pane-switch" role="group" aria-label="开书工作区视图">
+    <div className="candidate-pane-switch" role="group" aria-label="Vista del espacio de trabajo del libro abierto">
       <Button type="button" size="sm" variant={pane === "candidates" ? "secondary" : "ghost"} aria-controls={readingId}
-        aria-pressed={pane === "candidates"} onClick={() => setPane("candidates")}><List />方向候选</Button>
+        aria-pressed={pane === "candidates"} onClick={() => setPane("candidates")}><List />Candidatos de dirección</Button>
       <Button type="button" size="sm" variant={pane === "assistant" ? "secondary" : "ghost"} aria-controls={assistantId}
-        aria-pressed={pane === "assistant"} onClick={() => setPane("assistant")}><Sparkles />开书助手</Button>
+        aria-pressed={pane === "assistant"} onClick={() => setPane("assistant")}><Sparkles />Asistente de apertura de libros.</Button>
     </div>
     <WorkspaceColumns layoutId="opening-candidates" className="candidate-workspace-columns" data-pane={pane} minCenter={420}
-      right={{ label: "调整开书助手宽度", initial: "clamp(18rem, 29%, 25rem)", min: 280 }}>
+      right={{ label: "Ajustar el ancho del asistente de apertura de libros.", initial: "clamp(18rem, 29%, 25rem)", min: 280 }}>
       <div id={readingId} ref={reading} className="candidate-reading">
         {children}
         <div className="px-3 pb-4 sm:px-4 lg:pl-0">
@@ -62,23 +62,23 @@ export function CandidateReviewWorkspace({ taskId, selection, disabled, nextRoun
             setPreparingRound(true);
             setPane("assistant");
             roundHeading.current?.focus({ preventScroll: true });
-          }}><RefreshCw size={16} />都不合适，换一批</Button>
+          }}><RefreshCw size={16} />Ninguno de ellos es adecuado, reemplácelos.</Button>
         </div>
       </div>
-      <aside id={assistantId} className="candidate-inspector" aria-label="开书助手">
+      <aside id={assistantId} className="candidate-inspector" aria-label="Asistente de apertura de libros.">
         {active && canDiscuss && <div hidden={showNextRound} className={showNextRound ? undefined : "flex min-h-0 flex-1 flex-col"}>
           <CandidateDiscussion key={active.key} taskId={taskId} batchId={active.batch.id} candidate={active.candidate}
             disabled={disabled} onApplied={onApplied} draft={drafts[active.key] ?? ""}
             onDraftChange={text => setDrafts(previous => ({ ...previous, [active.key]: text }))}
             context={<label className="text-xs text-muted-foreground">
-              讨论当前方案
+              Discutir las opciones actuales
               <select ref={selector} className="candidate-context-select" value={active.key}
                 onChange={event => {
                   restoreSelectorFocus.current = document.activeElement === event.currentTarget;
                   selection.select(event.target.value);
                 }}>
                 {options.map(option => <option key={option.key} value={option.key}>
-                  {option.candidate.workingTitle} · {option.batch.roundLabel} · 方案 {option.number}
+                  {option.candidate.workingTitle} · {option.batch.roundLabel} · plan {option.number}
                 </option>)}
               </select>
             </label>} />

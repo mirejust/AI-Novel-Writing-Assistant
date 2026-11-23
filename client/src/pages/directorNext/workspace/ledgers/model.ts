@@ -12,11 +12,11 @@ export function characterResources(items:CharacterResourceLedgerItem[],novelId:s
   return items.filter(item=>item.novelId===novelId && (!characterId || item.holderCharacterId===characterId || item.ownerCharacterId===characterId));
 }
 
-export const payoffStatusLabels={setup:"已埋设",hinted:"已提示",pending_payoff:"待兑现",paid_off:"已兑现",failed:"兑现失败",overdue:"超出兑现窗口"};
-export const resourceStatusLabels={available:"可用",hidden:"隐藏",borrowed:"借用中",transferred:"已转移",lost:"已丢失",consumed:"已消耗",damaged:"已损坏",destroyed:"已毁坏",stale:"待核对状态"};
-export const resourceFunctionLabels={tool:"工具",clue:"线索",weapon:"武器",proof:"证据",key:"关键凭证",cost:"代价",promise:"伏笔",hidden_card:"底牌",constraint:"限制"};
-export const resourceEventLabels={introduced:"首次出现",acquired:"获得",revealed:"揭示",used:"使用",transferred:"转移",lost:"丢失",consumed:"消耗",damaged:"损坏",destroyed:"毁坏",recovered:"找回",stale_marked:"标记待核对"};
+export const payoffStatusLabels={setup:"Enterrado",hinted:"Ya se le solicitó",pending_payoff:"para ser cobrado",paid_off:"Cobrado",failed:"Redención fallida",overdue:"Ventana de canje excedida"};
+export const resourceStatusLabels={available:"Disponible",hidden:"Ocultar",borrowed:"Préstamo",transferred:"Transferido",lost:"Perdido",consumed:"Consumido",damaged:"Dañado",destroyed:"Destruido",stale:"Estado de verificación pendiente"};
+export const resourceFunctionLabels={tool:"Herramienta",clue:"Clave",weapon:"Armas",proof:"Evidencia",key:"Credenciales clave",cost:"Costo",promise:"Presagio",hidden_card:"Carta de triunfo",constraint:"Límite"};
+export const resourceEventLabels={introduced:"Primera aparición",acquired:"Conseguir",revealed:"Revelar",used:"Uso",transferred:"Transferir",lost:"Perdido",consumed:"Consumir",damaged:"Dañado",destroyed:"Destruir",recovered:"Recuperar",stale_marked:"Marcar para revisión"};
 export function chapterWindow(from?:number|null,to?:number|null) {
-  if(from && to) return from===to ? `第 ${from} 章` : `第 ${from}—${to} 章`;
-  return from ? `第 ${from} 章起` : to ? `截至第 ${to} 章` : "未指定章节范围";
+  if(from && to) return from===to ? `Cap. ${from}` : `Cap. ${from}—${to}`;
+  return from ? `Cap. ${from} Zhang Qi` : to ? `A partir de ${to}` : "No se ha especificado ningún rango de capítulos";
 }

@@ -84,22 +84,22 @@ export class CharacterDynamicsMutationService {
     const formatBeat = (beat: (typeof affectedBeats)[number]) => {
       const title = beat.beatTitle?.trim() ? ` · ${beat.beatTitle.trim()}` : "";
       const chapterRange = beat.chapterOrders.length > 0
-        ? `（第${beat.chapterOrders[0]}-${beat.chapterOrders[beat.chapterOrders.length - 1]}章）`
-        : "（待生成章节）";
-      return `第${beat.volumeOrder}卷 ${beat.beatLabel}${title}${chapterRange}`;
+        ? `(No.${beat.chapterOrders[0]}-${beat.chapterOrders[beat.chapterOrders.length - 1]}capítulo)`
+        : "(Capítulo por generar)";
+      return `Cap.${beat.volumeOrder}rollo ${beat.beatLabel}${title}${chapterRange}`;
     };
-    const writableSummary = writableBeats.slice(0, 5).map(formatBeat).join("；");
-    const lockedSummary = lockedBeats.slice(0, 3).map(formatBeat).join("；");
+    const writableSummary = writableBeats.slice(0, 5).map(formatBeat).join(";");
+    const lockedSummary = lockedBeats.slice(0, 3).map(formatBeat).join(";");
     await prisma.creativeDecision.create({
       data: {
         novelId: input.novelId,
         chapterId: input.sourceChapterId ?? null,
         category: "character_dynamic_beat_impact",
         content: [
-          `角色 ${input.characterName} 接入范围：${writableSummary || "暂无未写节奏段"}`,
-          lockedSummary ? `已有正文锁定：${lockedSummary}` : "",
-          "默认只接入后续未写节奏段；已有正文段仅用于一致性检查。",
-        ].filter(Boolean).join("；"),
+          `Role ${input.characterName} Rango de acceso:${writableSummary || "Aún no hay secciones rítmicas no escritas."}`,
+          lockedSummary ? `Texto bloqueado:${lockedSummary}` : "",
+          "De forma predeterminada, sólo se accede a los segmentos de ritmo posteriores no escritos; Los segmentos de texto existentes sólo se utilizan para comprobar la coherencia.",
+        ].filter(Boolean).join(";"),
         importance: writableBeats.length > 0 ? "high" : "normal",
         sourceType: input.sourceType,
         sourceRefId: input.sourceRefId,
@@ -118,13 +118,13 @@ export class CharacterDynamicsMutationService {
       },
     });
     if (!candidate) {
-      throw new Error("角色候选不存在。");
+      throw new Error("El candidato a rol no existe.");
     }
-    if (candidate.status.startsWith("v2_")) throw Object.assign(new Error("请从本书导演 V2 工作台确认人物候选。"), {statusCode: 409});
+    if (candidate.status.startsWith("v2_")) throw Object.assign(new Error("Confirme los candidatos a personajes del banco de trabajo del director de libros V2."), {statusCode: 409});
 
     const createdCharacter = await this.novelContextServiceFactory().createCharacter(novelId, {
       name: candidate.proposedName,
-      role: input.role?.trim() || candidate.proposedRole?.trim() || "新角色",
+      role: input.role?.trim() || candidate.proposedRole?.trim() || "nuevo rol",
       castRole: input.castRole,
       relationToProtagonist: input.relationToProtagonist?.trim() || undefined,
       currentState: input.currentState?.trim() || undefined,
@@ -145,7 +145,7 @@ export class CharacterDynamicsMutationService {
           novelId,
           chapterId: candidate.sourceChapter?.id ?? null,
           category: "character_dynamic_confirm",
-          content: `确认新角色：${createdCharacter.name}。来源候选：${candidate.proposedName}。${candidate.summary ?? ""}`.trim(),
+          content: `Confirmar nuevo rol:${createdCharacter.name}. Candidatos fuente:${candidate.proposedName}.${candidate.summary ?? ""}`.trim(),
           importance: "high",
           sourceType: "character_candidate",
           sourceRefId: candidate.id,
@@ -185,11 +185,11 @@ export class CharacterDynamicsMutationService {
       }),
     ]);
     if (!candidate) {
-      throw new Error("角色候选不存在。");
+      throw new Error("El candidato a rol no existe.");
     }
-    if (candidate.status.startsWith("v2_")) throw Object.assign(new Error("请从本书导演 V2 工作台确认人物候选。"), {statusCode: 409});
+    if (candidate.status.startsWith("v2_")) throw Object.assign(new Error("Confirme los candidatos a personajes del banco de trabajo del director de libros V2."), {statusCode: 409});
     if (!character) {
-      throw new Error("要合并到的角色不存在。");
+      throw new Error("El rol al que se va a fusionar no existe.");
     }
 
     await prisma.$transaction(async (tx) => {
@@ -205,7 +205,7 @@ export class CharacterDynamicsMutationService {
           novelId,
           chapterId: candidate.sourceChapter?.id ?? null,
           category: "character_dynamic_merge",
-          content: `候选角色 ${candidate.proposedName} 已并入 ${character.name}。${input.summary?.trim() || candidate.summary || ""}`.trim(),
+          content: `rol de candidato ${candidate.proposedName} Ya incorporado ${character.name}.${input.summary?.trim() || candidate.summary || ""}`.trim(),
           importance: "normal",
           sourceType: "character_candidate",
           sourceRefId: candidate.id,
@@ -235,7 +235,7 @@ export class CharacterDynamicsMutationService {
       select: { id: true, name: true },
     });
     if (!character) {
-      throw new Error("角色不存在。");
+      throw new Error("El personaje no existe.");
     }
 
     const overview = await this.queryService.getOverview(novelId, {
@@ -313,11 +313,11 @@ export class CharacterDynamicsMutationService {
       }
 
       const decisionSegments = [
-        typeof input.currentState === "string" ? `状态=${input.currentState}` : "",
-        typeof input.currentGoal === "string" ? `目标=${input.currentGoal}` : "",
-        typeof input.factionLabel === "string" ? `阵营=${input.factionLabel}` : "",
-        typeof input.roleLabel === "string" ? `卷级身份=${input.roleLabel}` : "",
-        typeof input.responsibility === "string" ? `职责=${input.responsibility}` : "",
+        typeof input.currentState === "string" ? `estado =${input.currentState}` : "",
+        typeof input.currentGoal === "string" ? `objetivo =${input.currentGoal}` : "",
+        typeof input.factionLabel === "string" ? `campamento =${input.factionLabel}` : "",
+        typeof input.roleLabel === "string" ? `Identidad del nivel de volumen =${input.roleLabel}` : "",
+        typeof input.responsibility === "string" ? `Responsabilidades =${input.responsibility}` : "",
         input.decisionNote?.trim() || "",
       ].filter(Boolean);
       if (decisionSegments.length > 0) {
@@ -326,7 +326,7 @@ export class CharacterDynamicsMutationService {
             novelId,
             chapterId: input.chapterId ?? null,
             category: "character_dynamic_manual_update",
-            content: `${character.name} 动态状态更新：${decisionSegments.join("；")}`,
+            content: `${character.name} Actualizaciones de estado dinámicas:${decisionSegments.join(";")}`,
             importance: "normal",
             sourceType: "character_dynamic_state",
             sourceRefId: character.id,
@@ -368,7 +368,7 @@ export class CharacterDynamicsMutationService {
       },
     });
     if (!relation) {
-      throw new Error("角色关系不存在。");
+      throw new Error("Las relaciones de roles no existen.");
     }
 
     const created = await prisma.$transaction(async (tx) => {
@@ -410,7 +410,7 @@ export class CharacterDynamicsMutationService {
           novelId,
           chapterId: input.chapterId ?? null,
           category: "character_relation_stage_manual_update",
-          content: `${relation.sourceCharacter.name} -> ${relation.targetCharacter.name} 关系阶段更新为 ${input.stageLabel}。${input.decisionNote?.trim() || input.stageSummary}`.trim(),
+          content: `${relation.sourceCharacter.name} -> ${relation.targetCharacter.name} Etapa de relación actualizada a ${input.stageLabel}.${input.decisionNote?.trim() || input.stageSummary}`.trim(),
           importance: "normal",
           sourceType: "character_relation_stage",
           sourceRefId: relation.id,
@@ -858,7 +858,7 @@ export class CharacterDynamicsMutationService {
     for (const candidate of candidates) {
       const createdCharacter = await novelContextService.createCharacter(novelId, {
         name: candidate.proposedName,
-        role: candidate.proposedRole?.trim() || "新角色",
+        role: candidate.proposedRole?.trim() || "nuevo rol",
         background: candidate.summary?.trim() || undefined,
       });
       await prisma.$transaction(async (tx) => {
@@ -871,7 +871,7 @@ export class CharacterDynamicsMutationService {
             novelId,
             chapterId: candidate.sourceChapter?.id ?? null,
             category: "character_dynamic_confirm",
-            content: `自动导演确认新角色：${createdCharacter.name}。来源候选：${candidate.proposedName}。${candidate.summary ?? ""}`.trim(),
+            content: `Auto Director confirma nuevo rol:${createdCharacter.name}. Candidatos fuente:${candidate.proposedName}.${candidate.summary ?? ""}`.trim(),
             importance: "high",
             sourceType: "character_candidate",
             sourceRefId: candidate.id,

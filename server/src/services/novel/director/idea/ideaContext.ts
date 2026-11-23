@@ -8,19 +8,19 @@ function compactText(value: string | null | undefined): string {
 
 function line(label: string, value: string | null | undefined): string {
   const text = compactText(value);
-  return text ? `${label}：${text}` : "";
+  return text ? `${label}:${text}` : "";
 }
 
 function readerChannelPreferenceLabel(value: DirectorIdeaContextRequest["readerChannelPreference"]): string {
   switch (value) {
     case "ai_judge":
-      return "AI 判断";
+      return "juicio de IA";
     case "male_oriented":
-      return "男频向";
+      return "frecuencia masculina";
     case "female_oriented":
-      return "女频向";
+      return "Frecuencia femenina";
     case "general":
-      return "泛读者 / 不限定";
+      return "Lector general/ilimitado";
     default:
       return "";
   }
@@ -35,24 +35,24 @@ export function buildDirectorIdeaContextSummary(input: DirectorIdeaContextReques
     commercialTags: input.commercialTags,
   });
   return [
-    line("当前输入框草稿", input.currentIdea),
-    line("暂定标题", input.title),
-    line("已有概述", input.description),
-    line("题材基底", input.genreLabel ?? input.genreId),
-    line("题材说明", input.genreDescription),
-    line("主推进模式", input.primaryStoryModeLabel ?? input.primaryStoryModeId),
-    line("主推进说明", input.primaryStoryModeDescription),
-    line("副推进模式", input.secondaryStoryModeLabel ?? input.secondaryStoryModeId),
-    line("副推进说明", input.secondaryStoryModeDescription),
-    line("世界观", input.worldName ?? input.worldId),
-    marketBriefPrompt.trim() ? `开书市场简报：\n${marketBriefPrompt.trim()}` : "",
-    line("读者频道倾向", readerChannelPreferenceLabel(input.readerChannelPreference)),
-    input.powerSystemPreference ? `战力体系偏好：${input.powerSystemPreference}` : "",
-    input.narrativePov ? `叙事视角：${input.narrativePov}` : "",
-    input.pacePreference ? `节奏偏好：${input.pacePreference}` : "",
-    input.emotionIntensity ? `情绪浓度：${input.emotionIntensity}` : "",
-    line("文风关键词", input.styleTone),
-    framing ? `书级 framing：\n${framing}` : "",
+    line("Borrador del cuadro de entrada actual", input.currentIdea),
+    line("Título provisional", input.title),
+    line("Ya delineado", input.description),
+    line("Base temática", input.genreLabel ?? input.genreId),
+    line("Descripción del tema", input.genreDescription),
+    line("modo de propulsión principal", input.primaryStoryModeLabel ?? input.primaryStoryModeId),
+    line("Descripción del empuje principal", input.primaryStoryModeDescription),
+    line("Modo de propulsión secundaria", input.secondaryStoryModeLabel ?? input.secondaryStoryModeId),
+    line("Descripción de propulsión adjunta", input.secondaryStoryModeDescription),
+    line("visión del mundo", input.worldName ?? input.worldId),
+    marketBriefPrompt.trim() ? `Informe del mercado del libro abierto: \\n${marketBriefPrompt.trim()}` : "",
+    line("Tendencias del canal de lectores", readerChannelPreferenceLabel(input.readerChannelPreference)),
+    input.powerSystemPreference ? `Preferencia del sistema de energía de combate:${input.powerSystemPreference}` : "",
+    input.narrativePov ? `Perspectiva narrativa:${input.narrativePov}` : "",
+    input.pacePreference ? `Preferencia de ritmo:${input.pacePreference}` : "",
+    input.emotionIntensity ? `Concentración emocional:${input.emotionIntensity}` : "",
+    line("Palabras claves de estilo de escritura", input.styleTone),
+    framing ? `Encuadre a nivel de libro: \\n${framing}` : "",
   ].filter(Boolean).join("\n");
 }
 

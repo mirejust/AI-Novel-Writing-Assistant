@@ -75,7 +75,7 @@ export class ChapterArtifactSyncService {
             select: { content: true },
           });
           if (!current || buildContentHash(current.content ?? "") !== contentHash) {
-            throw new ChapterArtifactContentVersionError("章节正文版本已变化，已拒绝写入过期基础资产。");
+            throw new ChapterArtifactContentVersionError("La versión del texto del capítulo ha cambiado y se ha rechazado la escritura de activos subyacentes vencidos.");
           }
           await tx.chapterSummary.upsert({
             where: { chapterId },
@@ -152,7 +152,7 @@ export class ChapterArtifactSyncService {
           status: "pending",
           contentHash,
           completedArtifacts: [],
-          reason: "章节资产已进入后台同步队列。",
+          reason: "Los recursos del capítulo han entrado en la cola de sincronización en segundo plano.",
         };
       }
     }
@@ -228,7 +228,7 @@ export class ChapterArtifactSyncService {
           select: { content: true },
         });
         if (!current || buildContentHash(current.content ?? "") !== buildContentHash(content)) {
-          throw new ChapterArtifactContentVersionError("章节正文版本已变化，已拒绝写入过期角色时间线。");
+          throw new ChapterArtifactContentVersionError("La versión del texto del capítulo ha cambiado y se ha rechazado escribir en la línea de tiempo de caracteres caducados.");
         }
         await tx.characterTimeline.deleteMany({
           where: {

@@ -16,7 +16,7 @@ import { serializeDirectorTaskState, splitDirectorTaskState, type DirectorTaskSt
 
 const ACTIVE_DIRECTOR_TASK_STATUSES = ["queued", "running", "waiting_approval"] as const;
 const ACTIVE_DIRECTOR_COMMAND_STATUSES = ["queued", "leased", "running"] as const;
-const REPLACED_TASK_MESSAGE = "已被新的 AI 任务替换";
+const REPLACED_TASK_MESSAGE = "Reemplazado por nuevas tareas de IA";
 
 export type StartDirectorTaskInput = Omit<
   BootstrapWorkflowInput,
@@ -77,7 +77,7 @@ export async function startDirectorTaskForNovel(
 ) {
   const novelId = input.novelId.trim();
   if (!novelId) {
-    throw new AppError("小说编号不能为空。", 400);
+    throw new AppError("El número de la novela no puede estar vacío.", 400);
   }
 
   return withSqliteRetry(
@@ -98,7 +98,7 @@ export async function startDirectorTaskForNovel(
 
       if (activeTasks.length > 0 && options.whenActive === "reject") {
         throw new AppError(
-          "这本书已有进行中的 AI 任务，请先继续或取消当前任务。",
+          "Este libro ya tiene una misión de IA en curso; primero continúe o cancele la misión actual.",
           409,
           {
             code: "DIRECTOR_TASK_ALREADY_ACTIVE",
@@ -145,7 +145,7 @@ export async function startDirectorTaskForNovel(
           throw new AppError("Only an unattached auto director task can be linked to this novel.", 409);
         }
         if (existingTask.novelId === novelId) {
-          if ((existingTask.directorEpoch ?? 0) !== identity.epoch || existingTask.directorVersion === "v2") throw new AppError("请在本书工作台开始新的创作任务。", 409);
+          if ((existingTask.directorEpoch ?? 0) !== identity.epoch || existingTask.directorVersion === "v2") throw new AppError("Inicie una nueva tarea creativa en el banco de trabajo de libros.", 409);
           return existingTask;
         }
         return tx.novelWorkflowTask.update({

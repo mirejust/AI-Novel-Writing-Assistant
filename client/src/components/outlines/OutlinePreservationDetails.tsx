@@ -4,18 +4,18 @@ import { findOutlineNodeTitle, formatOutlineValue, outlineFieldLabels } from "@/
 
 export function OutlinePreservationDetails({policy,document}:{policy:OutlineBookPolicy;document:OutlineDocument}) {
   const groups = [
-    {mode:"hard_constraint",label:"不可违背的固定设定"},
-    {mode:"preserve",label:"已填写内容 · 保留原文"},
-    {mode:"fill_missing",label:"空白字段 · 可补充"},
-    {mode:"propose_change",label:"允许提出优化建议"},
+    {mode:"hard_constraint",label:"Configuraciones fijas que no se pueden violar."},
+    {mode:"preserve",label:"Contenido completo · Mantener el texto original"},
+    {mode:"fill_missing",label:"Campos en blanco · Se pueden agregar"},
+    {mode:"propose_change",label:"Permitir sugerencias de optimización"},
   ];
-  return <div className="space-y-4 text-sm" aria-label="保留字段明细">{groups.map(group=>{
+  return <div className="space-y-4 text-sm" aria-label="Detalles del campo de reserva">{groups.map(group=>{
     const rules=policy.rules.filter(rule=>rule.mode===group.mode);
     return rules.length ? <details key={group.mode} open={group.mode==="hard_constraint"}>
-      <summary className="cursor-pointer py-1 font-medium">{group.label}（{rules.length} 项）</summary>
+      <summary className="cursor-pointer py-1 font-medium">{group.label}({rules.length} Artículos)</summary>
       <dl className="mt-2 max-h-64 divide-y divide-border/40 overflow-y-auto pr-2">{rules.map(rule=><div key={`${rule.nodeId}:${rule.field}`} className="py-2">
-        <dt className="text-xs text-muted-foreground">{findOutlineNodeTitle(document,rule.nodeId)} · {outlineFieldLabels[rule.field] ?? "创作内容"}</dt>
-        <dd className="mt-1 whitespace-pre-wrap break-words leading-6">{rule.mode==="fill_missing" ? "交给 AI 补充" : formatOutlineValue(rule.value,rule.field,document)}</dd>
+        <dt className="text-xs text-muted-foreground">{findOutlineNodeTitle(document,rule.nodeId)} · {outlineFieldLabels[rule.field] ?? "Crear contenido"}</dt>
+        <dd className="mt-1 whitespace-pre-wrap break-words leading-6">{rule.mode==="fill_missing" ? "Déjelo en manos de la IA para complementar" : formatOutlineValue(rule.value,rule.field,document)}</dd>
       </div>)}</dl>
     </details> : null;
   })}</div>;

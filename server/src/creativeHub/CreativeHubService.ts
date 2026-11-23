@@ -76,7 +76,7 @@ function serializePreview(messages: CreativeHubMessage[]): string | null {
 function deriveThreadTitle(messages: CreativeHubMessage[]): string {
   const firstHuman = messages.find((item) => item.type === "human");
   const content = typeof firstHuman?.content === "string" ? firstHuman.content.trim() : "";
-  return content ? content.slice(0, 24) : "新对话";
+  return content ? content.slice(0, 24) : "nueva conversación";
 }
 
 function mapThread(record: {
@@ -143,7 +143,7 @@ async function loadFailureDiagnostic(runId: string | null | undefined): Promise<
     failureSummary: run.error ?? latestStep?.error ?? null,
     failureDetails: latestStep?.error ?? null,
     recoveryHint: run.status === "failed"
-      ? "请查看最近一次失败步骤，必要时从创作中枢重新发起或重放。"
+      ? "Revise el paso fallido más reciente y reinícielo o reprodúzcalo desde Author Hub si es necesario."
       : null,
   };
 }
@@ -160,7 +160,7 @@ export class CreativeHubService {
   async createThread(input?: CreateThreadInput): Promise<CreativeHubThread> {
     const record = await prisma.creativeHubThread.create({
       data: {
-        title: input?.title?.trim() || "新对话",
+        title: input?.title?.trim() || "nueva conversación",
         resourceBindingsJson: JSON.stringify(normalizeBindings(input?.resourceBindings)),
       },
     });
@@ -170,7 +170,7 @@ export class CreativeHubService {
   async updateThread(threadId: string, input: UpdateThreadInput): Promise<CreativeHubThread> {
     const existing = await prisma.creativeHubThread.findUnique({ where: { id: threadId } });
     if (!existing) {
-      throw new Error("线程不存在。");
+      throw new Error("El hilo no existe.");
     }
     const nextBindings = input.resourceBindings
       ? JSON.stringify(normalizeBindings(input.resourceBindings))
@@ -206,7 +206,7 @@ export class CreativeHubService {
       },
     });
     if (!record) {
-      throw new Error("线程不存在。");
+      throw new Error("El hilo no existe.");
     }
     const latestCheckpoint = record.checkpoints[0];
     const diagnostics = await loadFailureDiagnostic(record.latestRunId);
@@ -263,7 +263,7 @@ export class CreativeHubService {
   async saveCheckpoint(threadId: string, input: SaveCheckpointInput): Promise<CreativeHubCheckpointRef> {
     const existing = await prisma.creativeHubThread.findUnique({ where: { id: threadId } });
     if (!existing) {
-      throw new Error("线程不存在。");
+      throw new Error("El hilo no existe.");
     }
     const checkpoint = await prisma.creativeHubCheckpoint.create({
       data: {
@@ -281,7 +281,7 @@ export class CreativeHubService {
     await prisma.creativeHubThread.update({
       where: { id: threadId },
       data: {
-        title: existing.title === "新对话" ? deriveThreadTitle(input.messages) : existing.title,
+        title: existing.title === "nueva conversación" ? deriveThreadTitle(input.messages) : existing.title,
         latestRunId: input.runId ?? existing.latestRunId,
         latestError: input.latestError ?? null,
         status: input.status ?? existing.status,

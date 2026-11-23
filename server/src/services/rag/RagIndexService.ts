@@ -658,8 +658,8 @@ export class RagIndexService {
     if (jobId) {
       await this.updateJobProgress(jobId, {
         stage: "deleting_existing",
-        label: "清理旧索引",
-        detail: `正在删除 ${existing.length} 条旧分块。`,
+        label: "Limpiar índices antiguos",
+        detail: `Eliminando ${existing.length} Trozos viejos.`,
         current: existing.length,
         total: existing.length,
         documents: 0,
@@ -684,8 +684,8 @@ export class RagIndexService {
     await this.assertJobNotCancelled(jobId);
     await this.updateJobProgress(jobId, {
       stage: "loading_source",
-      label: "读取文档",
-      detail: "正在读取知识库文档内容。",
+      label: "Leer documento",
+      detail: "Lectura del contenido del documento de la base de conocimientos.",
       documents: 0,
       chunks: 0,
       percent: 0.05,
@@ -699,8 +699,8 @@ export class RagIndexService {
     if (docs.length === 0) {
       await this.updateJobProgress(jobId, {
         stage: "deleting_existing",
-        label: "清理旧索引",
-        detail: "当前没有可索引内容，正在清理旧索引。",
+        label: "Limpiar índices antiguos",
+        detail: "Actualmente no hay contenido indexable, el índice antiguo se está limpiando.",
         documents: 0,
         chunks: 0,
         percent: 0.3,
@@ -708,8 +708,8 @@ export class RagIndexService {
       await this.deleteOwnerChunks(ownerType, ownerId, tenantId, jobId);
       await this.updateJobProgress(jobId, {
         stage: "completed",
-        label: "索引完成",
-        detail: "没有可索引内容，旧索引已清理。",
+        label: "Indexación completada",
+        detail: "Sin contenido indexable, índice antiguo limpiado.",
         documents: 0,
         chunks: 0,
         percent: 1,
@@ -741,8 +741,8 @@ export class RagIndexService {
     });
     await this.updateJobProgress(jobId, {
       stage: "chunking",
-      label: "切分分块",
-      detail: `已读取 ${docs.length} 份文档，生成 ${candidates.length} 个分块。`,
+      label: "Cortar en trozos",
+      detail: `Leer ${docs.length} documentos, generar ${candidates.length} bloques.`,
       current: candidates.length,
       total: candidates.length,
       documents: docs.length,
@@ -758,8 +758,8 @@ export class RagIndexService {
     const embedding = await this.embedTextsInBatches(splitTexts, async ({ processed, total }) => {
       await this.updateJobProgress(jobId, {
         stage: "embedding",
-        label: "生成向量",
-        detail: `已生成 ${processed}/${total} 个向量（${ragConfig.embeddingConcurrency} 并发）。`,
+        label: "Generar vector",
+        detail: `Generado ${processed}/${total} vectores (${ragConfig.embeddingConcurrency} concurrente).`,
         current: processed,
         total,
         documents: docs.length,
@@ -775,8 +775,8 @@ export class RagIndexService {
     if (candidates.length === 0) {
       await this.updateJobProgress(jobId, {
         stage: "deleting_existing",
-        label: "清理旧索引",
-        detail: "切分后没有可写入的分块，正在清理旧索引。",
+        label: "Limpiar índices antiguos",
+        detail: "No hay fragmentos grabables después de la fragmentación y se limpian los índices antiguos.",
         documents: docs.length,
         chunks: 0,
         percent: 0.3,
@@ -784,8 +784,8 @@ export class RagIndexService {
       await this.deleteOwnerChunks(ownerType, ownerId, tenantId, jobId);
       await this.updateJobProgress(jobId, {
         stage: "completed",
-        label: "索引完成",
-        detail: "切分后没有可写入的分块。",
+        label: "Indexación completada",
+        detail: "No hay fragmentos grabables después de la fragmentación.",
         documents: docs.length,
         chunks: 0,
         percent: 1,
@@ -793,14 +793,14 @@ export class RagIndexService {
       return { chunks: 0 };
     }
     if (embedding.vectors.length !== candidates.length) {
-      throw new Error("RAG embedding 数量与 chunk 数量不一致。");
+      throw new Error("El número de incrustaciones de RAG es inconsistente con el número de fragmentos.");
     }
 
     const vectorSize = embedding.vectors[0]?.length ?? 0;
     await this.updateJobProgress(jobId, {
       stage: "ensuring_collection",
-      label: "校验集合",
-      detail: `正在校验向量集合，目标维度 ${vectorSize}。`,
+      label: "conjunto de verificación",
+      detail: `Verificación del conjunto de vectores, dimensión objetivo ${vectorSize}.`,
       current: candidates.length,
       total: candidates.length,
       documents: docs.length,
@@ -820,8 +820,8 @@ export class RagIndexService {
 
     await this.updateJobProgress(jobId, {
       stage: "upserting_vectors",
-      label: "写入向量库",
-      detail: `正在向 Qdrant 写入 ${candidates.length} 个分块（${ragConfig.qdrantUpsertConcurrency} 并发）。`,
+      label: "Escribir en la biblioteca de vectores",
+      detail: `Escribiendo a Qdrant ${candidates.length} trozos (${ragConfig.qdrantUpsertConcurrency} concurrente).`,
       current: candidates.length,
       total: candidates.length,
       documents: docs.length,
@@ -867,8 +867,8 @@ export class RagIndexService {
     try {
       await this.updateJobProgress(jobId, {
         stage: "writing_metadata",
-        label: "写入索引元数据",
-        detail: `正在写入 ${candidates.length} 条本地索引记录。`,
+        label: "Escribir metadatos de índice",
+        detail: `Escribiendo ${candidates.length} registros de índices locales.`,
         current: candidates.length,
         total: candidates.length,
         documents: docs.length,
@@ -908,8 +908,8 @@ export class RagIndexService {
     if (oldIds.length > 0) {
       await this.updateJobProgress(jobId, {
         stage: "deleting_existing",
-        label: "清理旧索引",
-        detail: `正在删除 ${oldIds.length} 条旧分块。`,
+        label: "Limpiar índices antiguos",
+        detail: `Eliminando ${oldIds.length} Trozos viejos.`,
         current: oldIds.length,
         total: oldIds.length,
         documents: docs.length,
@@ -922,8 +922,8 @@ export class RagIndexService {
 
     await this.updateJobProgress(jobId, {
       stage: "completed",
-      label: "索引完成",
-      detail: `索引已完成，共 ${candidates.length} 个分块。`,
+      label: "Indexación completada",
+      detail: `Indexación completada, total ${candidates.length} bloques.`,
       current: candidates.length,
       total: candidates.length,
       documents: docs.length,
@@ -985,8 +985,8 @@ export class RagIndexService {
           ...(options?.payload ?? {}),
           progress: this.createProgressSnapshot({
             stage: "queued",
-            label: "等待执行",
-            detail: "索引任务已进入队列。",
+            label: "Esperando ejecución",
+            detail: "La tarea de indexación ha sido puesta en cola.",
             percent: 0,
           }),
         } satisfies RagJobPayloadRecord),
@@ -1126,30 +1126,30 @@ export class RagIndexService {
     if (payload.status === "queued") {
       await this.updateJobProgress(job.id, {
         stage: "queued",
-        label: payload.lastError ? "等待重试" : "等待执行",
-        detail: payload.lastError ? `任务已重新排队：${payload.lastError}` : "索引任务已进入队列。",
+        label: payload.lastError ? "Esperando reintento" : "Esperando ejecución",
+        detail: payload.lastError ? `La tarea ha sido puesta en cola:${payload.lastError}` : "La tarea de indexación ha sido puesta en cola.",
         percent: 0,
       });
     } else if (payload.status === "running") {
       await this.updateJobProgress(job.id, {
         stage: "loading_source",
-        label: "开始处理",
-        detail: "索引 worker 已开始处理任务。",
+        label: "Iniciar procesamiento",
+        detail: "El trabajador del índice ha comenzado a procesar la tarea.",
         percent: 0.02,
       });
     } else if (payload.status === "succeeded") {
       await this.updateJobProgress(job.id, {
         stage: "completed",
-        label: "索引完成",
-        detail: "索引任务已完成。",
+        label: "Indexación completada",
+        detail: "Tarea de indexación completada.",
         percent: 1,
       });
     } else if (payload.status === "cancelled") {
       const progress = this.parseJobPayload(current.payloadJson).progress;
       await this.updateJobProgress(job.id, {
         stage: "cancelled",
-        label: "任务已取消",
-        detail: payload.lastError ?? "索引任务已取消。",
+        label: "Tarea cancelada",
+        detail: payload.lastError ?? "Tarea de indexación cancelada.",
         current: progress?.current,
         total: progress?.total,
         documents: progress?.documents,
@@ -1159,8 +1159,8 @@ export class RagIndexService {
     } else if (payload.status === "failed") {
       await this.updateJobProgress(job.id, {
         stage: "failed",
-        label: "索引失败",
-        detail: payload.lastError ?? "索引任务失败。",
+        label: "Error en el índice",
+        detail: payload.lastError ?? "Error en la tarea de indexación.",
         percent: 1,
       });
     }
@@ -1195,15 +1195,15 @@ export class RagIndexService {
     if (jobType === "delete") {
       await this.updateJobProgress(job.id, {
         stage: "deleting_existing",
-        label: "清理旧索引",
-        detail: "正在删除现有知识库索引。",
+        label: "Limpiar índices antiguos",
+        detail: "Eliminando el índice de la base de conocimientos existente.",
         percent: 0.4,
       });
       const result = await this.deleteOwnerChunks(ownerType, job.ownerId, tenantId, job.id);
       await this.updateJobProgress(job.id, {
         stage: "completed",
-        label: "索引完成",
-        detail: result.deleted > 0 ? `已删除 ${result.deleted} 条旧分块。` : "没有需要删除的旧分块。",
+        label: "Indexación completada",
+        detail: result.deleted > 0 ? `Eliminado ${result.deleted} Trozos viejos.` : "No hay fragmentos antiguos que eliminar.",
         current: result.deleted,
         total: result.deleted,
         chunks: result.deleted,

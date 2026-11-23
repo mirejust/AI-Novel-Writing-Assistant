@@ -5,7 +5,7 @@ import { SettingsShell } from "../components/SettingsShell";
 
 export default function ModelsSettingsPage() {
   return (
-    <SettingsShell title="模型与厂商" description="添加并管理创作可用的模型厂商与模型。">
+    <SettingsShell title="Modelos y proveedores" description="Agregue y administre proveedores de modelos y modelos disponibles para su creación.">
       <SettingsPage />
       <WorldGenerationTimeoutSection />
       <InvocationHistorySection />

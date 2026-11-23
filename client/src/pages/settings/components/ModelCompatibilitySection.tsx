@@ -22,9 +22,9 @@ export default function ModelCompatibilitySection({ provider }: { provider: APIK
   const query = useQuery({ queryKey: key, queryFn: async () => (await apiClient.get<{ data: CapabilityResult }>(url)).data.data,
     enabled: provider.isConfigured, refetchInterval: (query) => query.state.data?.status.state === "running" ? 1500 : false });
   const probe = useMutation({ mutationFn: () => apiClient.post(url + "/probe", { model: provider.currentModel, baseURL: provider.currentBaseURL, allowNetwork: true }),
-    onSuccess: () => { setError(""); void queryClient.invalidateQueries({ queryKey: key }); }, onError: () => setError("无法启动探测，请检查连接后重试。") });
+    onSuccess: () => { setError(""); void queryClient.invalidateQueries({ queryKey: key }); }, onError: () => setError("No se puede iniciar la detección. Verifique la conexión e inténtelo nuevamente.") });
   const consent = useMutation({ mutationFn: (autoProbe: boolean) => apiClient.put(url, { autoProbe }),
-    onSuccess: () => { setError(""); void queryClient.invalidateQueries({ queryKey: key }); }, onError: () => setError("探测设置保存失败，请重试。") });
+    onSuccess: () => { setError(""); void queryClient.invalidateQueries({ queryKey: key }); }, onError: () => setError("No se pudo guardar la configuración de detección. Inténtelo de nuevo.") });
   const override = useMutation({ mutationFn: () => {
     const profile = query.data!.profile;
     const selectedMode = mode || profile.structuredModes[0];
@@ -33,40 +33,40 @@ export default function ModelCompatibilitySection({ provider }: { provider: APIK
     return apiClient.put(url, { override: { ...profile, source: "user_override", failedModes: [],
       structuredModes: ordered.slice(ordered.indexOf(selectedMode)),
       thinkingToggle: { ...profile.thinkingToggle, supported: selectedControl !== "none", control: selectedControl } } });
-  }, onSuccess: () => { setError(""); void queryClient.invalidateQueries({ queryKey: key }); }, onError: () => setError("指定能力保存失败，请重试。") });
+  }, onSuccess: () => { setError(""); void queryClient.invalidateQueries({ queryKey: key }); }, onError: () => setError("No se pudo guardar la capacidad especificada, inténtelo de nuevo.") });
   const data = query.data;
   const saveOutputLimit = useMutation({ mutationFn: () => apiClient.put(url, {
     override: { ...data!.profile, source: "user_override", maxOutputTokens: (outputLimit ?? data!.profile.maxOutputTokens ?? "") === "" ? undefined : Number(outputLimit ?? data!.profile.maxOutputTokens) },
   }), onSuccess: () => { setError(""); setOutputLimit(null); void queryClient.invalidateQueries({ queryKey: key }); },
-    onError: () => setError("输出上限保存失败，请重试。") });
-  const labels: Record<string, string> = { json_schema: "严格 JSON", json_object: "JSON", tool_calling: "工具调用", prompt_only: "提示约束 JSON" };
+    onError: () => setError("No se pudo guardar el límite superior de salida. Inténtelo de nuevo.") });
+  const labels: Record<string, string> = { json_schema: "JSON estricto", json_object: "JSON", tool_calling: "Llamada de herramienta", prompt_only: "Restricciones de solicitud JSON" };
   return <section className="space-y-2 border-t pt-3 text-sm">
-    <div className="font-medium">模型兼容性</div>
+    <div className="font-medium">Compatibilidad del modelo</div>
     {data ? <form className="space-y-2" onSubmit={(event) => { event.preventDefault(); saveOutputLimit.mutate(); }}>
-      <label className="flex flex-wrap items-center gap-2">当前模型输出上限（Token）
-        <Input type="number" min={1} max={1048576} step={1} className="w-40" placeholder="使用任务预算"
+      <label className="flex flex-wrap items-center gap-2">Límite superior de salida del modelo actual (Token)
+        <Input type="number" min={1} max={1048576} step={1} className="w-40" placeholder="Usar presupuesto de tarea"
           value={outputLimit ?? data.profile.maxOutputTokens ?? ""} onChange={(event) => setOutputLimit(event.target.value)} />
       </label>
-      <p className="text-xs text-muted-foreground">为 {provider.currentModel} 设置单次输出额度，适用于正文与结构化生成；留空使用任务预算。切换模型可分别设置。</p>
-      <Button size="sm" variant="outline" type="submit" disabled={saveOutputLimit.isPending}>保存输出上限</Button>
+      <p className="text-xs text-muted-foreground">para {provider.currentModel} Establezca una cuota de salida única, adecuada para texto y generación estructurada; déjelo en blanco para utilizar el presupuesto de la tarea. Los modelos de conmutación se pueden configurar individualmente.</p>
+      <Button size="sm" variant="outline" type="submit" disabled={saveOutputLimit.isPending}>Guardar límite superior de salida</Button>
     </form> : null}
-    <p className="text-xs text-muted-foreground">探测会发送少量付费请求，帮助选择可用的输出方式和思考开关。</p>
-    <label className="flex items-center gap-2"><Switch checked={data?.autoProbe ?? false} disabled={!data || consent.isPending} onCheckedChange={(value) => consent.mutate(value)} />保存或切换模型时自动探测</label>
-    <Button size="sm" variant="outline" disabled={!provider.isConfigured || probe.isPending || data?.status.state === "running"} onClick={() => probe.mutate()}>{data?.status.state === "running" ? "探测中…" : "重新探测"}</Button>
+    <p className="text-xs text-muted-foreground">La detección envía una pequeña cantidad de solicitudes pagas para ayudar a seleccionar los métodos de salida disponibles y los cambios de pensamiento.</p>
+    <label className="flex items-center gap-2"><Switch checked={data?.autoProbe ?? false} disabled={!data || consent.isPending} onCheckedChange={(value) => consent.mutate(value)} />Detección automática al guardar o cambiar de modelo</label>
+    <Button size="sm" variant="outline" disabled={!provider.isConfigured || probe.isPending || data?.status.state === "running"} onClick={() => probe.mutate()}>{data?.status.state === "running" ? "Detectando…" : "Redetectar"}</Button>
     {data ? <div className="space-y-1 text-xs text-muted-foreground" role="status">
-      <div>{data.status.message ?? "可手动探测模型兼容性。"} {data.status.checkedAt ? new Date(data.status.checkedAt).toLocaleString() : ""}</div>
-      <div>输出方式：{data.profile.structuredModes.filter((mode) => !data.profile.failedModes.includes(mode)).map((mode) => labels[mode]).join(" → ")}</div>
-      <div>关闭思考：{data.profile.thinkingToggle.supported ? "支持" : "未确认支持"}{data.profile.probedAt ? ` · 上次结果 ${new Date(data.profile.probedAt).toLocaleString()}` : " · 使用默认能力"}</div>
+      <div>{data.status.message ?? "La compatibilidad del modelo se puede detectar manualmente."} {data.status.checkedAt ? new Date(data.status.checkedAt).toLocaleString() : ""}</div>
+      <div>Modo de salida:{data.profile.structuredModes.filter((mode) => !data.profile.failedModes.includes(mode)).map((mode) => labels[mode]).join(" → ")}</div>
+      <div>Pensamientos finales:{data.profile.thinkingToggle.supported ? "Apoyo" : "Soporte no confirmado"}{data.profile.probedAt ? ` · Último resultado ${new Date(data.profile.probedAt).toLocaleString()}` : " · Utilizar capacidades predeterminadas"}</div>
     </div> : null}
     {provider.kind === "custom" && data ? <details className="text-xs">
-      <summary className="cursor-pointer">指定自定义服务能力</summary>
+      <summary className="cursor-pointer">Especificar capacidades de servicio personalizadas</summary>
       <div className="mt-2 space-y-2">
-        <label className="flex items-center gap-2">优先输出方式<select className="rounded border bg-background p-1" value={mode || data.profile.structuredModes[0]} onChange={(event) => setMode(event.target.value)}>{Object.entries(labels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
-        <label className="flex items-center gap-2">思考控制参数<select className="rounded border bg-background p-1" value={control || data.profile.thinkingToggle.control} onChange={(event) => setControl(event.target.value)}>{["none", "thinking", "thinking_boolean", "enable_thinking", "reasoning_effort"].map((value) => <option key={value} value={value}>{value === "none" ? "不指定" : value}</option>)}</select></label>
-        <Button size="sm" variant="outline" disabled={override.isPending} onClick={() => override.mutate()}>保存指定能力</Button>
-        <p className="text-muted-foreground">指定能力优先于探测结果，适用于服务商提供了明确参数说明的连接。</p>
+        <label className="flex items-center gap-2">Modo de salida prioritario<select className="rounded border bg-background p-1" value={mode || data.profile.structuredModes[0]} onChange={(event) => setMode(event.target.value)}>{Object.entries(labels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
+        <label className="flex items-center gap-2">Piense en los parámetros de control<select className="rounded border bg-background p-1" value={control || data.profile.thinkingToggle.control} onChange={(event) => setControl(event.target.value)}>{["none", "thinking", "thinking_boolean", "enable_thinking", "reasoning_effort"].map((value) => <option key={value} value={value}>{value === "none" ? "No especificado" : value}</option>)}</select></label>
+        <Button size="sm" variant="outline" disabled={override.isPending} onClick={() => override.mutate()}>Guardar capacidades especificadas</Button>
+        <p className="text-muted-foreground">Las capacidades especificadas tienen prioridad sobre los resultados de la detección y son adecuadas para conexiones en las que el proveedor de servicios proporciona descripciones claras de los parámetros.</p>
       </div>
     </details> : null}
-    {query.isError || error ? <p role="alert" className="text-xs text-destructive">{error || "兼容性信息读取失败。"}</p> : null}
+    {query.isError || error ? <p role="alert" className="text-xs text-destructive">{error || "No se pudo leer la información de compatibilidad."}</p> : null}
   </section>;
 }

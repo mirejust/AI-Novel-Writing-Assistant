@@ -49,7 +49,7 @@ function toTrimmedString(value: unknown): string {
 
 function sanitizeGeneratedNode(value: unknown, depth = 1): StoryModeTreeDraft {
   if (!value || typeof value !== "object") {
-    throw new Error("模型输出异常：流派模式节点不是合法对象。");
+    throw new Error("Excepción de salida del modelo: el nodo de modo de género no es un objeto legal.");
   }
 
   const record = value as {
@@ -62,7 +62,7 @@ function sanitizeGeneratedNode(value: unknown, depth = 1): StoryModeTreeDraft {
 
   const name = toTrimmedString(record.name);
   if (!name) {
-    throw new Error("模型输出异常：流派模式名称不能为空。");
+    throw new Error("Excepción de salida del modelo: el nombre del modo de género no puede estar vacío.");
   }
 
   const description = toTrimmedString(record.description);
@@ -139,10 +139,10 @@ export async function generateStoryModeChildDrafts(input: GenerateStoryModeChild
   });
 
   if (!parent) {
-    throw new Error("父级流派模式不存在。");
+    throw new Error("El modelo de género principal no existe.");
   }
   if (parent.parentId) {
-    throw new Error("新增子类只能挂在根流派模式下面。");
+    throw new Error("Solo se pueden agregar nuevas subcategorías en el modo de género raíz.");
   }
 
   const count = Math.max(1, Math.min(5, Math.trunc(input.count ?? 1)));
@@ -181,8 +181,8 @@ export async function generateStoryModeExpansionDrafts(input: GenerateStoryModeE
       },
     })
     : null;
-  if (input.parentId?.trim() && !parent) throw new Error("父级流派模式不存在。");
-  if (parent?.parentId) throw new Error("扩展推进模式只能选择根模式。");
+  if (input.parentId?.trim() && !parent) throw new Error("El modelo de género principal no existe.");
+  if (parent?.parentId) throw new Error("Sólo se puede seleccionar el modo raíz para el modo de avance extendido.");
 
   const allModes = await prisma.novelStoryMode.findMany({
     select: {
@@ -202,10 +202,10 @@ export async function generateStoryModeExpansionDrafts(input: GenerateStoryModeE
     return [
       path,
       description,
-      `驱动：${profile.coreDrive}`,
-      `回报：${profile.readerReward}`,
-      `单元：${profile.progressionUnits.slice(0, 3).join("、")}`,
-    ].filter(Boolean).join("；");
+      `conducir:${profile.coreDrive}`,
+      `Devolver:${profile.readerReward}`,
+      `unidad:${profile.progressionUnits.slice(0, 3).join(",")}`,
+    ].filter(Boolean).join(";");
   }).join("\n");
   const result = await runStructuredPrompt({
     asset: storyModeExpansionPrompt,

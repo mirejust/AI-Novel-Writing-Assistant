@@ -22,7 +22,7 @@ export async function loadCurrentChapterArtifactFacts(chapterId: string) {
   const metadata = JSON.parse(checkpoint.metadataJson ?? "null");
   const output = metadata?.output;
   if (metadata?.schemaVersion !== 1 || typeof output?.summary !== "string" || !Array.isArray(output?.concreteFacts)) {
-    throw new Error("章节事实检查点缺少有效的统一抽取结果。");
+    throw new Error("El control de hechos del capítulo carece de resultados de extracción unificados y eficientes.");
   }
   const rows = await prisma.novelFactEntry.findMany({
     where: { novelId: chapter.novelId, chapterOrder: chapter.order }, select: { text: true, category: true },
@@ -32,7 +32,7 @@ export async function loadCurrentChapterArtifactFacts(chapterId: string) {
   const seen = new Set<string>();
   for (const fact of output.concreteFacts) {
     if (typeof fact?.text !== "string" || !["completed", "revealed", "state_changed"].includes(fact.category)) {
-      throw new Error("章节事实检查点包含无效事实。");
+      throw new Error("El punto de control de hechos del capítulo contiene hechos no válidos.");
     }
     const text = fact.text.replace(/\s+/g, " ").trim();
     const key = `${fact.category}\0${text}`;

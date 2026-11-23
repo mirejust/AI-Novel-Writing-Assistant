@@ -38,49 +38,49 @@ export default function CharacterPreparationHero(props: CharacterPreparationHero
 
   return (
     <StepHero
-      eyebrow="角色阵容"
-      title="角色准备"
-      description="把人物当作可持续运行的叙事资产来维护：先补齐阵容，再切换查看档案、外显、资源、时间线和关系。"
+      eyebrow="Reparto de personajes"
+      title="Preparación de personajes"
+      description="Mantenga a los personajes como activos narrativos sostenibles: primero complete el elenco, luego cambie a archivos, apariencias, recursos, líneas de tiempo y relaciones."
       className="border border-border/60 bg-[linear-gradient(135deg,hsl(var(--background))_0%,hsl(var(--muted))_100%)] shadow-sm"
     >
       <StatusRail
         items={[
           {
-            label: "已建角色",
+            label: "Rol creado",
             value: characters.length,
-            description: characters.length > 0 ? "阵容已开始成形。" : "先创建主角或导入基础角色。",
+            description: characters.length > 0 ? "La alineación empieza a tomar forma." : "Primero crea el protagonista o importa un personaje básico.",
             tone: characters.length > 0 ? "success" : "warning",
           },
           {
-            label: "核心角色",
+            label: "Rol central",
             value: coreCharacterCount,
-            description: coreCharacterCount > 0 ? "继续补足对手、同盟和压力源。" : "至少明确主角与主要对手。",
+            description: coreCharacterCount > 0 ? "Continúe complementando a rivales, aliados y factores estresantes." : "Al menos deja claro quién es el protagonista y el principal antagonista.",
             tone: coreCharacterCount > 0 ? "success" : "warning",
           },
           {
-            label: "当前焦点",
-            value: selectedCharacter?.name ?? "尚未选择角色",
-            description: selectedCharacter?.role || `${baseCharacterCount} 个基础角色可导入`,
+            label: "Enfoque actual",
+            value: selectedCharacter?.name ?? "Aún no se ha seleccionado ningún rol",
+            description: selectedCharacter?.role || `${baseCharacterCount} Se pueden importar roles básicos`,
             tone: selectedCharacter ? "info" : "neutral",
           },
         ]}
       />
       <StepActionBar
         className="mt-4 border border-border/60 bg-background/80"
-        label="下一步建议"
+        label="Sugerencias para los próximos pasos"
         description={recommendedAction}
         actions={(
           <>
-            <Button onClick={onOpenCreateDialog}>新增角色</Button>
+            <Button onClick={onOpenCreateDialog}>Agregar nuevo rol</Button>
             <AiButton variant="outline" onClick={onOpenSupplementalDialog}>
-              补充角色
+              rol complementario
             </AiButton>
             <AiButton
               variant="secondary"
               onClick={onEvolveCharacter}
               disabled={isEvolvingCharacter || !selectedCharacterId}
             >
-              {isEvolvingCharacter ? "演进中..." : "AI 演进当前状态"}
+              {isEvolvingCharacter ? "Evolucionando..." : "El estado actual de la evolución de la IA"}
             </AiButton>
           </>
         )}
@@ -96,16 +96,16 @@ function getRecommendedAction(input: {
   pendingCharacterResourceCount: number;
 }): string {
   if (input.characterCount === 0) {
-    return "先建立主角或导入基础角色，让后续世界、卷规划和章节生成有明确行动主体。";
+    return "Primero cree el protagonista o importe el personaje básico para que haya un tema de acción claro para el mundo posterior, la planificación del volumen y la generación de capítulos.";
   }
   if (input.coreCharacterCount === 0) {
-    return "把主角、主要对手或关键同盟标记清楚，避免后续章节缺少稳定压力源。";
+    return "Marca claramente a tu protagonista, antagonista principal o aliado clave para evitar la falta de una fuente estable de estrés en capítulos posteriores.";
   }
   if (input.pendingCharacterResourceCount > 0) {
-    return `有 ${input.pendingCharacterResourceCount} 条资源变更等待确认，建议到“资源”页核对。`;
+    return `tener ${input.pendingCharacterResourceCount} Los cambios de recursos están esperando confirmación. Se recomienda consultar en la página "Recursos".`;
   }
   if (!input.selectedCharacter) {
-    return "从左侧选择一个角色，进入档案、外显、资源和时间线的切换式维护。";
+    return "Seleccione una función de la izquierda para ingresar al mantenimiento intercambiable de archivos, pantallas, recursos y cronogramas.";
   }
-  return "优先检查当前目标、最近出场和关键资源，再决定是否让 AI 演进状态。";
+  return "Priorice la verificación de objetivos actuales, apariciones recientes y recursos clave antes de decidir si dejar que la IA evolucione el estado.";
 }

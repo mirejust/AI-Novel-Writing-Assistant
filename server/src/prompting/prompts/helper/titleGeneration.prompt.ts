@@ -72,7 +72,7 @@ function buildTitleGenerationMessages(
     : "";
 
   return [
-    new SystemMessage(`你是中文网文平台的资深标题策划。${primarySelection
+    new SystemMessage(`你是西班牙语网文平台的资深标题策划。${primarySelection
       ? "你的任务是为一套已经确定的长篇网文方向，直接确定最适合当前平台与读者的主书名，并给出少量备选。"
       : "你的目标不是写“文艺名字”，而是输出一组适合封面展示、点击测试和投放筛选的小说标题候选。"}
 
@@ -98,7 +98,7 @@ ${primarySelection
 
 【字段要求】
 1. 必须恰好输出 ${input.count} 个标题，不多不少。
-2. title 必须像中文网文书名，适合封面展示，不要写成简介句、栏目名或世界观说明。
+2. title 必须像西班牙语网文书名，适合封面展示，不要写成简介句、栏目名或世界观说明。
 3. 标题建议 6-16 个汉字，最长不超过 20 个字符。
 4. clickRate 使用 35-99 的整数，表示主观点击预估分。
 5. style 只允许使用：literary / conflict / suspense / high_concept。

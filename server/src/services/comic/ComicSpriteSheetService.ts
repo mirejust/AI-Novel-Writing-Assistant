@@ -100,7 +100,7 @@ function buildPlaceholderColumn(label: string, width = 256): { buf: Buffer; widt
   <rect width="${width}" height="${TOTAL_HEIGHT}" fill="#f0f0f0"/>
   <text x="${width / 2}" y="${TARGET_HEIGHT / 2}"
     font-family="sans-serif" font-size="13" fill="#999999"
-    text-anchor="middle" dominant-baseline="middle">无参考图</text>
+    text-anchor="middle" dominante-baseline="middle">Sin imagen de referencia</text>
   ${buildLabelBuffer(label, width).toString("utf-8").replace(/<svg[^>]*>|<\/svg>/g, "")}
 </svg>`;
   return { buf: Buffer.from(svg), width };
@@ -119,10 +119,10 @@ export class ComicSpriteSheetService {
     // 列 1：三视图
     if (input.sheetFilePath) {
       try {
-        const col = await buildColumn(input.sheetFilePath, `${truncLabel(input.characterName, 8)}·三视图`);
+        const col = await buildColumn(input.sheetFilePath, `${truncLabel(input.characterName, 8)}·Tres vistas`);
         columns.push(col);
       } catch (err) {
-        console.warn(`[sprite] 三视图加载失败：${err instanceof Error ? err.message : err}`);
+        console.warn(`[sprite] No se pudieron cargar tres vistas:${err instanceof Error ? err.message : err}`);
       }
     }
 
@@ -131,7 +131,7 @@ export class ComicSpriteSheetService {
       const resolved = await resolveAssetFile(asset.id);
       if (!resolved) continue;
       try {
-        const col = await buildColumn(resolved.filePath, `服装·${asset.name}`);
+        const col = await buildColumn(resolved.filePath, `ropa·${asset.name}`);
         columns.push(col);
         break;
       } catch { /* 跳过损坏图 */ }

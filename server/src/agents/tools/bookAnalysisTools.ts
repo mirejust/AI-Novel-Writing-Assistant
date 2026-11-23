@@ -19,8 +19,8 @@ export const bookAnalysisToolDefinitions: Partial<
 > = {
   list_book_analyses: {
     name: "list_book_analyses",
-    title: "列出拆书任务",
-    description: "读取拆书分析任务列表、状态和最近错误。",
+    title: "Listar tareas de apertura de libros",
+    description: "Lea la lista de tareas de análisis de libros divididos, el estado y los errores recientes.",
     category: "read",
     riskLevel: "low",
     domainAgent: "BookAnalysisAgent",
@@ -57,14 +57,14 @@ export const bookAnalysisToolDefinitions: Partial<
           lastError: row.lastError ?? null,
           updatedAt: row.updatedAt.toISOString(),
         })),
-        summary: `已读取 ${rows.length} 个拆书任务。`,
+        summary: `Leer ${rows.length} Una tarea de apertura de libros.`,
       });
     },
   },
   get_book_analysis_detail: {
     name: "get_book_analysis_detail",
-    title: "读取拆书详情",
-    description: "读取单个拆书任务的进度、章节数和最近状态。",
+    title: "Lea los detalles de cómo abrir el libro.",
+    description: "Lea el progreso, la cantidad de capítulos y el estado reciente de una sola tarea de apertura de libros.",
     category: "read",
     riskLevel: "low",
     domainAgent: "BookAnalysisAgent",
@@ -108,8 +108,8 @@ export const bookAnalysisToolDefinitions: Partial<
   },
   get_book_analysis_failure_reason: {
     name: "get_book_analysis_failure_reason",
-    title: "解释拆书失败原因",
-    description: "解释拆书任务失败、阻塞或当前不可继续的原因。",
+    title: "Explique el motivo por el que no se pudo abrir el libro.",
+    description: "Explique por qué la tarea de apertura del libro falló, se bloqueó o no se puede continuar actualmente.",
     category: "inspect",
     riskLevel: "low",
     domainAgent: "BookAnalysisAgent",
@@ -125,21 +125,21 @@ export const bookAnalysisToolDefinitions: Partial<
         throw new AgentToolError("NOT_FOUND", "Book analysis not found.");
       }
       const failureSummary = row.status === "failed"
-        ? (row.lastError?.trim() || "拆书任务失败，但没有记录明确错误。")
+        ? (row.lastError?.trim() || "La tarea de apertura del libro falló, pero no se registró ningún error claro.")
         : row.status === "cancelled"
-          ? "拆书任务已取消。"
+          ? "La tarea de abrir el libro ha sido cancelada."
           : row.status === "running"
-            ? "拆书任务仍在执行中，并未失败。"
+            ? "La tarea de abrir el libro aún está en marcha y no ha fracasado."
             : row.status === "queued"
-              ? "拆书任务仍在排队，尚未开始执行。"
-              : "当前拆书任务没有失败记录。";
+              ? "La tarea de abrir el libro todavía está en cola y aún no se ha iniciado."
+              : "Actualmente no existe ningún registro de fallas para la tarea de apertura de libros.";
       const recoveryHint = row.status === "failed"
-        ? "可检查文档内容完整性、模型配置和最近一次章节生成记录，再决定是否重试。"
+        ? "Puede verificar la integridad del contenido del documento, la configuración del modelo y el registro de generación del capítulo más reciente antes de decidir si desea volver a intentarlo."
         : row.status === "running"
-          ? "建议等待当前任务完成，或在任务中心查看实时进度。"
+          ? "Se recomienda esperar a que se complete la tarea actual o verificar el progreso en tiempo real en el centro de tareas."
           : row.status === "queued"
-            ? "建议检查队列压力和模型可用性，确认任务是否被调度。"
-            : "当前无需恢复操作。";
+            ? "Se recomienda verificar la presión de la cola y la disponibilidad del modelo para confirmar si la tarea está programada."
+            : "Actualmente no se requieren operaciones de recuperación.";
       return getBookAnalysisFailureReasonOutputSchema.parse({
         analysisId: row.id,
         status: row.status,
@@ -152,25 +152,25 @@ export const bookAnalysisToolDefinitions: Partial<
   },
   audit_chapter_continuity: {
     name: "audit_chapter_continuity",
-    title: "章节连续性诊断",
-    description: "扫描指定章节范围的已生成正文，检测重复场景模式（时间+地点+动作三要素重复）和章节开头重复模式，并输出诊断报告。不需要 LLM，直接基于章节内容进行结构检测。",
+    title: "Capítulo Diagnóstico de Continuidad",
+    description: "Escanee el texto generado del rango de capítulos especificado, detecte patrones de escena repetidos (repetición de los tres elementos de tiempo + ubicación + acción) y patrones repetidos al comienzo de los capítulos, y genere un informe de diagnóstico. No se requiere LLM, la detección de estructuras se basa directamente en el contenido del capítulo.",
     category: "inspect",
     riskLevel: "low",
     domainAgent: "NovelAgent",
     resourceScopes: ["novel", "chapter"],
     parserHints: {
       intent: "inspect_failure_reason",
-      aliases: ["章节连续性诊断", "章节重复检测", "剧情一致性检查", "audit chapter continuity"],
+      aliases: ["Capítulo Diagnóstico de Continuidad", "Detección de capítulos duplicados", "Comprobación de coherencia de la trama", "audit chapter continuity"],
       phrases: [
-        "检查章节有没有重复",
-        "看看哪些章节内容重复了",
-        "诊断小说的连续性问题",
-        "哪些场景被重复写了",
-        "开头有没有模式重复",
+        "Comprueba si hay capítulos duplicados.",
+        "Ver qué capítulos se repiten",
+        "Diagnosticar problemas de continuidad en una novela.",
+        "¿Qué escenas fueron reescritas?",
+        "¿Hay un patrón que se repite al principio?",
       ],
       requiresNovelContext: true,
-      whenToUse: "用户想诊断已生成章节中的重复场景模式、开头重复或里程碑状态问题。",
-      whenNotToUse: "用户在查询任务状态或生产进度。",
+      whenToUse: "El usuario desea diagnosticar patrones de escenas recurrentes, aperturas duplicadas o problemas de estado de hitos en los capítulos generados.",
+      whenNotToUse: "El usuario consulta el estado de la tarea o el progreso de la producción.",
     },
     inputSchema: auditChapterContinuityInputSchema,
     outputSchema: auditChapterContinuityOutputSchema,
@@ -178,7 +178,7 @@ export const bookAnalysisToolDefinitions: Partial<
       const input = auditChapterContinuityInputSchema.parse(rawInput);
       const novelId = input.novelId?.trim() || context.novelId;
       if (!novelId) {
-        throw new AgentToolError("INVALID_INPUT", "没有当前小说上下文，无法执行连续性诊断。");
+        throw new AgentToolError("INVALID_INPUT", "El diagnóstico de continuidad no se puede realizar sin el contexto de la novela actual.");
       }
 
       const chapters = await prisma.chapter.findMany({
@@ -203,25 +203,25 @@ export const bookAnalysisToolDefinitions: Partial<
           repetitionClusters: [],
           openingPatternClusters: [],
           hasCriticalIssues: false,
-          summary: "指定范围内没有已生成的章节正文，无法执行诊断。",
-          recommendation: "请先生成章节正文再执行诊断。",
+          summary: "No se genera ningún texto de capítulo en el rango especificado y no se puede realizar el diagnóstico.",
+          recommendation: "Genere el texto del capítulo antes de realizar el diagnóstico.",
         });
       }
 
       const OPENING_LENGTH = 120;
       const SCENE_PATTERN_KEYWORDS = [
-        ["凌晨", "旅馆", "蹲"],
-        ["凌晨", "蹲守"],
-        ["街道办", "盖章"],
-        ["街道办", "章"],
-        ["工商", "执照"],
-        ["工商", "章"],
-        ["摊位", "合同"],
-        ["摊位", "签"],
-        ["凌晨四点"],
-        ["凌晨四"],
-        ["尾随", "跟丢"],
-        ["明天一早"],
+        ["madrugada", "Albergue", "agacharse"],
+        ["madrugada", "agacharse"],
+        ["Oficina del subdistrito", "estampilla"],
+        ["Oficina del subdistrito", "cap."],
+        ["Industria y comercio", "licencia"],
+        ["Industria y comercio", "cap."],
+        ["parar", "contrato"],
+        ["parar", "firmar"],
+        ["las cuatro de la mañana"],
+        ["cuatro de la mañana"],
+        ["seguir de cerca", "perdido"],
+        ["Mañana por la mañana"],
       ];
 
       function extractOpeningSnippet(content: string): string {
@@ -263,7 +263,7 @@ export const bookAnalysisToolDefinitions: Partial<
 
       const openingPatternClusters = Array.from(openingMap.entries())
         .filter(([, orders]) => orders.length >= 3)
-        .map(([pattern, occurrences]) => ({ pattern: `开头相同片段：${pattern}`, occurrences }));
+        .map(([pattern, occurrences]) => ({ pattern: `Mismo fragmento al principio:${pattern}`, occurrences }));
 
       const hasCriticalIssues = repetitionClusters.some((c) => c.occurrences.length >= 3)
         || openingPatternClusters.length > 0;
@@ -273,17 +273,17 @@ export const bookAnalysisToolDefinitions: Partial<
       const checkedRange = `ch${firstOrder}-ch${lastOrder}`;
 
       const issueLines: string[] = [
-        ...repetitionClusters.map((c) => `场景重复 [${c.pattern}] 出现于第 ${c.occurrences.join("、")} 章`),
-        ...openingPatternClusters.map((c) => `开头重复 出现于第 ${c.occurrences.join("、")} 章`),
+        ...repetitionClusters.map((c) => `repetición de escena[${c.pattern}] apareció en el ${c.occurrences.join(",")}`),
+        ...openingPatternClusters.map((c) => `Repetido al principio Aparece en el n. ${c.occurrences.join(",")}`),
       ];
 
       const summary = issueLines.length > 0
-        ? `发现 ${issueLines.length} 处连续性问题：${issueLines.slice(0, 3).join("；")}`
-        : `在 ${checkedRange} 共 ${chapters.length} 章中未检测到明显重复模式。`;
+        ? `Descubrir ${issueLines.length} Problemas de continuidad:${issueLines.slice(0, 3).join(";")}`
+        : `existir ${checkedRange} común ${chapters.length} No se detectaron patrones repetitivos obvios en el Capítulo.`;
 
       const recommendation = issueLines.length > 0
-        ? "建议：1) 将重复场景的章节加入 recentScenePatterns 黑名单，防止后续章节继续重复；2) 手动或通过 apply_chapter_patch 修复重复章节的内容差异化。"
-        : "章节连续性良好，无需修复。";
+        ? "Recomendaciones: 1) Agregue capítulos con escenas repetidas a la lista negra de RecentScenePatterns para evitar que se repitan capítulos posteriores; 2) Reparar la diferenciación de contenido de capítulos repetidos manualmente o mediante apply_chapter_patch."
+        : "La continuidad del capítulo es buena y no se necesitan correcciones.";
 
       return auditChapterContinuityOutputSchema.parse({
         novelId,
@@ -301,25 +301,25 @@ export const bookAnalysisToolDefinitions: Partial<
 
   analyze_quality_debt_attribution: {
     name: "analyze_quality_debt_attribution",
-    title: "质量债务根因归因分析",
-    description: "扫描已记录质量债务（defer_and_continue）的章节，聚合根因 A/B/D/E 占比、Top 失败 issue code 和缺失义务种类，产出决策报告。不需要 LLM，基于 riskFlags 数据直接计算。",
+    title: "Análisis de atribución de causa raíz de deuda de calidad",
+    description: "Escanee los capítulos de deuda de calidad registrada (aplazar_y_continuar), agregue la proporción de causas raíz A/B/D/E, el código de problema de falla principal y los tipos de obligaciones faltantes, y produzca un informe de decisión. No se requiere LLM, se calcula directamente en función de los datos de RiskFlags.",
     category: "inspect",
     riskLevel: "low",
     domainAgent: "NovelAgent",
     resourceScopes: ["novel", "chapter"],
     parserHints: {
       intent: "inspect_failure_reason",
-      aliases: ["质量债务归因", "质量债务分析", "根因分析", "analyze quality debt", "quality debt attribution"],
+      aliases: ["atribución de deuda de calidad", "Análisis de deuda de calidad", "análisis de causa raíz", "analyze quality debt", "quality debt attribution"],
       phrases: [
-        "为什么章节总是修复失败",
-        "质量债务的根本原因是什么",
-        "分析哪些章节有质量问题",
-        "质量债务根因报告",
-        "修复失败的原因统计",
+        "Por qué los capítulos siempre no se reparan",
+        "¿Cuáles son las causas fundamentales de la deuda de calidad?",
+        "Analizar qué capítulos tienen problemas de calidad.",
+        "Informe de causa raíz de la deuda de calidad",
+        "Estadísticas sobre causas de fallos de reparación.",
       ],
       requiresNovelContext: true,
-      whenToUse: "用户想了解已记录质量债务章节的根因分布，以决定优化方向。",
-      whenNotToUse: "用户在查询单章详细内容或生成状态。",
+      whenToUse: "Los usuarios quieren comprender la distribución de la causa raíz de los capítulos de deuda de calidad registrados para determinar la dirección de optimización.",
+      whenNotToUse: "El usuario consulta el contenido detallado o el estado de generación de un solo capítulo.",
     },
     inputSchema: analyzeQualityDebtAttributionInputSchema,
     outputSchema: analyzeQualityDebtAttributionOutputSchema,
@@ -327,7 +327,7 @@ export const bookAnalysisToolDefinitions: Partial<
       const input = analyzeQualityDebtAttributionInputSchema.parse(rawInput);
       const novelId = input.novelId?.trim() || context.novelId;
       if (!novelId) {
-        throw new AgentToolError("INVALID_INPUT", "没有当前小说上下文，无法执行质量债务归因分析。");
+        throw new AgentToolError("INVALID_INPUT", "El análisis de atribución de deuda de calidad no se puede realizar sin el novedoso contexto actual.");
       }
 
       const chapters = await prisma.chapter.findMany({
@@ -374,7 +374,7 @@ export const bookAnalysisToolDefinitions: Partial<
           deferredChapters.push({
             chapterOrder: chapter.order,
             chapterId: chapter.id,
-            title: chapter.title ?? `第${chapter.order}章`,
+            title: chapter.title ?? `Cap.${chapter.order}cap.`,
             firstFailureIssueCodes: [],
             secondFailureIssueCodes: [],
             firstFailureClassificationCode: null,
@@ -421,7 +421,7 @@ export const bookAnalysisToolDefinitions: Partial<
         deferredChapters.push({
           chapterOrder: chapter.order,
           chapterId: chapter.id,
-          title: chapter.title ?? `第${chapter.order}章`,
+          title: chapter.title ?? `Cap.${chapter.order}cap.`,
           firstFailureIssueCodes: firstIssueCodes,
           secondFailureIssueCodes: secondIssueCodes,
           firstFailureClassificationCode: classCode,
@@ -481,14 +481,14 @@ export const bookAnalysisToolDefinitions: Partial<
         .filter(([k]) => k !== "unknown")
         .sort((a, b) => b[1] - a[1])[0]?.[0] ?? "unknown";
       const recommendationMap: Record<string, string> = {
-        D: "根因 D（义务不可达）占主导 → 优先实施阶段一懒规划，JIT task sheet 生成可直接解决。",
-        A: "根因 A（开环修复）占主导 → 优先修复修复闭环（1.D 子项），让修复器拿到结构化义务。",
-        B: "根因 B（patch 锚点失配）占主导 → 保留原正文并记录质量债；后续重修必须由用户明确选择，不能自动升级修复模式。",
-        E: "根因 E（签名漂移）占主导 → 拆分 length/content issueSignature 分别计预算。",
-        unknown: "暂无足够归因数据，建议运行更多章节后再分析。",
+        D: "La causa raíz D (obligación inalcanzable) domina → Se da prioridad a la planificación perezosa en la fase de implementación y la generación de hojas de tareas JIT se puede resolver directamente.",
+        A: "Predomina la causa raíz A (reparación en bucle abierto) → Priorizar la reparación de bucles cerrados (subítem 1.D), permitiendo al reparador realizar tareas estructuradas.",
+        B: "La causa raíz B (no coincide el anclaje del parche) domina → conserva el texto original y registra la deuda de calidad; El usuario debe seleccionar explícitamente las reconstrucciones posteriores y el modo de reparación no se puede actualizar automáticamente.",
+        E: "La causa raíz E (derivación de la firma) domina → dividir el problema de longitud/contenidoFirma y calcular el presupuesto por separado.",
+        unknown: "Aún no hay suficientes datos de atribución. Se recomienda ejecutar más capítulos antes de analizarlos.",
       };
       const recommendation = totalDeferred === 0
-        ? "当前小说没有记录质量债务章节，无需处理。"
+        ? "La novela actual no tiene capítulos de deuda de calidad registrados y no necesita ser procesada."
         : recommendationMap[dominantRoot] ?? recommendationMap.unknown;
 
       const startOrder = input.startOrder ?? 1;

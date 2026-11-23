@@ -51,19 +51,19 @@ export default function WorldDeepeningTab(props: WorldDeepeningTabProps) {
   return (
     <section className="space-y-6">
         <div>
-          <h2 className="text-xl font-semibold tracking-tight">补齐关键设定</h2>
-          <p className="mt-1 text-sm leading-6 text-muted-foreground">AI 会从手册中找出最影响故事成立的空白，你只需选择方向或用一句话回答。</p>
+          <h2 className="text-xl font-semibold tracking-tight">Configuración clave completa</h2>
+          <p className="mt-1 text-sm leading-6 text-muted-foreground">La IA encontrará los huecos en el manual que más afectan a la historia, y tú sólo tendrás que elegir una dirección o responder con una frase.</p>
         </div>
 
         <div className="flex flex-col gap-4 rounded-3xl bg-primary/[0.055] p-5 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <div className="font-medium">寻找下一批关键问题</div>
+            <div className="font-medium">Encuentre el siguiente lote de preguntas críticas</div>
             <div className="mt-1 text-xs leading-5 text-muted-foreground">
-              每次只聚焦少量高影响问题，回答会整合进规则、势力、地点或冲突设定。
+              Concéntrese en una pequeña cantidad de preguntas de alto impacto a la vez y las respuestas se integrarán en las reglas, facciones, ubicaciones o escenarios de conflicto.
             </div>
           </div>
           <Button className="shrink-0 rounded-full" onClick={onGenerate} disabled={generatePending}>
-            {generatePending ? "生成中..." : "生成补齐问题"}
+            {generatePending ? "Generando..." : "Generar preguntas de finalización"}
           </Button>
         </div>
 
@@ -71,7 +71,7 @@ export default function WorldDeepeningTab(props: WorldDeepeningTabProps) {
           <div className="grid gap-4 lg:grid-cols-[250px_minmax(0,1fr)]">
             <div className="space-y-2 rounded-3xl bg-muted/20 p-3">
               <div className="flex items-center justify-between gap-2">
-                <div className="px-2 text-sm font-medium">待补问题</div>
+                <div className="px-2 text-sm font-medium">Preguntas por responder</div>
                 <div className="text-xs text-muted-foreground">{answeredCount}/{questions.length}</div>
               </div>
               {questions.map((question, index) => {
@@ -90,9 +90,9 @@ export default function WorldDeepeningTab(props: WorldDeepeningTabProps) {
                     onClick={() => setActiveQuestionId(question.id)}
                   >
                     <div className="flex items-center justify-between gap-2">
-                      <span className="font-medium text-foreground">问题 {index + 1}</span>
+                      <span className="font-medium text-foreground">pregunta {index + 1}</span>
                       <span className={answered ? "text-xs text-primary" : "text-xs text-muted-foreground"}>
-                        {integrated ? "已整合" : answered ? "待整合" : "待回答"}
+                        {integrated ? "Integrado" : answered ? "Para ser integrado" : "Para ser respondido"}
                       </span>
                     </div>
                     <div className="mt-1 line-clamp-2 text-xs leading-5 text-muted-foreground">
@@ -108,16 +108,16 @@ export default function WorldDeepeningTab(props: WorldDeepeningTabProps) {
                 <div>
                   <div className="text-sm font-medium text-foreground">{activeQuestion.question}</div>
                   <div className="mt-1 text-xs text-muted-foreground">
-                    这条回答会用于补齐世界手册。
+                    Esta respuesta se utilizará para completar el Manual Mundial.
                   </div>
                 </div>
                 {activeIntegration ? <div role="status" className="rounded-2xl bg-primary/5 p-3 text-sm leading-6">
-                  <div className="font-medium">手册整合结果</div>
+                  <div className="font-medium">Resultados de la integración manual</div>
                   <p>{activeIntegration.summary}</p>
-                </div> : activeQuestion.answer ? <p className="text-sm text-muted-foreground">回答已保存，可提交整合到世界手册。</p> : null}
+                </div> : activeQuestion.answer ? <p className="text-sm text-muted-foreground">La respuesta se ha guardado y se puede enviar para su integración en el Manual Mundial.</p> : null}
                 {activeQuickOptions.length > 0 ? (
                   <div className="space-y-2">
-                    <div className="text-xs text-muted-foreground">可直接采用的回答方向</div>
+                    <div className="text-xs text-muted-foreground">Responder instrucciones que se pueden seguir directamente.</div>
                     <div className="flex flex-wrap gap-2">
                       {activeQuickOptions.map((option) => (
                         <Button
@@ -136,7 +136,7 @@ export default function WorldDeepeningTab(props: WorldDeepeningTabProps) {
                   </div>
                 ) : (
                   <div className="rounded-2xl bg-muted/20 p-3 text-xs text-muted-foreground">
-                    可以直接写你的设定答案，也可以先用一句话描述方向。
+                    Puedes escribir la respuesta establecida directamente o puedes describir la dirección en una oración primero.
                   </div>
                 )}
                 <textarea
@@ -145,15 +145,15 @@ export default function WorldDeepeningTab(props: WorldDeepeningTabProps) {
                   onChange={(event) =>
                     setAnswerDrafts((prev) => ({ ...prev, [activeQuestion.id]: event.target.value }))
                   }
-                  placeholder="填写这条设定补充"
+                  placeholder="Rellene este suplemento de configuración"
                 />
               </div>
             ) : null}
           </div>
         ) : (
           <div className="flex min-h-48 flex-col items-center justify-center rounded-3xl bg-muted/20 px-6 text-center">
-            <div className="font-medium">等待发现世界中的关键空白</div>
-            <div className="mt-1 text-sm text-muted-foreground">生成问题后，可以逐条选择建议方向或补充自己的设定。</div>
+            <div className="font-medium">Brechas críticas en el mundo esperando ser descubiertas</div>
+            <div className="mt-1 text-sm text-muted-foreground">Después de generar una pregunta, puede seleccionar las direcciones sugeridas una por una o agregar su propia configuración.</div>
           </div>
         )}
         <div className="flex justify-end">
@@ -162,7 +162,7 @@ export default function WorldDeepeningTab(props: WorldDeepeningTabProps) {
             onClick={onSubmit}
             disabled={submitPending || answeredCount === 0 || questions.length === 0}
           >
-            {submitPending ? "整合中..." : "提交并整合回答"}
+            {submitPending ? "Integrando..." : "Enviar y consolidar respuestas"}
           </Button>
         </div>
     </section>

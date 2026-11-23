@@ -16,12 +16,12 @@ export function patchOutlinePolicy(current: OutlineBookPolicy, patch: OutlinePol
   const seen = new Set<string>();
   for (const change of patch.changes) {
     const key = `${change.nodeId}.${change.field}`;
-    if (seen.has(key)) throw new OutlineOpenBookError("OUTLINE_POLICY_INVALID", "同一字段不能重复修改。", 422);
+    if (seen.has(key)) throw new OutlineOpenBookError("OUTLINE_POLICY_INVALID", "El mismo campo no se puede modificar repetidamente.", 422);
     seen.add(key);
     const rule = next.rules.find(r => r.nodeId === change.nodeId && r.field === change.field);
-    if (!rule) throw new OutlineOpenBookError("OUTLINE_POLICY_INVALID", "身份、章序和来源不能通过保留设置修改。", 422);
+    if (!rule) throw new OutlineOpenBookError("OUTLINE_POLICY_INVALID", "La identidad, el orden de los capítulos y la fuente no se pueden modificar mediante la configuración de retención.", 422);
     if (rule.mode === "hard_constraint" && (change.mode && change.mode !== "hard_constraint" || "value" in change && canonicalJson(change.value) !== canonicalJson(rule.value)) && !patch.confirmHardConstraintChange)
-      throw new OutlineOpenBookError("OUTLINE_HARD_CONSTRAINT_CONFIRM_REQUIRED", "修改固定设定需要单独明确确认。", 422);
+      throw new OutlineOpenBookError("OUTLINE_HARD_CONSTRAINT_CONFIRM_REQUIRED", "Las modificaciones de las configuraciones fijas requieren una confirmación separada y explícita.", 422);
     if (change.mode) rule.mode = change.mode;
     if ("value" in change) rule.value = change.value;
   }

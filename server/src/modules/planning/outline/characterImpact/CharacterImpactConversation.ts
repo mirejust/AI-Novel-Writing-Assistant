@@ -15,7 +15,7 @@ export class CharacterImpactConversation {
 
   async read(projectId: string, characterId: string): Promise<ImpactConversationTurn[]> {
     const project = await this.db.outlineProject.findFirst({ where: { id: projectId, status: "active" }, select: { id: true } });
-    if (!project) throw new AppError("找不到可编辑的大纲。", 404);
+    if (!project) throw new AppError("No se encontró ningún esquema editable.", 404);
     const metadata = { id: true, status: true, baseVersion: true, createdAt: true, requestText: true, promptId: true } as const;
     const where = { projectId, kind: "character_impact" };
     const [rows, indexed, unindexed] = await this.db.$transaction([
@@ -32,7 +32,7 @@ export class CharacterImpactConversation {
       const result: ImpactResultRef = { id: row.id, status: row.status, baseVersion: row.baseVersion, source: row.promptId ? "workbench" : "external" };
       results.set(row.id, result);
       if (!ownedResults.has(row.id)) legacy.push({ id: row.id, createdAt: row.createdAt.toISOString(),
-        requestText: row.requestText ?? "", replyText: result.source === "external" ? "接入工具提交了一份人物修改提案。" : "生成人物修改提案。",
+        requestText: row.requestText ?? "", replyText: result.source === "external" ? "La herramienta de acceso presentó una propuesta de modificación de personaje." : "Generar propuestas de modificación de personajes.",
         status: "completed", contextVersion: String(row.baseVersion), parentResultId: null, result });
     }
     const turns: ImpactConversationTurn[] = rows.map(row => ({
@@ -46,7 +46,7 @@ export class CharacterImpactConversation {
   async send(projectId: string, input: Input) {
     const scopeKey = characterConversationScope(projectId, input.characterId);
     const project = await this.db.outlineProject.findFirst({ where: { id: projectId, status: "active" }, select: { id: true } });
-    if (!project) throw new AppError("找不到可编辑的大纲。", 404);
+    if (!project) throw new AppError("No se encontró ningún esquema editable.", 404);
     const { turn, created } = await this.turns.start({ scopeKey, requestId: input.requestId, requestText: input.requestText,
       contextVersion: String(input.baseVersion), parentResultId: input.priorProposalId });
     if (!created) return { turnId: turn.id };
@@ -88,13 +88,13 @@ export class CharacterImpactConversation {
       }
       await this.impact.generate(projectId, input, { scopeKey, turnId: input.requestId, priorProposalId: input.priorProposalId, conversationHistory });
     } catch (error) {
-      const message = error instanceof AppError ? error.message : "本轮生成失败。可以重新发送要求，继续讨论上一份提案。";
+      const message = error instanceof AppError ? error.message : "Esta ronda de generación fracasó. Puede reenviar la solicitud para continuar discutiendo la propuesta anterior.";
       await this.turns.stop(scopeKey, input.requestId, "failed", message);
     }
   }
 
   async interrupt(projectId: string, characterId: string, id: string) {
-    await this.turns.stop(characterConversationScope(projectId, characterId), id, "interrupted", "本轮讨论已结束，未生成新提案。");
+    await this.turns.stop(characterConversationScope(projectId, characterId), id, "interrupted", "Esta ronda de discusión ha finalizado y no se han generado nuevas propuestas.");
     agentReplyLive.end(id);
   }
 }

@@ -27,8 +27,8 @@ function rankForeshadowStatus(status: string | null | undefined): number {
   if (
     normalized.includes("resolved")
     || normalized.includes("complete")
-    || normalized.includes("兑现")
-    || normalized.includes("回收")
+    || normalized.includes("dinero")
+    || normalized.includes("Reciclar")
   ) {
     return 4;
   }
@@ -39,7 +39,7 @@ function rankForeshadowStatus(status: string | null | undefined): number {
     normalized.includes("active")
     || normalized.includes("progress")
     || normalized.includes("develop")
-    || normalized.includes("推进")
+    || normalized.includes("avance")
   ) {
     return 2;
   }
@@ -53,8 +53,8 @@ function rankInformationStatus(status: string | null | undefined): number {
     || normalized.includes("known")
     || normalized.includes("revealed")
     || normalized.includes("open")
-    || normalized.includes("公开")
-    || normalized.includes("已知")
+    || normalized.includes("público")
+    || normalized.includes("conocido")
   ) {
     return 3;
   }
@@ -62,8 +62,8 @@ function rankInformationStatus(status: string | null | undefined): number {
     normalized.includes("hint")
     || normalized.includes("suspect")
     || normalized.includes("partial")
-    || normalized.includes("线索")
-    || normalized.includes("怀疑")
+    || normalized.includes("clave")
+    || normalized.includes("Sospechar")
   ) {
     return 2;
   }

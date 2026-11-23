@@ -31,10 +31,10 @@ function planningSnapshot(document: VolumePlanDocument): string {
 function serializeRecoveredMetadata(contentJson: string, document: VolumePlanDocument): string {
   let raw: unknown;
   try { raw = JSON.parse(contentJson); } catch {
-    throw new AppError("已保存的卷规划无法读取，请先核对卷规划后再继续。", 422);
+    throw new AppError("El plan de volumen guardado no se puede leer. Consulte el plan de volumen antes de continuar.", 422);
   }
   if (!raw || typeof raw !== "object" || Array.isArray(raw)) {
-    throw new AppError("已保存的卷规划格式异常，请先核对卷规划后再继续。", 422);
+    throw new AppError("El formato del plan de volumen guardado es anormal. Consulte el plan de volumen antes de continuar.", 422);
   }
   const record = raw as Record<string, unknown>;
   // Preserve unknown legacy fields and author annotations, including nested planning data.
@@ -73,7 +73,7 @@ export async function recoverMissingVolumeStrategy(
   const strategyPlan = normalizeVolumeWorkspaceDocument(novelId, {
     ...before, strategyPlan: generated.strategyPlan,
   }).strategyPlan;
-  if (!strategyPlan) throw new AppError("卷战略建议没有生成完整结果，请从保存进度继续重试。", 422);
+  if (!strategyPlan) throw new AppError("Los consejos de estrategia de volumen no generaron resultados completos. Continúe guardando el progreso e inténtelo nuevamente.", 422);
 
   return runVolumeWorkspaceTransaction(async tx => {
     const version = await getActiveVersionRow(novelId, tx);
@@ -88,7 +88,7 @@ export async function recoverMissingVolumeStrategy(
     if (current.strategyPlan) return current;
     if (current.activeVersionId !== sourceVersionId
       || planningSnapshot(current) !== sourceSnapshot) {
-      throw new AppError("本书规划已更新，请从保存进度继续，按最新规划补齐卷战略。", 409);
+      throw new AppError("El plan de este libro ha sido actualizado. Continúe guardando el progreso y complete la estrategia de volumen de acuerdo con el último plan.", 409);
     }
     const recovered = buildVolumeWorkspaceDocument({ ...current, strategyPlan });
     if (version) {
@@ -96,14 +96,14 @@ export async function recoverMissingVolumeStrategy(
         where: { id: version.id, contentJson: version.contentJson },
         data: { contentJson: serializeRecoveredMetadata(version.contentJson, recovered) },
       });
-      if (updated.count !== 1) throw new AppError("本书规划已更新，请从保存进度继续。", 409);
+      if (updated.count !== 1) throw new AppError("El plan del libro se ha actualizado. Continúe guardando el progreso.", 409);
       return recovered;
     }
     const latest = await getLatestVersionRow(novelId, tx);
     const created = await tx.volumePlanVersion.create({ data: {
       novelId, version: (latest?.version ?? 0) + 1, status: "active",
       contentJson: serializeVolumeWorkspaceDocument(recovered),
-      diffSummary: "补齐卷战略，保留已有分卷与章节。",
+      diffSummary: "Complete la estrategia de volumen y conserve los volúmenes y capítulos existentes.",
     } });
     const saved = { ...recovered, activeVersionId: created.id };
     await tx.volumePlanVersion.update({ where: { id: created.id }, data: {

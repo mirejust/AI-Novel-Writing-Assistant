@@ -66,7 +66,7 @@ export function composeImpact(snapshot: ImpactSnapshot, reviews: Partial<Record<
     if (!review) continue;
     for (const item of review.retained) {
       if (!known.has(item.nodeId)) {
-        skip({role, nodeId: item.nodeId, reason: "unknown_node"}, "保留说明引用了大纲中不存在的内容。");
+        skip({role, nodeId: item.nodeId, reason: "unknown_node"}, "La nota de retención hace referencia a contenido que no existe en el programa de estudios.");
         continue;
       }
       retained.push({...item, role});
@@ -74,18 +74,18 @@ export function composeImpact(snapshot: ImpactSnapshot, reviews: Partial<Record<
     for (const item of review.changes) {
       const target = targets.get(item.nodeId);
       if (!target || !fields[target.type].includes(item.field)) {
-        skip({role, nodeId: item.nodeId, field: item.field, reason: "out_of_scope"}, "建议修改了范围外的节点或字段。");
+        skip({role, nodeId: item.nodeId, field: item.field, reason: "out_of_scope"}, "Se recomienda modificar los nodos o campos fuera del alcance.");
         continue;
       }
       const allowed = role === "character" ? item.nodeId === snapshot.characterId
         : role === "plot" ? target.type === "volume" || target.type === "chapter"
         : target.type === "payoff" || (target.type === "chapter" && item.field === "endingHook");
       if (!allowed) {
-        skip({role, nodeId: item.nodeId, field: item.field, reason: "out_of_scope"}, "这项建议超出了本次人物联动可改的范围。");
+        skip({role, nodeId: item.nodeId, field: item.field, reason: "out_of_scope"}, "Esta sugerencia está más allá del alcance de este vínculo de caracteres que se puede cambiar.");
         continue;
       }
       if (written.has(item.nodeId)) {
-        skip({role, nodeId: item.nodeId, field: item.field, reason: "written_chapter"}, "这项建议涉及已有正文的章节，无法修改。");
+        skip({role, nodeId: item.nodeId, field: item.field, reason: "written_chapter"}, "Esta sugerencia involucra un capítulo que ya tiene texto y no se puede modificar.");
         continue;
       }
       if (item.value === (target.values[item.field] ?? "")) continue;
@@ -95,7 +95,7 @@ export function composeImpact(snapshot: ImpactSnapshot, reviews: Partial<Record<
         operations.set(item.nodeId, op);
       }
       if (op.fields[item.field] !== undefined && op.fields[item.field] !== item.value) {
-        skip({role, nodeId: item.nodeId, field: item.field, reason: "conflicting_change"}, "两份建议对同一字段给出了不同改法，请统一后再提交。");
+        skip({role, nodeId: item.nodeId, field: item.field, reason: "conflicting_change"}, "Las dos sugerencias proporcionan diferentes modificaciones al mismo campo; unifíquelas antes de enviarlas.");
         continue;
       }
       op.fields[item.field] = item.value;
@@ -127,7 +127,7 @@ export function composeImpact(snapshot: ImpactSnapshot, reviews: Partial<Record<
 export function buildNoUsableImpactError(skipped: ImpactSkippedChange[]): AppError {
   const written = skipped.some(item => item.reason === "written_chapter");
   const scope = skipped.some(item => item.reason !== "written_chapter");
-  if (written && scope) return invalid("这次提的修改里，有的碰到了已经写过正文的章节、有的不在人物联动可改的范围内，没有一条能用。请换个说法再试一次。");
-  if (written) return invalid("这次提的修改都碰到了已经写过正文的章节，改不了。请换个还没写正文的部分再试一次。");
-  return invalid("这次提的修改都不在人物联动可改的范围内，请换个说法再试一次。");
+  if (written && scope) return invalid("Entre las modificaciones propuestas esta vez, algunas se referían a capítulos que ya se habían escrito y otras no estaban dentro del alcance de las modificaciones de vinculación de personajes. Ninguno de ellos podría usarse. Inténtelo de nuevo con otra palabra.");
+  if (written) return invalid("Todos los cambios propuestos esta vez afectan a capítulos donde el texto ya ha sido escrito y no se puede cambiar. Por favor, inténtalo de nuevo en una sección que aún no se haya escrito.");
+  return invalid("Las modificaciones mencionadas esta vez no están dentro del alcance de las modificaciones de vinculación de personajes. Inténtelo de nuevo con otra palabra.");
 }

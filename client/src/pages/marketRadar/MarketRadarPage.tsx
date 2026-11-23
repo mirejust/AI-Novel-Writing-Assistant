@@ -34,26 +34,26 @@ import { toast } from "@/components/ui/toast";
 import { cn } from "@/lib/utils";
 
 const PLATFORM_LABELS: Record<MarketRadarPlatform, string> = {
-  fanqie: "番茄小说",
-  qidian: "起点中文网",
-  jinjiang: "晋江文学城",
+  fanqie: "Novela de tomate",
+  qidian: "Sitio web chino Qidian",
+  jinjiang: "Ciudad de la literatura de Jinjiang",
 };
 
 const KIND_LABELS: Record<MarketRadarSignal["kind"], string> = {
-  genre: "热门题材",
-  protagonist: "主角身份",
-  advantage: "金手指",
-  opening: "开局爆点",
-  relationship: "关系卖点",
-  title_pattern: "标题句式",
-  opportunity: "差异化机会",
-  crowding: "拥挤套路",
+  genre: "Temas populares",
+  protagonist: "Identidad protagonista",
+  advantage: "Dedo dorado",
+  opening: "Un comienzo caliente",
+  relationship: "Punto de venta de la relación",
+  title_pattern: "Patrón de oración de título",
+  opportunity: "Oportunidades de diferenciación",
+  crowding: "Rutina abarrotada",
 };
 
 const MODE_LABELS: Record<MarketInfluenceMode, string> = {
-  follow_hot: "跟随热门",
-  differentiate: "热门中求差异",
-  light: "弱化市场",
+  follow_hot: "Seguir popular",
+  differentiate: "Encuentra diferencias entre populares.",
+  light: "Debilitar el mercado",
 };
 
 function recommendedSignalIds(report: MarketTrendReport): string[] {
@@ -127,17 +127,17 @@ export default function MarketRadarPage() {
       setSelectedIds(run.report ? recommendedSignalIds(run.report) : []);
       void queryClient.invalidateQueries({ queryKey: queryKeys.marketRadar.latest });
     },
-    onError: (error) => toast.error(error instanceof Error ? error.message : "扫榜失败，请稍后重试。"),
+    onError: (error) => toast.error(error instanceof Error ? error.message : "No se pudo escanear la lista, inténtelo nuevamente más tarde."),
   });
   const saveTopicMutation = useMutation({
     mutationFn: (signalId: string) => saveMarketTopic(report!.id, signalId),
-    onSuccess: () => { void queryClient.invalidateQueries({ queryKey: queryKeys.marketRadar.savedTopics }); toast.success("题材已收藏到热门题材列表。"); },
-    onError: (error) => toast.error(error instanceof Error ? error.message : "收藏题材失败。"),
+    onSuccess: () => { void queryClient.invalidateQueries({ queryKey: queryKeys.marketRadar.savedTopics }); toast.success("El tema se ha agregado a la lista de temas populares."); },
+    onError: (error) => toast.error(error instanceof Error ? error.message : "El tema de la colección falló."),
   });
   const deleteTopicMutation = useMutation({
     mutationFn: deleteSavedMarketTopic,
-    onSuccess: () => { void queryClient.invalidateQueries({ queryKey: queryKeys.marketRadar.savedTopics }); toast.success("已取消收藏题材。"); },
-    onError: () => toast.error("取消收藏失败。"),
+    onSuccess: () => { void queryClient.invalidateQueries({ queryKey: queryKeys.marketRadar.savedTopics }); toast.success("El tema ha sido cancelado."); },
+    onError: () => toast.error("No se pudo cancelar la recolección."),
   });
   const analysisMutation = useMutation({
     mutationFn: () => startMarketRadarAnalysis(activeRun!.id, {
@@ -152,14 +152,14 @@ export default function MarketRadarPage() {
         setSelectedIds(recommendedSignalIds(run.report));
       }
     },
-    onError: (error) => toast.error(error instanceof Error ? error.message : "AI分析失败，请稍后重试。"),
+    onError: (error) => toast.error(error instanceof Error ? error.message : "El análisis de IA falló. Vuelve a intentarlo más tarde."),
   });
   const briefMutation = useMutation({
     mutationFn: () => createMarketCreativeBrief({ reportId: report!.id, signalIds: selectedIds, influenceMode }),
     onSuccess: (response) => {
       if (response.data) navigate(`/novels/auto-director?marketBriefId=${encodeURIComponent(response.data.id)}`);
     },
-    onError: (error) => toast.error(error instanceof Error ? error.message : "生成市场创作简报失败。"),
+    onError: (error) => toast.error(error instanceof Error ? error.message : "No se pudo generar un resumen creativo de marketing."),
   });
   const savedTopicBriefMutation = useMutation({
     mutationFn: (topic: { reportId: string; signalId: string }) => createMarketCreativeBrief({
@@ -170,7 +170,7 @@ export default function MarketRadarPage() {
     onSuccess: (response) => {
       if (response.data) navigate(`/novels/auto-director?marketBriefId=${encodeURIComponent(response.data.id)}`);
     },
-    onError: (error) => toast.error(error instanceof Error ? error.message : "准备开书方向失败。"),
+    onError: (error) => toast.error(error instanceof Error ? error.message : "La preparación para abrir la dirección del libro falló."),
   });
   useEffect(() => {
     if (initialScanStarted.current || latestScanQuery.isPending) return;
@@ -202,7 +202,7 @@ export default function MarketRadarPage() {
     && scanning,
   );
   const refreshFailure = latestRun && currentRun?.id !== latestRun.id && currentRun?.status === "failed"
-    ? currentRun.lastError || "没有取得新的公开榜单数据。"
+    ? currentRun.lastError || "No se obtuvieron nuevos datos de la lista pública."
     : null;
   const rankingGroups = useMemo(() => {
     const groups = new Map<string, NonNullable<typeof activeRun>["rankingItems"]>();
@@ -254,7 +254,7 @@ export default function MarketRadarPage() {
   const toggleSignal = (id: string) => {
     setSelectedIds((current) => {
       if (current.includes(id)) return current.filter((item) => item !== id);
-      if (current.length >= 5) { toast.error("最多选择5项市场信号。"); return current; }
+      if (current.length >= 5) { toast.error("Seleccione hasta 5 señales de mercado."); return current; }
       return [...current, id];
     });
   };
@@ -282,30 +282,30 @@ export default function MarketRadarPage() {
   return (
     <div className="w-full min-w-0 space-y-6 py-6">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/35 pb-4">
-        <h1 className="text-lg font-semibold tracking-tight">热门题材雷达</h1>
+        <h1 className="text-lg font-semibold tracking-tight">Radar de temas candentes</h1>
         <div className="flex flex-wrap items-center justify-end gap-2">
           {Object.entries(PLATFORM_LABELS).map(([key, label]) => (
             <button key={key} type="button" onClick={() => togglePlatform(key as MarketRadarPlatform)} className={cn("rounded-full border px-3 py-1.5 text-sm transition", platforms.includes(key as MarketRadarPlatform) ? "border-primary bg-primary/10 text-primary" : "border-border text-muted-foreground")}>{label}</button>
           ))}
           <Button onClick={() => scanMutation.mutate()} disabled={scanMutation.isPending || scanning || sourcesQuery.isPending} variant="outline">
             {scanning ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
-            {scanning ? `正在获取榜单 ${scanningProgress}%` : "重新扫榜"}
+            {scanning ? `Obteniendo la lista ${scanningProgress}%` : "Escanee la lista nuevamente"}
           </Button>
         </div>
       </div>
 
       <Tabs value={viewTab} onValueChange={(value) => { const next = value as typeof viewTab; setViewTab(next); setShowAnalysis(next === "analysis"); }}>
         <TabsList className="grid h-auto w-full grid-cols-3 rounded-lg bg-muted/45 p-1">
-          <TabsTrigger value="rankings">当前榜单</TabsTrigger>
-          <TabsTrigger value="analysis" disabled={!analysisAvailability.canViewReport && !analyzing}>AI 分析结果</TabsTrigger>
-          <TabsTrigger value="saved">热门题材列表{savedTopicsQuery.data?.data?.length ? ` · ${savedTopicsQuery.data.data.length}` : ""}</TabsTrigger>
+          <TabsTrigger value="rankings">Lista actual</TabsTrigger>
+          <TabsTrigger value="analysis" disabled={!analysisAvailability.canViewReport && !analyzing}>Resultados del análisis de IA</TabsTrigger>
+          <TabsTrigger value="saved">Lista de temas populares{savedTopicsQuery.data?.data?.length ? ` · ${savedTopicsQuery.data.data.length}` : ""}</TabsTrigger>
         </TabsList>
       </Tabs>
 
       {displayingPreviousRun ? (
         <Card className="border-primary/25 bg-primary/[0.035]">
           <CardContent className="p-4 text-sm text-muted-foreground">
-             正在更新公开榜单，暂时展示上次获取结果。
+             La lista pública se está actualizando y se muestran temporalmente los últimos resultados obtenidos.
           </CardContent>
         </Card>
       ) : null}
@@ -313,32 +313,32 @@ export default function MarketRadarPage() {
       {refreshFailure ? (
         <Card className="border-amber-300 bg-amber-50/60 dark:bg-amber-950/15">
           <CardContent className="p-4 text-sm text-amber-800 dark:text-amber-200">
-            本次更新未取得新榜单，暂时保留上次获取结果：{refreshFailure}
+            No se han obtenido nuevas clasificaciones en esta actualización y los últimos resultados obtenidos se conservan temporalmente:{refreshFailure}
           </CardContent>
         </Card>
       ) : null}
 
       {activeRun?.platformStatuses.some((item) => item.status !== "succeeded") ? (
-        <Card className="border-amber-300 bg-amber-50/60 dark:bg-amber-950/15"><CardContent className="p-4 text-sm text-amber-800 dark:text-amber-200">部分榜单暂时无法读取，仍可查看并分析已成功获取的数据：{activeRun.platformStatuses.filter((item) => item.status !== "succeeded").map((item) => `${PLATFORM_LABELS[item.platform]}：${item.error || "读取失败"}`).join("；")}</CardContent></Card>
+        <Card className="border-amber-300 bg-amber-50/60 dark:bg-amber-950/15"><CardContent className="p-4 text-sm text-amber-800 dark:text-amber-200">Algunas listas no se pueden leer temporalmente, pero aún puedes ver y analizar los datos que se han obtenido con éxito:{activeRun.platformStatuses.filter((item) => item.status !== "succeeded").map((item) => `${PLATFORM_LABELS[item.platform]}:${item.error || "Error de lectura"}`).join(";")}</CardContent></Card>
       ) : null}
       {activeRun?.status === "failed" ? (
-        <Card className="border-destructive/40"><CardContent className="p-4 text-sm text-destructive">本次扫榜未完成：{activeRun.lastError || "没有取得可分析的公开榜单数据。"}</CardContent></Card>
+        <Card className="border-destructive/40"><CardContent className="p-4 text-sm text-destructive">Este barrido de lista no se ha completado:{activeRun.lastError || "No se obtuvieron datos de la lista pública que pudieran analizarse."}</CardContent></Card>
       ) : null}
       {activeRun?.lastError && activeRun.status !== "failed" ? (
         <Card className="border-amber-300 bg-amber-50/60 dark:bg-amber-950/15"><CardContent className="p-4 text-sm text-amber-800 dark:text-amber-200">{activeRun.lastError}</CardContent></Card>
       ) : null}
 
       {viewTab === "rankings" && (rankingGroups.length === 0 ? (
-        <Card className="border-dashed"><CardContent className="flex min-h-72 flex-col items-center justify-center gap-3 text-center">{scanning ? <Loader2 className="h-10 w-10 animate-spin text-primary" /> : <Radar className="h-10 w-10 text-muted-foreground" />}<div className="font-medium">{scanning ? "正在获取公开榜单" : "还没有可展示的榜单数据"}</div><p className="max-w-lg text-sm text-muted-foreground">进入页面会自动扫榜。榜单获取完成后，你可以先查看原始排名，再决定是否让 AI 分析。</p></CardContent></Card>
+        <Card className="border-dashed"><CardContent className="flex min-h-72 flex-col items-center justify-center gap-3 text-center">{scanning ? <Loader2 className="h-10 w-10 animate-spin text-primary" /> : <Radar className="h-10 w-10 text-muted-foreground" />}<div className="font-medium">{scanning ? "Obteniendo lista pública" : "Aún no hay datos de lista para mostrar"}</div><p className="max-w-lg text-sm text-muted-foreground">Al ingresar a la página se escaneará automáticamente la lista. Una vez obtenida la lista, puede comprobar la clasificación original antes de decidir si desea que la IA la analice.</p></CardContent></Card>
       ) : <>
         <section className="flex flex-col gap-4 border-b border-border/50 pb-5 lg:flex-row lg:items-end lg:justify-between">
           <p className="text-sm text-muted-foreground">{availableReport
-            ? `已选 ${selectedAnalysisItemIds.length} 本作品，可调整范围并生成新的 AI 分析；已有报告关联的题材与简报会保留。`
-            : `已选 ${selectedAnalysisItemIds.length} 本作品，可在各榜单右上角全选或逐本调整。`}</p>
+            ? `Seleccionado ${selectedAnalysisItemIds.length} Para este trabajo, se puede ajustar el alcance y generar nuevos análisis de IA; Se mantendrán los temas y sesiones informativas asociados con los informes existentes.`
+            : `Seleccionado ${selectedAnalysisItemIds.length} Para este trabajo, puedes seleccionarlos todos en la esquina superior derecha de cada lista o ajustarlos uno por uno.`}</p>
           <div className="flex justify-end">
             <Button onClick={startNewAnalysis} disabled={analysisAvailability.startDisabled} className="shrink-0">
               {analyzing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-              {analyzing ? `AI 分析中 ${Math.round((activeRun?.progress ?? 0) * 100)}%` : scanning ? "等待榜单获取完成" : `${availableReport ? "生成新分析" : "开始 AI 分析"}（${selectedAnalysisItemIds.length} 本）`}
+              {analyzing ? `Análisis de IA en progreso ${Math.round((activeRun?.progress ?? 0) * 100)}%` : scanning ? "Esperando que se obtenga la lista" : `${availableReport ? "Generar nuevo análisis" : "Iniciar análisis de IA"}(${selectedAnalysisItemIds.length} Libro)`}
             </Button>
           </div>
         </section>
@@ -349,23 +349,23 @@ export default function MarketRadarPage() {
             const allSelected = selectedCount === itemIds.length;
             return <Card key={key} className="flex h-[34rem] flex-col">
             <CardHeader className="flex-row items-start justify-between gap-3 border-b border-border/40 px-4 pb-4 pt-4">
-              <div><CardTitle className="text-base">{PLATFORM_LABELS[items[0].platform]} · {sourceLabels.get(key) ?? items[0].listKey}</CardTitle><CardDescription className="mt-1">本次识别 {items.length} 条公开上榜记录（最多 30 条）</CardDescription></div>
+              <div><CardTitle className="text-base">{PLATFORM_LABELS[items[0].platform]} · {sourceLabels.get(key) ?? items[0].listKey}</CardTitle><CardDescription className="mt-1">Esta identificación {items.length} Registros de lista pública (hasta 30 registros)</CardDescription></div>
               <Button type="button" variant="ghost" size="sm" aria-pressed={allSelected} disabled={analysisAvailability.selectionDisabled} onClick={() => toggleAnalysisList(itemIds)} className="shrink-0">
-                {allSelected ? "取消全选" : "全选"}{selectedCount > 0 && !allSelected ? ` ${selectedCount}/${items.length}` : ""}
+                {allSelected ? "Deseleccionar todo" : "Seleccionar todo"}{selectedCount > 0 && !allSelected ? ` ${selectedCount}/${items.length}` : ""}
               </Button>
             </CardHeader>
             <CardContent className="min-h-0 flex-1 overflow-y-auto px-4 pb-4 pt-2"><div className="divide-y divide-border/35">{items.map((item) => {
               const selected = selectedAnalysisItemIds.includes(item.id);
               return <div key={item.id} className="grid grid-cols-[1.5rem_2.5rem_minmax(0,1fr)_1.75rem] items-center gap-2 px-2 py-2.5 text-sm transition-colors hover:bg-muted/45">
-                <button type="button" aria-pressed={selected} aria-label={`${selected ? "取消选择" : "选择"}${item.title}`} disabled={analysisAvailability.selectionDisabled} onClick={() => toggleAnalysisItem(item.id)} className={cn("flex h-4 w-4 items-center justify-center rounded border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 disabled:cursor-not-allowed disabled:opacity-70", selected ? "border-primary bg-primary text-primary-foreground" : "border-border")}>
+                <button type="button" aria-pressed={selected} aria-label={`${selected ? "Deseleccionar" : "Elegir"}${item.title}`} disabled={analysisAvailability.selectionDisabled} onClick={() => toggleAnalysisItem(item.id)} className={cn("flex h-4 w-4 items-center justify-center rounded border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 disabled:cursor-not-allowed disabled:opacity-70", selected ? "border-primary bg-primary text-primary-foreground" : "border-border")}>
                   {selected ? <Check className="h-3 w-3" /> : null}
                 </button>
                 <span className="font-mono text-muted-foreground">#{item.rank}</span>
                 <button type="button" disabled={analysisAvailability.selectionDisabled} onClick={() => toggleAnalysisItem(item.id)} className="min-w-0 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 disabled:cursor-not-allowed">
                   <span className="block truncate font-medium">{item.title}</span>
-                  <span className="block truncate text-xs text-muted-foreground">{item.author || "作者未公开"}{item.category ? ` · ${item.category}` : ""}</span>
+                  <span className="block truncate text-xs text-muted-foreground">{item.author || "Autor no revelado"}{item.category ? ` · ${item.category}` : ""}</span>
                 </button>
-                <a href={item.sourceUrl} target="_blank" rel="noreferrer" aria-label={`查看${item.title}的公开来源`} className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"><ExternalLink className="h-3.5 w-3.5" /></a>
+                <a href={item.sourceUrl} target="_blank" rel="noreferrer" aria-label={`Controlar${item.title}Fuentes públicas de`} className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"><ExternalLink className="h-3.5 w-3.5" /></a>
               </div>;
             })}</div></CardContent>
           </Card>})}
@@ -375,18 +375,18 @@ export default function MarketRadarPage() {
       {viewTab === "analysis" && analyzing ? (
         <section className="flex min-h-56 flex-col items-center justify-center gap-3 bg-muted/25 px-6 py-10 text-center">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          <div className="font-medium">正在分析所选作品 · {Math.round((activeRun?.progress ?? 0) * 100)}%</div>
-          <p className="text-sm text-muted-foreground">完成后会在这里展示新的市场判断。</p>
+          <div className="font-medium">Analizando obras seleccionadas · {Math.round((activeRun?.progress ?? 0) * 100)}%</div>
+          <p className="text-sm text-muted-foreground">Los nuevos juicios de mercado se mostrarán aquí una vez finalizado.</p>
         </section>
       ) : null}
 
       {viewTab === "analysis" && !analyzing && report ? (
         <div ref={analysisResultRef} className="space-y-6 scroll-mt-6">
           <Card>
-            <CardHeader><CardTitle className="text-xl">本期判断</CardTitle><CardDescription>采集于 {new Date(report.createdAt).toLocaleString()}，结论均可回看公开榜单证据。</CardDescription></CardHeader>
+            <CardHeader><CardTitle className="text-xl">Sentencia en este asunto</CardTitle><CardDescription>Recogido de {new Date(report.createdAt).toLocaleString()}, todas las conclusiones se pueden revisar revisando la evidencia de la lista pública.</CardDescription></CardHeader>
             <CardContent>
               <p className="leading-7">{report.summary}</p>
-              <div className="mt-4 flex flex-wrap gap-2">{report.platformStatuses.map((status) => <Badge key={status.platform} variant={status.status === "failed" ? "destructive" : "outline"}>{PLATFORM_LABELS[status.platform]} · {status.itemCount}项{status.status === "stale" ? " · 建议刷新" : ""}</Badge>)}</div>
+              <div className="mt-4 flex flex-wrap gap-2">{report.platformStatuses.map((status) => <Badge key={status.platform} variant={status.status === "failed" ? "destructive" : "outline"}>{PLATFORM_LABELS[status.platform]} · {status.itemCount}Artículo{status.status === "stale" ? " · Recomendado para refrescar" : ""}</Badge>)}</div>
             </CardContent>
           </Card>
 
@@ -396,9 +396,9 @@ export default function MarketRadarPage() {
               const saved = (savedTopicsQuery.data?.data ?? []).some((topic) => topic.reportId === report.id && topic.signalId === signal.id);
               return <article key={signal.id} className={cn("rounded-xl border p-5 text-left transition hover:border-primary/50 hover:shadow-sm", selected ? "border-primary bg-primary/5 ring-2 ring-primary/20" : "border-border bg-card")}>
                 <div role="button" tabIndex={0} aria-pressed={selected} onClick={() => toggleSignal(signal.id)} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") toggleSignal(signal.id); }} className="w-full text-left">
-                <div className="flex items-start justify-between gap-3"><Badge variant={signal.kind === "opportunity" ? "default" : signal.kind === "crowding" ? "destructive" : "secondary"}>{KIND_LABELS[signal.kind]}</Badge><span className="flex items-center gap-2 text-xs font-medium text-primary">{selected ? "已选" : null}<button type="button" aria-label={`${saved ? "取消收藏" : "收藏"}${signal.label}`} onClick={(event) => { event.stopPropagation(); if (saved) { const item = savedTopicsQuery.data?.data?.find((topic) => topic.signalId === signal.id); if (item) deleteTopicMutation.mutate(item.id); } else saveTopicMutation.mutate(signal.id); }}><span className={saved ? "text-amber-600" : "text-muted-foreground"}>{saved ? "★" : "☆"}</span></button></span></div>
+                <div className="flex items-start justify-between gap-3"><Badge variant={signal.kind === "opportunity" ? "default" : signal.kind === "crowding" ? "destructive" : "secondary"}>{KIND_LABELS[signal.kind]}</Badge><span className="flex items-center gap-2 text-xs font-medium text-primary">{selected ? "Seleccionado" : null}<button type="button" aria-label={`${saved ? "Cancelar favoritos" : "Recolectar"}${signal.label}`} onClick={(event) => { event.stopPropagation(); if (saved) { const item = savedTopicsQuery.data?.data?.find((topic) => topic.signalId === signal.id); if (item) deleteTopicMutation.mutate(item.id); } else saveTopicMutation.mutate(signal.id); }}><span className={saved ? "text-amber-600" : "text-muted-foreground"}>{saved ? "★" : "☆"}</span></button></span></div>
                 <div className="mt-4 text-lg font-semibold">{signal.label}</div><p className="mt-2 text-sm leading-6 text-muted-foreground">{signal.summary}</p>
-                <div className="mt-4 flex gap-3 text-xs text-muted-foreground"><span>热度 {signal.heat}</span><span>拥挤度 {signal.crowding}</span><span>{signal.direction === "current" ? "当前高频" : signal.direction === "rising" ? "正在升温" : signal.direction === "falling" ? "正在降温" : "相对稳定"}</span></div>
+                <div className="mt-4 flex gap-3 text-xs text-muted-foreground"><span>picor {signal.heat}</span><span>Apiñamiento {signal.crowding}</span><span>{signal.direction === "current" ? "Alta frecuencia actual" : signal.direction === "rising" ? "se esta calentando" : signal.direction === "falling" ? "Enfriándose" : "Relativamente estable"}</span></div>
                 </div>
               </article>;
             })}
@@ -406,18 +406,18 @@ export default function MarketRadarPage() {
 
           <Card className="sticky bottom-4 border-primary/30 bg-background/95 shadow-xl backdrop-blur">
             <CardContent className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between">
-              <div><div className="font-medium">已选 {selectedIds.length}/5 项市场信号</div><p className="mt-1 text-xs text-muted-foreground">AI 推荐已自动勾选，你可以替换后再开书。</p></div>
+              <div><div className="font-medium">Seleccionado {selectedIds.length}/5 señales de mercado</div><p className="mt-1 text-xs text-muted-foreground">La recomendación de IA se ha verificado automáticamente; puede reemplazarla antes de abrir el libro.</p></div>
               <div className="flex flex-col gap-2 sm:flex-row">
                 <Select value={influenceMode} onValueChange={(value) => setInfluenceMode(value as MarketInfluenceMode)}><SelectTrigger className="w-full sm:w-44"><SelectValue /></SelectTrigger><SelectContent>{Object.entries(MODE_LABELS).map(([value, label]) => <SelectItem key={value} value={value}>{label}</SelectItem>)}</SelectContent></Select>
-                <Button onClick={() => briefMutation.mutate()} disabled={selectedIds.length === 0 || briefMutation.isPending}>{briefMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}用这些信号创作<ArrowRight className="h-4 w-4" /></Button>
+                <Button onClick={() => briefMutation.mutate()} disabled={selectedIds.length === 0 || briefMutation.isPending}>{briefMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}Utilice estas señales para crear<ArrowRight className="h-4 w-4" /></Button>
               </div>
             </CardContent>
           </Card>
         </div>
       ) : null}
       {viewTab === "saved" ? <section className="space-y-3">
-        <div className="flex items-center justify-between"><div><h2 className="text-base font-semibold">热门题材列表</h2><p className="text-sm text-muted-foreground">收藏 AI 分析后认可的题材，之后可回看来源和推荐理由。</p></div><Badge variant="secondary">{savedTopicsQuery.data?.data?.length ?? 0} 个</Badge></div>
-        {(savedTopicsQuery.data?.data ?? []).length > 0 ? <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">{savedTopicsQuery.data!.data!.map((topic) => <Card key={topic.id}><CardContent className="p-4"><div className="flex items-start justify-between gap-3"><div className="min-w-0"><div className="font-medium">{topic.label}</div><p className="mt-1 text-sm leading-6 text-muted-foreground">{topic.summary}</p><div className="mt-2 text-xs text-muted-foreground">热度 {topic.heat} · 拥挤度 {topic.crowding}</div></div><Button type="button" variant="ghost" size="sm" aria-label={`取消收藏${topic.label}`} onClick={() => deleteTopicMutation.mutate(topic.id)}><X className="h-3.5 w-3.5" /></Button></div><div className="mt-4 flex items-center justify-between gap-3"><span className="text-xs text-muted-foreground">收藏于 {new Date(topic.createdAt).toLocaleString()}</span><Button type="button" size="sm" disabled={!topic.signalId || savedTopicBriefMutation.isPending} onClick={() => savedTopicBriefMutation.mutate(topic)}>{savedTopicBriefMutation.isPending && savedTopicBriefMutation.variables?.signalId === topic.signalId ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}用此题材开书</Button></div></CardContent></Card>)}</div> : <div className="rounded-lg bg-muted/30 px-4 py-5 text-sm text-muted-foreground">完成 AI 分析后，收藏你认可的热门题材，这里会形成自己的选题参考。</div>}
+        <div className="flex items-center justify-between"><div><h2 className="text-base font-semibold">Lista de temas populares</h2><p className="text-sm text-muted-foreground">Recopile los temas aprobados por el análisis de IA y podrá revisar la fuente y los motivos de la recomendación más adelante.</p></div><Badge variant="secondary">{savedTopicsQuery.data?.data?.length ?? 0} Individual</Badge></div>
+        {(savedTopicsQuery.data?.data ?? []).length > 0 ? <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">{savedTopicsQuery.data!.data!.map((topic) => <Card key={topic.id}><CardContent className="p-4"><div className="flex items-start justify-between gap-3"><div className="min-w-0"><div className="font-medium">{topic.label}</div><p className="mt-1 text-sm leading-6 text-muted-foreground">{topic.summary}</p><div className="mt-2 text-xs text-muted-foreground">picor {topic.heat} · Aglomeración {topic.crowding}</div></div><Button type="button" variant="ghost" size="sm" aria-label={`Cancelar favoritos${topic.label}`} onClick={() => deleteTopicMutation.mutate(topic.id)}><X className="h-3.5 w-3.5" /></Button></div><div className="mt-4 flex items-center justify-between gap-3"><span className="text-xs text-muted-foreground">Recogido en {new Date(topic.createdAt).toLocaleString()}</span><Button type="button" size="sm" disabled={!topic.signalId || savedTopicBriefMutation.isPending} onClick={() => savedTopicBriefMutation.mutate(topic)}>{savedTopicBriefMutation.isPending && savedTopicBriefMutation.variables?.signalId === topic.signalId ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}Iniciar un libro con este tema.</Button></div></CardContent></Card>)}</div> : <div className="rounded-lg bg-muted/30 px-4 py-5 text-sm text-muted-foreground">Después de completar el análisis de IA, recopile temas populares que reconozca y aquí se formará su propia referencia de selección de temas.</div>}
       </section> : null}
     </div>
   );

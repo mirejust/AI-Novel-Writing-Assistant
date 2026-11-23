@@ -44,30 +44,30 @@ interface CreativeHubSidebarProps {
 }
 
 function bindingStatusLabel(value: string | null | undefined): string {
-  return value?.trim() ? "已绑定" : "未绑定";
+  return value?.trim() ? "Atado" : "no obligado";
 }
 
 function pipelineStatusLabel(status: string | null | undefined): string {
-  if (status === "queued") return "等待执行";
-  if (status === "running") return "执行中";
-  if (status === "succeeded") return "已完成";
-  if (status === "failed") return "执行失败";
-  if (status === "cancelled") return "已取消";
-  return "未启动";
+  if (status === "queued") return "Esperando ejecución";
+  if (status === "running") return "Ejecutando";
+  if (status === "succeeded") return "Completado";
+  if (status === "failed") return "La ejecución falló";
+  if (status === "cancelled") return "Cancelado";
+  return "No iniciado";
 }
 
 function turnStatusLabel(status: CreativeHubTurnSummary["status"]): string {
   switch (status) {
     case "succeeded":
-      return "已完成";
+      return "Completado";
     case "interrupted":
-      return "待确认";
+      return "Pendiente de confirmación";
     case "failed":
-      return "失败";
+      return "Error";
     case "cancelled":
-      return "已取消";
+      return "Cancelado";
     case "running":
-      return "进行中";
+      return "En curso";
     default:
       return status;
   }
@@ -76,15 +76,15 @@ function turnStatusLabel(status: CreativeHubTurnSummary["status"]): string {
 function threadStatusLabel(status: CreativeHubThread["status"] | undefined): string {
   switch (status) {
     case "busy":
-      return "执行中";
+      return "Ejecutando";
     case "interrupted":
-      return "待处理";
+      return "Pendiente";
     case "error":
-      return "异常";
+      return "Incidencia";
     case "idle":
-      return "空闲";
+      return "Gratis";
     default:
-      return "未初始化";
+      return "no inicializado";
   }
 }
 
@@ -109,70 +109,70 @@ function buildBlockerCardData(input: {
 }) {
   if (input.interrupt) {
     return {
-      title: "当前阻塞",
+      title: "Actualmente bloqueado",
       summary: input.interrupt.summary,
       details: [
-        `等待确认: ${input.interrupt.title}`,
-        input.interrupt.targetType ? `目标类型: ${input.interrupt.targetType}` : "",
+        `Esperando confirmación: ${input.interrupt.title}`,
+        input.interrupt.targetType ? `Tipo de objetivo: ${input.interrupt.targetType}` : "",
       ].filter(Boolean),
       tone: "border-warning/30 bg-warning/5 text-foreground",
-      actionLabel: "查看待确认项",
-      actionPrompt: "总结当前待确认的创作决策，并说明推荐处理方式",
+      actionLabel: "Ver elementos pendientes",
+      actionPrompt: "Resumir las decisiones creativas actuales que se deben confirmar y explicar los métodos de procesamiento recomendados.",
     };
   }
 
   if (input.diagnostics?.failureSummary) {
     return {
-      title: "当前风险",
+      title: "Riesgos actuales",
       summary: input.diagnostics.failureSummary,
       details: [
-        input.diagnostics.failureCode ? `错误码: ${input.diagnostics.failureCode}` : "",
-        input.diagnostics.recoveryHint ? `恢复建议: ${input.diagnostics.recoveryHint}` : "",
+        input.diagnostics.failureCode ? `Código de error: ${input.diagnostics.failureCode}` : "",
+        input.diagnostics.recoveryHint ? `Sugerencias de recuperación: ${input.diagnostics.recoveryHint}` : "",
       ].filter(Boolean),
       tone: "border-destructive/30 bg-destructive/5 text-foreground",
-      actionLabel: "生成恢复方案",
-      actionPrompt: input.diagnostics.recoveryHint || "分析当前失败原因并给出恢复步骤",
+      actionLabel: "Generar plan de recuperación",
+      actionPrompt: input.diagnostics.recoveryHint || "Analizar los motivos de falla actuales y proporcionar pasos de recuperación.",
     };
   }
 
   if (input.productionStatus?.failureSummary) {
     return {
-      title: "当前阻塞",
+      title: "Actualmente bloqueado",
       summary: input.productionStatus.failureSummary,
       details: [
-        input.productionStatus.recoveryHint ? `恢复建议: ${input.productionStatus.recoveryHint}` : "",
-        `当前阶段: ${input.productionStatus.currentStage}`,
+        input.productionStatus.recoveryHint ? `Sugerencias de recuperación: ${input.productionStatus.recoveryHint}` : "",
+        `Etapa actual: ${input.productionStatus.currentStage}`,
       ].filter(Boolean),
       tone: "border-destructive/30 bg-destructive/5 text-foreground",
-      actionLabel: "查看当前阻塞",
-      actionPrompt: input.productionStatus.recoveryHint || "分析当前生产阻塞和正式处理入口",
+      actionLabel: "Ver bloqueo actual",
+      actionPrompt: input.productionStatus.recoveryHint || "Analizar los bloqueos de producción actuales y las entradas formales de procesamiento.",
     };
   }
 
   if (input.latestTurnSummary?.status === "interrupted") {
     return {
-      title: "当前关注点",
+      title: "Preocupaciones actuales",
       summary: input.latestTurnSummary.nextSuggestion,
       details: [
-        `阶段: ${input.latestTurnSummary.currentStage}`,
-        `状态: ${turnStatusLabel(input.latestTurnSummary.status)}`,
+        `escenario: ${input.latestTurnSummary.currentStage}`,
+        `estado: ${turnStatusLabel(input.latestTurnSummary.status)}`,
       ],
       tone: "border-info/30 bg-info/5 text-foreground",
-      actionLabel: "查看建议",
-      actionPrompt: `解释当前建议和正式入口：${input.latestTurnSummary.nextSuggestion}`,
+      actionLabel: "Ver sugerencias",
+      actionPrompt: `Explicación de propuestas actuales y entrada formal:${input.latestTurnSummary.nextSuggestion}`,
     };
   }
 
   return {
-    title: "当前状态",
-    summary: "当前没有需要处理的状态问题，可以查看小说进度或执行记录。",
+    title: "Estado actual",
+    summary: "Actualmente no hay problemas de estatus que deban abordarse. Puede ver el progreso novedoso o los registros de ejecución.",
     details: input.latestTurnSummary?.nextSuggestion
-      ? [`建议下一步: ${input.latestTurnSummary.nextSuggestion}`]
+      ? [`Próximos pasos sugeridos: ${input.latestTurnSummary.nextSuggestion}`]
       : [],
     tone: "border-border bg-muted/20 text-foreground",
-    actionLabel: input.latestTurnSummary?.nextSuggestion ? "查看建议" : undefined,
+    actionLabel: input.latestTurnSummary?.nextSuggestion ? "Ver sugerencias" : undefined,
     actionPrompt: input.latestTurnSummary?.nextSuggestion
-      ? `解释当前建议和正式入口：${input.latestTurnSummary.nextSuggestion}`
+      ? `Explicación de propuestas actuales y entrada formal:${input.latestTurnSummary.nextSuggestion}`
       : undefined,
   };
 }
@@ -233,14 +233,14 @@ export default function CreativeHubSidebar({
       aria-busy={isBindingNovel || novelsRetrying}
     >
       <CardHeader className="pb-4">
-        <CardTitle className="text-base">当前小说与状态</CardTitle>
+        <CardTitle className="text-base">Novelas actuales y estado</CardTitle>
       </CardHeader>
       <CardContent className="min-h-0 flex-1 space-y-3 overflow-y-auto pr-1 text-sm">
         <div className="rounded-md border border-border bg-muted/20 p-3">
-          <div className="mb-2 text-xs font-medium text-muted-foreground">当前小说与资源</div>
+          <div className="mb-2 text-xs font-medium text-muted-foreground">Novelas y recursos actuales</div>
           <div className="space-y-3 text-xs text-muted-foreground">
             <div className="space-y-1">
-              <label htmlFor="creative-hub-novel" className="text-xs font-medium text-muted-foreground">当前小说</label>
+              <label htmlFor="creative-hub-novel" className="text-xs font-medium text-muted-foreground">Novela actual</label>
               <SelectControl
                 id="creative-hub-novel"
                 className="w-full rounded-md border border-input bg-background p-2 text-base text-foreground disabled:cursor-not-allowed disabled:opacity-60 md:text-sm"
@@ -251,14 +251,14 @@ export default function CreativeHubSidebar({
                   setIsBindingNovel(true);
                   void Promise.resolve(onNovelChange(novelId))
                     .catch((error: unknown) => {
-                      toast.error(error instanceof Error ? error.message : "小说工作区切换失败，请重试。");
+                      toast.error(error instanceof Error ? error.message : "No se pudo cambiar el nuevo espacio de trabajo. Inténtelo de nuevo.");
                     })
                     .finally(() => setIsBindingNovel(false));
                 }}
               >
-                <option value="">未绑定小说</option>
+                <option value="">Novela sin encuadernar</option>
                 {bindings.novelId && !selectedNovel ? (
-                  <option value={bindings.novelId}>{currentNovelTitle ?? "当前已绑定小说"}</option>
+                  <option value={bindings.novelId}>{currentNovelTitle ?? "Novela actualmente encuadernada"}</option>
                 ) : null}
                 {novels.map((novel) => (
                   <option key={novel.id} value={novel.id}>
@@ -268,11 +268,11 @@ export default function CreativeHubSidebar({
               </SelectControl>
               {novelsLoading ? (
                 <div className="text-xs leading-5 text-muted-foreground" role="status">
-                  正在读取可用小说，完成前不能切换工作区。
+                  Cargando novelas disponibles, no se puede cambiar de espacio de trabajo hasta que se complete.
                 </div>
               ) : novelsErrorMessage ? (
                 <div className="rounded-md border border-destructive/30 bg-destructive/5 p-2 text-xs leading-5 text-foreground">
-                  <div>小说列表读取失败，现有线程不会受影响。</div>
+                  <div>La lectura de la lista de novelas falla, los hilos existentes no se ven afectados.</div>
                   {onRetryNovels ? (
                     <Button
                       type="button"
@@ -282,40 +282,40 @@ export default function CreativeHubSidebar({
                       disabled={novelsRetrying}
                       onClick={onRetryNovels}
                     >
-                      {novelsRetrying ? "正在重新读取..." : "重新读取小说"}
+                      {novelsRetrying ? "Releyendo..." : "Releer la novela"}
                     </Button>
                   ) : null}
                 </div>
               ) : null}
               <div className="mt-2 flex flex-wrap gap-2">
-                <Button asChild size="sm" variant="outline"><Link to="/novels/create">创建小说</Link></Button>
-                {bindings.novelId ? <Button asChild size="sm" variant="outline"><Link to={`/novels/${bindings.novelId}/edit`}>打开小说工作台</Link></Button> : null}
+                <Button asChild size="sm" variant="outline"><Link to="/novels/create">Crear una novela</Link></Button>
+                {bindings.novelId ? <Button asChild size="sm" variant="outline"><Link to={`/novels/${bindings.novelId}/edit`}>Abra el banco de trabajo novedoso</Link></Button> : null}
               </div>
             </div>
             <div className="grid gap-2 sm:grid-cols-2">
-              <div>章节: {bindingStatusLabel(bindings.chapterId)}</div>
-              <div>世界观: {bindingStatusLabel(bindings.worldId)}</div>
-              <div>任务: {bindingStatusLabel(bindings.taskId)}</div>
-              <div>拆书分析: {bindingStatusLabel(bindings.bookAnalysisId)}</div>
-              <div>写作公式: {bindingStatusLabel(bindings.formulaId)}</div>
-              <div>基础角色: {bindingStatusLabel(bindings.baseCharacterId)}</div>
+              <div>capítulo: {bindingStatusLabel(bindings.chapterId)}</div>
+              <div>Visión del mundo: {bindingStatusLabel(bindings.worldId)}</div>
+              <div>Tarea: {bindingStatusLabel(bindings.taskId)}</div>
+              <div>Análisis de división de libros: {bindingStatusLabel(bindings.bookAnalysisId)}</div>
+              <div>Fórmula de escritura: {bindingStatusLabel(bindings.formulaId)}</div>
+              <div>Roles básicos: {bindingStatusLabel(bindings.baseCharacterId)}</div>
             </div>
-            <div>知识文档: {bindings.knowledgeDocumentIds?.length ?? 0} 份</div>
+            <div>Documentos de conocimiento: {bindings.knowledgeDocumentIds?.length ?? 0} Porción</div>
           </div>
         </div>
 
         <div className="rounded-md border border-info/30 bg-info/5 p-3">
-          <div className="text-xs font-medium text-info">正式创作入口</div>
-          <div className="mt-2 text-sm leading-6 text-foreground">完整的小说创建、Agent 生产和自动导演流程，请从正式工作台继续。</div>
+          <div className="text-xs font-medium text-info">Entrada de creación formal.</div>
+          <div className="mt-2 text-sm leading-6 text-foreground">Continúe desde el banco de trabajo oficial para el proceso completo de creación de novelas, producción de agentes y dirección automatizada.</div>
           <div className="mt-3 flex flex-wrap gap-2">
-            <Button asChild size="sm"><Link to="/novels/auto-director">打开 AI 自动导演</Link></Button>
+            <Button asChild size="sm"><Link to="/novels/auto-director">Activar el director automático de IA</Link></Button>
           </div>
         </div>
 
         <div className={cn("rounded-md border p-3", blocker.tone)}>
           <div className="mb-2 flex items-center justify-between gap-2">
             <div className="text-xs font-medium">{blocker.title}</div>
-            {interrupt ? <Badge variant="secondary">需要确认</Badge> : null}
+            {interrupt ? <Badge variant="secondary">Necesita confirmación</Badge> : null}
           </div>
           <div className="text-sm leading-6">{blocker.summary}</div>
           {blocker.details.length > 0 ? (
@@ -342,28 +342,28 @@ export default function CreativeHubSidebar({
         </div>
 
         <div className="rounded-md border border-border bg-background p-3">
-          <div className="mb-3 text-xs font-medium text-muted-foreground">创作阶段</div>
+          <div className="mb-3 text-xs font-medium text-muted-foreground">Etapa creativa</div>
           {productionStatus ? (
             <div className="space-y-3">
               <div className="grid gap-2 sm:grid-cols-2">
                 <div className="rounded-md border border-border bg-muted/20 p-3">
-                  <div className="text-xs text-muted-foreground">当前阶段</div>
+                  <div className="text-xs text-muted-foreground">Etapa actual</div>
                   <div className="mt-2 text-sm font-medium text-foreground">{productionStatus.currentStage}</div>
                 </div>
                 <div className="rounded-md border border-border bg-muted/20 p-3">
-                  <div className="text-xs text-muted-foreground">章节进度</div>
+                  <div className="text-xs text-muted-foreground">Progreso del capítulo</div>
                   <div className="mt-2 text-sm font-medium text-foreground">
                     {productionStatus.chapterCount}/{productionStatus.targetChapterCount}
                   </div>
                 </div>
                 <div className="rounded-md border border-border bg-muted/20 p-3">
-                  <div className="text-xs text-muted-foreground">资产完成</div>
+                  <div className="text-xs text-muted-foreground">Finalización de activos</div>
                   <div className="mt-2 text-sm font-medium text-foreground">
                     {completedAssets}/{productionStatus.assetStages.length}
                   </div>
                 </div>
                 <div className="rounded-md border border-border bg-muted/20 p-3">
-                  <div className="text-xs text-muted-foreground">生产流水线</div>
+                  <div className="text-xs text-muted-foreground">Línea de montaje</div>
                   <div className="mt-2 text-sm font-medium text-foreground">
                     {pipelineStatusLabel(productionStatus.pipelineStatus)}
                   </div>
@@ -382,68 +382,68 @@ export default function CreativeHubSidebar({
             </div>
           ) : (
             <div className="rounded-md border border-dashed border-border bg-muted/20 p-3 text-xs text-muted-foreground">
-              选择小说并发起整本创作后，这里会显示阶段与进度。
+              Después de seleccionar una novela e iniciar toda la creación, aquí se mostrarán las etapas y el progreso.
             </div>
           )}
         </div>
 
         <details className="rounded-md border border-border bg-background p-3">
           <summary className="cursor-pointer list-none text-xs font-medium text-muted-foreground">
-            运行与调试信息
+            Ejecutar y depurar información
           </summary>
           <div className="mt-3 space-y-3">
             <div className="rounded-md border border-border bg-muted/20 p-3">
               <div className="mb-2 text-xs font-medium text-muted-foreground">
-                运行细节显示
+                Visualización de detalles de ejecución
               </div>
               <div className="flex items-center justify-between gap-3 text-xs text-muted-foreground">
                 <span>
-                  当前默认
-                  {defaultRuntimeDetailsCollapsed ? "折叠" : "展开"}
-                  消息内的运行细节
+                  Valor predeterminado actual
+                  {defaultRuntimeDetailsCollapsed ? "Doblar" : "Expandir"}
+                  Detalles operativos dentro del mensaje.
                 </span>
                 <Button type="button" size="sm" variant="outline" onClick={onToggleRuntimeDetailsDefault}>
-                  切换为{defaultRuntimeDetailsCollapsed ? "默认展开" : "默认折叠"}
+                  Cambiar a{defaultRuntimeDetailsCollapsed ? "Expandir por defecto" : "Plegado predeterminado"}
                 </Button>
               </div>
             </div>
 
             <div className="space-y-2 rounded-md border border-border bg-muted/20 p-3">
-              <div className="text-xs font-medium text-muted-foreground">线程状态</div>
-              <DebugRow label="线程 ID" value={thread?.id ?? "-"} />
-              <DebugRow label="线程状态" value={threadStatusLabel(thread?.status)} />
-              <DebugRow label="最新 Run" value={latestRunId ?? "-"} />
-              <DebugRow label="当前 Checkpoint" value={currentCheckpointId ?? "-"} />
+              <div className="text-xs font-medium text-muted-foreground">Estado del hilo</div>
+              <DebugRow label="ID del hilo" value={thread?.id ?? "-"} />
+              <DebugRow label="Estado del hilo" value={threadStatusLabel(thread?.status)} />
+              <DebugRow label="Última ejecución" value={latestRunId ?? "-"} />
+              <DebugRow label="Punto de control actual" value={currentCheckpointId ?? "-"} />
             </div>
 
             <div className="space-y-2 rounded-md border border-border bg-muted/20 p-3">
-              <div className="text-xs font-medium text-muted-foreground">资源绑定 ID</div>
-              <DebugRow label="小说" value={bindings.novelId ?? "-"} />
-              <DebugRow label="章节" value={bindings.chapterId ?? "-"} />
-              <DebugRow label="世界观" value={bindings.worldId ?? "-"} />
-              <DebugRow label="任务" value={bindings.taskId ?? "-"} />
-              <DebugRow label="拆书分析" value={bindings.bookAnalysisId ?? "-"} />
-              <DebugRow label="写作公式" value={bindings.formulaId ?? "-"} />
-              <DebugRow label="写法档案" value={bindings.styleProfileId ?? "-"} />
-              <DebugRow label="基础角色" value={bindings.baseCharacterId ?? "-"} />
-              <DebugRow label="知识文档" value={bindings.knowledgeDocumentIds?.join(", ") || "-"} />
-              {interrupt ? <DebugRow label="待确认目标" value={interrupt.targetId ?? "-"} /> : null}
+              <div className="text-xs font-medium text-muted-foreground">ID de enlace de recursos</div>
+              <DebugRow label="Novela" value={bindings.novelId ?? "-"} />
+              <DebugRow label="Capítulos" value={bindings.chapterId ?? "-"} />
+              <DebugRow label="Visión del mundo" value={bindings.worldId ?? "-"} />
+              <DebugRow label="Tarea" value={bindings.taskId ?? "-"} />
+              <DebugRow label="Análisis de división de libros" value={bindings.bookAnalysisId ?? "-"} />
+              <DebugRow label="Formula de escritura" value={bindings.formulaId ?? "-"} />
+              <DebugRow label="Escribir archivo" value={bindings.styleProfileId ?? "-"} />
+              <DebugRow label="Rol básico" value={bindings.baseCharacterId ?? "-"} />
+              <DebugRow label="Documento de conocimiento" value={bindings.knowledgeDocumentIds?.join(", ") || "-"} />
+              {interrupt ? <DebugRow label="Objetivo por confirmar" value={interrupt.targetId ?? "-"} /> : null}
             </div>
 
             <div className="space-y-2 rounded-md border border-border bg-muted/20 p-3">
-              <div className="text-xs font-medium text-muted-foreground">模型路由</div>
+              <div className="text-xs font-medium text-muted-foreground">Enrutamiento del modelo</div>
               <DebugRow label="Provider" value={modelSummary.provider} />
               <DebugRow label="Model" value={modelSummary.model} />
               <DebugRow label="Temperature" value={String(modelSummary.temperature)} />
-              <DebugRow label="Max tokens" value={modelSummary.maxTokens != null ? String(modelSummary.maxTokens) : "默认"} />
+              <DebugRow label="Max tokens" value={modelSummary.maxTokens != null ? String(modelSummary.maxTokens) : "Predeterminado"} />
             </div>
 
             {latestTurnSummary ? (
               <div className="space-y-2 rounded-md border border-border bg-muted/20 p-3">
-                <div className="text-xs font-medium text-muted-foreground">最近回合</div>
-                <DebugRow label="回合状态" value={turnStatusLabel(latestTurnSummary.status)} />
-                <DebugRow label="回合阶段" value={latestTurnSummary.currentStage} />
-                <DebugRow label="摘要 Checkpoint" value={latestTurnSummary.checkpointId ?? "-"} />
+                <div className="text-xs font-medium text-muted-foreground">Última ronda</div>
+                <DebugRow label="Estado de giro" value={turnStatusLabel(latestTurnSummary.status)} />
+                <DebugRow label="Fase de giro" value={latestTurnSummary.currentStage} />
+                <DebugRow label="Punto de control de resumen" value={latestTurnSummary.checkpointId ?? "-"} />
               </div>
             ) : null}
           </div>

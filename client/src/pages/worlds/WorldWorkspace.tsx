@@ -214,10 +214,10 @@ function WorldWorkspaceContent({ id }: { id: string }) {
       setAnswerDrafts(current => Object.fromEntries(Object.entries(current).filter(([key, value]) => value !== submitted[key])));
       queryClient.setQueryData(queryKeys.worlds.detail(id), (current: typeof worldDetailQuery.data) => current?.data
         ? {...current, data: {...current.data, deepeningQA: response.data ?? current.data.deepeningQA}} : current);
-      toast.success("回答已整合到世界手册，可在“手册整理”查看。");
+      toast.success("Las respuestas se han integrado en el Manual Mundial y se pueden consultar en \"Organización del Manual\".");
       await invalidateWorld();
     },
-    onError: (error) => toast.error(error instanceof Error ? error.message : "整合未完成，回答已保留，请重试。"),
+    onError: (error) => toast.error(error instanceof Error ? error.message : "La integración no se ha completado, la respuesta ha sido reservada, por favor inténtalo de nuevo."),
   });
   const consistencyMutation = useMutation({
     mutationFn: () => checkWorldConsistency(id, { provider: llm.provider, model: llm.model }),
@@ -285,11 +285,11 @@ function WorldWorkspaceContent({ id }: { id: string }) {
     mutationFn: (worldId: string) => deleteWorld(worldId),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: queryKeys.worlds.all });
-      toast.success("世界样本已删除。");
+      toast.success("Se han eliminado muestras mundiales.");
       navigate("/worlds", { replace: true });
     },
     onError: (error) => {
-      toast.error(error instanceof Error ? error.message : "删除世界样本失败。");
+      toast.error(error instanceof Error ? error.message : "No se pudo eliminar la muestra mundial.");
     },
   });
 
@@ -306,7 +306,7 @@ function WorldWorkspaceContent({ id }: { id: string }) {
     if (!id || !world) {
       return;
     }
-    const confirmed = window.confirm(`确认删除世界样本「${world.name}」？此操作不可恢复。`);
+    const confirmed = window.confirm(`Confirmar la eliminación de la muestra mundial "${world.name}”? Esta operación es irreversible.`);
     if (!confirmed) {
       return;
     }
@@ -323,7 +323,7 @@ function WorldWorkspaceContent({ id }: { id: string }) {
             size="icon"
             className="mt-0.5 shrink-0 rounded-full"
             onClick={() => navigate("/worlds")}
-            aria-label="返回世界样本库"
+            aria-label="Volver a la biblioteca de muestras mundial"
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
@@ -331,14 +331,14 @@ function WorldWorkspaceContent({ id }: { id: string }) {
             <Globe2 className="h-5 w-5" aria-hidden="true" />
           </div>
           <div className="min-w-0">
-            <div className="text-xs text-muted-foreground">世界样本 · 世界手册</div>
-            <h1 className="mt-1 truncate text-2xl font-semibold tracking-tight">{world?.name ?? "正在读取世界样本"}</h1>
-            {world?.version ? <div className="mt-1 text-xs text-muted-foreground">版本 v{world.version}</div> : null}
+            <div className="text-xs text-muted-foreground">Muestra Mundial · Manual Mundial</div>
+            <h1 className="mt-1 truncate text-2xl font-semibold tracking-tight">{world?.name ?? "Muestra del mundo de lectura"}</h1>
+            {world?.version ? <div className="mt-1 text-xs text-muted-foreground">Versión v{world.version}</div> : null}
           </div>
         </div>
         <div className="flex flex-wrap items-start justify-end gap-2">
           <details className="group rounded-2xl bg-muted/25 px-4 py-2">
-            <summary className="cursor-pointer list-none text-sm font-medium marker:hidden">创作模型</summary>
+            <summary className="cursor-pointer list-none text-sm font-medium marker:hidden">Crear un modelo</summary>
             <div className="mt-3 w-[420px] max-w-[70vw]">
               <LLMSelector />
             </div>
@@ -352,7 +352,7 @@ function WorldWorkspaceContent({ id }: { id: string }) {
             disabled={!id || !world || deleteWorldMutation.isPending}
           >
             <Trash2 className="h-4 w-4" />
-            {deleteWorldMutation.isPending ? "删除中..." : "删除样本"}
+            {deleteWorldMutation.isPending ? "Eliminando..." : "Eliminar muestra"}
           </Button>
         </div>
       </header>
@@ -368,12 +368,12 @@ function WorldWorkspaceContent({ id }: { id: string }) {
         className="space-y-5"
       >
         <TabsList className="h-11 w-full justify-start gap-1 overflow-x-auto rounded-full bg-muted/30 p-1">
-          <TabsTrigger value="structure" className="rounded-full px-5">手册整理</TabsTrigger>
-          <TabsTrigger value="overview" className="rounded-full px-5">阅读与图谱</TabsTrigger>
-          <TabsTrigger value="layers" className="rounded-full px-5">AI 分层</TabsTrigger>
-          <TabsTrigger value="deepening" className="rounded-full px-5">补齐设定</TabsTrigger>
-          <TabsTrigger value="consistency" className="rounded-full px-5">一致性</TabsTrigger>
-          <TabsTrigger value="assets" className="rounded-full px-5">资料与版本</TabsTrigger>
+          <TabsTrigger value="structure" className="rounded-full px-5">Organización manual</TabsTrigger>
+          <TabsTrigger value="overview" className="rounded-full px-5">Lectura y mapeo</TabsTrigger>
+          <TabsTrigger value="layers" className="rounded-full px-5">Capas de IA</TabsTrigger>
+          <TabsTrigger value="deepening" className="rounded-full px-5">Configuración de finalización</TabsTrigger>
+          <TabsTrigger value="consistency" className="rounded-full px-5">Consistencia</TabsTrigger>
+          <TabsTrigger value="assets" className="rounded-full px-5">Información y versión</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview">
@@ -432,13 +432,13 @@ function WorldWorkspaceContent({ id }: { id: string }) {
             <>
               <Card className="rounded-3xl border-border/35 shadow-none">
                 <CardHeader className="flex flex-row items-center justify-between gap-3">
-                  <CardTitle className="text-lg">高级字段维护</CardTitle>
+                  <CardTitle className="text-lg">Mantenimiento de campo avanzado</CardTitle>
                   <Button variant="ghost" size="sm" className="rounded-full" onClick={() => setAdvancedStructureOpen(false)}>
-                    返回整理手册
+                    Volver al manual de organización
                   </Button>
                 </CardHeader>
                 <CardContent className="text-sm text-muted-foreground">
-                  这里用于处理势力关系、地点控制权、结构导入等细节。普通整理优先回到世界手册。
+                  Esto se utiliza para manejar detalles como relaciones de poder, derechos de control de ubicación e importación de estructuras. La clasificación ordinaria dará prioridad al regreso al manual mundial.
                 </CardContent>
               </Card>
               {id ? (

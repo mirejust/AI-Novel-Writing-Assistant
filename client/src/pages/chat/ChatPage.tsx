@@ -24,61 +24,61 @@ type ApprovalRequiredEvent = Extract<SSEFrame, { type: "approval_required" }>;
 type RunStatusEvent = Extract<SSEFrame, { type: "run_status" }>;
 
 function toRunStatusLabel(status: string): string {
-  if (status === "queued") return "排队中";
-  if (status === "running") return "运行中";
-  if (status === "waiting_approval") return "待审批";
-  if (status === "succeeded") return "已完成";
-  if (status === "failed") return "失败";
-  if (status === "cancelled") return "已取消";
+  if (status === "queued") return "En cola";
+  if (status === "running") return "En ejecución";
+  if (status === "waiting_approval") return "Pendiente de aprobación";
+  if (status === "succeeded") return "Completado";
+  if (status === "failed") return "Error";
+  if (status === "cancelled") return "Cancelado";
   return status;
 }
 
 function toApprovalActionLabel(action: string): string {
-  if (action === "approved") return "已通过";
-  if (action === "rejected") return "已拒绝";
+  if (action === "approved") return "Aprobado";
+  if (action === "rejected") return "Rechazado";
   return action;
 }
 
 function toStepTypeLabel(stepType: string): string {
-  if (stepType === "planning") return "规划";
-  if (stepType === "tool_call") return "工具调用";
-  if (stepType === "tool_result") return "工具结果";
-  if (stepType === "approval") return "审批";
-  if (stepType === "completion") return "收尾";
-  if (stepType === "analysis") return "分析";
-  if (stepType === "review") return "审校";
-  if (stepType === "repair") return "修复";
-  if (stepType === "writing") return "写作";
-  if (stepType === "context") return "上下文";
+  if (stepType === "planning") return "Planificación";
+  if (stepType === "tool_call") return "Llamada de herramienta";
+  if (stepType === "tool_result") return "Resultados de la herramienta";
+  if (stepType === "approval") return "Aprobación";
+  if (stepType === "completion") return "Final";
+  if (stepType === "analysis") return "Analizar";
+  if (stepType === "review") return "Revisión";
+  if (stepType === "repair") return "Reparación";
+  if (stepType === "writing") return "Escribiendo";
+  if (stepType === "context") return "Contexto";
   return stepType;
 }
 
 function toAgentNameLabel(name: string): string {
   const normalized = name.toLowerCase();
-  if (normalized === "planner") return "规划器";
-  if (normalized === "writer") return "写作器";
-  if (normalized === "reviewer") return "审校器";
-  if (normalized === "continuity") return "连续性检查";
-  if (normalized === "repair") return "修复器";
+  if (normalized === "planner") return "Planificador";
+  if (normalized === "writer") return "Escritor";
+  if (normalized === "reviewer") return "Revisor";
+  if (normalized === "continuity") return "Control de continuidad";
+  if (normalized === "repair") return "Restaurador";
   return name;
 }
 
 function formatEvent(event: RuntimeEvent): string {
   if (event.type === "tool_call") {
-    return `调用工具 ${event.toolName}: ${event.inputSummary}`;
+    return `herramienta de llamada ${event.toolName}: ${event.inputSummary}`;
   }
   if (event.type === "tool_result") {
-    return `${event.toolName} ${event.success ? "成功" : "失败"}: ${event.outputSummary}`;
+    return `${event.toolName} ${event.success ? "Éxito" : "Error"}: ${event.outputSummary}`;
   }
   if (event.type === "approval_required") {
-    return `等待审批: ${event.summary}`;
+    return `En espera de aprobación: ${event.summary}`;
   }
-  return `审批结果: ${toApprovalActionLabel(event.action)}${event.note ? ` (${event.note})` : ""}`;
+  return `Resultados de la aprobación: ${toApprovalActionLabel(event.action)}${event.note ? ` (${event.note})` : ""}`;
 }
 
 function safePreview(json: string | null | undefined): string {
   if (!json?.trim()) {
-    return "无";
+    return "Ninguno";
   }
   try {
     const parsed = JSON.parse(json) as unknown;
@@ -124,7 +124,7 @@ export default function ChatPage() {
     if (!chatStore.hydrated || chatStore.currentSessionId || chatStore.sessions.length > 0) {
       return;
     }
-    void chatStore.createSession("新对话");
+    void chatStore.createSession("Nueva conversación");
   }, [chatStore, chatStore.currentSessionId, chatStore.hydrated, chatStore.sessions.length]);
 
   useEffect(() => {
@@ -257,7 +257,7 @@ export default function ChatPage() {
     if (chatStore.currentSessionId) {
       return chatStore.currentSessionId;
     }
-    return chatStore.createSession("新对话");
+    return chatStore.createSession("Nueva conversación");
   }, [chatStore]);
 
   const buildPayloadMessages = (
@@ -266,7 +266,7 @@ export default function ChatPage() {
     if (sessionMessages.length > 0) {
       return sessionMessages;
     }
-    return [{ role: "user" as const, content: "继续当前任务。" }];
+    return [{ role: "user" as const, content: "Continuar la tarea actual." }];
   };
 
   const onRuntimeEvent = useCallback((event: RuntimeEvent) => {
@@ -308,7 +308,7 @@ export default function ChatPage() {
         }
         : null);
     if (!runId || !pending) {
-      setLocalError("当前没有可处理的审批项。");
+      setLocalError("Actualmente no hay elementos de aprobación para procesar.");
       return;
     }
     setLocalError("");
@@ -317,7 +317,7 @@ export default function ChatPage() {
       type: "run_status",
       runId,
       status: "running",
-      message: action === "approve" ? "审批已提交，继续执行中" : "审批已提交，处理中",
+      message: action === "approve" ? "Se ha enviado la aprobación y la ejecución continúa." : "La aprobación ha sido enviada y está en proceso.",
     });
     const sessionMessages = buildPayloadMessages(
       (currentSession?.messages ?? [])
@@ -350,7 +350,7 @@ export default function ChatPage() {
 
   const triggerReplay = async (mode: "continue" | "dry_run") => {
     if (!currentRunId || !effectiveReplayStepId) {
-      setLocalError("当前运行没有可重放的步骤。");
+      setLocalError("No hay pasos reproducibles para la ejecución actual.");
       return;
     }
     setLocalError("");
@@ -361,7 +361,7 @@ export default function ChatPage() {
       });
       const newRunId = response.data?.run.id;
       if (!newRunId) {
-        setLocalError(response.error ?? "重放失败。");
+        setLocalError(response.error ?? "La reproducción falló.");
         return;
       }
       if (chatStore.currentSessionId) {
@@ -375,10 +375,10 @@ export default function ChatPage() {
     } catch (error) {
       const message = error instanceof Error
         ? error.message
-        : "重放失败。";
+        : "La reproducción falló.";
       setLocalError(
         message === "No replayable tool steps after source step."
-          ? "所选步骤之后没有可重放的工具步骤，请选择更早的步骤。"
+          ? "No hay pasos de herramientas que se puedan reproducir después del paso seleccionado; seleccione un paso anterior."
           : message,
       );
       return;
@@ -441,15 +441,15 @@ export default function ChatPage() {
     : (persistedRunState ?? scopedLatestRun);
   const headerRunLabel = headerRunState ? toRunStatusLabel(headerRunState.status) : "";
   const headerRunMessage = headerRunState?.status === "waiting_approval"
-    ? "当前运行等待审批"
+    ? "Actualmente en funcionamiento y pendiente de aprobación."
     : headerRunState?.status === "running"
-      ? (headerRunState.message?.trim() || "当前运行中")
+      ? (headerRunState.message?.trim() || "Actualmente funcionando")
       : headerRunState?.status === "succeeded"
-        ? "当前运行已完成"
+        ? "La ejecución actual se ha completado."
         : headerRunState?.status === "failed"
-          ? (headerRunState.message?.trim() || "当前运行失败")
+          ? (headerRunState.message?.trim() || "Error en la ejecución actual")
           : headerRunState?.status === "cancelled"
-            ? "当前运行已取消"
+            ? "La ejecución actual ha sido cancelada."
             : "";
 
   const liveEvents = [...runtimeEvents, ...approvalSse.events];
@@ -467,15 +467,15 @@ export default function ChatPage() {
 
   return (
     <WorkspaceColumns layoutId="chat" className="grid min-h-[70vh] gap-4 lg:workspace-split"
-      left={{ label: "调整会话列表宽度", initial: "240px", min: 144 }}
-      right={{ label: "调整运行详情宽度", initial: "360px", min: 212 }}>
+      left={{ label: "Ajustar el ancho de la lista de sesiones", initial: "240px", min: 144 }}
+      right={{ label: "Ajustar el ancho de los detalles de ejecución", initial: "360px", min: 212 }}>
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">会话列表</CardTitle>
+          <CardTitle className="text-base">Lista de conversación</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
-          <Button className="w-full" onClick={() => void chatStore.createSession("新对话")}>
-            新建对话
+          <Button className="w-full" onClick={() => void chatStore.createSession("Nueva conversación")}>
+            Nueva conversación
           </Button>
           <div className="space-y-1">
             {chatStore.sessions.map((session) => (
@@ -490,7 +490,7 @@ export default function ChatPage() {
                 <div>{session.title}</div>
                 {session.latestRunId ? (
                   <div className="text-[11px] text-muted-foreground">
-                    运行: {session.latestRunId.slice(0, 8)} · {session.runIds?.length ?? 1}条
+                    correr: {session.latestRunId.slice(0, 8)} · {session.runIds?.length ?? 1}banda
                   </div>
                 ) : null}
               </button>
@@ -502,7 +502,7 @@ export default function ChatPage() {
       <Card>
         <CardHeader className="flex flex-row items-start justify-between gap-3 space-y-0">
           <div className="space-y-1">
-            <CardTitle className="text-base">对话消息</CardTitle>
+            <CardTitle className="text-base">Mensaje de conversación</CardTitle>
             {headerRunMessage ? (
               <div className="text-xs text-slate-500">{headerRunMessage}</div>
             ) : null}

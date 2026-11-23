@@ -11,13 +11,13 @@ export async function isManuscriptNovel(db: ManuscriptIsolationDb, novelId: stri
 
 export async function rejectLegacyManuscriptWrite(db: ManuscriptIsolationDb, novelId: string): Promise<void> {
   if (await isManuscriptNovel(db, novelId)) {
-    throw new AppError("请在原稿修订工作区处理章节，旧创作入口不会覆盖导入正文。", 409);
+    throw new AppError("Procese los capítulos en el espacio de trabajo de revisión del manuscrito. La entrada de creatividad anterior no sobrescribirá el texto importado.", 409);
   }
 }
 
 export async function rejectManuscriptDirectorEntry(db: ManuscriptIsolationDb, novelId: string): Promise<void> {
   if (await isManuscriptNovel(db, novelId)) {
-    throw new AppError("导入原稿请在原稿修订工作区中调整章节，导演创作不会改写导入正文。", 409);
+    throw new AppError("Al importar un manuscrito, ajuste los capítulos en el espacio de trabajo de revisión del manuscrito. La creación del director no reescribirá el texto importado.", 409);
   }
 }
 

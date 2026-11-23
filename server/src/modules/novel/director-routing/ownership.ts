@@ -16,21 +16,21 @@ export function directorSourceRoute(novelId: string, version: DirectorVersion): 
 
 export async function readNovelDirectorIdentity(novelId: string, db: Database = prisma): Promise<Pick<NovelDirectorIdentity, "novelId" | "version" | "epoch" | "sourceRoute">> {
   const book = await db.novel.findUnique({where: {id: novelId}, select: {directorVersion: true, directorEpoch: true, narrativeForm: true}});
-  if (!book) throw new AppError("找不到这本小说。", 404);
-  if (book.narrativeForm === "short_story") throw new AppError("导演版本选择适用于长篇小说。", 400);
-  if (book.directorVersion && !["v1", "v2"].includes(book.directorVersion)) throw new AppError("小说导演归属无效，请检查运行记录。", 409);
+  if (!book) throw new AppError("No se puede encontrar la novela.", 404);
+  if (book.narrativeForm === "short_story") throw new AppError("Las selecciones de versión del director están disponibles para novelas completas.", 400);
+  if (book.directorVersion && !["v1", "v2"].includes(book.directorVersion)) throw new AppError("La atribución del director novedoso no es válida; verifique los registros en ejecución.", 409);
   const version: DirectorVersion = book.directorVersion as DirectorVersion
     || (await db.directorNextRun.findFirst({where: {novelId}, select: {id: true}}) ? "v2" : "v1");
   return {novelId, version, epoch: book.directorEpoch, sourceRoute: directorSourceRoute(novelId, version)};
 }
 
 export async function assertNovelDirectorVersion(novelId: string, version: DirectorVersion, epoch?: number, db: Database = prisma) {
-  if(await db.manuscriptProject?.findUnique({where:{novelId},select:{id:true}}))throw new AppError("原稿修订副本只允许逐章预览和明确采纳，不启动导演写稿。",409);
+  if(await db.manuscriptProject?.findUnique({where:{novelId},select:{id:true}}))throw new AppError("La copia revisada del manuscrito original solo puede ser vista previa y adoptada explícitamente capítulo por capítulo, y no se inicia la escritura del director.",409);
   const identity = await readNovelDirectorIdentity(novelId, db);
   if (identity.version !== version || (epoch !== undefined && epoch !== identity.epoch)) {
-    throw new AppError(`请从本书导演 ${identity.version.toUpperCase()} 工作台开始新的创作。`, 409, {sourceRoute: identity.sourceRoute});
+    throw new AppError(`por favor directo desde este libro ${identity.version.toUpperCase()} Inicie una nueva creación en el banco de trabajo.`, 409, {sourceRoute: identity.sourceRoute});
   }
-  if (version === "v2" && !directorV2Available()) throw new AppError("导演 V2 未启用，请启用后继续本书创作。", 409);
+  if (version === "v2" && !directorV2Available()) throw new AppError("Director V2 no está habilitado, habilítelo para continuar creando este libro.", 409);
   return identity;
 }
 
@@ -45,14 +45,14 @@ export async function canExecuteLegacyTask(taskId: string, db: Database = prisma
 
 export async function assertLegacyTaskExecution(taskId: string, commandType?: string, allowV2Opening = false, db: Database = prisma): Promise<void> {
   const task = await db.novelWorkflowTask.findUnique({where: {id: taskId}, select: {novelId: true, directorVersion: true}});
-  if (!task) throw new AppError("找不到这项创作任务。", 404);
+  if (!task) throw new AppError("No se puede encontrar esta tarea de creación.", 404);
   if (allowV2Opening && !task.novelId && task.directorVersion === "v2" && commandType && openingCommands.has(commandType)) return;
-  if (!await canExecuteLegacyTask(taskId, db)) throw new AppError("这项任务属于其他导演版本或已结束的创作代次，请打开小说对应的工作台。", 409);
+  if (!await canExecuteLegacyTask(taskId, db)) throw new AppError("Esta tarea pertenece a la versión de otro director o a una generación creativa que ha terminado. Abra el banco de trabajo correspondiente a la novela.", 409);
 }
 
 export async function assertV2RunExecution(runId: string): Promise<void> {
   const run = await prisma.directorNextRun.findUnique({where: {id: runId}, select: {novelId: true, contractJson: true}});
-  if (!run) throw new AppError("找不到这次导演 V2 创作。", 404);
+  if (!run) throw new AppError("No se puede encontrar la creación V2 de este director.", 404);
   await assertNovelDirectorVersion(run.novelId, "v2", readRunExecutionEpoch(run.contractJson));
 }
 
@@ -61,7 +61,7 @@ export function readRunExecutionEpoch(contractJson: string): number {
     const value = JSON.parse(contractJson).executionEpoch ?? 0;
     if (Number.isSafeInteger(value) && value >= 0) return value;
   } catch { /* Invalid ownership is never guessed. */ }
-  throw new AppError("创作任务的执行归属损坏，请检查运行记录。", 409);
+  throw new AppError("El atributo de ejecución de la tarea de creación está dañado; verifique el registro de ejecución.", 409);
 }
 
 async function hasActiveProduction(novelId: string, epoch: number, db: Database): Promise<boolean> {
@@ -100,19 +100,19 @@ export async function getNovelDirectorIdentity(novelId: string): Promise<NovelDi
   const outlineBound = await prisma.outlineBookBinding.findUnique({where: {novelId}, select: {id: true}});
   const blocked = Boolean(outlineBound) || await hasActiveProduction(novelId, identity.epoch, prisma);
   return {...identity, availableVersions: outlineBound ? ["v2"] : directorV2Available() ? ["v1", "v2"] : ["v1"], canSwitch: !blocked,
-    blockedReason: outlineBound ? "按大纲写作需要导演 V2 保留来源与约束。" : blocked ? "请先结束本书当前创作任务，再选择导演版本。" : null};
+    blockedReason: outlineBound ? "Escribir a partir de un esquema requiere que Director V2 preserve las fuentes y las limitaciones." : blocked ? "Primero termine la tarea de escritura actual de este libro y luego elija la versión del director." : null};
 }
 
 export async function switchNovelDirectorVersion(novelId: string, version: DirectorVersion, expectedEpoch: number): Promise<NovelDirectorIdentity> {
-  if(await prisma.manuscriptProject.findUnique({where:{novelId},select:{id:true}}))throw new AppError("原稿修订副本不切换导演；请在修订工作区处理章节。",409);
-  if (version === "v2" && !directorV2Available()) throw new AppError("导演 V2 未启用。", 409);
+  if(await prisma.manuscriptProject.findUnique({where:{novelId},select:{id:true}}))throw new AppError("Las copias revisadas del manuscrito no cambian de director; trabaje en los capítulos en el espacio de trabajo de revisión.",409);
+  if (version === "v2" && !directorV2Available()) throw new AppError("Director V2 no está habilitado.", 409);
   await withSqliteRetry(() => prisma.$transaction(async tx => {
     const locked = await tx.novel.updateMany({where: {id: novelId, directorEpoch: expectedEpoch}, data: {directorEpoch: {increment: 0}}});
-    if (locked.count !== 1) throw new AppError("本书导演设置已变化，请刷新后重新选择。", 409);
+    if (locked.count !== 1) throw new AppError("La configuración del director de este libro ha cambiado; actualice y seleccione nuevamente.", 409);
     const identity = await readNovelDirectorIdentity(novelId, tx);
-    if (version === "v1" && await tx.outlineBookBinding.findUnique({where: {novelId}, select: {id: true}})) throw new AppError("按大纲写作需要导演 V2 保留来源与约束，不能切换为 V1。", 409);
+    if (version === "v1" && await tx.outlineBookBinding.findUnique({where: {novelId}, select: {id: true}})) throw new AppError("Escribir a partir de un esquema requiere que Director V2 conserve las fuentes y las limitaciones y no se puede cambiar a V1.", 409);
     if (identity.version === version) return;
-    if (await hasActiveProduction(novelId, expectedEpoch, tx)) throw new AppError("请先结束本书当前创作任务，再选择导演版本。", 409);
+    if (await hasActiveProduction(novelId, expectedEpoch, tx)) throw new AppError("Primero termine la tarea de escritura actual de este libro y luego elija la versión del director.", 409);
     await tx.novel.update({where: {id: novelId}, data: {directorVersion: version, directorEpoch: {increment: 1}}});
   }), {label: "director.switch_version"});
   return getNovelDirectorIdentity(novelId);
@@ -121,9 +121,9 @@ export async function switchNovelDirectorVersion(novelId: string, version: Direc
 export async function readOpeningVersion(taskId: string | undefined, requested?: DirectorVersion): Promise<DirectorVersion> {
   const task = taskId ? await prisma.novelWorkflowTask.findUnique({where: {id: taskId}, select: {directorVersion: true}}) : null;
   const frozen = task ? (task.directorVersion ?? "v1") : null;
-  if (frozen && requested && frozen !== requested) throw new AppError("请结束当前开书任务后再选择其他导演版本。", 409);
+  if (frozen && requested && frozen !== requested) throw new AppError("Finalice la tarea de apertura del libro actual antes de elegir la versión de otro director.", 409);
   const version = (frozen as DirectorVersion | null) ?? requested ?? "v1";
-  if (!["v1", "v2"].includes(version)) throw new AppError("开书任务的导演归属无效，请检查运行记录。", 409);
-  if (version === "v2" && !directorV2Available()) throw new AppError("导演 V2 未启用。", 409);
+  if (!["v1", "v2"].includes(version)) throw new AppError("La propiedad del director de la tarea de apertura del libro no es válida; verifique los registros en ejecución.", 409);
+  if (version === "v2" && !directorV2Available()) throw new AppError("Director V2 no está habilitado.", 409);
   return version;
 }

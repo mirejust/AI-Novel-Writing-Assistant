@@ -77,7 +77,7 @@ export class NovelDirectorConfirmRuntime {
         ?? buildDirectorCompletionProfile(input.estimatedChapterCount ?? input.candidate.targetChapterCount),
     });
     const runMode = "full_book_autopilot" as const;
-    const title = resolvedInput.candidate.workingTitle.trim() || resolvedInput.title?.trim() || "未命名项目";
+    const title = resolvedInput.candidate.workingTitle.trim() || resolvedInput.title?.trim() || "Proyecto sin nombre";
     const description = resolvedInput.description?.trim() || resolvedInput.candidate.logline.trim();
     const bookSpec = toBookSpec(
       resolvedInput.candidate,
@@ -120,7 +120,7 @@ export class NovelDirectorConfirmRuntime {
       novelId: workflowTask.novelId,
       entrypoint: "candidate_confirm",
       policyMode: this.resolveInitialPolicyMode(runMode),
-      summary: "自动导演确认方案后进入统一运行时。",
+      summary: "Una vez que el director automático confirma el plan, ingresa al tiempo de ejecución unificado.",
     });
 
     if (workflowTask.novelId) {
@@ -129,13 +129,13 @@ export class NovelDirectorConfirmRuntime {
     }
 
     const novelCreationClaim = await this.deps.workflowService.claimAutoDirectorNovelCreation(workflowTask.id, {
-      itemLabel: "正在创建小说项目",
+      itemLabel: "Creando un proyecto novedoso",
       progress: DIRECTOR_PROGRESS.novelCreate,
     });
     if (novelCreationClaim.status === "attached") {
       const attachedTask = novelCreationClaim.task;
       if (!attachedTask) {
-        throw new Error("自动导演确认链缺少已附着的任务快照。");
+        throw new Error("A la cadena de confirmación automática del director le falta una instantánea de la tarea adjunta.");
       }
       if (attachedTask.novelId) {
         await this.deps.directorRuntime.initializeRun({
@@ -143,7 +143,7 @@ export class NovelDirectorConfirmRuntime {
           novelId: attachedTask.novelId,
           entrypoint: "candidate_confirm",
           policyMode: this.resolveInitialPolicyMode(runMode),
-          summary: "自动导演复用已创建的小说项目并进入统一运行时。",
+          summary: "Automatic Director reutiliza proyectos novedosos creados en un tiempo de ejecución unificado.",
         });
         await this.deps.ensurePrimaryNovelStyleBinding(attachedTask.novelId, resolvedInput.styleProfileId);
       }
@@ -157,15 +157,15 @@ export class NovelDirectorConfirmRuntime {
           novelId: existingTask.novelId,
           entrypoint: "candidate_confirm",
           policyMode: this.resolveInitialPolicyMode(runMode),
-          summary: "自动导演复用正在创建完成的小说项目并进入统一运行时。",
+          summary: "La reutilización automática del director consiste en crear el nuevo proyecto completo en el tiempo de ejecución unificado.",
         });
         await this.deps.ensurePrimaryNovelStyleBinding(existingTask.novelId, resolvedInput.styleProfileId);
         return this.buildExistingConfirmResponse(existingTask, resolvedInput, bookSpec);
       }
       if (existingTask?.status === "failed" || existingTask?.status === "cancelled") {
-        throw new Error(existingTask.lastError?.trim() || "当前导演建书流程已中断，请重新尝试。");
+        throw new Error(existingTask.lastError?.trim() || "El proceso de creación del libro del director actual se ha interrumpido, inténtelo de nuevo.");
       }
-      throw new Error("当前导演方案正在创建小说，请勿重复提交。");
+      throw new Error("El plan del director actual es crear una novela, no la vuelva a enviar.");
     }
 
     try {
@@ -269,7 +269,7 @@ export class NovelDirectorConfirmRuntime {
             await new DirectorTaskStateWriter(this.deps.workflowService).markRunning(workflowTask.id, {
               stage: "auto_director",
               itemKey: "novel_create",
-              itemLabel: "正在创建小说项目",
+              itemLabel: "Creando un proyecto novedoso",
               progress: DIRECTOR_PROGRESS.novelCreate,
             });
             const novel = await this.deps.novelContextService.createNovel({
@@ -327,7 +327,7 @@ export class NovelDirectorConfirmRuntime {
           },
         });
         if (!createdNovel?.id) {
-          throw new Error("自动导演建书节点没有返回小说项目。");
+          throw new Error("El nodo de creación automática de libros del director no devolvió el proyecto de novela.");
         }
         const executionDirectorInput: DirectorConfirmRequest = resolvedDirectorInput;
         await prisma.novel.update({
@@ -366,13 +366,13 @@ export class NovelDirectorConfirmRuntime {
           novelId: createdNovel.id,
           entrypoint: "candidate_confirm",
           policyMode: this.resolveInitialPolicyMode(runMode),
-          summary: "自动导演已创建小说项目并进入统一运行时。",
+          summary: "Auto Director creó el proyecto novedoso y entró en el tiempo de ejecución de Unity.",
         });
         await this.deps.runtimeOrchestrator.markRunning(
           workflowTask.id,
           "story_macro",
           "book_contract",
-          "正在准备 Book Contract 与故事宏观规划",
+          "Preparación del contrato del libro y planificación macro de la historia.",
           DIRECTOR_PROGRESS.bookContract,
         );
         this.deps.scheduleBackgroundRun(workflowTask.id, async () => {
@@ -411,7 +411,7 @@ export class NovelDirectorConfirmRuntime {
         };
       });
     } catch (error) {
-      const message = error instanceof Error ? error.message : "自动导演确认链执行失败。";
+      const message = error instanceof Error ? error.message : "Error en la ejecución automática de la cadena de confirmación del director.";
       await new DirectorTaskStateWriter(this.deps.workflowService).markFailed(workflowTask.id, message);
       throw error;
     }
@@ -433,11 +433,11 @@ export class NovelDirectorConfirmRuntime {
     bookSpec: BookSpec,
   ): Promise<DirectorConfirmApiResponse> {
     if (!task?.novelId) {
-      throw new Error("自动导演确认链缺少已创建的小说项目。");
+      throw new Error("A la cadena de confirmación automática del director le falta un proyecto novedoso creado.");
     }
     const novel = await this.deps.novelContextService.getNovelById(task.novelId) as unknown as DirectorConfirmApiResponse["novel"];
     if (!novel) {
-      throw new Error("自动导演确认链未能读取已创建的小说项目。");
+      throw new Error("La cadena automática de confirmación del director no pudo leer el nuevo proyecto creado.");
     }
     const storedState = await new DirectorStateReader().readTaskStateById(task.id);
     const directorTaskData = (storedState ? toDirectorTaskDataView(storedState) : {}) as DirectorWorkflowSeedPayload;

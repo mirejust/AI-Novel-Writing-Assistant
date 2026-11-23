@@ -159,33 +159,33 @@ function buildRepairRagContext(input: {
   }
   const fragments = [
     writeContext.previousChapterTail
-      ? `上一章尾段：${writeContext.previousChapterTail}`
+      ? `El final del capítulo anterior:${writeContext.previousChapterTail}`
       : "",
     writeContext.recentChapterSummaries?.length
-      ? `最近章节摘要：\n${writeContext.recentChapterSummaries.slice(0, 3).map((item) => `- ${item}`).join("\n")}`
+      ? `Resumen de capítulos recientes: \\n${writeContext.recentChapterSummaries.slice(0, 3).map((item) => `- ${item}`).join("\n")}`
       : "",
     writeContext.openConflictSummaries?.length
-      ? `待回收冲突：\n${writeContext.openConflictSummaries.slice(0, 5).map((item) => `- ${item}`).join("\n")}`
+      ? `Conflicto a reciclar: \\n${writeContext.openConflictSummaries.slice(0, 5).map((item) => `- ${item}`).join("\n")}`
       : "",
     writeContext.characterHardFacts?.length
-      ? `角色硬事实：\n${writeContext.characterHardFacts.slice(0, 6).map((item) => [
+      ? `Datos concretos del personaje: \\n${writeContext.characterHardFacts.slice(0, 6).map((item) => [
           item.name,
-          item.currentState ? `状态=${item.currentState}` : "",
-          item.currentGoal ? `目标=${item.currentGoal}` : "",
-          item.currentLocation ? `位置=${item.currentLocation}` : "",
+          item.currentState ? `estado =${item.currentState}` : "",
+          item.currentGoal ? `objetivo =${item.currentGoal}` : "",
+          item.currentLocation ? `ubicación =${item.currentLocation}` : "",
           item.locationState?.sourceChapterOrder !== null && item.locationState?.sourceChapterOrder !== undefined
-            ? `位置来源=第${item.locationState.sourceChapterOrder}章；证据=${item.locationState.evidence}` : "",
-          item.locationState?.concern ? `位置待核对=${item.locationState.concern}` : "",
-          item.prohibitions?.length ? `禁止=${item.prohibitions.join(" / ")}` : "",
+            ? `Fuente de ubicación = No.${item.locationState.sourceChapterOrder}capítulo; evidencia =${item.locationState.evidence}` : "",
+          item.locationState?.concern ? `Ubicación a verificar =${item.locationState.concern}` : "",
+          item.prohibitions?.length ? `Prohibido =${item.prohibitions.join(" / ")}` : "",
         ].filter(Boolean).join(" | ")).join("\n")}`
       : "",
     writeContext.characterResourceContext
       ? [
-          "资源事实：",
-          ...writeContext.characterResourceContext.availableItems.slice(0, 4).map((item) => `- 可用：${item.name} / ${item.summary}`),
-          ...writeContext.characterResourceContext.blockedItems.slice(0, 4).map((item) => `- 不可直接使用：${item.name} / ${item.status} / ${item.summary}`),
-          ...writeContext.characterResourceContext.highRiskCommittedItems.slice(0, 3).map((item) => `- 高风险已入账：${item.name} / ${item.summary}`),
-          ...writeContext.characterResourceContext.pendingProposalItems.slice(0, 3).map((item) => `- 未确认变更：${item.summary}；确认前不要写成已发生事实`),
+          "Datos de recursos:",
+          ...writeContext.characterResourceContext.availableItems.slice(0, 4).map((item) => `- Disponible:${item.name} / ${item.summary}`),
+          ...writeContext.characterResourceContext.blockedItems.slice(0, 4).map((item) => `- No disponible para uso directo:${item.name} / ${item.status} / ${item.summary}`),
+          ...writeContext.characterResourceContext.highRiskCommittedItems.slice(0, 3).map((item) => `- Se ha contabilizado riesgo alto:${item.name} / ${item.summary}`),
+          ...writeContext.characterResourceContext.pendingProposalItems.slice(0, 3).map((item) => `- Cambios no confirmados:${item.summary};No lo escribas como un hecho ocurrido antes de confirmar`),
         ].join("\n")
       : "",
   ].filter((item) => item.trim().length > 0);
@@ -306,11 +306,11 @@ function buildRepairBibleFallback(runtimePackage: ChapterRuntimePackage | null |
     return "none";
   }
   const fragments = [
-    context.bookContract?.sellingPoint ? `核心卖点：${context.bookContract.sellingPoint}` : "",
-    context.bookContract?.first30ChapterPromise ? `前30章承诺：${context.bookContract.first30ChapterPromise}` : "",
-    context.macroConstraints?.coreConflict ? `核心冲突：${context.macroConstraints.coreConflict}` : "",
-    context.macroConstraints?.progressionLoop ? `推进回路：${context.macroConstraints.progressionLoop}` : "",
-    context.volumeWindow?.missionSummary ? `当前卷使命：${context.volumeWindow.missionSummary}` : "",
+    context.bookContract?.sellingPoint ? `Puntos de venta principales:${context.bookContract.sellingPoint}` : "",
+    context.bookContract?.first30ChapterPromise ? `Los primeros 30 capítulos prometen:${context.bookContract.first30ChapterPromise}` : "",
+    context.macroConstraints?.coreConflict ? `Conflicto central:${context.macroConstraints.coreConflict}` : "",
+    context.macroConstraints?.progressionLoop ? `Circuito de propulsión:${context.macroConstraints.progressionLoop}` : "",
+    context.volumeWindow?.missionSummary ? `Misión de volumen actual:${context.volumeWindow.missionSummary}` : "",
   ].filter(Boolean);
   return fragments.join("\n") || "none";
 }
@@ -320,25 +320,25 @@ export function getRepairModeHint(
   issueCodes: string[] = [],
 ): string {
   if (issueCodes.includes("LENGTH_OVER_HARD_MAX")) {
-    return "compress_chapter_for_length：整章压缩重复表达、解释段和无效回合，保留核心推进与结尾压力。";
+    return "compress_chapter_for_length: comprime expresiones repetidas, párrafos explicativos y giros no válidos a lo largo del capítulo, conservando el avance central y la presión final.";
   }
   if (issueCodes.includes("LENGTH_OVER_SOFT_MAX")) {
-    return "compress_tail_for_length：优先回收尾段冗余展开，保留结尾 hook 和关键冲突。";
+    return "compress_tail_for_length: prioriza la expansión redundante del segmento de cola y conserva los conflictos de gancho final y clave.";
   }
   if (issueCodes.includes("LENGTH_UNDER_SOFT_MIN")) {
-    return "extend_for_length：只补最后的义务场景或结尾 hook，增加有效推进，不要回顾性凑字数。";
+    return "extend_for_length: agregue solo la escena de la misión final o el gancho final para aumentar el avance efectivo. No recupere el recuento de palabras retrospectivamente.";
   }
   switch (repairMode) {
     case "continuity_only":
-      return "优先修连续性、时间线和事件承接，不做大幅风格重写。";
+      return "Priorice las reparaciones de continuidad, cronograma y continuidad de eventos, y no realice reescrituras de estilo importantes.";
     case "character_only":
-      return "优先修人物言行一致性、动机和关系表现，不改变主线任务。";
+      return "Priorice la coherencia de las palabras y los hechos de los personajes, las motivaciones y el desempeño de las relaciones sin cambiar la misión principal.";
     case "ending_only":
-      return "优先修章节收束、钩子和结尾决断感，让章节尾部更有拉力。";
+      return "Priorice el cierre del capítulo, el gancho y la sensación de decisión al final para que el final del capítulo sea más atractivo.";
     case "heavy_repair":
-      return "允许较大幅度重写句段，只要剧情方向不变即可。";
+      return "Se permite una reescritura mayor de segmentos siempre que la dirección de la trama permanezca sin cambios.";
     case "light_repair":
     default:
-      return "以轻修为主，优先保持原有内容框架和事件顺序。";
+      return "Principalmente reparaciones ligeras, dando prioridad al mantenimiento del marco de contenidos original y la secuencia de eventos.";
   }
 }

@@ -70,8 +70,8 @@ export default function TensionCurvePanel(props: TensionCurvePanelProps) {
           <div className="min-w-0 space-y-1">
             <div className="flex flex-wrap items-center gap-2">
               <CardTitle className={cn("leading-none", compact ? "text-sm" : "text-base")}>{title}</CardTitle>
-              <Badge variant="outline">只读</Badge>
-              {userAnchorCount > 0 ? <Badge variant="secondary">{userAnchorCount} 个手动固定点</Badge> : null}
+              <Badge variant="outline">Solo lectura</Badge>
+              {userAnchorCount > 0 ? <Badge variant="secondary">{userAnchorCount} Puntos fijos manuales</Badge> : null}
             </div>
             {subtitle ? <div className="text-xs leading-5 text-muted-foreground">{subtitle}</div> : null}
           </div>
@@ -92,16 +92,16 @@ export default function TensionCurvePanel(props: TensionCurvePanelProps) {
             {onRequestEdit ? (
               <Button type="button" size="sm" className="h-8 px-2 text-xs" onClick={onRequestEdit}>
                 <PencilRuler className="mr-1 h-3.5 w-3.5" aria-hidden="true" />
-                编辑紧张度曲线
+                Editar curva de tensión
               </Button>
             ) : null}
             {primaryPointCount > 1 ? (
               <div className="flex items-center gap-2 rounded-md border border-border/70 px-2 py-1">
-                <span className="text-xs text-muted-foreground">参考线</span>
+                <span className="text-xs text-muted-foreground">Línea de referencia</span>
                 <Switch
                   checked={showReferenceCurve}
                   onCheckedChange={setShowReferenceCurve}
-                  aria-label="显示紧张度参考线"
+                  aria-label="Mostrar líneas guía de tensión"
                   className="h-5 w-9"
                 />
                 {showReferenceCurve ? (
@@ -134,7 +134,7 @@ export default function TensionCurvePanel(props: TensionCurvePanelProps) {
         />
 
         {!compact && canvasWidth > 900 ? (
-          <div className="text-xs text-muted-foreground">拖动画布或滚轮可横向浏览更多章节；双指/Ctrl+滚轮缩放查看细节。</div>
+          <div className="text-xs text-muted-foreground">Arrastre el lienzo o la rueda para explorar más capítulos horizontalmente; use dos dedos/Ctrl+rueda para acercar y alejar para ver los detalles.</div>
         ) : null}
 
         {!compact ? <CompactLegend /> : null}
@@ -153,12 +153,12 @@ export default function TensionCurvePanel(props: TensionCurvePanelProps) {
         <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
           <span className="inline-flex items-center gap-1.5">
             <LockKeyhole className="h-3.5 w-3.5" aria-hidden="true" />
-            当前视图只用于查看，不会改动草稿
+            La vista actual es sólo para visualización y el borrador no se modificará.
           </span>
           {showReferenceCurve && referenceTemplate ? (
             <span className="inline-flex items-center gap-1.5">
               <span className="h-px w-5 border-t border-dashed border-slate-500" />
-              {referenceTemplate.label}参考
+              {referenceTemplate.label}referirse a
             </span>
           ) : null}
         </div>

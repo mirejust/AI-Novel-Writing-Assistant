@@ -54,12 +54,12 @@ type DirectorStepDefinition = {
 };
 
 const DIRECTOR_EXECUTION_STEPS: DirectorStepDefinition[] = [
-  { key: "novel_create", label: "创建项目" },
-  { key: "book_contract", label: "Book Contract + 故事宏观规划" },
-  { key: "character_setup", label: "角色准备" },
-  { key: "volume_strategy", label: "卷战略 + 卷骨架" },
-  { key: "beat_sheet", label: "第 1 卷节奏板 + 章节列表" },
-  { key: "chapter_detail_bundle", label: "章节批量细化" },
+  { key: "novel_create", label: "Crear proyecto" },
+  { key: "book_contract", label: "Contrato de libro + Macroplanificación de historias" },
+  { key: "character_setup", label: "Preparación de personajes" },
+  { key: "volume_strategy", label: "Estrategia de volumen + esqueleto de volumen" },
+  { key: "beat_sheet", label: "Volumen 1 Tablero de ritmo + Lista de capítulos" },
+  { key: "chapter_detail_bundle", label: "Refinamiento por lotes de capítulos" },
 ];
 
 const DIRECTOR_CANDIDATE_SETUP_STEP_KEYS = new Set<string>(
@@ -67,17 +67,17 @@ const DIRECTOR_CANDIDATE_SETUP_STEP_KEYS = new Set<string>(
 );
 
 const AUTO_DIRECTOR_PLACEHOLDER_TITLES = new Set([
-  "AI 自动导演小说",
-  "小说流程任务",
+  "La IA dirige automáticamente las novelas",
+  "Tareas de proceso novedosas",
 ]);
 
 function formatDate(value: string | null | undefined): string {
   if (!value) {
-    return "暂无";
+    return "Sin datos";
   }
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) {
-    return "暂无";
+    return "Sin datos";
   }
   return date.toLocaleString();
 }
@@ -98,7 +98,7 @@ function resolveAutoExecutionScopeLabel(task: UnifiedTaskDetail | null): string 
     return scopeLabel;
   }
   const fallbackCount = Math.max(1, Math.round(seedPayload?.autoExecution?.totalChapterCount ?? 10));
-  return `前 ${fallbackCount} 章`;
+  return `adelante ${fallbackCount}`;
 }
 
 function resolveDirectorStyleSeed(task: UnifiedTaskDetail | null): {
@@ -121,7 +121,7 @@ function resolveDirectorStyleSeed(task: UnifiedTaskDetail | null): {
   }
   return {
     title: fallbackTone,
-    summaryLines: [`文风关键词：${fallbackTone}`],
+    summaryLines: [`Palabras clave para el estilo de escritura:${fallbackTone}`],
   };
 }
 
@@ -130,36 +130,36 @@ function formatCheckpoint(
   task: UnifiedTaskDetail | null,
 ): string {
   if (checkpoint === "rewrite_snapshot_created") {
-    return "重写前备份已创建";
+    return "Copia de seguridad creada antes de reescribir";
   }
   if (checkpoint === "candidate_selection_required") {
-    return "等待确认书级方向";
+    return "Esperando confirmación de la dirección del libro";
   }
   if (checkpoint === "book_contract_ready") {
-    return "Book Contract 已就绪";
+    return "El contrato del libro está listo";
   }
   if (checkpoint === "character_setup_required") {
-    return "角色准备待审核";
+    return "Preparación de personajes pendiente de revisión";
   }
   if (checkpoint === "volume_strategy_ready") {
-    return "卷战略已就绪";
+    return "La estrategia de volumen está lista";
   }
   if (checkpoint === "production_experience_required") {
-    return "已可开写，等待选择生产方式";
+    return "Listo para empezar a escribir, esperando seleccionar el método de producción.";
   }
   if (checkpoint === "chapter_batch_ready") {
-    return `${resolveAutoExecutionScopeLabel(task)}自动执行已暂停`;
+    return `${resolveAutoExecutionScopeLabel(task)}La ejecución automatizada está en pausa`;
   }
   if (checkpoint === "step_review_required") {
-    return "当前步骤待检查";
+    return "Paso actual a comprobar";
   }
   if (checkpoint === "replan_required") {
-    return "需要重规划";
+    return "Requiere replanificación";
   }
   if (checkpoint === "workflow_completed") {
-    return "主流程完成";
+    return "Proceso principal completado";
   }
-  return "暂无";
+  return "Sin datos";
 }
 
 function isCandidateSetupFlow(task: UnifiedTaskDetail | null): boolean {
@@ -339,7 +339,7 @@ export default function NovelAutoDirectorProgressPanel({
     ? {
       summary: fallbackError?.trim() ?? "",
       route: null,
-      label: "快速修复章节标题",
+      label: "Arreglar rápidamente los títulos de los capítulos",
     }
     : null;
   const rawChapterTitleWarning = taskChapterTitleWarning ?? fallbackChapterTitleWarning;
@@ -354,15 +354,15 @@ export default function NovelAutoDirectorProgressPanel({
     || runtimeProjectionForDisplay?.currentLabel?.trim()
     || task?.currentItemLabel?.trim()
     || (visualMode === "execution_failed"
-      ? "导演任务执行中断"
-      : (chapterTitleWarning ? "章节列表已生成，等待修复标题结构" : "正在准备导演任务"));
+      ? "Ejecución de la tarea del director interrumpida"
+      : (chapterTitleWarning ? "Se ha generado la lista de capítulos, esperando que se arregle la estructura del título." : "Preparándose para una tarea de dirección"));
   const activityTags = extractWorkflowActivityTags(displayStateForDisplay?.currentFactStepLabel || task?.currentItemLabel);
   const workflowTitle = task?.title?.trim() || "";
   const hintedTitle = titleHint?.trim() || "";
   const taskTitle = (
     hintedTitle && (!workflowTitle || AUTO_DIRECTOR_PLACEHOLDER_TITLES.has(workflowTitle))
       ? hintedTitle
-      : workflowTitle || hintedTitle || "新小说项目"
+      : workflowTitle || hintedTitle || "Nuevo proyecto novedoso"
   );
   const milestones = Array.isArray(task?.meta.milestones)
     ? task.meta.milestones as NovelWorkflowMilestone[]
@@ -378,7 +378,7 @@ export default function NovelAutoDirectorProgressPanel({
   const failureMessage = task?.lastError?.trim()
     || task?.checkpointSummary?.trim()
     || fallbackError?.trim()
-    || "导演任务执行失败，但没有记录明确错误。";
+    || "La ejecución de la tarea del director falló, pero no se registró ningún error claro.";
   const isHighMemoryConflict = /高内存卷规划生成正在处理同一范围|高内存.*同一范围|已有自动导演任务正在处理同一范围/.test(failureMessage);
   const isBudgetExhaustedFailure = /\[STRUCTURED_OUTPUT:(reasoning_budget_exhausted|output_budget_exhausted)\]/i.test(failureMessage);
   const seedPayload = extractDirectorTaskSeedPayloadFromMeta(task?.meta) as {
@@ -408,24 +408,24 @@ export default function NovelAutoDirectorProgressPanel({
   const description = candidateSetupFlow
     ? (
       visualMode === "execution_failed"
-        ? "候选方向生成链已中断，可以从当前进度重试。"
-        : "系统会先整理项目设定、对齐书级 framing，再生成两套书级方案和对应标题组。"
+        ? "La cadena de generación de direcciones candidatas se ha interrumpido y se puede volver a intentar desde el progreso actual."
+        : "El sistema primero organizará la configuración del proyecto, alineará el marco a nivel de libro y luego generará dos conjuntos de planos a nivel de libro y los grupos de títulos correspondientes."
     )
     : (
       dashboardViewForDisplay?.description
       || displayStateForDisplay?.description
       || (visualMode === "execution_failed"
-        ? "任务已停在最近一步，可以从当前进度恢复。"
+        ? "La tarea se detuvo en el paso más reciente y se puede reanudar desde el progreso actual."
         : chapterTitleWarning
-          ? "章节列表已经保留，这是一条可直接处理的结构提醒。你可以快速修复标题，再决定是否继续后续导演流程。"
+          ? "Se ha conservado la lista de capítulos, un recordatorio estructural que se puede abordar directamente. Puede corregir rápidamente el título antes de decidir si continúa con el proceso de dirección."
           : task?.status === "waiting_approval"
-            ? "当前导演流程已经停在审核点，你可以先检查产物，再决定是否继续自动推进。"
-            : "可离开当前页面，任务会继续运行；回来后可在 AI 驾驶舱查看进度。")
+            ? "El proceso director actual se ha detenido en el punto de revisión. Puede verificar el producto primero y luego decidir si continúa avanzando automáticamente."
+            : "Puede salir de la página actual y la tarea seguirá ejecutándose; Puedes comprobar el progreso en la cabina de IA cuando regreses.")
     );
   const resolveDashboardAction = (dashboardAction: DirectorDashboardAction) => {
     if (dashboardAction.type === "confirm_and_continue" && onConfirmAndContinue) {
       return {
-        label: isConfirmingAndContinuing ? "继续中..." : dashboardAction.label,
+        label: isConfirmingAndContinuing ? "Continuando..." : dashboardAction.label,
         onClick: onConfirmAndContinue,
         variant: "default" as const,
         disabled: isConfirmingAndContinuing,
@@ -434,7 +434,7 @@ export default function NovelAutoDirectorProgressPanel({
     if (dashboardAction.type === "background_continue" || dashboardAction.type === "open_task_center") return null;
     if ((dashboardAction.type === "resume_from_checkpoint" || dashboardAction.type === "retry") && onConfirmAndContinue) {
       return {
-        label: isConfirmingAndContinuing ? "正在恢复..." : (isHighMemoryConflict ? "从检查点重新尝试" : dashboardAction.label),
+        label: isConfirmingAndContinuing ? "Recuperando..." : (isHighMemoryConflict ? "Inténtalo de nuevo desde el punto de control." : dashboardAction.label),
         onClick: onConfirmAndContinue,
         variant: "default" as const,
         disabled: isConfirmingAndContinuing,
@@ -454,7 +454,7 @@ export default function NovelAutoDirectorProgressPanel({
     && onConfirmAndContinue
     && (visualMode === "execution_failed" || task?.pendingManualRecovery)
     ? {
-        label: isConfirmingAndContinuing ? "重试中..." : quickRetryLabel,
+        label: isConfirmingAndContinuing ? "Intentando de nuevo..." : quickRetryLabel,
         onClick: onConfirmAndContinue,
         variant: "default" as const,
         disabled: isConfirmingAndContinuing,
@@ -505,8 +505,8 @@ export default function NovelAutoDirectorProgressPanel({
         <details className="group mt-4 overflow-hidden rounded-2xl border border-border/70 bg-muted/[0.12]">
           <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-4 py-3.5">
             <div>
-              <div className="text-sm font-medium text-foreground">运行详情</div>
-              <div className="mt-0.5 text-xs text-muted-foreground">按需查看实时指标、事件记录、写法和 AI 用量</div>
+              <div className="text-sm font-medium text-foreground">Detalles de ejecución</div>
+              <div className="mt-0.5 text-xs text-muted-foreground">Vea métricas en tiempo real, registros de eventos, escritura y uso de IA bajo demanda</div>
             </div>
             <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground transition group-open:rotate-180" />
           </summary>
@@ -553,11 +553,11 @@ export default function NovelAutoDirectorProgressPanel({
 
         {styleSeed ? (
           <div className="mt-5">
-            <div className="text-sm font-medium text-foreground">当前命中写法</div>
+            <div className="text-sm font-medium text-foreground">Escritura de éxito actual</div>
             <div className="mt-2 text-sm text-foreground">{styleSeed.title}</div>
             {styleSeed.summaryLines.length > 0 ? (
               <div className="mt-3 space-y-2">
-                <div className="text-xs font-medium text-muted-foreground">本阶段仅生效的写法摘要</div>
+                <div className="text-xs font-medium text-muted-foreground">Sólo el resumen escrito que esté vigente en esta etapa</div>
                 {styleSeed.summaryLines.map((line) => (
                   <div key={line} className="text-xs leading-6 text-muted-foreground">
                     {line}
@@ -571,21 +571,21 @@ export default function NovelAutoDirectorProgressPanel({
         {tokenUsage ? (
           <div className="mt-4 grid gap-3 md:grid-cols-4">
             <div className="rounded-lg bg-muted/15 p-3">
-              <div className="text-xs text-muted-foreground">累计调用</div>
+              <div className="text-xs text-muted-foreground">Llamadas acumuladas</div>
               <div className="mt-1 text-sm font-medium text-foreground">{formatTokenCount(tokenUsage.llmCallCount)}</div>
             </div>
             <div className="rounded-lg bg-muted/15 p-3">
-              <div className="text-xs text-muted-foreground">输入 Tokens</div>
+              <div className="text-xs text-muted-foreground">Introducir fichas</div>
               <div className="mt-1 text-sm font-medium text-foreground">{formatTokenCount(tokenUsage.promptTokens)}</div>
             </div>
             <div className="rounded-lg bg-muted/15 p-3">
-              <div className="text-xs text-muted-foreground">输出 Tokens</div>
+              <div className="text-xs text-muted-foreground">Fichas de salida</div>
               <div className="mt-1 text-sm font-medium text-foreground">{formatTokenCount(tokenUsage.completionTokens)}</div>
             </div>
             <div className="rounded-lg bg-muted/15 p-3">
-              <div className="text-xs text-muted-foreground">累计总 Tokens</div>
+              <div className="text-xs text-muted-foreground">Total acumulado de tokens</div>
               <div className="mt-1 text-sm font-medium text-foreground">{formatTokenCount(tokenUsage.totalTokens)}</div>
-              <div className="mt-1 text-[11px] text-muted-foreground">最近记录：{formatDate(tokenUsage.lastRecordedAt)}</div>
+              <div className="mt-1 text-[11px] text-muted-foreground">Registros recientes:{formatDate(tokenUsage.lastRecordedAt)}</div>
             </div>
           </div>
         ) : null}
@@ -594,7 +594,7 @@ export default function NovelAutoDirectorProgressPanel({
 
         {chapterTitleWarning ? (
           <div className="mt-4 rounded-xl border border-amber-300/60 bg-amber-50/80 p-4 text-sm text-amber-950">
-            <div className="font-medium">当前提醒</div>
+            <div className="font-medium">Recordatorio actual</div>
             <div className="mt-1">{chapterTitleWarning.summary}</div>
             <div className="mt-3 flex flex-wrap gap-2">
               {task && chapterTitleWarning ? (
@@ -607,7 +607,7 @@ export default function NovelAutoDirectorProgressPanel({
                   disabled={chapterTitleRepairMutation.isPending}
                 >
                   {chapterTitleRepairMutation.isPending && chapterTitleRepairMutation.pendingTaskId === task.id
-                    ? "AI 修复中..."
+                    ? "Reparación de IA en progreso..."
                     : chapterTitleWarning.label}
                 </Button>
               ) : null}
@@ -615,15 +615,15 @@ export default function NovelAutoDirectorProgressPanel({
           </div>
         ) : visualMode === "execution_failed" ? (
           <div className="mt-4 rounded-xl border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
-            <div className="font-medium">失败摘要</div>
+            <div className="font-medium">Resumen de fallas</div>
             <div className="mt-1">{failureMessage}</div>
             {isHighMemoryConflict ? (
               <div className="mt-3 rounded-lg border border-destructive/20 bg-background/60 p-3 text-xs leading-5 text-destructive/90">
-                这是一项可恢复的资源冲突，已完成的设定和章节规划不会丢失。资源释放后可从当前安全检查点继续，不需要重新开始。
+                Este es un conflicto de recursos recuperables y las configuraciones y planes de capítulos completos no se perderán. Una vez liberados los recursos, puede continuar desde el punto de control de seguridad actual sin tener que empezar de nuevo.
               </div>
             ) : null}
             {task?.recoveryHint ? (
-              <div className="mt-2 text-xs text-destructive/80">恢复建议：{task.recoveryHint}</div>
+              <div className="mt-2 text-xs text-destructive/80">Sugerencias de recuperación:{task.recoveryHint}</div>
             ) : null}
             {showBudgetRecovery ? (
               <div className="mt-3 flex flex-wrap gap-2">
@@ -635,8 +635,8 @@ export default function NovelAutoDirectorProgressPanel({
                     disabled={budgetRecovery.isPending}
                   >
                     {budgetRecovery.isPending && budgetRecovery.pendingAction === "disable_thinking"
-                      ? "正在关闭并重试..."
-                      : "关闭深度思考并重试"}
+                      ? "Cerrando y volviendo a intentar..."
+                      : "Desactiva el pensamiento profundo y vuelve a intentarlo."}
                   </Button>
                 ) : null}
                 {budgetRecovery.canRaiseBudget ? (
@@ -648,8 +648,8 @@ export default function NovelAutoDirectorProgressPanel({
                     disabled={budgetRecovery.isPending}
                   >
                     {budgetRecovery.isPending && budgetRecovery.pendingAction === "raise_budget"
-                      ? "正在提高上限并重试..."
-                      : "提高输出上限并重试"}
+                      ? "Subiendo el límite y volviendo a intentarlo..."
+                      : "Aumente el límite de salida y vuelva a intentarlo."}
                   </Button>
                 ) : null}
               </div>
@@ -662,7 +662,7 @@ export default function NovelAutoDirectorProgressPanel({
                   onClick={onConfirmAndContinue}
                   disabled={isConfirmingAndContinuing}
                 >
-                  {isConfirmingAndContinuing ? "正在恢复..." : "从检查点重新尝试"}
+                  {isConfirmingAndContinuing ? "Recuperando..." : "Inténtalo de nuevo desde el punto de control."}
                 </Button>
               </div>
             ) : null}
@@ -673,8 +673,8 @@ export default function NovelAutoDirectorProgressPanel({
       <details className="group rounded-2xl border border-border/70 bg-background">
         <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3.5">
           <div>
-            <div className="text-sm font-medium text-foreground">里程碑历史</div>
-            <div className="mt-0.5 text-xs text-muted-foreground">查看可恢复检查点与完成记录</div>
+            <div className="text-sm font-medium text-foreground">Historia de hitos</div>
+            <div className="mt-0.5 text-xs text-muted-foreground">Ver puntos de control recuperables y registros de finalización</div>
           </div>
           <ChevronDown className="h-4 w-4 text-muted-foreground transition group-open:rotate-180" />
         </summary>
@@ -688,13 +688,13 @@ export default function NovelAutoDirectorProgressPanel({
                 <div key={`${item.checkpointType}:${item.createdAt}`} className="text-sm">
                   <div className="font-medium text-foreground">{formatCheckpoint(item.checkpointType, task)}</div>
                   <div className="mt-1 text-sm text-muted-foreground">{item.summary}</div>
-                  <div className="mt-1 text-xs text-muted-foreground">记录时间：{formatDate(item.createdAt)}</div>
+                  <div className="mt-1 text-xs text-muted-foreground">Tiempo de grabación:{formatDate(item.createdAt)}</div>
                 </div>
               ))}
           </div>
         ) : (
           <div className="mt-3 text-sm text-muted-foreground">
-            任务已创建，正在等待第一个稳定里程碑写入。
+            La tarea ha sido creada y está esperando que se escriba el primer hito estable.
           </div>
         )}
         </div>

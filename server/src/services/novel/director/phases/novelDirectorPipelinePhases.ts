@@ -58,21 +58,21 @@ function buildVolumeStrategyPhaseUpdate(event: VolumeGenerationPhaseEvent): {
   if (event.scope === "strategy") {
     return {
       itemKey: "volume_strategy",
-      itemLabel: event.phase === "load_context" ? "正在整理卷战略上下文" : "正在生成卷战略",
+      itemLabel: event.phase === "load_context" ? "Contexto de la estrategia de volumen de recopilación" : "Estrategia de generación de volumen",
       progress: DIRECTOR_PROGRESS.volumeStrategy,
     };
   }
   if (event.scope === "strategy_critique") {
     return {
       itemKey: "volume_strategy",
-      itemLabel: event.phase === "load_context" ? "正在整理卷战略审查上下文" : "正在审查卷战略",
+      itemLabel: event.phase === "load_context" ? "Contexto de revisión de la estrategia de volumen de recopilación" : "Estrategia de volumen bajo revisión",
       progress: DIRECTOR_PROGRESS.volumeStrategyCritique,
     };
   }
   if (event.scope === "skeleton") {
     return {
       itemKey: "volume_skeleton",
-      itemLabel: event.phase === "load_context" ? "正在整理卷骨架上下文" : "正在生成卷骨架",
+      itemLabel: event.phase === "load_context" ? "Organizar el contexto del esqueleto de volumen" : "Generando esqueleto de volumen",
       progress: DIRECTOR_PROGRESS.volumeSkeleton,
     };
   }
@@ -113,7 +113,7 @@ export async function runDirectorCharacterSetupPhase(input: {
     taskId,
     stage: "character_setup",
     itemKey: "character_setup",
-    itemLabel: "正在生成角色阵容",
+    itemLabel: "Generando elenco de personajes.",
     progress: DIRECTOR_PROGRESS.characterSetup,
     callbacks,
     run: async () => dependencies.characterPreparationService.generateAutoCharacterCastOption(novelId, {
@@ -134,8 +134,8 @@ export async function runDirectorCharacterSetupPhase(input: {
       "character_setup",
       "character_cast_apply",
       targetOption.status === "applied"
-        ? `复用可直接使用的角色阵容「${targetOption.title}」`
-        : `复用候选角色阵容「${targetOption.title}」`,
+        ? `Reutiliza el elenco de personajes que se pueden usar directamente "${targetOption.title}»`
+        : `Reutilizar la alineación de personajes candidatos "${targetOption.title}»`,
       DIRECTOR_PROGRESS.characterSetupReady,
     );
   }
@@ -154,7 +154,7 @@ export async function runDirectorCharacterSetupPhase(input: {
       isBackgroundRunning: false,
     });
     const reason = [
-      "角色阵容候选已生成，但当前自动质量闸未通过，不能直接自动应用。",
+      "Se han generado los candidatos a la alineación de personajes, pero el control de calidad automático actual no ha pasado y no se puede aplicar automáticamente de forma directa.",
       buildCharacterCastBlockedMessage(assessment),
     ].join("\n");
     const directorTaskData = callbacks.buildDirectorSeedPayload(request, novelId, {
@@ -167,7 +167,7 @@ export async function runDirectorCharacterSetupPhase(input: {
       stage: "character_setup",
       checkpointType: "character_setup_required",
       checkpointSummary: reason,
-      itemLabel: "等待审核角色准备",
+      itemLabel: "Esperando la preparación del rol de revisión",
       progress: DIRECTOR_PROGRESS.characterSetup,
     });
     return {
@@ -182,7 +182,7 @@ export async function runDirectorCharacterSetupPhase(input: {
     taskId,
     stage: "character_setup",
     itemKey: "character_cast_apply",
-    itemLabel: `正在应用角色阵容「${targetOption.title}」`,
+    itemLabel: `Aplicando alineación de personajes"${targetOption.title}»`,
     progress: DIRECTOR_PROGRESS.characterSetupReady,
     callbacks,
     run: async () => {
@@ -215,7 +215,7 @@ export async function runDirectorCharacterSetupPhase(input: {
       novelId,
       novelTitle: request.candidate.workingTitle,
       checkpointType: "character_setup_required",
-      checkpointSummary: `角色准备已生成并应用「${targetOption.title}」。`,
+      checkpointSummary: `Se ha generado y aplicado la preparación del personaje”${targetOption.title}».`,
       stage: "character_setup",
     });
     return {
@@ -230,7 +230,7 @@ export async function runDirectorCharacterSetupPhase(input: {
     phase: "character_setup",
     isBackgroundRunning: false,
   });
-  const reason = `角色准备已生成并应用「${targetOption.title}」。建议先检查核心角色、关系与当前目标，再继续自动导演。`;
+  const reason = `Se ha generado y aplicado la preparación del personaje”${targetOption.title}". Se recomienda verificar los personajes principales, las relaciones y los objetivos actuales antes de continuar con la dirección automática.`;
   const stateWriter = new DirectorTaskStateWriter(dependencies.workflowService);
   const nextState = splitDirectorTaskState(callbacks.buildDirectorSeedPayload(request, novelId, {
     directorSession: pausedSession,
@@ -243,7 +243,7 @@ export async function runDirectorCharacterSetupPhase(input: {
     stage: "character_setup",
     checkpointType: "character_setup_required",
     checkpointSummary: reason,
-    itemLabel: "等待审核角色准备",
+    itemLabel: "Esperando la preparación del rol de revisión",
     progress: DIRECTOR_PROGRESS.characterSetupReady,
   });
   return {
@@ -287,7 +287,7 @@ export async function runDirectorVolumeStrategyPhase(input: {
     taskId,
     stage: "volume_strategy",
     itemKey: "volume_strategy",
-    itemLabel: "正在生成卷战略",
+    itemLabel: "Estrategia de generación de volumen",
     progress: DIRECTOR_PROGRESS.volumeStrategy,
     callbacks,
     run: async ({ updateStatus, signal }) => dependencies.volumeService.generateVolumes(novelId, {
@@ -314,7 +314,7 @@ export async function runDirectorVolumeStrategyPhase(input: {
     taskId,
     stage: "volume_strategy",
     itemKey: "volume_strategy",
-    itemLabel: "正在审查卷战略",
+    itemLabel: "Estrategia de volumen bajo revisión",
     progress: DIRECTOR_PROGRESS.volumeStrategyCritique,
     callbacks,
     run: async ({ updateStatus, signal }) => dependencies.volumeService.generateVolumes(novelId, {
@@ -341,7 +341,7 @@ export async function runDirectorVolumeStrategyPhase(input: {
     taskId,
     stage: "volume_strategy",
     itemKey: "volume_skeleton",
-    itemLabel: "正在生成卷骨架",
+    itemLabel: "Generando esqueleto de volumen",
     progress: DIRECTOR_PROGRESS.volumeSkeleton,
     callbacks,
     run: async ({ updateStatus, signal }) => dependencies.volumeService.generateVolumes(novelId, {
@@ -378,7 +378,7 @@ export async function runDirectorVolumeStrategyPhase(input: {
       novelId,
       novelTitle: request.candidate.workingTitle,
       checkpointType: "volume_strategy_ready",
-      checkpointSummary: `卷战略与卷骨架已生成，共 ${persistedStrategyWorkspace.volumes.length} 卷。`,
+      checkpointSummary: `Se han generado la estrategia de volumen y el esqueleto de volumen, un total de ${persistedStrategyWorkspace.volumes.length} rollo.`,
       stage: "volume_strategy",
     });
     return persistedStrategyWorkspace;
@@ -398,8 +398,8 @@ export async function runDirectorVolumeStrategyPhase(input: {
   await stateWriter.persistCheckpoint(taskId, {
     stage: "volume_strategy",
     checkpointType: "volume_strategy_ready",
-    checkpointSummary: `卷战略与卷骨架已生成，共 ${persistedStrategyWorkspace.volumes.length} 卷。确认无误后再继续第 1 卷节奏与拆章。`,
-    itemLabel: "等待审核卷战略 / 卷骨架",
+    checkpointSummary: `Se han generado la estrategia de volumen y el esqueleto de volumen, un total de ${persistedStrategyWorkspace.volumes.length} rollo. Después de confirmar que es correcto, continúa con el ritmo y capítulos del Volumen 1.`,
+    itemLabel: "En espera de revisión Estrategia de volumen/Esqueleto de volumen",
     progress: DIRECTOR_PROGRESS.volumeStrategyReady,
   });
   return null;

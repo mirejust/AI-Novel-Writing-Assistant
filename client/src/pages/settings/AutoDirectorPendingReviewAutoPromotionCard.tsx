@@ -13,7 +13,7 @@ import { AUTO_DIRECTOR_MOBILE_CLASSES } from "@/mobile/autoDirector";
 
 function formatBaseline(value: string | null | undefined): string {
   if (!value) {
-    return "未建立";
+    return "No creado";
   }
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) {
@@ -40,7 +40,7 @@ export function AutoDirectorPendingReviewAutoPromotionCard(props: {
   const [acknowledgedRisks, setAcknowledgedRisks] = useState(false);
   const [confirmationText, setConfirmationText] = useState("");
   const enabled = Boolean(settings?.enabled);
-  const acknowledgementText = settings?.acknowledgementText ?? "我已了解自动放行风险";
+  const acknowledgementText = settings?.acknowledgementText ?? "Entiendo los riesgos de la liberación automática";
   const baselineLabel = useMemo(() => formatBaseline(settings?.baselineAt), [settings?.baselineAt]);
   const canConfirm = acknowledgedRisks && confirmationText.trim() === acknowledgementText && !isSaving;
 
@@ -56,16 +56,16 @@ export function AutoDirectorPendingReviewAutoPromotionCard(props: {
           <div className="min-w-0 space-y-1.5">
             <CardTitle className="flex flex-wrap items-center gap-2">
               <ShieldAlert className="h-5 w-5 text-amber-700" aria-hidden="true" />
-              待确认状态自动放行
+              Liberación automática pendiente de estado de confirmación
             </CardTitle>
             <CardDescription className={AUTO_DIRECTOR_MOBILE_CLASSES.wrapText}>
-              开启后，仅处理基准时间之后产生、超过 14 天且没有命中未解决冲突的角色关系与信息认知提案。
+              Después de la activación, solo se procesarán las propuestas de relación de roles y conocimiento de la información generadas después del tiempo de referencia, hace más de 14 días, y sin encontrar conflictos no resueltos.
             </CardDescription>
           </div>
           <Switch
             checked={enabled}
             disabled={isLoading || isSaving}
-            aria-label={enabled ? "关闭待确认状态自动放行" : "开启待确认状态自动放行"}
+            aria-label={enabled ? "Desactivar la liberación automática en estado de confirmación pendiente" : "Habilitar la liberación automática en estado pendiente de confirmación"}
             onCheckedChange={(checked) => {
               if (checked) {
                 setConfirmOpen(true);
@@ -80,24 +80,24 @@ export function AutoDirectorPendingReviewAutoPromotionCard(props: {
             <div className={`flex min-w-0 items-start gap-2 rounded-md border border-amber-300 bg-amber-100/80 px-3 py-2 text-sm text-amber-950 ${AUTO_DIRECTOR_MOBILE_CLASSES.wrapText}`}>
               <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
               <div>
-                自动放行处于开启状态。符合条件的提案会按正史提交；如需回退，需要依据留痕记录人工核对。
+                La liberación automática está activada. Las propuestas elegibles se presentarán de acuerdo con la historia oficial; si es necesario revertirlos, es necesario verificarlos manualmente en función de los registros de seguimiento.
               </div>
             </div>
           ) : null}
 
           <div className="grid min-w-0 gap-3 text-sm md:grid-cols-3">
             <div className="rounded-md border bg-background/80 p-3">
-              <div className="text-xs text-muted-foreground">开关状态</div>
-              <div className="mt-1 font-medium">{enabled ? "开启中" : "关闭"}</div>
+              <div className="text-xs text-muted-foreground">Estado del interruptor</div>
+              <div className="mt-1 font-medium">{enabled ? "Apertura" : "Cerrar"}</div>
             </div>
             <div className="rounded-md border bg-background/80 p-3 md:col-span-2">
-              <div className="text-xs text-muted-foreground">生效基准时间</div>
+              <div className="text-xs text-muted-foreground">Tiempo base efectivo</div>
               <div className={`mt-1 font-medium ${AUTO_DIRECTOR_MOBILE_CLASSES.wrapText}`}>{baselineLabel}</div>
             </div>
           </div>
 
           <div className={`rounded-md border bg-background/70 p-3 text-sm text-muted-foreground ${AUTO_DIRECTOR_MOBILE_CLASSES.wrapText}`}>
-            存量待确认提案不进入自动放行范围。提案命中未解决冲突时会继续保留为待确认，等待人工处理。
+            Las propuestas que estén en stock aún por confirmar no se incluirán en el rango de publicación automática. Cuando una propuesta se encuentra con un conflicto no resuelto, permanecerá pendiente de confirmación y esperará a que se procese manualmente.
           </div>
         </CardContent>
       </Card>
@@ -112,8 +112,8 @@ export function AutoDirectorPendingReviewAutoPromotionCard(props: {
         }}
       >
         <AppDialogContent
-          title="开启待确认状态自动放行"
-          description="这个设置会把符合条件的待确认关系与认知提案提交为正史事实。"
+          title="Habilitar la liberación automática en estado pendiente de confirmación"
+          description="Este escenario presentará relaciones pendientes cualificadas y propuestas cognitivas como hechos históricos oficiales."
           footer={(
             <>
               <Button
@@ -124,7 +124,7 @@ export function AutoDirectorPendingReviewAutoPromotionCard(props: {
                   resetDialog();
                 }}
               >
-                取消
+                Cancelar
               </Button>
               <Button
                 type="button"
@@ -138,14 +138,14 @@ export function AutoDirectorPendingReviewAutoPromotionCard(props: {
                   resetDialog();
                 }}
               >
-                {isSaving ? "保存中..." : "确认开启"}
+                {isSaving ? "Guardando..." : "Confirmar para abrir"}
               </Button>
             </>
           )}
         >
           <div className="space-y-4">
             <div className={`rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-950 ${AUTO_DIRECTOR_MOBILE_CLASSES.wrapText}`}>
-              开启后，系统只处理生效基准时间之后产生的提案；存量待确认提案不进入自动放行范围。符合条件的提案会被提交为正史事实，系统不会自动撤销。
+              Una vez activado, el sistema solo procesará las propuestas generadas después del tiempo base efectivo; Las propuestas existentes que aún no se han confirmado no entrarán en el rango de publicación automática. Las propuestas que cumplan con las condiciones se presentarán como hechos oficiales y no serán revocadas automáticamente por el sistema.
             </div>
 
             <label className="flex min-w-0 items-start gap-3 rounded-md border p-3 text-sm">
@@ -156,19 +156,19 @@ export function AutoDirectorPendingReviewAutoPromotionCard(props: {
                 onChange={(event) => setAcknowledgedRisks(event.target.checked)}
               />
               <span className={AUTO_DIRECTOR_MOBILE_CLASSES.wrapText}>
-                我了解这项能力会自动提交待确认的状态变更，并会通过导演留痕记录每次动作。
+                Entiendo que esta capacidad envía automáticamente los cambios de estado para su confirmación y registra cada acción a través de un Rastreo del Director.
               </span>
             </label>
 
             <div className="space-y-2">
-              <div className="text-sm font-medium">输入确认文本</div>
+              <div className="text-sm font-medium">Introduzca el texto de confirmación</div>
               <Input
                 value={confirmationText}
                 onChange={(event) => setConfirmationText(event.target.value)}
                 placeholder={acknowledgementText}
               />
               <div className={`text-xs text-muted-foreground ${AUTO_DIRECTOR_MOBILE_CLASSES.wrapText}`}>
-                请输入：{acknowledgementText}
+                Por favor ingrese:{acknowledgementText}
               </div>
             </div>
           </div>

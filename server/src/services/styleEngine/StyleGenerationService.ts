@@ -24,18 +24,18 @@ export class StyleGenerationService {
   }> {
     const resolved = await this.resolver.resolve({ styleProfileId: input.styleProfileId });
     if (!resolved.context.compiledBlocks) {
-      throw new Error("该写法没有可执行规则。");
+      throw new Error("No existen reglas aplicables para esta forma de escribir.");
     }
 
     const targetLength = input.targetLength ?? 1200;
     const prompt = input.mode === "rewrite"
-      ? `任务：请在不改变事件事实与顺序的前提下改写原文，使其符合当前写法。
+      ? `Tarea: reescriba el texto original para que se ajuste a la escritura actual sin cambiar los hechos y la secuencia de eventos.
 
-原文：
+original:
 ${input.sourceText ?? ""}`
-      : `任务：请围绕以下主题创作一段小说文本，控制在 ${targetLength} 字左右。
+      : `Tarea: cree un texto novedoso sobre los siguientes temas, controlados dentro ${targetLength} Palabras o algo así.
 
-主题：
+tema:
 ${input.topic ?? ""}`;
 
     const result = await runTextPrompt({

@@ -21,7 +21,7 @@ export function anchorFinalFindings(findings: FinalFinding[], paragraphs: Record
   return findings.map(finding => {
     if (paragraphs[String(finding.paragraph)]?.includes(finding.quote)) return finding;
     const matches = Object.entries(paragraphs).filter(([, text]) => text.includes(finding.quote));
-    if (matches.length !== 1) throw new AppError("检查意见未能定位到本章原句，请重试本章检查。", 422);
+    if (matches.length !== 1) throw new AppError("Los comentarios de verificación no pudieron ubicar la oración original de este capítulo; intente nuevamente verificar este capítulo.", 422);
     return {...finding, paragraph: Number(matches[0][0])};
   });
 }

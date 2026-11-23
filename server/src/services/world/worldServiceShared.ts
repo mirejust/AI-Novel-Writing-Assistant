@@ -388,65 +388,65 @@ export function buildWorldStructurePromptSource(world: {
   factions?: string | null;
 }): string {
   return [
-    `世界名称：${world.name}`,
-    `世界类型：${world.worldType ?? "custom"}`,
-    `世界概要：${world.description ?? "无"}`,
-    `规则/公理：${world.axioms ?? "无"}`,
-    `背景：${world.background ?? "无"}`,
-    `地理：${world.geography ?? "无"}`,
-    `文化：${world.cultures ?? "无"}`,
-    `力量体系：${world.magicSystem ?? "无"}`,
-    `政治：${world.politics ?? "无"}`,
-    `种族：${world.races ?? "无"}`,
-    `宗教：${world.religions ?? "无"}`,
-    `科技：${world.technology ?? "无"}`,
-    `冲突：${world.conflicts ?? "无"}`,
-    `历史：${world.history ?? "无"}`,
-    `经济：${world.economy ?? "无"}`,
-    `势力：${world.factions ?? "无"}`,
+    `Nombre mundial:${world.name}`,
+    `Tipo de mundo:${world.worldType ?? "custom"}`,
+    `Resumen mundial:${world.description ?? "Ninguno"}`,
+    `Reglas/Axiomas:${world.axioms ?? "Ninguno"}`,
+    `fondo:${world.background ?? "Ninguno"}`,
+    `geografía:${world.geography ?? "Ninguno"}`,
+    `cultura:${world.cultures ?? "Ninguno"}`,
+    `Sistema de energía:${world.magicSystem ?? "Ninguno"}`,
+    `política:${world.politics ?? "Ninguno"}`,
+    `Carrera:${world.races ?? "Ninguno"}`,
+    `religión:${world.religions ?? "Ninguno"}`,
+    `ciencia y tecnología:${world.technology ?? "Ninguno"}`,
+    `conflicto:${world.conflicts ?? "Ninguno"}`,
+    `historia:${world.history ?? "Ninguno"}`,
+    `economía:${world.economy ?? "Ninguno"}`,
+    `fuerza:${world.factions ?? "Ninguno"}`,
   ].join("\n\n");
 }
 
 export function buildStructureSectionInstructions(section: WorldStructureSectionKey): string {
   switch (section) {
     case "profile":
-      return `只输出 JSON 对象，结构为：
+      return `Solo se generan objetos JSON, la estructura es:
 {
-  "summary": "...",
-  "identity": "...",
-  "tone": "...",
-  "themes": ["..."],
+  "resumen": "...",
+  "identidad": "...",
+  "tono": "...",
+  "temas": ["..."],
   "coreConflict": "..."
 }`;
     case "rules":
-      return `只输出 JSON 对象，结构为：
+      return `Solo se generan objetos JSON, la estructura es:
 {
-  "summary": "...",
-  "axioms": [{"id":"rule-1","name":"...","summary":"...","cost":"...","boundary":"...","enforcement":"..."}],
-  "taboo": ["..."],
-  "sharedConsequences": ["..."]
+  "resumen": "...",
+  "axiomas": [{"id":"regla-1","nombre":"...","summary":"...","costo":"...","límite":"...","aplicación":"..."}],
+  "tabú": ["..."],
+  "consecuencias compartidas": ["..."]
 }`;
     case "factions":
-      return `只输出 JSON 对象，结构为：
+      return `Solo se generan objetos JSON, la estructura es:
 {
-  "factions": [{"id":"faction-1","name":"...","position":"...","doctrine":"...","goals":["..."],"methods":["..."],"representativeForceIds":["force-1"]}],
-  "forces": [{"id":"force-1","name":"...","type":"...","factionId":"faction-1","summary":"...","baseOfPower":"...","currentObjective":"...","pressure":"...","leader":"...","narrativeRole":"..."}]
+  "facciones": [{"id":"facción-1","nombre":"...","posición":"...","doctrina":"...","objetivos":["..."],"métodos":["..."],"representativeForceIds":["force-1"]}],
+  "forces": [{"id":"force-1","name":"...","type":"...","factionId":"faction-1","summary":"...","baseOfPower":"...","currentObjective":"...","presión":"...","leader":"...","narrativeRole":"..."}]
 }
-补充约束：
-1. faction 是抽象阵营、立场、路线或世界站队，不是行业规则、社会压力机制或人际法则。
-2. force 是具体组织、圈层、部门、公司、网络或机构，必须是能施压、能参与冲突、能与地点建立关系的行动主体。
-3. 像“社会压力来源”“行业运作规则”“人际网络默认法则”这类世界级机制，应放到 rules，不要写进 factions / forces。`;
+Restricciones adicionales:
+1. Una facción es un campo, posición, línea o alineamiento mundial abstracto, no una regla de la industria, un mecanismo de presión social o una ley interpersonal.
+2. Fuerza se refiere a una organización, círculo, departamento, empresa, red o institución específica. Debe ser un sujeto de acción que pueda ejercer presión, participar en conflictos y establecer relaciones con los lugares.
+3. Los mecanismos de clase mundial como las “fuentes de presión social”, las “reglas operativas de la industria” y las “reglas predeterminadas de las redes interpersonales” deberían ubicarse en reglas, no en facciones/fuerzas.`;
     case "locations":
-      return `只输出 JSON 数组，元素结构为：
-[{"id":"location-1","name":"...","terrain":"...","summary":"...","narrativeFunction":"...","risk":"...","entryConstraint":"...","exitCost":"...","controllingForceIds":["force-1"]}]`;
+      return `Solo genera una matriz JSON, la estructura del elemento es:
+[{"id":"ubicación-1","nombre":"...","terreno":"...","summary":"...","narrativeFunction":"...","riesgo":"...","entryConstraint":"...","exitCost":"...","controllingForceIds":["force-1"]}]`;
     case "relations":
-      return `只输出 JSON 对象，结构为：
+      return `Solo se generan objetos JSON, la estructura es:
 {
-  "forceRelations": [{"id":"force-relation-1","sourceForceId":"force-1","targetForceId":"force-2","relation":"...","tension":"...","detail":"..."}],
-  "locationControls": [{"id":"location-control-1","forceId":"force-1","locationId":"location-1","relation":"...","detail":"..."}]
+  "forceRelations": [{"id":"force-relation-1","sourceForceId":"force-1","targetForceId":"force-2","relation":"...","tension":"...","detalle":"..."}],
+  "locationControls": [{"id":"ubicación-control-1","forceId":"force-1","locationId":"ubicación-1","relation":"...","detalle":"..."}]
 }`;
     default:
-      return "只输出合法 JSON。";
+      return "Solo genera JSON válido.";
   }
 }
 

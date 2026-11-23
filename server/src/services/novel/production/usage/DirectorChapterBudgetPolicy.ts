@@ -31,14 +31,14 @@ export function readPausedChapterBudget(snapshot: PipelineDirectorSnapshot, jobI
 
 export function authorizeChapterBudget(snapshot: PipelineDirectorSnapshot, jobId: string, grant: DirectorChapterBudgetGrant): void {
   if (grant.applyToRemaining && !directorChapterTokenLimitSchema.safeParse(grant.tokenLimit).success) {
-    throw new Error("后续章节上限须为 16,001 至 10,000,000 之间的整数。");
+    throw new Error("Los capítulos posteriores deben tener un límite de un número entero entre 16.001 y 10.000.000.");
   }
   const view = readPausedChapterBudget(snapshot, jobId);
-  if (!view || grant.jobId !== jobId || grant.chapterId !== view.chapterId) throw new Error("预算授权与暂停章节不一致，请刷新后重试。");
-  if (grant.metric !== view.metric) throw new Error("预算计量口径发生变化，请刷新后重试。");
+  if (!view || grant.jobId !== jobId || grant.chapterId !== view.chapterId) throw new Error("La autorización presupuestaria no coincide con el capítulo suspendido, actualice e inténtelo nuevamente.");
+  if (grant.metric !== view.metric) throw new Error("El calibre de medición del presupuesto ha cambiado; actualice e inténtelo nuevamente.");
   if (!Number.isSafeInteger(grant.tokenLimit) || grant.tokenLimit > 10_000_000
     || grant.tokenLimit <= view.tokenLimit || grant.tokenLimit <= view.usedTokens + view.reserveTokens) {
-    throw new Error("本章额度须高于已用量、下一步预留及当前上限。");
+    throw new Error("El monto de este capítulo debe ser superior al monto utilizado, a la próxima reserva y al límite superior actual.");
   }
   const row = snapshot.chapterUsage!.find(item => item.chapterId === view.chapterId)!;
   row.tokenLimit = grant.tokenLimit;
@@ -51,7 +51,7 @@ export function authorizeChapterBudget(snapshot: PipelineDirectorSnapshot, jobId
 
 export function pauseChapterBudget(row: Checkpoint, reserveTokens: number, stage: DirectorChapterBudgetStage | null,
   automatic = false): boolean {
-  if (!Number.isSafeInteger(reserveTokens) || reserveTokens < 0) throw new Error("下一步预算预估无效。");
+  if (!Number.isSafeInteger(reserveTokens) || reserveTokens < 0) throw new Error("La estimación del presupuesto del siguiente paso no es válida.");
   const view = chapterBudgetView("", row);
   if (view.usedTokens < view.tokenLimit && (reserveTokens === 0 || view.usedTokens + reserveTokens < view.tokenLimit)) return false;
   if (automatic && row.automaticTopUpTokens == null && !row.budgetPause) {

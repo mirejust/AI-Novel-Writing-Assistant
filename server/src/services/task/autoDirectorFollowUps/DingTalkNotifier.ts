@@ -115,19 +115,19 @@ export class DingTalkNotifier {
       query.set("signature", signWeComMarkdownCallback(params, input.channelConfig!.callbackToken));
       return {title: action.label, actionURL: `${baseUrl}/api/auto-director/channel-callbacks/dingtalk/execute?${query}`};
     });
-    const title = input.cardTitle?.trim() || "自动导演跟进提醒";
+    const title = input.cardTitle?.trim() || "Recordatorio automático de seguimiento del director";
     return {
       msgtype: "actionCard",
       actionCard: {
         title,
-        text: [`### ${title}`, `小说：${input.novelTitle}`, input.event.summary, input.reasonLabel, input.stage, input.checkpointSummary].filter(Boolean).join("\n\n"),
+        text: [`### ${title}`, `novedoso:${input.novelTitle}`, input.event.summary, input.reasonLabel, input.stage, input.checkpointSummary].filter(Boolean).join("\n\n"),
         btnOrientation: "0",
-        btns: [...callbackButtons, {title: "查看详情", actionURL: detailUrl}, {title: "打开跟进中心", actionURL: followUpCenterUrl}],
+        btns: [...callbackButtons, {title: "comprobar los detalles", actionURL: detailUrl}, {title: "Centro de seguimiento abierto", actionURL: followUpCenterUrl}],
       },
       channelType: "dingtalk",
       event: input.event,
       card: {
-        title: input.cardTitle?.trim() || "自动导演跟进提醒",
+        title: input.cardTitle?.trim() || "Recordatorio automático de seguimiento del director",
         summary: input.event.summary,
         reasonLabel: input.reasonLabel,
         stage: input.stage,
@@ -136,12 +136,12 @@ export class DingTalkNotifier {
           ...callbackActions,
           buildLinkAction({
             actionCode: "open_detail",
-            label: "查看详情",
+            label: "comprobar los detalles",
             url: detailUrl,
           }),
           buildLinkAction({
             actionCode: "open_follow_up_center",
-            label: "打开跟进中心",
+            label: "Centro de seguimiento abierto",
             url: followUpCenterUrl,
           }),
         ],

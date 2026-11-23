@@ -29,7 +29,7 @@ export function configureDirectorAgentEntry(_enabled: boolean, ports: {
       if (!taskId && !novelId) return;
       const route = novelId ? `/lab/director/${encodeURIComponent(novelId)}`
         : taskId ? `/novels/auto-director?taskId=${encodeURIComponent(taskId)}` : "/lab/director";
-      throw new AgentToolError("CONFLICT", `请打开小说导演台，选择创作范围后继续。 ${route}`);
+      throw new AgentToolError("CONFLICT", `Abra la consola del director novel, seleccione el alcance creativo y continúe. ${route}`);
     },
   });
 }

@@ -18,13 +18,13 @@ export function proseConversationRouter() {
       artifact: "chapter_batch_closed",
       scope: "director-prose",
       stage: "chapter_batch",
-      progress: "正在阅读本章正文…",
+      progress: "Leyendo el texto de este capítulo…",
       draft: proseDraftSchema,
       reply: proseReply,
       changes: proseChanges,
       async read(db, address, contract) {
         const range = contract.chapterRange;
-        if (!range) throw new AppError("本次没有可讨论的正文范围。", 409);
+        if (!range) throw new AppError("No hay lugar para discusión en este momento.", 409);
         const chapters = await db.chapter.findMany({
           where: { novelId: contract.novelId, order: { gte: range.from, lte: range.to } },
           orderBy: { order: "asc" },
@@ -34,12 +34,12 @@ export function proseConversationRouter() {
           chapters.length !== range.to - range.from + 1 ||
           chapters.some((row, i) => row.order !== range.from + i || !row.content?.trim())
         ) {
-          throw new AppError("本批正文有变化，请重新打开确认页。", 409);
+          throw new AppError("Hay cambios en el texto de este lote, vuelva a abrir la página de confirmación.", 409);
         }
         const row = chapters.find((chapter) => chapter.id === address.resourceId);
-        if (!row) throw new AppError("请选择本批次的章节。", 404);
+        if (!row) throw new AppError("Seleccione un capítulo para este lote.", 404);
         if (address.bodyHash !== hashProductionContent(row.content!))
-          throw new AppError("本章正文有新版本，请重新打开后讨论。", 409);
+          throw new AppError("Hay una nueva versión del texto de este capítulo; vuelva a abrirla para su discusión.", 409);
         const { order, title, taskSheet, mustAvoid } = row;
         return { base: proseParagraphs(row.content!).fields, chapter: { order, title, taskSheet, mustAvoid } };
       },

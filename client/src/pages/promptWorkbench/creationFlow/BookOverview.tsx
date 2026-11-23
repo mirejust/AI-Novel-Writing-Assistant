@@ -91,28 +91,28 @@ export function BookOverview({ enter, onOpenCatalog, openAtlas }: {
 
   return <section ref={root} className="book-atlas" aria-labelledby="atlas-title">
     <header className="atlas-masthead">
-      <div><h2 id="atlas-title">从开书到<span>成稿</span></h2>
-        <p>{expanded ? "沿五个阶段读主线。左侧是独立创作工具，各阶段下方可点读相关提示词。" : "沿五个阶段读主线，展开分支可查看辅助步骤与相关提示词。"}</p></div>
+      <div><h2 id="atlas-title">Desde abrir el libro hasta<span>Manuscrito terminado</span></h2>
+        <p>{expanded ? "Lea la línea principal a lo largo de las cinco etapas. A la izquierda hay herramientas de creación independientes y puede hacer clic en las indicaciones relevantes en cada etapa." : "Lea la línea principal a lo largo de las cinco etapas y expanda las ramas para ver los pasos auxiliares y las palabras clave relacionadas."}</p></div>
       <div className="atlas-actions">
         <button type="button" ref={tourTrigger} className="atlas-play" onClick={tour.current ? (reading ? closeReader : closeTour) : startTour}>
           {tour.current ? <Square size={12} /> : <Play size={14} fill="currentColor" />}
-          {tour.current ? (reading ? "返回导览" : "退出导览") : "播放主线"}</button>
+          {tour.current ? (reading ? "Volver al recorrido" : "Salir del recorrido") : "Reproducir línea principal"}</button>
         <button type="button" className="atlas-branches" aria-pressed={expanded} onClick={toggleBranches}>
-          <GitBranch size={15} />{expanded ? "收起分支" : "展开分支"}</button>
-        <button type="button" className="atlas-shortcut" onClick={() => read("draft")}>查看正文写作提示词<ArrowRight size={14} /></button>
-        <button type="button" className="atlas-shortcut" onClick={() => locateScope("tools")}><LibraryBig size={15} />独立创作工具</button>
+          <GitBranch size={15} />{expanded ? "Cerrar sucursal" : "Expandir sucursal"}</button>
+        <button type="button" className="atlas-shortcut" onClick={() => read("draft")}>Ver indicaciones de escritura de texto<ArrowRight size={14} /></button>
+        <button type="button" className="atlas-shortcut" onClick={() => locateScope("tools")}><LibraryBig size={15} />Herramientas creativas independientes</button>
       </div>
     </header>
     <div className={`book-atlas-spread ${reading ? "reading" : ""} ${focused ? "focused" : ""} ${inspecting ? "inspecting" : ""}`}>
       <div className="book-map-pane">
         <BookMapCanvas layout={layout} selected={selected} touring={reading ? null : tour.current?.step.id ?? null} enter={enter} jump={jump}
           locateScope={locateScope} openScope={openScope} readReference={readReference} read={read} pause={tour.pause} />
-        {tour.current && !reading ? <TourDesk tour={tour} read={read} /> : <footer className="book-map-key" aria-label="连线图例">
-          <span><i />主流程</span>
-          {expanded && <span><i className="key-branch" />可选分支</span>}
-          {expanded && <span><i className="key-reference" />步骤与提示词</span>}
-          <span><i className="key-return" />逐章、逐卷循环</span>
-          <small>拖动平移 · 点选步骤或提示词追踪连线</small>
+        {tour.current && !reading ? <TourDesk tour={tour} read={read} /> : <footer className="book-map-key" aria-label="Leyenda del cableado">
+          <span><i />Proceso principal</span>
+          {expanded && <span><i className="key-branch" />Rama opcional</span>}
+          {expanded && <span><i className="key-reference" />Pasos y indicaciones</span>}
+          <span><i className="key-return" />Ciclo capítulo por capítulo, volumen por volumen</span>
+          <small>Arrastre y desplácese · Haga clic en los pasos o solicite palabras para rastrear la conexión</small>
         </footer>}
       </div>
       {entry && <div data-stage={entry.stage.id} className="book-map-reader">

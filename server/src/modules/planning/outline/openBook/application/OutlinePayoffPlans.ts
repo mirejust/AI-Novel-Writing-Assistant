@@ -9,7 +9,7 @@ export async function readOutlinePayoffPlans(db: Pick<Prisma.TransactionClient, 
   if (!binding) return null;
   const revision = await db.outlineRevision.findFirstOrThrow({where: {id: binding.revisionId, projectId: binding.projectId}});
   const doc: OutlineDocument = JSON.parse(revision.documentJson);
-  if (outlineHash(doc) !== binding.sourceDocumentHash) throw new OutlineOpenBookError("OUTLINE_BINDING_INTEGRITY", "大纲伏笔来源校验失败。");
+  if (outlineHash(doc) !== binding.sourceDocumentHash) throw new OutlineOpenBookError("OUTLINE_BINDING_INTEGRITY", "Error en la verificación de la fuente que presagia el esquema.");
   const mapping: OutlineBookMapping = JSON.parse(binding.mappingJson);
   const chapterOrders = (ids: string[]) => ids.map(id => mapping.chapters.find(c => c.nodeId === id)?.chapterOrder).filter((n): n is number => n !== undefined);
   const effective = applyOutlinePolicy(doc, JSON.parse(binding.policyJson));

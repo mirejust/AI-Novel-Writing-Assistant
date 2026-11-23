@@ -22,9 +22,9 @@ export function shortStoryProductionFoundationText(novel: ShortStoryFoundationNo
     }
     : null;
   return [
-    novel.genre?.name ? `题材基底：${novel.genre.name}` : "",
-    novel.genre?.description ? `题材定位：${novel.genre.description}` : "",
-    novel.genre?.template ? `题材使用倾向：${novel.genre.template}` : "",
+    novel.genre?.name ? `Base temática:${novel.genre.name}` : "",
+    novel.genre?.description ? `Posicionamiento del tema:${novel.genre.description}` : "",
+    novel.genre?.template ? `Tendencia de uso del tema:${novel.genre.template}` : "",
     buildStoryModePromptBlock({
       primary: toMode(novel.primaryStoryMode),
       secondary: toMode(novel.secondaryStoryMode),
@@ -38,8 +38,8 @@ export function parseWritingPlatformSnapshot(raw: string | null | undefined): Wr
 }
 
 export function shortStoryPlatformText(snapshot: WritingPlatformSnapshot | null, stage: "planning" | "drafting" | "auditing" | "repairing"): string {
-  if (!snapshot) return "沿用通用中文商业网文写法，优先保证事件推进、因果清晰、人物主动和完整结局。";
-  return `${snapshot.label}（配置版本 ${snapshot.profileVersion}）：${snapshot.guidance[stage]}`;
+  if (!snapshot) return "Siguiendo el método general de redacción web empresarial china, se da prioridad a garantizar el avance de los acontecimientos, una causa y efecto claros, caracteres activos y un final completo.";
+  return `${snapshot.label}(Versión de configuración ${snapshot.profileVersion}):${snapshot.guidance[stage]}`;
 }
 
 export function buildShortStoryWriterContextBlocks(input: {
@@ -62,10 +62,10 @@ export function buildShortStoryWriterContextBlocks(input: {
   return [
     ...(input.reference ? [block("short-story:reference", "creation_reference", JSON.stringify(input.reference), 101)] : []),
     block("short-story:intent", "creation_intent", JSON.stringify({ originalIdea: input.originalIdea, understanding: input.understanding, direction: input.direction, revisionInstruction: input.revisionInstruction }, null, 2), 100),
-    block("short-story:plan", "short_story_plan", `【本次篇幅】只写第${input.segment.order}段，目标约${input.segment.targetWordCount}字；全篇${input.plan.targetWordCount}字。${shortStoryProseBudget(input.segment.targetWordCount)}字数统计正文去空白、含标点，不含JSON与连续性摘要。\n${JSON.stringify({ plan: input.plan, currentSegment: input.segment }, null, 2)}`, 100),
+    block("short-story:plan", "short_story_plan", `[La extensión de este artículo]Escribe solo el primer capítulo.${input.segment.order}segmento, objetivo aprox.${input.segment.targetWordCount}palabra; artículo completo${input.plan.targetWordCount}Personaje.${shortStoryProseBudget(input.segment.targetWordCount)}Recuento de palabras: el texto principal carece de espacios en blanco, incluida la puntuación, y no incluye JSON ni resúmenes de continuidad. zx0zx${JSON.stringify({ plan: input.plan, currentSegment: input.segment }, null, 2)}`, 100),
     block("short-story:continuity", "short_story_continuity", JSON.stringify({ previousContinuity: input.previousContinuity, previousContentTail: input.previousContentTail }, null, 2), 96),
     block("short-story:platform", "writing_platform", shortStoryPlatformText(input.platform, "drafting"), 104),
     block("short-story:production-foundation", "production_foundation", input.productionFoundation, 103),
-    block("short-story:book-style", "book_style", input.bookStyle?.trim() || input.direction.styleKeywords.join("、"), 80),
+    block("short-story:book-style", "book_style", input.bookStyle?.trim() || input.direction.styleKeywords.join(","), 80),
   ];
 }

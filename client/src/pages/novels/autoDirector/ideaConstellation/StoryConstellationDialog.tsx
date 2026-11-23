@@ -42,7 +42,7 @@ function DirectionField({ label, choices, value, disabled, onChange }: {
       <span className="atlas-select">
         <select value={value} disabled={disabled || !choices.length} title={choice?.hint}
           onChange={(event) => void onChange(event.target.value)}>
-          <option value="">AI 自动搭配</option>
+          <option value="">Emparejamiento automático de IA</option>
           {choices.map((item) => <option key={item.id} value={item.id} title={item.hint}>{item.label}</option>)}
         </select>
         <ChevronDown size={15} aria-hidden="true" />
@@ -103,7 +103,7 @@ export default function StoryConstellationDialog({
 
   return (
     <Dialog open={open} onOpenChange={closeDialog}>
-      <AppDialogContent title="故事星图" description="点开一颗星，阅读它的灵感，再决定是否用来开书。"
+      <AppDialogContent title="Gráfico de estrellas de la historia" description="Haga clic en una estrella, lea su inspiración y luego decida si desea usarla para abrir un libro."
         className="story-atlas" headerClassName="sr-only" bodyClassName="atlas-body"
         onOpenAutoFocus={(event) => { event.preventDefault(); titleRef.current?.focus(); }}
         onEscapeKeyDown={(event) => {
@@ -115,24 +115,24 @@ export default function StoryConstellationDialog({
         }}>
         <div className="sky-workspace">
           <header className="sky-top">
-            <div><h2 ref={titleRef} tabIndex={-1}>故事星图</h2><p>每颗星都是一个灵感。点一颗，看看会发生什么。</p></div>
+            <div><h2 ref={titleRef} tabIndex={-1}>Gráfico de estrellas de la historia</h2><p>Cada estrella es una inspiración. Haga clic en uno y vea qué sucede.</p></div>
             <div className="sky-tools">
               <div className="sky-menu-wrap" onBlur={(event) => {
                 if (!event.currentTarget.contains(event.relatedTarget)) setMenu((value) => value === "directions" ? null : value);
               }}>
                 <button className="sky-tool" type="button" ref={preferencesRef} aria-expanded={menu === "directions"}
                   onClick={() => setMenu(menu === "directions" ? null : "directions")}>
-                  <SlidersHorizontal size={15} />创作偏好
+                  <SlidersHorizontal size={15} />Preferencias creativas
                 </button>
                 {menu === "directions" && <div className="sky-menu sky-directions">
-                  <DirectionField label="故事类型" choices={selectRotatingFoundationOptions(genreOptions, foundationPage, selectedGenreId, 8)}
+                  <DirectionField label="Tipo de historia" choices={selectRotatingFoundationOptions(genreOptions, foundationPage, selectedGenreId, 8)}
                     value={selectedGenreId} disabled={busy} onChange={onSelectGenre} />
-                  <DirectionField label="推进方式" choices={selectRotatingFoundationOptions(storyModeOptions, foundationPage, selectedStoryModeId, 8)}
+                  <DirectionField label="Método de propulsión" choices={selectRotatingFoundationOptions(storyModeOptions, foundationPage, selectedStoryModeId, 8)}
                     value={selectedStoryModeId} disabled={busy} onChange={onSelectStoryMode} />
                 </div>}
               </div>
               <button className="sky-tool" type="button" disabled={busy} onClick={() => { setFoundationPage((page) => page + 1); onGenerate(); }}>
-                {isGenerating ? <Loader2 size={15} className="motion-safe:animate-spin" /> : <RotateCcw size={15} />}换一组
+                {isGenerating ? <Loader2 size={15} className="motion-safe:animate-spin" /> : <RotateCcw size={15} />}Cambiar un grupo
               </button>
             </div>
           </header>
@@ -143,14 +143,14 @@ export default function StoryConstellationDialog({
           ) : (
             <div className="sky-message" role="status">
               {isGenerating && <Loader2 className="motion-safe:animate-spin" size={22} />}
-              <h3>{isGenerating ? "正在寻找灵感…" : "这片星空暂时没有灵感"}</h3>
-              <p>{isGenerating ? "AI 会结合你的想法和创作偏好。" : "可以沿用当前的创作偏好再试一次。"}</p>
-              {!isGenerating && <button className="sky-tool" onClick={onGenerate}>重新生成</button>}
+              <h3>{isGenerating ? "Buscando inspiración…" : "Este cielo estrellado no tiene inspiración por el momento."}</h3>
+              <p>{isGenerating ? "La IA combina tus ideas y preferencias creativas." : "Puede intentarlo nuevamente utilizando sus preferencias de creación actuales."}</p>
+              {!isGenerating && <button className="sky-tool" onClick={onGenerate}>Regenerar</button>}
             </div>
           )}
 
           {!isGenerating && visible && (
-            <section className="sky-inspector" aria-label="正在查看的灵感">
+            <section className="sky-inspector" aria-label="Ver inspiración">
               <div className="sky-inspiration" aria-live="polite" aria-atomic="true">
                 <span className="sky-category">{IDEA_CONSTELLATION_CATEGORY_LABELS[visible.category]}</span>
                 <h3>{visible.label}</h3><p>{visible.hint}</p>
@@ -159,7 +159,7 @@ export default function StoryConstellationDialog({
               <button className="sky-bookmark" type="button" disabled={busy} aria-pressed={isSaved}
                 onClick={() => setSelected((previous) => toggleIdeaConstellationSelection(previous, visible))}>
                 {isSaved ? <Check size={16} /> : <Bookmark size={16} />}
-                {isSaved ? "取消收下" : savedInCategory ? `替换已选的${IDEA_CONSTELLATION_CATEGORY_LABELS[visible.category]}` : "收下这颗星"}
+                {isSaved ? "Cancelar aceptación" : savedInCategory ? `Reemplazar seleccionado${IDEA_CONSTELLATION_CATEGORY_LABELS[visible.category]}` : "Toma esta estrella"}
               </button>
             </section>
           )}
@@ -169,12 +169,12 @@ export default function StoryConstellationDialog({
             }}>
               <button className="sky-tool sky-saved" ref={savedRef} type="button" disabled={!selected.length}
                 aria-expanded={menu === "saved"} onClick={() => setMenu(menu === "saved" ? null : "saved")}>
-                <Bookmark size={15} />已收下 {selected.length} 颗星{selected.length > 0 && <ChevronDown size={14} />}
+                <Bookmark size={15} />Recibió {selected.length} Estrellas{selected.length > 0 && <ChevronDown size={14} />}
               </button>
-              {menu === "saved" && selected.length > 0 && <ul className="sky-menu sky-saved-list" aria-label="已收下的灵感">
+              {menu === "saved" && selected.length > 0 && <ul className="sky-menu sky-saved-list" aria-label="Inspiración recibida">
                 {selected.map((item) => <li key={item.id}>
                   <button type="button" onClick={() => { setInspectedId(item.id); setMenu(null); savedRef.current?.focus(); }}>{item.label}</button>
-                  <button type="button" aria-label={`移除${item.label}`} disabled={busy}
+                  <button type="button" aria-label={`Eliminar${item.label}`} disabled={busy}
                     onClick={() => { setSelected((items) => items.filter((choice) => choice.id !== item.id)); if (selected.length === 1) setMenu(null); }}>
                     <X size={15} />
                   </button>
@@ -182,9 +182,9 @@ export default function StoryConstellationDialog({
               </ul>}
             </div>
             <div className="sky-actions">
-              <button type="button" className="sky-tool sky-return" onClick={() => closeDialog(false)} disabled={isComposing}>返回</button>
+              <button type="button" className="sky-tool sky-return" onClick={() => closeDialog(false)} disabled={isComposing}>Volver</button>
               <Button size="sm" type="button" onClick={() => void compose()} disabled={busy || !visible} className="sky-primary">
-                {isComposing ? "正在构思…" : selected.length ? `用已选的 ${selected.length} 颗星开书` : "从这颗星开书"}
+                {isComposing ? "Pensando en ello..." : selected.length ? `Usar seleccionado ${selected.length} Libro abierto de estrellas` : "Abre un libro de esta estrella."}
                 {isComposing ? <Loader2 size={15} className="motion-safe:animate-spin" /> : <ArrowRight size={15} />}
               </Button>
             </div>

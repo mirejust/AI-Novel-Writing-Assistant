@@ -18,17 +18,17 @@ export default function CharacterTimelineTab(props: CharacterTimelineTabProps) {
       <section className="rounded-xl border border-border/70 bg-muted/10 p-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <div className="text-sm font-medium">角色事件流</div>
+            <div className="text-sm font-medium">Flujo de eventos de personajes</div>
             <div className="mt-1 text-xs leading-5 text-muted-foreground">
-              用最近章节事件观察角色处境变化，必要时同步时间线后再继续写作。
+              Utilice los eventos de capítulos recientes para observar los cambios en la situación del personaje y sincronice la línea de tiempo si es necesario antes de continuar escribiendo.
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
             <AiButton size="sm" variant="outline" onClick={onSyncTimeline} disabled={isSyncingTimeline}>
-              {isSyncingTimeline ? "同步中..." : "同步角色时间线"}
+              {isSyncingTimeline ? "Sincronizando..." : "Sincronizar líneas de tiempo de personajes"}
             </AiButton>
             <AiButton size="sm" variant="outline" onClick={onSyncAllTimeline} disabled={isSyncingAllTimeline}>
-              {isSyncingAllTimeline ? "同步中..." : "同步全部角色时间线"}
+              {isSyncingAllTimeline ? "Sincronizando..." : "Sincroniza todas las líneas de tiempo de los personajes."}
             </AiButton>
           </div>
         </div>
@@ -43,7 +43,7 @@ export default function CharacterTimelineTab(props: CharacterTimelineTabProps) {
                 <Badge variant="outline">{event.source}</Badge>
               </div>
               <div className="text-xs text-muted-foreground">
-                {event.chapterOrder ? `章节 ${event.chapterOrder}` : "无章节归属"} ·{" "}
+                {event.chapterOrder ? `capítulo ${event.chapterOrder}` : "Sin atribución de capítulo"} ·{" "}
                 {new Date(event.createdAt).toLocaleString()}
               </div>
               <div className="mt-1 text-xs text-muted-foreground">{event.content}</div>
@@ -52,7 +52,7 @@ export default function CharacterTimelineTab(props: CharacterTimelineTabProps) {
         </div>
       ) : (
         <div className="rounded-xl border border-dashed p-4 text-sm text-muted-foreground">
-          暂无事件，先点击“同步角色时间线”。
+          Aún no hay eventos. Primero haga clic en "Sincronizar línea de tiempo de personajes".
         </div>
       )}
     </div>

@@ -4,7 +4,7 @@ import type { OutlineBookMapping, OutlineBookPolicy } from "@ai-novel/shared/typ
 import { currentOutlinePlanning, readOutlinePlanningState, assertOutlineReference, type OutlinePlanningState } from "../application/OutlinePlanningContext";
 import { canonicalJson } from "./mapping";
 import { OutlineOpenBookError } from "./errors";
-function conflict(field: string): never { throw new OutlineOpenBookError("OUTLINE_PRESERVED_FIELD", `保留内容发生冲突：${field}。请保留原内容或明确调整保留策略。`); }
+function conflict(field: string): never { throw new OutlineOpenBookError("OUTLINE_PRESERVED_FIELD", `Conflicto con contenido reservado:${field}. Conserve el contenido original o ajuste explícitamente su política de retención.`); }
 const text = (value: unknown) => typeof value === "string" ? value.trim() : value ?? null;
 const volumeFields: Record<string, string> = {title: "title", summary: "summary", promise: "mainPromise", pressure: "primaryPressureSource", protagonistChange: "protagonistChange", climax: "climax", endingHook: "nextVolumeHook"};
 const chapterFields: Record<string, string> = {title: "title", summary: "summary", purpose: "purpose"};
@@ -46,13 +46,13 @@ export function assertOutlineWorkspaceCandidate(state: OutlinePlanningState, can
     if (volume.sortOrder !== m.volumes.indexOf(mapped) + 1) conflict(`${mapped.nodeId}.order`);
     for (const r of policy.rules.filter(r => r.nodeId === mapped.nodeId && volumeFields[r.field] && r.mode !== "fill_missing"))
       if (canonicalJson(text(volume[volumeFields[r.field] as keyof typeof volume])) !== canonicalJson(text(r.value))) conflict(`${r.nodeId}.${r.field}`);
-    for (const c of volume.chapters) if (c.chapterOrder < mapped.from || c.chapterOrder > mapped.to) conflict(`章${c.chapterOrder}超出卷槽位`);
+    for (const c of volume.chapters) if (c.chapterOrder < mapped.from || c.chapterOrder > mapped.to) conflict(`cap.${c.chapterOrder}Espacio de volumen excedido`);
   }
   const allSlots = [...m.volumes, ...(m.runtimeVolumes ?? [])];
   if (allSlots.length) for (const v of candidate.volumes) {
     const slot = allSlots.find(s => s.volumeId === v.id);
-    if (!slot) conflict(`未确认的卷${v.title}`);
-    for (const c of v.chapters) if (c.chapterOrder < slot.from || c.chapterOrder > slot.to) conflict(`章${c.chapterOrder}超出卷槽位`);
+    if (!slot) conflict(`Volumen no confirmado${v.title}`);
+    for (const c of v.chapters) if (c.chapterOrder < slot.from || c.chapterOrder > slot.to) conflict(`cap.${c.chapterOrder}Espacio de volumen excedido`);
   }
   for (const mapped of m.chapters) {
     const volume = candidate.volumes.find(v => v.id === mapped.volumeId);
@@ -76,9 +76,9 @@ export function assertOutlineWorkspaceCandidate(state: OutlinePlanningState, can
     for (const c of after) {
       if (c.chapterOrder >= state.range.from && c.chapterOrder <= state.range.to) continue;
       const old = before.find(x => x.id === c.id);
-      if (!old || canonicalJson(creative(old)) !== canonicalJson(creative(c))) conflict(`非授权章${c.chapterOrder}`);
+      if (!old || canonicalJson(creative(old)) !== canonicalJson(creative(c))) conflict(`Sello no autorizado${c.chapterOrder}`);
     }
-    for (const c of before) if (!after.some(x => x.id === c.id)) conflict(`删除已有章${c.chapterOrder}`);
+    for (const c of before) if (!after.some(x => x.id === c.id)) conflict(`Eliminar capítulos existentes${c.chapterOrder}`);
   }
 }
 export async function assertOutlineWorkspaceWrite(tx: Prisma.TransactionClient, novelId: string, candidate: VolumePlanDocument) {
@@ -92,7 +92,7 @@ export async function assertOutlineWorkspaceWrite(tx: Prisma.TransactionClient, 
     const previous = await tx.chapter.findFirst({where: {id: state.previousActualResult.chapterId, novelId}, select: {content: true}});
     // Execution metadata sync also touches updatedAt; only changed actual text invalidates this context.
     if (!previous || previous.content !== state.previousActualResult.content)
-      throw new OutlineOpenBookError("OUTLINE_PREVIOUS_CHAPTER_CHANGED", "前章正文在准备期间发生变化，请依据最新正文重新准备。");
+      throw new OutlineOpenBookError("OUTLINE_PREVIOUS_CHAPTER_CHANGED", "El texto del capítulo anterior ha cambiado durante el período de preparación. Prepárese nuevamente según el texto más reciente.");
   }
   assertOutlineWorkspaceCandidate(state, candidate);
 }

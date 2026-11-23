@@ -18,7 +18,7 @@ function AtlasSearch({ prompts, select }: { prompts: AtlasPrompt[]; select: (pro
   const show = open && !!query;
   return <div className="atlas-search" onBlur={e => { if (!e.currentTarget.contains(e.relatedTarget)) setOpen(false); }}
     onKeyDown={e => { if (e.key === "Escape") { search.current?.focus(); setOpen(false); } }}>
-    <Search size={15} /><input ref={search} type="search" value={text} placeholder="搜索名称或提示词 ID" aria-label="在所有分图中搜索提示词"
+    <Search size={15} /><input ref={search} type="search" value={text} placeholder="Buscar nombre o ID de palabra" aria-label="Busque palabras clave en todas las subimágenes"
       onFocus={() => setOpen(true)} onChange={e => { setText(e.target.value); setOpen(true); }}
       onKeyDown={e => {
         if (e.key === "ArrowDown" && show && matches.length) {
@@ -26,10 +26,10 @@ function AtlasSearch({ prompts, select }: { prompts: AtlasPrompt[]; select: (pro
         }
         if (e.key === "Enter" && query && matches[0]) { select(matches[0]); setText(""); setOpen(false); }
       }} />
-    {show && <div className="atlas-results" aria-label="匹配的提示词">
+    {show && <div className="atlas-results" aria-label="Palabras clave coincidentes">
       {matches.length ? matches.map(p => <button key={p.id} type="button" onClick={() => { select(p); setText(""); setOpen(false); }}>
         <span>{p.title}<small>{p.topicTitle}</small></span><ArrowUpRight size={14} />
-      </button>) : <p role="status">未找到匹配的提示词。</p>}
+      </button>) : <p role="status">No se encontró ninguna palabra que coincida.</p>}
     </div>}
   </div>;
 }
@@ -55,27 +55,27 @@ export function PromptAtlas({ initial, back, onOpenCatalog }: { initial: AtlasLo
     setSelected(null); setFocused(false);
     requestAnimationFrame(() => root.current?.querySelector<HTMLButtonElement>(`[data-prompt-id="${selected}"]`)?.focus({ preventScroll: true }));
   }
-  return <section className="book-atlas prompt-atlas" data-stage={scope.skin} aria-label="创作提示词分图" ref={root}>
-    <nav className="atlas-scope-nav" aria-label="提示词分图范围">
-      <button type="button" className="atlas-back" onClick={back}><ArrowLeft size={15} />返回流程图</button>
+  return <section className="book-atlas prompt-atlas" data-stage={scope.skin} aria-label="Crear imágenes de palabras rápidas" ref={root}>
+    <nav className="atlas-scope-nav" aria-label="Rango de imágenes de palabras rápidas">
+      <button type="button" className="atlas-back" onClick={back}><ArrowLeft size={15} />Volver al diagrama de flujo</button>
       <div>{atlasScopes.map(item => <button type="button" key={item.id} data-stage={item.skin} aria-current={item === scope ? "page" : undefined}
         onClick={() => navigate({ scope: item.id })}>{item.id === "tools" && <LibraryBig size={13} />}{item.title}</button>)}</div>
     </nav>
     <header className="atlas-index-heading">
-      <div><h2 tabIndex={-1} ref={heading}>{scope.title}<span>提示词分图</span></h2><p>{topic.description}</p></div>
+      <div><h2 tabIndex={-1} ref={heading}>{scope.title}<span>Mapa de palabras rápido</span></h2><p>{topic.description}</p></div>
       <div className="atlas-index-actions">
-        <label>主题<select value={topic.id} onChange={e => navigate({ scope: scope.id, topic: e.target.value })}>
+        <label>Tema<select value={topic.id} onChange={e => navigate({ scope: scope.id, topic: e.target.value })}>
           {scope.topics.map(t => <option value={t.id} key={t.id}>{t.title}</option>)}</select></label>
         <AtlasSearch prompts={prompts} select={select} />
       </div>
     </header>
     <div className={`book-atlas-spread ${entry ? "reading" : ""} ${focused ? "focused" : ""}`}>
       <div className="book-map-pane">
-        {catalog.query.isError ? <div className="atlas-index-status" role="alert">提示词目录读取失败。<button type="button" onClick={() => void catalog.refetch()}>重新读取</button></div>
-          : catalog.query.isPending ? <p className="atlas-index-status" role="status">正在读取提示词目录…</p>
+        {catalog.query.isError ? <div className="atlas-index-status" role="alert">Error al leer el directorio de palabras.<button type="button" onClick={() => void catalog.refetch()}>Releer</button></div>
+          : catalog.query.isPending ? <p className="atlas-index-status" role="status">Leyendo el directorio de palabras del mensaje...</p>
           : visible.length ? <AtlasCanvas stage={scope.id} topic={topic} prompts={visible} selected={selected} select={select} />
-          : <p className="atlas-index-status" role="status">此主题暂无可读的提示词。</p>}
-        <footer className="book-map-key"><span><i />同一用途下的提示词</span><small>点选提示词可阅读或复制全文</small></footer>
+          : <p className="atlas-index-status" role="status">Actualmente no hay palabras clave legibles para este tema.</p>}
+        <footer className="book-map-key"><span><i />Palabras rápidas para el mismo propósito.</span><small>Haga clic en la palabra clave para leer o copiar el texto completo.</small></footer>
       </div>
       {entry && <div className="book-map-reader"><AssetReader key={entry.id} prompt={entry} focused={focused}
         backToMap={close} toggleFocus={() => setFocused(v => !v)} onOpenCatalog={onOpenCatalog} /></div>}

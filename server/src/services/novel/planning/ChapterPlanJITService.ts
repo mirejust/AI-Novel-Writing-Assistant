@@ -102,24 +102,24 @@ function buildFactLedgerGuidance(
   const stateChanged = facts.filter((f) => f.category === "state_changed");
 
   const lines: string[] = [
-    "【已发生事实 / Fact Ledger — 请将以下事实纳入 task sheet 设计，避免重复或矛盾】",
+    "[Hechos que han ocurrido/Libro mayor de hechos: incluya los siguientes hechos en el diseño de la hoja de tareas para evitar duplicaciones o contradicciones]",
   ];
   if (completed.length > 0) {
-    lines.push("已完成目标：");
+    lines.push("Metas cumplidas:");
     for (const f of completed) {
-      lines.push(`  - [第${f.chapterOrder}章] ${f.text}`);
+      lines.push(`  - [No.${f.chapterOrder}capítulo] ${f.text}`);
     }
   }
   if (revealed.length > 0) {
-    lines.push("已揭示信息：");
+    lines.push("Información revelada:");
     for (const f of revealed) {
-      lines.push(`  - [第${f.chapterOrder}章] ${f.text}`);
+      lines.push(`  - [No.${f.chapterOrder}capítulo] ${f.text}`);
     }
   }
   if (stateChanged.length > 0) {
-    lines.push("近期状态变化：");
+    lines.push("Cambios de estado recientes:");
     for (const f of stateChanged) {
-      lines.push(`  - [第${f.chapterOrder}章] ${f.text}`);
+      lines.push(`  - [No.${f.chapterOrder}capítulo] ${f.text}`);
     }
   }
   return lines.join("\n");

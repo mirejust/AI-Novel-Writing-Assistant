@@ -34,7 +34,7 @@ async function annotateBatch(volumes: VolumeEmphasisSource[], options: PromptExe
       const temp = path.join(dir, key + "." + randomUUID() + ".tmp");
       await writeFile(temp, JSON.stringify(output), "utf8");
       await rename(temp, file);
-    } catch (error) { console.warn("无法缓存分卷重点标注", error); }
+    } catch (error) { console.warn("No se pueden almacenar en caché los aspectos destacados del volumen", error); }
     return result;
   })();
   inFlight.set(key, job);
@@ -46,7 +46,7 @@ export async function annotateVolumeSummaries(novelId: string, ids: string[]) {
     prisma.novel.findUnique({ where: { id: novelId }, select: { id: true, directorVersion: true, directorEpoch: true, narrativeForm: true } }),
     getActiveVersionRow(novelId),
   ]);
-  if (!novel) throw new AppError("小说不存在。", 404);
+  if (!novel) throw new AppError("La novela no existe.", 404);
   const raw = version?.contentJson ?? { volumes: await prisma.volumePlan.findMany({
     where: { ...directorVolumeChapterPlanFilter(novelId), id: { in: ids } }, orderBy: { sortOrder: "asc" },
   }) };

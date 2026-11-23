@@ -54,7 +54,7 @@ function fallbackSummary(content: string): string {
 }
 
 function joinFacts(items: string[], max = 3): string {
-  return Array.from(new Set(items)).slice(0, max).join("；");
+  return Array.from(new Set(items)).slice(0, max).join(";");
 }
 
 export class NovelChapterSummaryService {
@@ -64,7 +64,7 @@ export class NovelChapterSummaryService {
       include: { novel: { select: { title: true } } },
     });
     if (!chapter) {
-      throw new Error("章节不存在。");
+      throw new Error("El capítulo no existe.");
     }
 
     const content = (options.contentOverride ?? chapter.content ?? "").trim();
@@ -109,7 +109,7 @@ export class NovelChapterSummaryService {
       } else if (existingExpectation) {
         summary = existingExpectation;
       } else {
-        summary = "暂无可总结正文";
+        summary = "Aún no hay texto resumido disponible";
       }
     }
 

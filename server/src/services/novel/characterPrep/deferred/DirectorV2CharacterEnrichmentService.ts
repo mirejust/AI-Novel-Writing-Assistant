@@ -85,7 +85,7 @@ export class DirectorV2CharacterEnrichmentService {
     if (!payload || !hasText(payload.novelId) || !hasText(payload.runId) || !hasText(payload.optionId)
       || !Number.isSafeInteger(payload.executionEpoch) || payload.executionEpoch < 0
       || !Array.isArray(payload.characterIds) || !payload.characterIds.length || !payload.characterIds.every(hasText)) {
-      throw new Error("导演 V2 角色补全任务缺少有效的执行归属。");
+      throw new Error("Las tareas de finalización de personajes de Director V2 carecen de atribución de ejecución válida.");
     }
     try {
       const owner = await this.assertWritable(payload, this.db, lease);
@@ -101,7 +101,7 @@ export class DirectorV2CharacterEnrichmentService {
           await this.assertWritable(payload, this.db, lease);
           const suggestion = await profiles.generateCharacterVisibleProfile(payload.novelId, character.id, {
             provider: owner.provider, model: owner.model, temperature: owner.temperature,
-            userGuidance: "只补空白的稳定外显资料；保留所有已有设定，不补临时伤势、物品归属或人物位置。",
+            userGuidance: "Solo completa datos de apariencia estable en blanco; Conserva todas las configuraciones existentes, no completa lesiones temporales, propiedad de elementos o posiciones de personajes.",
           });
           await this.db.$transaction(async tx => {
             await this.assertWritable(payload, tx, lease);

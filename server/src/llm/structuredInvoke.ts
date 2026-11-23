@@ -110,7 +110,7 @@ function normalizeTransportRetryCount(value: number | undefined): number {
 
 function waitForTransportRetry(signal: AbortSignal | undefined, retryAttempt: number, retryAfterMs?: number | null): Promise<void> {
   if (signal?.aborted) {
-    return Promise.reject(signal.reason ?? new Error("请求已取消。"));
+    return Promise.reject(signal.reason ?? new Error("La solicitud ha sido cancelada."));
   }
   const delayMs = retryAfterMs ?? Math.min(2_000, 500 * 2 ** (retryAttempt - 1));
   return new Promise((resolve, reject) => {
@@ -121,7 +121,7 @@ function waitForTransportRetry(signal: AbortSignal | undefined, retryAttempt: nu
     const onAbort = () => {
       clearTimeout(timer);
       signal?.removeEventListener("abort", onAbort);
-      reject(signal?.reason ?? new Error("请求已取消。"));
+      reject(signal?.reason ?? new Error("La solicitud ha sido cancelada."));
     };
     signal?.addEventListener("abort", onAbort, { once: true });
   });
@@ -293,7 +293,7 @@ async function invokeStructuredAttempt<T>(input: {
   const evidence = emptyResponseEvidence(resolved.maxTokens, resolved.budgetTrace);
   let diagnosticId: string | null = null;
   try {
-    liveSession.phase("streaming", "模型正在返回结构化结果");
+    liveSession.phase("streaming", "El modelo arroja resultados estructurados.");
     diagnosticId = await beginStructuredDiagnostic({ meta: input.baseInput.promptMeta, context: input.baseInput.diagnosticContext,
       provider: resolved.provider, model: resolved.model, requestProtocol: resolved.requestProtocol,
       strategy: input.strategy, response: evidence });
@@ -358,7 +358,7 @@ async function invokeStructuredAttempt<T>(input: {
       fallbackUsed: input.fallbackUsed,
       reasoningForcedOff: resolved.reasoningForcedOff,
     });
-    liveSession.phase("validating", "正在检查生成结果");
+    liveSession.phase("validating", "Comprobando los resultados de la compilación");
     let repairStarted = false;
     const parsed = await liveSession.observe(() => parseStructuredLlmRawContentDetailed({
       rawContent,
@@ -384,7 +384,7 @@ async function invokeStructuredAttempt<T>(input: {
       onRepairOutputDelta: (content) => {
         if (!repairStarted) {
           repairStarted = true;
-          liveSession.phase("repairing", "正在修复生成结果");
+          liveSession.phase("repairing", "Arreglando resultados de compilación");
         }
         liveSession.delta(content);
       },
@@ -452,8 +452,8 @@ async function invokeStructuredAttempt<T>(input: {
     if (!(error instanceof StructuredOutputError) && (evidence.failureReason === "network" || evidence.failureReason === "timeout")) {
       wrapped = buildStructuredError({
         message: `[${input.baseInput.label}] ${evidence.failureReason === "network"
-          ? "连接模型服务时发生网络错误，请检查网络、渠道地址和服务状态后重试。"
-          : "模型请求超时，请检查服务状态或稍后重试。"}`,
+          ? "Se produjo un error de red al conectarse al servicio modelo. Verifique la red, la dirección del canal y el estado del servicio e inténtelo nuevamente."
+          : "Se agotó el tiempo de espera de la solicitud del modelo. Verifique el estado del servicio o vuelva a intentarlo más tarde."}`,
         cause: error,
         category: "transport_error",
         strategy: input.strategy,
@@ -689,28 +689,28 @@ export function summarizeStructuredOutputFailure(input: {
   const category = input.error instanceof StructuredOutputError
     ? input.error.category
     : extractStructuredOutputErrorCategory(message) ?? classifyStructuredOutputFailure({ error: input.error });
-  const suffix = input.fallbackAvailable ? "，可考虑启用结构化备用模型。" : "。";
+  const suffix = input.fallbackAvailable ? ", considere habilitar el modelo de respaldo estructurado." : ".";
   const profile = input.error instanceof StructuredOutputError ? input.error.diagnostics.profile : null;
   // When the system knows no thinking toggle for this endpoint (typically an
   // unprobed custom provider), "turn off deep thinking" is not an action the
   // user can take: the probe is what teaches the system the toggle.
   const reasoningExhaustedSummary = profile?.requiresNonThinkingForStructured && !profile.supportsReasoningToggle
-    ? "模型只返回了思考内容，输出 Token 已在生成正文前耗尽；系统尚不知道如何关闭该模型的深度思考。如该模型从未做过兼容探测，请先在模型设置里完成一次探测；若已探测仍出现此问题，请提高输出 Token 上限或更换模型。"
-    : "模型只返回了思考内容，输出 Token 已在生成正文前耗尽；请关闭深度思考或提高输出 Token 上限。";
+    ? "El modelo solo devolvió el contenido del pensamiento y el token de salida se agotó antes de generar el texto; el sistema aún no sabe cómo desactivar el pensamiento profundo del modelo. Si nunca se ha probado la compatibilidad del modelo, primero complete una prueba en la configuración del modelo; Si el problema persiste después de la prueba, aumente el límite superior del token de salida o cambie el modelo."
+    : "El modelo solo devolvió el contenido del pensamiento y el token de salida se agotó antes de generar el texto; desactive el pensamiento profundo o aumente el límite superior del token de salida.";
   const incompleteJsonSummary = input.fallbackAvailable
-    ? "模型输出的 JSON 被截断或不完整，可能是输出被截断或 token 上限不足；建议先重试，必要时切换更强模型或启用结构化备用模型。"
-    : "模型输出的 JSON 被截断或不完整，可能是输出被截断或 token 上限不足；建议先重试，必要时切换更强模型。";
+    ? "La salida JSON del modelo está truncada o incompleta. Puede ser que la salida esté truncada o que el límite superior del token sea insuficiente. Se recomienda intentarlo nuevamente y cambiar a un modelo más potente o habilitar un modelo de respaldo estructurado si es necesario."
+    : "La salida JSON del modelo está truncada o incompleta. Puede ser que la salida esté truncada o que el límite superior del token sea insuficiente. Se recomienda intentarlo nuevamente y cambiar a un modelo más potente si es necesario.";
   const summaryMap: Record<StructuredOutputErrorCategory, string> = {
-    unsupported_native_json: `当前模型端点不兼容原生 JSON 输出${suffix}`,
-    thinking_pollution: `当前模型的思考内容污染了结构化输出${suffix}`,
+    unsupported_native_json: `El punto final del modelo actual no es compatible con la salida JSON nativa${suffix}`,
+    thinking_pollution: `El contenido de pensamiento del modelo actual contamina el resultado estructurado.${suffix}`,
     incomplete_json: incompleteJsonSummary,
-    malformed_json: `模型输出的 JSON 格式不稳定${suffix}`,
-    schema_mismatch: `模型输出未满足目标结构要求${suffix}`,
-    empty_response: "模型返回了空内容，没有收到可用正文；请重试，持续出现时检查渠道兼容性、思考设置或更换模型。",
+    malformed_json: `La salida en formato JSON del modelo es inestable${suffix}`,
+    schema_mismatch: `La salida del modelo no cumple con los requisitos de la estructura objetivo${suffix}`,
+    empty_response: "El modelo devolvió contenido vacío y no se recibió ningún texto disponible; por favor inténtalo de nuevo. Si continúa apareciendo, verifique la compatibilidad del canal, considere la configuración o reemplace el modelo.",
     reasoning_budget_exhausted: reasoningExhaustedSummary,
-    output_budget_exhausted: "模型输出达到 Token 上限后被截断，结果不完整；请提高输出 Token 上限后重试。",
-    model_unavailable: "模型余额或可用额度不足；请检查账户额度，或更换可用的模型渠道后重试。",
-    transport_error: `结构化调用过程发生传输或服务端错误${suffix}`,
+    output_budget_exhausted: "La salida del modelo se truncó después de alcanzar el límite superior de Token y los resultados estaban incompletos; aumente el límite superior del token de salida e inténtelo de nuevo.",
+    model_unavailable: "El saldo del modelo o la cuota disponible es insuficiente; verifique la cuota de la cuenta o cambie los canales del modelo disponibles e inténtelo nuevamente.",
+    transport_error: `Se produjo un error de transmisión o del servidor durante el proceso de llamada estructurada.${suffix}`,
   };
   return {
     category,

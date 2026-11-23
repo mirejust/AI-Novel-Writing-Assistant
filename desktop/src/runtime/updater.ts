@@ -42,20 +42,20 @@ export function initializeDesktopUpdater(options: DesktopUpdaterOptions): Deskto
   const supported = isUpdaterSupported(options);
   const hasFeedConfig = !supported || hasPackagedUpdateFeedConfig();
   const unsupportedReason = process.platform === "darwin"
-    ? "Mac 版请下载新版安装包后手动安装。"
+    ? "Para la versión Mac, descargue el paquete de instalación de la nueva versión e instálelo manualmente."
     : !options.isPackaged
-    ? "开发环境不下载安装包，请在正式安装版中检查更新。"
+    ? "El entorno de desarrollo no descarga el paquete de instalación. Busque actualizaciones en la versión de instalación oficial."
     : options.isPortable
-      ? "便携版需要下载新版安装包后手动替换。"
+      ? "La versión portátil necesita descargar el paquete de instalación de la nueva versión y reemplazarlo manualmente."
       : !hasFeedConfig
-        ? "此安装包未配置版本更新通道。"
-        : "桌面版更新已被运行环境关闭。";
+        ? "Este paquete de instalación no tiene configurado un canal de actualización de versión."
+        : "El entorno de ejecución ha desactivado las actualizaciones de la versión de escritorio.";
 
   markUpdaterSnapshot(createUpdaterSnapshot({
     status: supported && hasFeedConfig ? "idle" : "disabled",
     message: supported
       ? hasFeedConfig
-        ? "可以检查桌面版更新。"
+        ? "Puede buscar actualizaciones de escritorio."
         : unsupportedReason
       : unsupportedReason,
     currentVersion: options.currentVersion,
@@ -94,7 +94,7 @@ export function initializeDesktopUpdater(options: DesktopUpdaterOptions): Deskto
     markUpdaterSnapshot(createUpdaterSnapshot({
       ...desktopUpdaterStore.getSnapshot(),
       status: "checking",
-      message: "正在检查桌面版更新。",
+      message: "Buscando actualizaciones de escritorio.",
       canInstall: false,
       lastCheckedAt: new Date().toISOString(),
       progressPercent: null,
@@ -107,7 +107,7 @@ export function initializeDesktopUpdater(options: DesktopUpdaterOptions): Deskto
     markUpdaterSnapshot(createUpdaterSnapshot({
       ...desktopUpdaterStore.getSnapshot(),
       status: "update-available",
-      message: `桌面版 v${info.version} 可用，由你确认后开始下载。`,
+      message: `Versión de escritorio v${info.version} Disponible, la descarga comenzará después de su confirmación.`,
       availableVersion: info.version,
       canInstall: false,
       progressPercent: null,
@@ -121,7 +121,7 @@ export function initializeDesktopUpdater(options: DesktopUpdaterOptions): Deskto
     markUpdaterSnapshot(createUpdaterSnapshot({
       ...desktopUpdaterStore.getSnapshot(),
       status: "not-available",
-      message: "当前安装包符合此更新通道的最新版本。",
+      message: "El paquete de instalación actual es compatible con la última versión de este canal de actualización.",
       availableVersion: null,
       canInstall: false,
       progressPercent: null,
@@ -134,7 +134,7 @@ export function initializeDesktopUpdater(options: DesktopUpdaterOptions): Deskto
     markUpdaterSnapshot(createUpdaterSnapshot({
       ...desktopUpdaterStore.getSnapshot(),
       status: "downloading",
-      message: "正在下载桌面版更新。",
+      message: "Descarga de actualizaciones de escritorio.",
       progressPercent: progress.percent,
       bytesPerSecond: progress.bytesPerSecond,
       canInstall: false,
@@ -146,7 +146,7 @@ export function initializeDesktopUpdater(options: DesktopUpdaterOptions): Deskto
     markUpdaterSnapshot(createUpdaterSnapshot({
       ...desktopUpdaterStore.getSnapshot(),
       status: "downloaded",
-      message: `桌面版 v${info.version} 准备完成，重启应用后安装。`,
+      message: `Versión de escritorio v${info.version} Cuando se complete la preparación, reinicie la aplicación e instálela.`,
       availableVersion: info.version,
       canInstall: true,
       progressPercent: 100,
@@ -160,7 +160,7 @@ export function initializeDesktopUpdater(options: DesktopUpdaterOptions): Deskto
     markUpdaterSnapshot(createUpdaterSnapshot({
       ...desktopUpdaterStore.getSnapshot(),
       status: "error",
-      message: "未能完成版本检查，请确认网络连接后重试。",
+      message: "No se pudo completar la verificación de la versión. Confirme la conexión de red e inténtelo nuevamente.",
       canInstall: false,
       progressPercent: null,
       bytesPerSecond: null,
@@ -180,7 +180,7 @@ export function initializeDesktopUpdater(options: DesktopUpdaterOptions): Deskto
         markUpdaterSnapshot(createUpdaterSnapshot({
           ...snapshot,
           status: "downloading",
-          message: "正在下载桌面版更新。",
+          message: "Descarga de actualizaciones de escritorio.",
           canInstall: false,
           progressPercent: 0,
           bytesPerSecond: null,

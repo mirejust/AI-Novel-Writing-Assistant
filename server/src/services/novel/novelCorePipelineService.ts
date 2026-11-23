@@ -115,7 +115,7 @@ export class NovelCorePipelineService {
     // may deduplicate jobs carrying the exact same persisted owner.
     if (!input.owner) return primaryJob;
     if (jobs.some(job => !sameDirectorPipelineOwner(this.parsePipelinePayload(job.payload), input.owner!))) {
-      throw new Error("同一章节范围存在其他创作任务，请从对应工作台处理。");
+      throw new Error("Hay otras tareas creativas en el mismo rango de capítulos, manejelas desde el banco de trabajo correspondiente.");
     }
     const duplicateJobs = jobs.filter((job) => job.id !== primaryJob.id);
 
@@ -128,13 +128,13 @@ export class NovelCorePipelineService {
         },
         data: {
           status: "cancelled",
-          error: `检测到同一本书相同章节区间存在重复流水线，已切换为主任务 ${primaryJob.id}。`,
+          error: `Se detectó que hay canales duplicados en la misma sección de capítulo del mismo libro y se cambió a la tarea principal. ${primaryJob.id}.`,
           cancelRequestedAt: cancelledAt,
           heartbeatAt: cancelledAt,
           finishedAt: cancelledAt,
         },
       });
-      logPipelineWarn("发现重复活跃批量任务，已取消重复项", {
+      logPipelineWarn("Se encontraron tareas por lotes activas duplicadas, duplicados cancelados", {
         novelId: input.novelId,
         range: `${input.startOrder}-${input.endOrder}`,
         primaryJobId: primaryJob.id,
@@ -286,13 +286,13 @@ export class NovelCorePipelineService {
       },
     });
     if (!job) {
-      throw new Error("章节流水线任务不存在。");
+      throw new Error("La tarea de canalización del capítulo no existe.");
     }
       if (job.status !== "queued" && job.status !== "running") {
         return;
       }
       const persistedOwner = this.parsePipelinePayload(job.payload);
-      if (options.expectedOwner && !sameDirectorPipelineOwner(persistedOwner, options.expectedOwner)) throw new AppError("请从该正文作业所属的创作工作台继续。", 409);
+      if (options.expectedOwner && !sameDirectorPipelineOwner(persistedOwner, options.expectedOwner)) throw new AppError("Continúe desde el banco de trabajo de creación al que pertenece esta tarea de texto.", 409);
       await this.assertOwner(job.novelId, persistedOwner);
       if (options.preserveManualRecovery) {
         const resumed = await prisma.generationJob.updateMany({where: {id: job.id, status: {in: ["queued", "running"]}, pendingManualRecovery: false, cancelRequestedAt: null,
@@ -344,13 +344,13 @@ export class NovelCorePipelineService {
         issuePolicySnapshot,
         styleSignalPolicy,
       };
-      await ensureNovelCharacters(novelId, "启动批量章节流水");
+      await ensureNovelCharacters(novelId, "Iniciar la transmisión de capítulos por lotes");
 
       if (options.directorNext) {
         const jobs = await prisma.generationJob.findMany({where: {novelId, startOrder: options.startOrder, endOrder: options.endOrder}, orderBy: {createdAt: "desc"}});
         for (const job of jobs) {
           const owner = this.parsePipelinePayload(job.payload).directorNext?.runId;
-          if (owner !== options.directorNext.runId && (job.status === "queued" || job.status === "running")) throw new Error("同一章节范围存在其他运行的正文作业，请从原创作页面处理。");
+          if (owner !== options.directorNext.runId && (job.status === "queued" || job.status === "running")) throw new Error("Hay otros trabajos de texto en ejecución en el mismo rango de capítulos; proceselos desde la página de creación original.");
         }
         const owned = jobs.find(job => this.parsePipelinePayload(job.payload).directorNext?.runId === options.directorNext?.runId);
         if (owned) {
@@ -367,8 +367,8 @@ export class NovelCorePipelineService {
       });
       if (existingActiveJob) {
         const owner = this.parsePipelinePayload(existingActiveJob.payload).directorNext?.runId;
-        if (owner && owner !== options.directorNext?.runId) throw new Error("该正文作业属于导演创作，请从导演页面继续。");
-        logPipelineWarn("检测到同区间已有活跃批量任务，复用现有任务", {
+        if (owner && owner !== options.directorNext?.runId) throw new Error("Esta tarea de texto es creación del director, continúe desde la página del director.");
+        logPipelineWarn("Se detecta que ya hay tareas por lotes activas en el mismo intervalo y las tareas existentes se reutilizan.", {
           novelId,
           range: `${options.startOrder}-${options.endOrder}`,
           reusedJobId: existingActiveJob.id,
@@ -384,7 +384,7 @@ export class NovelCorePipelineService {
         _count: { order: true },
       });
       if ((chapterStats._count.order ?? 0) === 0) {
-        throw new Error("当前小说还没有章节，请先创建章节后再启动流水线。");
+        throw new Error("La novela actual aún no tiene capítulos. Cree capítulos antes de iniciar la canalización.");
       }
 
       const chapterCandidates = await prisma.chapter.findMany({
@@ -413,10 +413,10 @@ export class NovelCorePipelineService {
       if (chapters.length === 0) {
         const minOrder = chapterStats._min.order ?? 1;
         const maxOrder = chapterStats._max.order ?? 1;
-        throw new Error(`指定区间内没有可生成的章节。当前可用章节范围为第 ${minOrder} 章到第 ${maxOrder} 章。`);
+        throw new Error(`No hay capítulos que se puedan generar en el rango especificado. Los capítulos disponibles actualmente van desde ${minOrder} Capítulo a Capítulo ${maxOrder} capítulo.`);
       }
 
-      logPipelineInfo("创建批量任务", {
+      logPipelineInfo("Crear tareas por lotes", {
         novelId,
         range: `${options.startOrder}-${options.endOrder}`,
         matchedChapters: chapters.length,
@@ -465,7 +465,7 @@ export class NovelCorePipelineService {
         },
       });
 
-      logPipelineInfo("批量任务已入队", {
+      logPipelineInfo("La tarea por lotes ha sido puesta en cola.", {
         jobId: job.id,
         novelId,
         totalCount: job.totalCount,
@@ -491,14 +491,14 @@ export class NovelCorePipelineService {
       where: { id: jobId },
     });
     if (!job) {
-      throw new Error("任务不存在。");
+      throw new Error("La tarea no existe.");
     }
-    if (!await canRecoverLegacyPipelineJob(jobId)) throw new AppError("请从该正文作业所属的导演工作台继续。", 409);
+    if (!await canRecoverLegacyPipelineJob(jobId)) throw new AppError("Continúe desde el banco de trabajo del director al que pertenece esta tarea de texto.", 409);
     if (job.status !== "failed" && job.status !== "cancelled") {
-      throw new Error("仅失败或已取消的任务支持重试。");
+      throw new Error("Sólo las tareas fallidas o canceladas admiten reintentos.");
     }
     if (job.status === "cancelled" && job.cancelRequestedAt && !job.finishedAt) {
-      throw new Error("任务仍在取消中，请等待取消完成后再重试。");
+      throw new Error("La tarea aún se está cancelando. Espere a que se complete la cancelación antes de volver a intentarlo.");
     }
 
     const payload = this.parsePipelinePayload(job.payload);
@@ -528,11 +528,11 @@ export class NovelCorePipelineService {
       where: { id: jobId },
     });
     if (!job) {
-      throw new Error("任务不存在。");
+      throw new Error("La tarea no existe.");
     }
-    if (!await canRecoverLegacyPipelineJob(jobId)) throw new AppError("请从该正文作业所属的导演工作台取消创作。", 409);
+    if (!await canRecoverLegacyPipelineJob(jobId)) throw new AppError("Cancele la creación desde Director's Workbench al que pertenece esta tarea de texto.", 409);
     if (job.status === "succeeded" || job.status === "failed" || job.status === "cancelled") {
-      throw new Error("仅排队中或运行中的任务可取消。");
+      throw new Error("Sólo se pueden cancelar las tareas en cola o en ejecución.");
     }
     if (job.status === "queued") {
       return prisma.generationJob.update({
@@ -640,7 +640,7 @@ export class NovelCorePipelineService {
           currentStage: "queued",
           currentItemKey: null,
           currentItemLabel: null,
-          error: "无法确认章节流水线执行所有权，任务已暂停。请检查数据库迁移和连接后再恢复。",
+          error: "No se puede confirmar la propiedad de la ejecución de la canalización del capítulo, la tarea está en pausa. Verifique la migración y la conexión de la base de datos antes de restaurar.",
           finishedAt: null,
         },
       });
@@ -673,7 +673,7 @@ export class NovelCorePipelineService {
         leaseMs: PIPELINE_EXECUTION_LEASE_MS,
       });
     } catch (error) {
-      const message = "无法确认章节流水线执行所有权，任务已暂停。请检查数据库迁移和连接后再恢复。";
+      const message = "No se puede confirmar la propiedad de la ejecución de la canalización del capítulo, la tarea está en pausa. Verifique la migración y la conexión de la base de datos antes de restaurar.";
       await this.pauseForExecutionLeaseFailure(jobId, error);
       logPipelineWarn(message, {
         jobId,
@@ -683,7 +683,7 @@ export class NovelCorePipelineService {
       return;
     }
     if (!claimed) {
-      logPipelineInfo("任务已有执行者，跳过重复调度", { jobId, novelId });
+      logPipelineInfo("La tarea ya tiene un ejecutor, omita la programación repetida", { jobId, novelId });
       return;
     }
     const renewalTimer = setInterval(() => {

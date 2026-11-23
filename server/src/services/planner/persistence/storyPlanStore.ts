@@ -169,7 +169,7 @@ export async function readSavedStoryPlan(db:Reader,planId:string) {
     },
   });
   if (!persistedPlan) {
-    throw new Error("章节规划持久化失败。");
+    throw new Error("La persistencia en la planificación del capítulo falló.");
   }
   return enrichStoryPlan(persistedPlan as any);
 

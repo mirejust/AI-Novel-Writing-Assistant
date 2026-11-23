@@ -101,11 +101,11 @@ function canHomeWrite(novel: HomeNovelItem): boolean {
 
 export function formatHomeDate(value: string | undefined): string {
   if (!value) {
-    return "暂无";
+    return "Sin datos";
   }
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) {
-    return "暂无";
+    return "Sin datos";
   }
   return date.toLocaleString();
 }
@@ -135,7 +135,7 @@ export function getNovelPriorityScore(novel: HomeNovelItem): number {
 }
 
 export function getNovelLeadSummary(novel: HomeNovelItem): string {
-  if (isHomeV2Novel(novel)) return "进入小说导演台查看规划、正文与本次创作进度。";
+  if (isHomeV2Novel(novel)) return "Entra en el escritorio del director de novelas para comprobar la planificación, el texto y el avance de esta creación.";
   const workflowDescription = getWorkflowDescription(getHomeNovelTask(novel));
   if (workflowDescription) {
     return workflowDescription;
@@ -144,9 +144,9 @@ export function getNovelLeadSummary(novel: HomeNovelItem): string {
     return novel.description.trim();
   }
   if (novel.world?.name) {
-    return `当前项目绑定世界观「${novel.world.name}」，可以继续创作。`;
+    return `El proyecto actual está ligado a la cosmovisión "${novel.world.name}”, puedes seguir creando.`;
   }
-  return "当前项目暂无简介，可以进入编辑页继续推进。";
+  return "El proyecto actual no tiene introducción. Puedes ingresar a la página de edición para seguir progresando.";
 }
 
 export function selectPrimaryNovel(novels: HomeNovelItem[]): HomeNovelItem | null {
@@ -167,10 +167,10 @@ export function buildHomeNextAction(primaryNovel: HomeNovelItem | null): HomeNex
   if (!primaryNovel) {
     return {
       kind: "starter",
-      eyebrow: "开始第一本小说",
-      title: "选择适合你的第一种创作方式",
-      description: "想完成长篇，可以交给自动导演准备整本结构；想更快看到完整作品，可以直接从短篇开始。",
-      reason: "两种方式都只需要先说出一个模糊想法，AI 会继续帮你整理创作方向。",
+      eyebrow: "Empezar la primera novela",
+      title: "Elige el primer método creativo que más te convenga",
+      description: "Si desea completar una función, puede dejar que el director automático prepare toda la estructura; Si quieres ver la obra completa más rápido, puedes empezar directamente desde el cuento.",
+      reason: "Ambos métodos solo requieren que primero expongas una idea vaga, y la IA continuará ayudándote a organizar tu dirección creativa.",
       tone: "info",
     };
   }
@@ -178,92 +178,92 @@ export function buildHomeNextAction(primaryNovel: HomeNovelItem | null): HomeNex
   const task = getHomeNovelTask(primaryNovel);
   if (isHomeV2Novel(primaryNovel)) {
     const status = primaryNovel.bookProgress?.director?.status;
-    const action = status === "waiting_gate" ? "确认本阶段结果" : isHomeActionRequired(primaryNovel) || status === "cancelled"
-      ? "查看创作中断" : isHomeRunning(primaryNovel) ? "查看创作进度"
+    const action = status === "waiting_gate" ? "Confirmar los resultados de esta etapa." : isHomeActionRequired(primaryNovel) || status === "cancelled"
+      ? "Ver pausas creativas" : isHomeRunning(primaryNovel) ? "Ver el progreso de la creación"
       : primaryNovel.bookProgress?.targetChapters && getHomeWrittenChapters(primaryNovel) >= primaryNovel.bookProgress.targetChapters
-        ? "阅读并检查正文" : "继续创作小说";
-    return {kind: "novel", eyebrow: "推荐下一步", title: action, description: getNovelLeadSummary(primaryNovel),
-      reason: "在本书导演台核对保存结果、质量提醒和后续章节范围，再继续创作。",
+        ? "Leer y comprobar el texto." : "Seguir escribiendo novelas";
+    return {kind: "novel", eyebrow: "Siguiente paso recomendado", title: action, description: getNovelLeadSummary(primaryNovel),
+      reason: "Verifique los resultados de guardado, los recordatorios de calidad y el alcance de los capítulos posteriores en el escritorio del director del libro antes de continuar con la creación.",
       tone: isHomeActionRequired(primaryNovel) ? "warning" : "info"};
   }
   if (primaryNovel.narrativeForm === "short_story") {
     return {
       kind: "novel",
-      eyebrow: task?.status === "succeeded" ? "完整作品" : "创作进行中",
-      title: task?.status === "succeeded" ? "继续完善这篇作品" : "查看成稿进度",
+      eyebrow: task?.status === "succeeded" ? "Trabajo completo" : "Creación en curso",
+      title: task?.status === "succeeded" ? "Continuar mejorando este trabajo." : "Consultar el progreso del manuscrito.",
       description: getNovelLeadSummary(primaryNovel),
       reason: task?.status === "succeeded"
-        ? "作品已完整生成，可以直接阅读、编辑、修改或导出。"
-        : "短篇正在后台写成一篇连续作品，打开后即可查看实时进度。",
+        ? "El trabajo ha sido completamente generado y se puede leer, editar, modificar o exportar directamente."
+        : "La historia corta se escribe en un trabajo continuo en segundo plano y puedes ver el progreso en tiempo real después de abrirla.",
       tone: task?.status === "succeeded" ? "success" : "info",
     };
   }
   if (getNovelWorkflowAttention(task) === "recovery" || canContinueChapterBatchAutoExecution(task)) {
     return {
       kind: "novel",
-      eyebrow: "推荐下一步",
-      title: "恢复章节创作",
+      eyebrow: "Siguiente paso recomendado",
+      title: "Reanudar la creación de capítulos",
       description: getNovelLeadSummary(primaryNovel),
-      reason: "章节批次停在可恢复节点，先恢复执行能最快回到正文生产。",
+      reason: "El lote de capítulos se detiene en el nodo reanudable. Reanudar la ejecución primero puede volver a la producción de texto lo más rápido posible.",
       tone: "danger",
     };
   }
   if (requiresCandidateSelection(task)) {
     return {
       kind: "novel",
-      eyebrow: "推荐下一步",
-      title: "确认整本故事方向",
+      eyebrow: "Siguiente paso recomendado",
+      title: "Confirmar la dirección general de la historia.",
       description: getNovelLeadSummary(primaryNovel),
-      reason: "确认方向后，系统才能继续准备世界观、角色和章节执行计划。",
+      reason: "Después de confirmar la dirección, el sistema puede continuar preparando la visión del mundo, los personajes y el plan de ejecución del capítulo.",
       tone: "warning",
     };
   }
   if (canContinueDirector(task)) {
     return {
       kind: "novel",
-      eyebrow: "推荐下一步",
-      title: "继续准备整本小说",
+      eyebrow: "Siguiente paso recomendado",
+      title: "Continuar preparando toda la novela.",
       description: getNovelLeadSummary(primaryNovel),
-      reason: "当前阶段等待确认，继续后会推进到下一段可执行准备。",
+      reason: "La etapa actual está a la espera de confirmación. Después de continuar, avanzará a la siguiente etapa de preparación del ejecutable.",
       tone: "warning",
     };
   }
   if (task?.status === "running" || task?.status === "queued") {
     return {
       kind: "novel",
-      eyebrow: "AI 创作中",
-      title: "查看创作进度",
+      eyebrow: "Creación de IA en progreso",
+      title: "Ver el progreso de la creación",
       description: getNovelLeadSummary(primaryNovel),
-      reason: "自动导演或章节执行仍在后台处理，可以查看进度和最近阶段。",
+      reason: "La ejecución automática del director o capítulo todavía se está procesando en segundo plano y se pueden ver el progreso y las etapas recientes.",
       tone: "info",
     };
   }
   if (canEnterChapterExecution(task)) {
     return {
       kind: "novel",
-      eyebrow: "推荐下一步",
-      title: "开始创作章节",
+      eyebrow: "Siguiente paso recomendado",
+      title: "Comience a crear un capítulo",
       description: getNovelLeadSummary(primaryNovel),
-      reason: "规划资产已经能支撑章节生产，可以进入正文生成和审阅。",
+      reason: "Los activos de planificación ya pueden respaldar la producción de capítulos y pueden ingresar a la generación y revisión del texto.",
       tone: "success",
     };
   }
   if (task?.status === "failed" || task?.status === "cancelled") {
     return {
       kind: "novel",
-      eyebrow: "需要处理",
-      title: "处理创作中断",
+      eyebrow: "Requiere atención",
+      title: "Manejar las interrupciones creativas",
       description: getNovelLeadSummary(primaryNovel),
-      reason: "任务存在暂停或失败记录，先查看详情再决定恢复、重试或调整。",
+      reason: "Hay constancia de suspensión o fracaso de la tarea. Verifique los detalles antes de decidir reanudar, reintentar o ajustar.",
       tone: "danger",
     };
   }
   return {
     kind: "novel",
-    eyebrow: "推荐下一步",
-    title: "继续完善小说",
+    eyebrow: "Siguiente paso recomendado",
+    title: "Continuar mejorando la novela.",
     description: getNovelLeadSummary(primaryNovel),
-    reason: "没有更高优先级的阻塞项，可以回到项目主页继续完善资料或章节。",
+    reason: "Si no hay elementos de bloqueo con mayor prioridad, puede regresar a la página de inicio del proyecto para continuar mejorando los materiales o capítulos.",
     tone: "neutral",
   };
 }
@@ -286,30 +286,30 @@ export function buildHomeMetrics(input: {
   return [
     {
       id: "running",
-      title: "正在创作",
+      title: "Actualmente creando",
       value: liveWorkflowCount,
-      hint: "AI 正在推进的小说或章节。",
+      hint: "La novela o capítulo que avanza la IA.",
       tone: "info",
     },
     {
       id: "attention",
-      title: "等待你确认",
+      title: "Esperando tu confirmación",
       value: actionRequiredCount,
-      hint: "确认后即可继续创作的项目。",
+      hint: "Después de la confirmación, puede continuar creando el proyecto.",
       tone: actionRequiredCount > 0 ? "warning" : "success",
     },
     {
       id: "chapter-ready",
-      title: "可以开始写",
+      title: "Puedes empezar a escribir",
       value: readyForExecutionCount,
-      hint: "故事准备充分，可以进入正文。",
+      hint: "La historia está bien preparada y se puede introducir en el texto.",
       tone: readyForExecutionCount > 0 ? "success" : "neutral",
     },
     {
       id: "chapters",
-      title: "已写正文",
+      title: "El texto ha sido escrito.",
       value: totalChapterCount,
-      hint: "所有作品中持续积累的章节。",
+      hint: "Una acumulación continua de capítulos en todas las obras.",
       tone: totalChapterCount > 0 ? "info" : "neutral",
     },
   ];
@@ -324,16 +324,16 @@ export function buildHomeAttentionItems(
     const status = isHomeV2Novel(novel) ? novel.bookProgress?.director?.status : task?.status;
     const to = getHomeNovelActionHref(novel);
     const description = status === "waiting_gate" || getNovelWorkflowAttention(task) === "confirmation"
-      ? "等待确认本阶段结果"
-      : status === "failed" ? "创作中断，打开作品查看恢复方式"
-        : status === "cancelled" ? "本次创作已取消" : "创作已暂停，打开作品查看暂停原因";
+      ? "A la espera de confirmación de los resultados de esta etapa."
+      : status === "failed" ? "La creación se interrumpe, abre el trabajo para comprobar el método de recuperación."
+        : status === "cancelled" ? "Esta creación ha sido cancelada." : "La creación ha sido suspendida. Abra el trabajo para ver el motivo de la suspensión.";
     return {
       id: novel.id,
       title: novel.title,
-      description: to ? description : `${description}。创作入口暂不可用，请重新读取。`,
+      description: to ? description : `${description}. La entrada de creación no está disponible temporalmente, lea de nuevo.`,
       tone: status === "failed" ? "danger" : "warning",
       to: to ?? undefined,
-      actionLabel: isHomeV2Novel(novel) ? "打开导演台" : "打开作品",
+      actionLabel: isHomeV2Novel(novel) ? "Abre el escritorio del director." : "Trabajo abierto",
     };
   });
 }
@@ -353,32 +353,32 @@ export function buildHomeAssetHealthItems(novels: HomeNovelItem[]): HomeAssetHea
   return [
     {
       id: "world",
-      title: "世界观覆盖",
+      title: "Cobertura de visión mundial",
       value: totalNovels > 0 ? `${worldBoundCount}/${totalNovels}` : "0",
       description: totalNovels > 0
-        ? "绑定世界观的项目更容易在后续章节中保持规则一致。"
-        : "创建小说后，这里会显示世界观资产状态。",
+        ? "Los elementos que vinculan una visión del mundo hacen que sea más fácil mantener la coherencia de las reglas en los capítulos siguientes."
+        : "Después de crear una novela, el estado del activo de la visión del mundo se mostrará aquí.",
       tone: totalNovels === 0 ? "neutral" : worldBoundCount === totalNovels ? "success" : "warning",
     },
     {
       id: "characters",
-      title: "角色资产",
+      title: "Activos de carácter",
       value: String(totalCharacters),
-      description: "角色数量用于判断项目是否具备连续生成的基本资产。",
+      description: "La cantidad de caracteres se utiliza para determinar si el proyecto tiene los activos básicos para generarse continuamente.",
       tone: totalCharacters > 0 ? "success" : "warning",
     },
     {
       id: "chapters",
-      title: "章节沉淀",
+      title: "Precipitación del capítulo",
       value: String(totalChapters),
-      description: "章节越多，摘要、事实和角色时间线越需要稳定回灌。",
+      description: "Cuantos más capítulos tengas, más necesitarás una alimentación constante de resúmenes, hechos y líneas de tiempo de los personajes.",
       tone: totalChapters > 0 ? "info" : "neutral",
     },
     {
       id: "readiness",
-      title: "资源准备度",
+      title: "Preparación de recursos",
       value: averageResourceScore == null ? "--" : `${averageResourceScore}`,
-      description: "来自项目资料准备度的平均信号，用于辅助判断开写基础。",
+      description: "La señal promedio de la disponibilidad de los datos del proyecto se utiliza para ayudar a juzgar la base para la apertura y la redacción.",
       tone: averageResourceScore == null
         ? "neutral"
         : averageResourceScore >= 80

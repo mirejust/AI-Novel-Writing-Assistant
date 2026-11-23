@@ -1,8 +1,8 @@
 import type { NovelCorePipelineService } from "./novelCorePipelineService";
 import {canRecoverLegacyPipelineJob} from "../../modules/novel/director-routing";
 
-const SERVER_RESTART_RECOVERY_MESSAGE = "章节流水线任务因服务重启中断，正在尝试恢复。";
-const STALE_PIPELINE_RECOVERY_MESSAGE = "章节流水线任务心跳超时，正在尝试恢复。";
+const SERVER_RESTART_RECOVERY_MESSAGE = "La tarea de canalización del capítulo se interrumpió debido al reinicio del servicio y se está intentando restaurar.";
+const STALE_PIPELINE_RECOVERY_MESSAGE = "Se agotó el tiempo de espera del latido de la tarea de canalización del capítulo y se está intentando recuperar.";
 const DEFAULT_WATCHDOG_INTERVAL_MS = 60000;
 const DEFAULT_STALE_THRESHOLD_MS = 3 * 60 * 1000;
 
@@ -47,7 +47,7 @@ export class NovelPipelineRuntimeService {
     const rows = await this.pipelineService.listRecoverablePipelineJobs();
     for (const row of rows) {
       if (!await this.canRecover(row.id)) continue;
-      await this.pipelineService.markPipelineJobPendingManualRecovery(row.id, "服务重启后任务已暂停，等待手动恢复。");
+      await this.pipelineService.markPipelineJobPendingManualRecovery(row.id, "Una vez reiniciado el servicio, la tarea se suspendió y está esperando la recuperación manual.");
     }
   }
 
@@ -91,10 +91,10 @@ export class NovelPipelineRuntimeService {
       try {
         await this.pipelineService.resumePipelineJob(row.id);
       } catch (error) {
-        const message = error instanceof Error ? error.message : "章节流水线任务恢复失败。";
+        const message = error instanceof Error ? error.message : "Error en la recuperación de la tarea de canalización del capítulo.";
         await this.pipelineService.markPipelineJobPendingManualRecovery(
           row.id,
-          `${recoveryMessage} 恢复失败：${message}`,
+          `${recoveryMessage} La recuperación falló:${message}`,
         );
       }
     }
@@ -106,8 +106,8 @@ export class NovelPipelineRuntimeService {
       try {
         await this.pipelineService.markPipelineJobCancelled(row.id);
       } catch (error) {
-        const message = error instanceof Error ? error.message : "章节流水线任务取消收尾失败。";
-        await this.pipelineService.markPipelineJobFailed(row.id, `${SERVER_RESTART_RECOVERY_MESSAGE} 取消收尾失败：${message}`);
+        const message = error instanceof Error ? error.message : "La tarea de canalización del capítulo no logró cancelar el final.";
+        await this.pipelineService.markPipelineJobFailed(row.id, `${SERVER_RESTART_RECOVERY_MESSAGE} Error al cancelar el cierre:${message}`);
       }
     }
   }

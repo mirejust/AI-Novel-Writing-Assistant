@@ -23,18 +23,18 @@ export function toBindings(bindings?: CreativeHubResourceBinding): CreativeHubRe
 
 export function describeBindings(bindings: CreativeHubResourceBinding): string | null {
   const parts = [
-    bindings.novelId ? `小说ID=${bindings.novelId}` : null,
-    bindings.chapterId ? `章节ID=${bindings.chapterId}` : null,
-    bindings.worldId ? `世界观ID=${bindings.worldId}` : null,
-    bindings.taskId ? `任务ID=${bindings.taskId}` : null,
-    bindings.bookAnalysisId ? `拆书分析ID=${bindings.bookAnalysisId}` : null,
-    bindings.formulaId ? `写作公式ID=${bindings.formulaId}` : null,
-    bindings.styleProfileId ? `写法资产ID=${bindings.styleProfileId}` : null,
-    bindings.baseCharacterId ? `基础角色ID=${bindings.baseCharacterId}` : null,
-    bindings.knowledgeDocumentIds?.length ? `知识文档ID=${bindings.knowledgeDocumentIds.join(",")}` : null,
+    bindings.novelId ? `ID de novela =${bindings.novelId}` : null,
+    bindings.chapterId ? `ID del capítulo =${bindings.chapterId}` : null,
+    bindings.worldId ? `ID de cosmovisión=${bindings.worldId}` : null,
+    bindings.taskId ? `ID de tarea=${bindings.taskId}` : null,
+    bindings.bookAnalysisId ? `ID de análisis de libro abierto=${bindings.bookAnalysisId}` : null,
+    bindings.formulaId ? `Escribir fórmula ID=${bindings.formulaId}` : null,
+    bindings.styleProfileId ? `ID del activo del método de escritura =${bindings.styleProfileId}` : null,
+    bindings.baseCharacterId ? `ID de rol básico=${bindings.baseCharacterId}` : null,
+    bindings.knowledgeDocumentIds?.length ? `ID del documento de conocimiento=${bindings.knowledgeDocumentIds.join(",")}` : null,
   ].filter((item): item is string => Boolean(item));
 
-  return parts.length > 0 ? parts.join("，") : null;
+  return parts.length > 0 ? parts.join(",") : null;
 }
 
 export function prependBindingMessage(
@@ -50,7 +50,7 @@ export function prependBindingMessage(
     {
       id: "creative_hub_binding_context",
       type: "system",
-      content: `当前创作中枢绑定的工作区资源如下：${summary}。如需查询、诊断或控制，请优先围绕这些资源理解用户意图。`,
+      content: `Los recursos del espacio de trabajo actualmente vinculados al centro de creación son los siguientes:${summary}. Si necesita consultar, diagnosticar o controlar, dé prioridad a comprender la intención del usuario en torno a estos recursos.`,
       additional_kwargs: {
         source: "creative_hub_binding",
         bindings,
@@ -211,7 +211,7 @@ export function buildInterrupt(payload: {
     id: payload.approvalId,
     approvalId: payload.approvalId,
     runId: payload.runId,
-    title: "审批确认",
+    title: "Confirmación de aprobación",
     summary: payload.summary,
     targetType: payload.targetType,
     targetId: payload.targetId,

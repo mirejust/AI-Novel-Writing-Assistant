@@ -60,18 +60,18 @@ export default function ReferenceNovelStartDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <AppDialogContent
         className="max-w-3xl"
-        title="照着一本书写"
-        description="选择参考小说和创作方式，系统会自动带入拆书结论与写法。"
+        title="Escribir según un libro"
+        description="Seleccione la novela de referencia y el método de creación, y el sistema introducirá automáticamente la conclusión y el método de escritura del libro."
       >
         {!fixedAnalysis ? (
           <section>
-            <div className="text-sm font-medium text-foreground">选择参考小说</div>
+            <div className="text-sm font-medium text-foreground">Elige una novela de referencia</div>
             {analysesQuery.isLoading ? (
               <div className="mt-3 flex items-center gap-2 rounded-xl bg-muted/45 px-4 py-6 text-sm text-muted-foreground">
-                <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />正在读取可用小说…
+                <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />Leyendo novelas disponibles...
               </div>
             ) : analyses.length > 0 ? (
-              <div className="mt-3 max-h-56 space-y-1 overflow-y-auto rounded-xl bg-muted/35 p-2" role="radiogroup" aria-label="参考小说">
+              <div className="mt-3 max-h-56 space-y-1 overflow-y-auto rounded-xl bg-muted/35 p-2" role="radiogroup" aria-label="Novela de referencia">
                 {analyses.map((analysis) => {
                   const selected = analysis.id === selectedAnalysis?.id;
                   return (
@@ -94,27 +94,27 @@ export default function ReferenceNovelStartDialog({
               </div>
             ) : (
               <div className="mt-3 rounded-xl bg-muted/45 px-4 py-5 text-sm text-muted-foreground">
-                <p>还没有完成拆书的参考小说。</p>
-                <Button type="button" variant="ghost" className="mt-2 h-auto p-0 text-primary hover:bg-transparent" onClick={() => navigate("/book-analysis")}>导入并分析参考小说</Button>
+                <p>Todavía no he terminado de desempacar la novela de referencia.</p>
+                <Button type="button" variant="ghost" className="mt-2 h-auto p-0 text-primary hover:bg-transparent" onClick={() => navigate("/book-analysis")}>Importar y analizar novelas de referencia.</Button>
               </div>
             )}
           </section>
         ) : (
           <div className="rounded-xl bg-muted/40 px-4 py-3">
-            <div className="text-xs text-muted-foreground">参考小说</div>
+            <div className="text-xs text-muted-foreground">Novela de referencia</div>
             <div className="mt-1 font-medium text-foreground">{fixedAnalysis.documentTitle}</div>
           </div>
         )}
 
-        <section className="mt-5" aria-label="作品规模">
-          <div className="text-sm font-medium">选择作品规模</div>
+        <section className="mt-5" aria-label="Escala de trabajo">
+          <div className="text-sm font-medium">Elige el tamaño de tu obra</div>
           <div className="mt-3 flex flex-wrap gap-2">
-            <Button type="button" variant={targetForm === "long_novel" ? "default" : "outline"} aria-pressed={targetForm === "long_novel"} onClick={() => setTargetForm("long_novel")}>长篇小说</Button>
-            <Button type="button" variant={targetForm === "short_story" ? "default" : "outline"} aria-pressed={targetForm === "short_story"} onClick={() => setTargetForm("short_story")}>短篇 · 3,000—30,000 字</Button>
+            <Button type="button" variant={targetForm === "long_novel" ? "default" : "outline"} aria-pressed={targetForm === "long_novel"} onClick={() => setTargetForm("long_novel")}>Novedoso</Button>
+            <Button type="button" variant={targetForm === "short_story" ? "default" : "outline"} aria-pressed={targetForm === "short_story"} onClick={() => setTargetForm("short_story")}>Cuento breve · 3000—30 000 palabras</Button>
           </div>
         </section>
         <section className="mt-5">
-          <div className="text-sm font-medium text-foreground">选择创作方式</div>
+          <div className="text-sm font-medium text-foreground">Elige cómo crear</div>
           <div className="mt-3 grid gap-3 sm:grid-cols-2">
             <button
               type="button"
@@ -123,8 +123,8 @@ export default function ReferenceNovelStartDialog({
               onClick={() => startCreation("continuation")}
             >
               <BookOpen className="h-5 w-5" aria-hidden="true" />
-              <div className="mt-4 font-semibold text-foreground">续写原作</div>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">{targetForm === "short_story" ? "续写原作请选长篇；短篇支持借鉴方法、创作新故事。" : "保留角色、世界规则、时间线与未完线索，从原作结尾继续写。"}</p>
+              <div className="mt-4 font-semibold text-foreground">Continuación del trabajo original.</div>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">{targetForm === "short_story" ? "Si quieres seguir escribiendo una obra original, elige una larga; Las historias cortas apoyan los métodos de préstamo y la creación de nuevas historias." : "Conserva los personajes, las reglas del mundo, la línea de tiempo y las pistas inacabadas, y continúa escribiendo desde el final de la obra original."}</p>
             </button>
             <button
               type="button"
@@ -133,8 +133,8 @@ export default function ReferenceNovelStartDialog({
               onClick={() => startCreation("adaptation")}
             >
               <GitBranch className="h-5 w-5" aria-hidden="true" />
-              <div className="mt-4 font-semibold text-foreground">{targetForm === "short_story" ? "参考创作新短篇" : "参考创作新书"}</div>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">参考结构、节奏和写法，重新生成角色、世界与剧情。</p>
+              <div className="mt-4 font-semibold text-foreground">{targetForm === "short_story" ? "Crear nuevas historias cortas con referencia." : "Creación de referencia nuevo libro."}</div>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">En referencia a la estructura, el ritmo y la escritura, se regeneran personajes, mundo y trama.</p>
             </button>
           </div>
         </section>

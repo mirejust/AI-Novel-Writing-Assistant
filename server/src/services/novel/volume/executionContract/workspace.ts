@@ -11,10 +11,10 @@ export async function readExecutionContractWorkspace(
     db.volumePlan.findMany({ where: { novelId }, select: { id: true } }),
     db.volumePlanVersion.findFirst({ where: { novelId, status: "active" }, orderBy: { version: "desc" } }),
   ]);
-  if (!rows.length || !version) throw new Error("请返回来源页完成卷规划与章节同步，再生成正文。");
+  if (!rows.length || !version) throw new Error("Regrese a la página de origen para completar la planificación del volumen y la sincronización de capítulos, y luego genere el texto principal.");
   const document = normalizeVolumeWorkspaceDocument(novelId, version.contentJson, { source: "volume", activeVersionId: version.id });
   if (!document.volumes.length || document.volumes.some(volume => !rows.some(row => row.id === volume.id))) {
-    throw new Error("卷规划来源与章节记录不一致，请返回来源页完成同步。");
+    throw new Error("La fuente de planificación del volumen no coincide con el registro del capítulo. Regrese a la página de origen para completar la sincronización.");
   }
   return document;
 }

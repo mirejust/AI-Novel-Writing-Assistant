@@ -9,8 +9,8 @@ import {
 import { characterLibrarySyncService } from "./CharacterLibrarySyncService";
 import { buildReferenceContext } from "./characterGenerateReference";
 
-const STORY_FUNCTION_VALUES = ["主角", "反派", "导师", "对照组", "配角"] as const;
-const GROWTH_STAGE_VALUES = ["起点", "受挫", "转折", "觉醒", "收束"] as const;
+const STORY_FUNCTION_VALUES = ["Protagonista", "Villano", "Mentor", "grupo de control", "Secundario"] as const;
+const GROWTH_STAGE_VALUES = ["punto de partida", "frustrado", "momento crucial", "Despertar", "embalar"] as const;
 
 export const characterGenerateConstraintsSchema = z.object({
   storyFunction: z.enum(STORY_FUNCTION_VALUES).optional(),
@@ -107,27 +107,27 @@ function assertConstraintConsistency(category: string, constraints: CharacterGen
   const normalizedCategory = category.trim();
   const categoryInSet = STORY_FUNCTION_VALUES.includes(normalizedCategory as (typeof STORY_FUNCTION_VALUES)[number]);
   if (categoryInSet && normalizedCategory !== constraints.storyFunction) {
-    throw new Error(`约束冲突：角色类别“${normalizedCategory}”与故事功能位“${constraints.storyFunction}”不一致，请统一后再试。`);
+    throw new Error(`Violación de restricción: clase de rol"${normalizedCategory}"bits con funcion historia"${constraints.storyFunction}"Inconsistente, unifique y vuelva a intentarlo.`);
   }
 }
 
 function buildConstraintsText(constraints: CharacterGenerateConstraints | null): string {
   if (!constraints) {
-    return "无";
+    return "Ninguno";
   }
   const lines = [
-    constraints.storyFunction ? `角色功能位：${constraints.storyFunction}` : "",
-    constraints.externalGoal ? `外显目标：${constraints.externalGoal}` : "",
-    constraints.internalNeed ? `内在需求：${constraints.internalNeed}` : "",
-    constraints.coreFear ? `核心恐惧：${constraints.coreFear}` : "",
-    constraints.moralBottomLine ? `道德底线：${constraints.moralBottomLine}` : "",
-    constraints.secret ? `秘密：${constraints.secret}` : "",
-    constraints.coreFlaw ? `核心缺陷：${constraints.coreFlaw}` : "",
-    constraints.relationshipHooks ? `关系钩子：${constraints.relationshipHooks}` : "",
-    constraints.growthStage ? `成长阶段：${constraints.growthStage}` : "",
-    constraints.toneStyle ? `风格语气：${constraints.toneStyle}` : "",
+    constraints.storyFunction ? `Bits de función de rol:${constraints.storyFunction}` : "",
+    constraints.externalGoal ? `Objetivos explícitos:${constraints.externalGoal}` : "",
+    constraints.internalNeed ? `Necesidades internas:${constraints.internalNeed}` : "",
+    constraints.coreFear ? `Miedo central:${constraints.coreFear}` : "",
+    constraints.moralBottomLine ? `Conclusión moral:${constraints.moralBottomLine}` : "",
+    constraints.secret ? `secreto:${constraints.secret}` : "",
+    constraints.coreFlaw ? `Defectos principales:${constraints.coreFlaw}` : "",
+    constraints.relationshipHooks ? `Gancho de relación:${constraints.relationshipHooks}` : "",
+    constraints.growthStage ? `Etapa de crecimiento:${constraints.growthStage}` : "",
+    constraints.toneStyle ? `Estilo y tono:${constraints.toneStyle}` : "",
   ].filter(Boolean);
-  return lines.length > 0 ? lines.join("\n") : "无";
+  return lines.length > 0 ? lines.join("\n") : "Ninguno";
 }
 
 async function invokeJsonWithRetry(
@@ -181,7 +181,7 @@ async function invokeJsonWithRetry(
       });
     return { parsed: result.output as Record<string, unknown>, retried: false, rawText: "" };
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : `模型输出异常：${stageLabel}阶段无法解析。`;
+    const errorMessage = error instanceof Error ? error.message : `Excepción de salida del modelo:${stageLabel}La etapa no se puede analizar.`;
     return { parsed: null, retried: false, rawText: "", errorMessage };
   }
 }
@@ -400,7 +400,7 @@ export async function generateBaseCharacterFromAI(input: CharacterGenerateInput)
   const data = await prisma.baseCharacter.create({
     data: finalPayload,
   });
-  await characterLibrarySyncService.createBaseRevision(data.id, "AI 生成角色库角色。", "ai_base_character_generate");
+  await characterLibrarySyncService.createBaseRevision(data.id, "Personajes de biblioteca de personajes generados por IA.", "ai_base_character_generate");
 
   console.info("[base-characters.generate] done", {
     outputAnomaly,

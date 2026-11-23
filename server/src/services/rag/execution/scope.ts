@@ -50,5 +50,5 @@ export async function scopedRagFetch(input: RagHttpRequest, send: () => Promise<
 export class RagIndexUnavailableError extends Error {
   readonly code = "production_rag_index_not_ready";
   readonly sourceRoute = "/knowledge";
-  constructor(cause?: unknown) {super("知识库索引尚未就绪，请到知识库页面检查集合与索引后继续。", {cause}); this.name = "RagIndexUnavailableError";}
+  constructor(cause?: unknown) {super("El índice de la base de conocimientos aún no está listo. Vaya a la página de la base de conocimientos para comprobar la colección y el índice antes de continuar.", {cause}); this.name = "RagIndexUnavailableError";}
 }

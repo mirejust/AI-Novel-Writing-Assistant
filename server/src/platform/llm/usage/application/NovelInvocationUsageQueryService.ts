@@ -12,7 +12,7 @@ export interface NovelUsageScope {
   generationJobIds: string[];
 }
 
-const badPaging = () => Object.assign(new Error("分页位置无效或不属于本书及当前筛选。"), { statusCode: 400 });
+const badPaging = () => Object.assign(new Error("La posición de paginación no es válida o no pertenece a este libro ni al filtro actual."), { statusCode: 400 });
 const filterKeys = ["chapterId", "stage", "provider", "model", "status"] as const;
 
 /** Pure read projection over distinct invocation IDs; never combines task counter totals. */
@@ -27,9 +27,9 @@ export class NovelInvocationUsageQueryService {
     const limit = query.limit ?? 30;
     if (!Number.isInteger(limit) || limit < 1 || limit > 100) throw Object.assign(new Error("invalid usage limit"), { statusCode: 400 });
     const scope = await this.loadScope(novelId);
-    if (!scope || scope.novel.id !== novelId) throw Object.assign(new Error("找不到这本小说。"), { statusCode: 404 });
+    if (!scope || scope.novel.id !== novelId) throw Object.assign(new Error("No se puede encontrar la novela."), { statusCode: 404 });
     if (query.chapterId && !scope.chapters.some(chapter => chapter.id === query.chapterId)) {
-      throw Object.assign(new Error("筛选章节不属于这本小说。"), { statusCode: 400 });
+      throw Object.assign(new Error("Los capítulos filtrados no pertenecen a esta novela."), { statusCode: 400 });
     }
     const filters = Object.fromEntries(filterKeys.filter(key => query[key] !== undefined).map(key => [key, query[key]]));
     const identity = createHash("sha256").update(JSON.stringify({ novelId, ...filters })).digest("hex");
@@ -78,7 +78,7 @@ export class NovelInvocationUsageQueryService {
       novel: scope.novel, summary: projectNovelUsage(groups), filteredSummary: projectNovelUsage(filteredGroups), items,
       chapterBreakdown: chapterIds.map(chapterId => {
         const chapter = chapterId ? chapterMap.get(chapterId) : null;
-        return { chapterId, label: chapter ? `第 ${chapter.order} 章 · ${chapter.title}` : chapterId ? "章节信息未记录" : "书级规划及未归属章节的调用",
+        return { chapterId, label: chapter ? `Cap. ${chapter.order} capítulo · ${chapter.title}` : chapterId ? "La información del capítulo no se registra." : "Planificación a nivel de libro y convocatoria de capítulos no atribuidos.",
           ...projectNovelUsage(groups.filter(g => g.chapterId === chapterId)) };
       }).sort((a, b) => (b.totalTokens ?? 0) - (a.totalTokens ?? 0)),
       facets: { chapters: scope.chapters, stages: values("stage"), providers: values("provider"), models: values("model") },
@@ -98,10 +98,10 @@ export class NovelInvocationUsageQueryService {
   }
   async getInvocation(novelId: string, invocationId: string): Promise<LlmInvocationDetail> {
     const scope = await this.loadScope(novelId);
-    if (!scope || scope.novel.id !== novelId) throw Object.assign(new Error("找不到这本小说。"), { statusCode: 404 });
+    if (!scope || scope.novel.id !== novelId) throw Object.assign(new Error("No se puede encontrar la novela."), { statusCode: 404 });
     const bookWhere = this.bookWhere(novelId, scope);
     const [row] = await this.rows.findMany({ where: { AND: [bookWhere, { id: invocationId }] }, take: 1 });
-    if (!row) throw Object.assign(new Error("找不到本书的调用记录。"), { statusCode: 404 });
+    if (!row) throw Object.assign(new Error("No se puede encontrar el registro de llamadas de este libro."), { statusCode: 404 });
     const chain = row.chainId ? await this.rows.findMany({ where: { AND: [bookWhere, { chainId: row.chainId }] }, orderBy: [{ attemptNumber: "asc" }, { id: "asc" }] }) : [row];
     return { item: projectInvocation(row), chain: chain.map(projectInvocation), payload: await this.payloads?.read(row.id) ?? null };
   }

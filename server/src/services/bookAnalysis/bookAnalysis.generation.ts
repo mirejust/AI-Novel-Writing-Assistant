@@ -62,7 +62,7 @@ function getRemainingSectionProgress(completed: number, total: number, startProg
 
 function assertReadableSectionResult(result: SectionGenerationResult): void {
   if (!result.markdown.trim()) {
-    throw new Error("AI 未返回可展示的拆书正文，请检查模型配置后重试。");
+    throw new Error("AI no devolvió el texto visualizable del libro abierto. Verifique la configuración del modelo e inténtelo nuevamente.");
   }
 }
 

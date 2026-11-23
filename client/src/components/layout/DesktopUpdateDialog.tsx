@@ -15,8 +15,8 @@ export default function DesktopUpdateDialog({ trigger }: DesktopUpdateDialogProp
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <AppDialogContent
         className="max-w-2xl"
-        title="版本与更新"
-        description="查看桌面版状态，并在确认后下载和安装新版本。"
+        title="Versiones y actualizaciones"
+        description="Verifique el estado de la versión de escritorio y descargue e instale la nueva versión después de la confirmación."
       >
         <DesktopUpdatePanel updater={updater} />
       </AppDialogContent>

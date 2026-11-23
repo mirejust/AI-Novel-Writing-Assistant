@@ -25,7 +25,7 @@ export function createWorldSetupStepHandler<Provider extends string>(dependencie
   return async context => {
     const input = await dependencies.inputProvider(context);
     if (!input.storyInput.trim() || !input.storyMacroContext.trim() || !input.bookContractContext.trim()) {
-      throw new Error("世界准备缺少故事想法、故事宏观规划或书级创作约定。");
+      throw new Error("La preparación mundial carece de ideas para historias, grandes planes para historias o convenciones de escritura a nivel de libro.");
     }
     const novelId = context.contract.novelId;
     if (input.worldMode === "skip") {
@@ -34,7 +34,7 @@ export function createWorldSetupStepHandler<Provider extends string>(dependencie
         contentHash: dependencies.contentHash({novelId, worldMode: "skip"})}};
     }
     const existing = await dependencies.worldService.hasActiveWorld(novelId);
-    if (!existing && input.worldMode === "reuse") throw new Error("本书缺少可复用的世界设定。");
+    if (!existing && input.worldMode === "reuse") throw new Error("Este libro carece de un escenario mundial reutilizable.");
     if (!existing) {
       await dependencies.worldService.generateWorldFromNovelTheme(novelId, {
         saveToLibrary: false,
@@ -54,7 +54,7 @@ export function createWorldSetupStepHandler<Provider extends string>(dependencie
       model: input.model,
       temperature: input.temperature,
     });
-    if (!block) throw new Error("本书世界上下文未保存，不能完成世界准备。");
+    if (!block) throw new Error("El contexto mundial de este libro no se salva y la preparación mundial no se puede completar.");
     return {
       artifact: {
         scope: context.contract.scope,

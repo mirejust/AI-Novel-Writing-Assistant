@@ -23,18 +23,18 @@ interface DirectorBadgeProps {
 
 function statusLabel(mode: DashboardView["mode"]): string {
   switch (mode) {
-    case "queued": return "等待开始";
-    case "running": return "推进中";
-    case "waiting_gate": return "等待确认";
-    case "paused": return "暂停中";
-    case "completed": return "已完成";
-    case "failed": return "需要处理";
-    case "cancelled": return "已取消";
+    case "queued": return "Esperando para comenzar";
+    case "running": return "Avanzando";
+    case "waiting_gate": return "Esperando confirmación";
+    case "paused": return "En pausa";
+    case "completed": return "Completado";
+    case "failed": return "Requiere atención";
+    case "cancelled": return "Cancelado";
   }
 }
 
 function driverLabel(driver: DashboardView["driver"]): string {
-  return driver === "auto" ? "全自动推进" : "按阶段确认（半自动）";
+  return driver === "auto" ? "Propulsión totalmente automática" : "Confirmar por etapa (semiautomático)";
 }
 
 function statusTone(mode: DashboardView["mode"]): string {
@@ -75,7 +75,7 @@ export default function DirectorBadge({ view, novelId, onActionComplete, compact
   const mutation = useMutation({
     mutationFn: (action: DirectorAction) => {
       const command = commandFor(action, view, novelId);
-      if (!command) throw new Error("当前动作需要从来源页处理。");
+      if (!command) throw new Error("La acción actual debe procesarse desde la página de origen.");
       return submitDirectorCommand(command);
     },
     onSuccess: async () => {
@@ -104,8 +104,8 @@ export default function DirectorBadge({ view, novelId, onActionComplete, compact
   );
 
   if (modeOnly) return (
-    <span className="inline-flex max-w-full items-center rounded-md bg-primary/10 px-3 py-1.5 text-sm font-semibold text-foreground" aria-label="当前创作模式">
-      当前模式：{driverLabel(view.driver)}
+    <span className="inline-flex max-w-full items-center rounded-md bg-primary/10 px-3 py-1.5 text-sm font-semibold text-foreground" aria-label="Modo de creación actual">
+      Modo actual:{driverLabel(view.driver)}
     </span>
   );
 
@@ -135,7 +135,7 @@ export default function DirectorBadge({ view, novelId, onActionComplete, compact
           disabled={preview || mutation.isPending}
           onClick={() => mutation.mutate(action)}
         >
-          {mutation.isPending && primary ? "处理中…" : action.label}
+          {mutation.isPending && primary ? "Procesando…" : action.label}
         </Button>
       );
     }
@@ -143,7 +143,7 @@ export default function DirectorBadge({ view, novelId, onActionComplete, compact
   };
 
   return (
-    <section className={cn("flex min-w-0 flex-col gap-3", !panel && (compact ? "py-1" : "py-3"))} aria-label="导演状态">
+    <section className={cn("flex min-w-0 flex-col gap-3", !panel && (compact ? "py-1" : "py-3"))} aria-label="Estatus de director">
       <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1">
         <Badge variant="outline" className={cn("flex shrink-0 items-center gap-1.5", statusTone(view.mode),
           panel && view.mode === "completed" && "border-transparent bg-success/10 text-success",
@@ -151,7 +151,7 @@ export default function DirectorBadge({ view, novelId, onActionComplete, compact
           <StatusIcon mode={view.mode} />
           {statusLabel(view.mode)}
         </Badge>
-        <span className="text-xs font-medium leading-6 text-muted-foreground" aria-label="创作方式">模式：{driverLabel(view.driver)}</span>
+        <span className="text-xs font-medium leading-6 text-muted-foreground" aria-label="Método de creación">Modo:{driverLabel(view.driver)}</span>
       </div>
       {panel ? <h2 className="break-words text-xl font-semibold leading-snug tracking-tight">{view.headline}</h2>
         : <p className="min-w-0 break-words text-sm leading-6 text-foreground" title={view.headline}>{view.headline}</p>}
@@ -159,7 +159,7 @@ export default function DirectorBadge({ view, novelId, onActionComplete, compact
         {primaryAction ? renderAction(primaryAction, true) : null}
         {secondaryActions.map((action) => renderAction(action, false))}
       </div>}
-      {mutation.isError ? <p role="alert" className="w-full text-sm text-destructive">{mutation.error instanceof Error ? mutation.error.message : "动作提交失败。"}</p> : null}
+      {mutation.isError ? <p role="alert" className="w-full text-sm text-destructive">{mutation.error instanceof Error ? mutation.error.message : "Error al enviar la acción."}</p> : null}
     </section>
   );
 }

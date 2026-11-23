@@ -352,9 +352,9 @@ export class BookAnalysisCharacterService {
     await this.assertAnalysisWritable(analysisId);
     await this.upsertCandidateRows(analysisId, names.map((name) => ({
       name,
-      role: "待分析角色",
+      role: "Papel a analizar",
       importance: "medium",
-      briefDescription: "用户指定的角色候选。",
+      briefDescription: "Candidatos de rol especificados por el usuario.",
       occurringChapters: [],
     })));
   }
@@ -613,13 +613,13 @@ export class BookAnalysisCharacterService {
         }));
     }
     const profileByDimension: Partial<Record<BookAnalysisCharacterDimension, string>> = {
-      basic: [profile.name, profile.role].filter(Boolean).join("："),
-      appearance: [profile.appearance, profile.physique, profile.attireStyle, profile.signatureDetail].filter(Boolean).join("；"),
+      basic: [profile.name, profile.role].filter(Boolean).join(":"),
+      appearance: [profile.appearance, profile.physique, profile.attireStyle, profile.signatureDetail].filter(Boolean).join(";"),
       personality: profile.personality,
-      motivation: [profile.outerGoal, profile.innerNeed, profile.fear, profile.wound, profile.misbelief].filter(Boolean).join("；"),
+      motivation: [profile.outerGoal, profile.innerNeed, profile.fear, profile.wound, profile.misbelief].filter(Boolean).join(";"),
       arc: profile.growthTrajectory,
-      relations: profile.keyRelations?.map((item) => `${item.targetName}：${item.relationType}${item.description ? `，${item.description}` : ""}`).join("；"),
-      scenes: profile.highlightScenes?.map((item) => `${item.sceneLabel}：${item.performance}`).join("；"),
+      relations: profile.keyRelations?.map((item) => `${item.targetName}:${item.relationType}${item.description ? `,${item.description}` : ""}`).join(";"),
+      scenes: profile.highlightScenes?.map((item) => `${item.sceneLabel}:${item.performance}`).join(";"),
       languageStyle: profile.speakingStyle,
       values: profile.values,
     };

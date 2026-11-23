@@ -82,7 +82,7 @@ export class DramaProjectService {
   async assembleSourceBundle(projectId: string): Promise<SourceBundle> {
     const project = await prisma.dramaProject.findUnique({ where: { id: projectId } });
     if (!project) {
-      throw new Error(`未找到短剧项目：${projectId}`);
+      throw new Error(`Elementos dramáticos cortos no encontrados:${projectId}`);
     }
 
     const adapter = sourceContentRegistry.resolve(project.source as DramaSourceType);

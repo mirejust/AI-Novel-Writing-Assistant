@@ -21,41 +21,41 @@ export function mapOutlineGenerateFailure(error: unknown, kind: "edit" | "initia
     ? error.category
     : extractStructuredOutputErrorCategory(error instanceof Error ? error.message : String(error ?? ""));
   if (!category) return error;
-  const noun = kind === "edit" ? "修改建议" : "大纲建议";
+  const noun = kind === "edit" ? "Sugerencias de modificación" : "sugerencias de esquema";
   switch (category) {
     case "schema_mismatch": {
       const stripped = (error instanceof Error ? error.message : String(error ?? ""))
         .replace(/\[STRUCTURED_OUTPUT:[^\]]+\]\s*/g, "")
         .replace(/\[[^\]]+@v\d+\]\s*/g, "")
         .trim();
-      const marker = stripped.lastIndexOf("错误：");
-      const rawDetail = (marker >= 0 ? stripped.slice(marker + "错误：".length) : stripped).replace(/^[-\s]+/, "").trim();
+      const marker = stripped.lastIndexOf("error:");
+      const rawDetail = (marker >= 0 ? stripped.slice(marker + "error:".length) : stripped).replace(/^[-\s]+/, "").trim();
       const detail = rawDetail.replace(/[。]+$/, "");
       return detail
-        ? new AppError(`模型返回的${noun}格式有误，自动修复后仍未通过校验：${detail}。请重新生成提案。`, 400)
-        : new AppError(`模型返回的${noun}格式有误，自动修复后仍未通过校验。请重新生成提案。`, 400);
+        ? new AppError(`devuelto por el modelo${noun}El formato es incorrecto y la verificación aún falla después de la reparación automática:${detail}. Por favor regenera la propuesta.`, 400)
+        : new AppError(`devuelto por el modelo${noun}The format is incorrect and it still fails the verification after automatic repair. Por favor regenera la propuesta.`, 400);
     }
     case "incomplete_json":
     case "malformed_json":
-      return new AppError(`模型返回的${noun}不完整，未能通过校验。请重新生成提案。`, 400);
+      return new AppError(`devuelto por el modelo${noun}Incompleto, no pasó la verificación. Por favor regenera la propuesta.`, 400);
     case "output_budget_exhausted":
     case "reasoning_budget_exhausted":
       return new AppError(
         kind === "edit"
-          ? "这次要生成的内容较多，超出了单次输出上限。请分批提出修改（例如先改前几卷），或调高模型路线的输出上限后重试。"
-          : "这次要生成的内容较多，超出了单次输出上限。请先生成部分内容（例如先定卷和前几章），或调高模型路线的输出上限后重试。",
+          ? "This time there is a lot of content to be generated, exceeding the single output limit. Proponga modificaciones en lotes (por ejemplo, modifique los primeros volúmenes primero) o aumente el límite de salida de la ruta del modelo e inténtelo nuevamente."
+          : "This time there is a lot of content to be generated, exceeding the single output limit. Primero genere algún contenido (como configurar el volumen y los primeros capítulos) o aumente el límite de salida de la ruta del modelo e inténtelo nuevamente.",
         400,
       );
     case "empty_response":
-      return new AppError("模型没有返回内容，请重新生成提案。", 400);
+      return new AppError("El modelo no devolvió contenido, por favor regenera la propuesta.", 400);
     case "thinking_pollution":
-      return new AppError(`模型返回的${noun}中混入了思考过程，未能通过校验。请重新生成提案，或在厂商设置里关闭深度思考后重试。`, 400);
+      return new AppError(`devuelto por el modelo${noun}El proceso de pensamiento se mezcló y no pasó la prueba. Vuelva a generar la propuesta o desactive Deep Thinking en la configuración del fabricante e inténtelo de nuevo.`, 400);
     case "unsupported_native_json":
-      return new AppError("当前模型不支持本次需要的结构化输出格式，请换一个模型后重试。", 400);
+      return new AppError("El modelo actual no admite el formato de salida estructurado requerido esta vez. Cambie el modelo e inténtelo de nuevo.", 400);
     case "transport_error":
-      return new AppError("连接模型服务时发生网络错误，请检查模型服务后重试。", 502);
+      return new AppError("Se produjo un error de red al conectarse al servicio modelo. Verifique el servicio del modelo e inténtelo nuevamente.", 502);
     case "model_unavailable":
-      return new AppError("模型服务暂时不可用，请稍后重试。", 502);
+      return new AppError("El servicio de modelo no está disponible temporalmente, inténtalo de nuevo más tarde.", 502);
     default:
       return error;
   }
@@ -65,7 +65,7 @@ export class OutlineProposalService {
   constructor(private readonly repository: OutlineRepository) {}
   async generate(projectId: string, request: { kind: "edit" | "initial_generation"; requestText: string; scope?: string }) {
     const current = await this.repository.getCurrent(projectId);
-    if (!current || !current.revision) throw new AppError("大纲项目不存在", 404);
+    if (!current || !current.revision) throw new AppError("El elemento del esquema no existe", 404);
     const document = validateOutlineDocument(JSON.parse(current.revision.documentJson));
     const baseVersion = current.project.currentVersion;
     let result: Awaited<ReturnType<typeof runOutlineProposalStructuredCall>>;
@@ -86,21 +86,21 @@ export class OutlineProposalService {
   }
   async apply(projectId: string, proposalId: string, operationIds: string[], feedbackAuthorized = false) {
     const proposal = await this.repository.findProposal(projectId, proposalId);
-    if (proposal?.kind === "text_feedback" && !feedbackAuthorized) throw new AppError("请从章节反馈逐项采纳建议。", 409);
-    if (!proposal || !["pending"].includes(proposal.status)) throw new AppError("此提案不可采纳", 409, "请重新生成提案后再采纳。");
+    if (proposal?.kind === "text_feedback" && !feedbackAuthorized) throw new AppError("Adopte las sugerencias una por una de los comentarios del capítulo.", 409);
+    if (!proposal || !["pending"].includes(proposal.status)) throw new AppError("Esta propuesta no es aceptable.", 409, "Por favor regenere la propuesta antes de adoptarla.");
     const current = await this.repository.getCurrent(projectId);
-    if (!current || current.project.currentVersion !== proposal.baseVersion) throw new AppError("大纲已更新，请重新生成提案。", 409);
-    if (proposal.kind === "chapter_edit" && !operationIds.length) throw new AppError("请选择要采纳的章纲修改。", 400);
-    if (proposal.kind === "volume_edit" && !operationIds.length) throw new AppError("请选择要采纳的卷纲修改。", 400);
-    if (proposal.kind === "character_impact" && !operationIds.length) throw new AppError("请选择要采纳的人物联动修改。", 400);
-    if (proposal.kind === "edit" && proposal.promptId === "outline.workbench_dialogue" && !operationIds.length) throw new AppError("请选择要采纳的修改。", 400);
+    if (!current || current.project.currentVersion !== proposal.baseVersion) throw new AppError("El esquema ha sido actualizado, por favor regenere la propuesta.", 409);
+    if (proposal.kind === "chapter_edit" && !operationIds.length) throw new AppError("Seleccione los cambios del programa de estudios que se adoptarán.", 400);
+    if (proposal.kind === "volume_edit" && !operationIds.length) throw new AppError("Seleccione los cambios del programa de estudios que se adoptarán.", 400);
+    if (proposal.kind === "character_impact" && !operationIds.length) throw new AppError("Seleccione la modificación de vinculación de caracteres que desea adoptar.", 400);
+    if (proposal.kind === "edit" && proposal.promptId === "outline.workbench_dialogue" && !operationIds.length) throw new AppError("Seleccione las ediciones que desee adoptar.", 400);
     if (proposal.kind === "initial_generation") {
       const initial = JSON.parse(proposal.proposalJson) as SavedInitialOutlineDraft;
       const referenceError = initialReferenceError(initial);
       if (referenceError) throw new AppError(referenceError, 422);
       const refs = new Map<string, string>();
       for (const item of [...initial.volumes, ...initial.chapters, ...initial.characters, ...initial.payoffs, ...initial.facts]) refs.set(item.clientRef, randomUUID());
-      const document = createEmptyOutlineDocument(String(initial.storyFields.title ?? "新大纲"));
+      const document = createEmptyOutlineDocument(String(initial.storyFields.title ?? "nuevo esquema"));
       Object.assign(document.story, initial.storyFields);
       document.volumes = initial.volumes.map((x,index)=>({ nodeId: refs.get(x.clientRef)!, title: x.title, summary: x.summary, order: index, planningDepth: x.planningDepth, ...(x.beats && {beats:x.beats}), chapterNodeIds: [] }));
       document.chapters = initial.chapters.map((x,index)=>({ nodeId: refs.get(x.clientRef)!, volumeNodeId: refs.get(x.volumeRef)!, ...(x.beatKey && {beatKey:x.beatKey}), title: x.title, summary: x.summary, order: index, planningDepth: x.planningDepth, characterNodeIds: [], payoffNodeIds: [] }));
@@ -119,7 +119,7 @@ export class OutlineProposalService {
     const payload = JSON.parse(proposal.proposalJson) as { operations: OutlineEditOperation[] };
     const document = validateOutlineDocument(JSON.parse(current.revision!.documentJson));
     if (proposal.kind === "volume_beats" && operationIds.length > 0 && (new Set(operationIds).size !== payload.operations.length || payload.operations.some(op => !operationIds.includes(op.operationId))))
-      throw new AppError("节奏板和本卷章节归属需一起采纳。",400);
+      throw new AppError("El tablero rítmico debe adoptarse junto con las atribuciones de los capítulos de este volumen.",400);
     const selectedIds = operationIds.length ? operationIds : payload.operations.map((operation) => operation.operationId);
     try {
       assertValidOutlineEditOperations(payload.operations, { document, selectedOperationIds: selectedIds });
@@ -139,8 +139,8 @@ export class OutlineProposalService {
   get(projectId: string, proposalId: string) { return this.repository.findProposal(projectId, proposalId); }
   async reject(projectId: string, proposalId: string) {
     const proposal = await this.repository.findProposal(projectId, proposalId);
-    if (proposal?.kind === "text_feedback") throw new AppError("请从章节反馈逐项拒绝建议。", 409);
-    if (!proposal || proposal.status !== "pending") throw new AppError("此提案不可放弃", 409);
+    if (proposal?.kind === "text_feedback") throw new AppError("Rechace las sugerencias artículo por artículo de los comentarios del capítulo.", 409);
+    if (!proposal || proposal.status !== "pending") throw new AppError("Esta propuesta no puede abandonarse.", 409);
     return this.repository.updateProposalStatus(proposalId, "rejected");
   }
 }

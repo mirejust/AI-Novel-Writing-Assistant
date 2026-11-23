@@ -68,7 +68,7 @@ export function useNovelWorldSlice({
       temperature: llm.temperature,
     }),
     onSuccess: async () => {
-      setWorldSliceMessage("已重新整理这本书会用到的世界设定。");
+      setWorldSliceMessage("Se han reorganizado los escenarios mundiales utilizados en este libro.");
       await queryClient.invalidateQueries({ queryKey: queryKeys.novels.worldSlice(novelId) });
       await queryClient.invalidateQueries({ queryKey: queryKeys.novels.detail(novelId) });
     },
@@ -77,7 +77,7 @@ export function useNovelWorldSlice({
   const saveWorldSliceOverridesMutation = useMutation({
     mutationFn: (payload: StoryWorldSliceOverrides) => updateNovelWorldSliceOverrides(novelId, payload),
     onSuccess: async () => {
-      setWorldSliceMessage("已保存这本书的世界设定保留项。");
+      setWorldSliceMessage("La reserva de configuración mundial de este libro se ha guardado.");
       await queryClient.invalidateQueries({ queryKey: queryKeys.novels.worldSlice(novelId) });
     },
   });
@@ -96,7 +96,7 @@ export function useNovelWorldSlice({
     mutationFn: (payload: NovelWorldImportInput) => importNovelWorldFromLibrary(novelId, payload),
     onSuccess: async (_response, payload) => {
       onNovelWorldImported?.(payload.worldId);
-      setWorldSliceMessage("已导入为这本书的世界，后续会按本书内容重新整理可用设定。");
+      setWorldSliceMessage("El mundo ha sido importado como este libro y las configuraciones disponibles se reorganizarán de acuerdo con el contenido de este libro.");
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: queryKeys.novels.novelWorld(novelId) }),
         queryClient.invalidateQueries({ queryKey: queryKeys.novels.worldSlice(novelId) }),
@@ -118,11 +118,11 @@ export function useNovelWorldSlice({
       const details = (error as ApiHttpError).details as { sourceRoute?: unknown } | undefined;
       const route = details?.sourceRoute;
       toast.error(error.message, route === "/settings/models" || route === "/settings/model-routes"
-        ? { action: { label: "打开模型设置", onClick: () => { void navigate(route); } } }
+        ? { action: { label: "Abrir configuración del modelo", onClick: () => { void navigate(route); } } }
         : undefined);
     },
     onSuccess: async () => {
-      setWorldSliceMessage("已根据本书主题生成世界，并保存到世界库供后续复用。");
+      setWorldSliceMessage("El mundo se generó según el tema de este libro y se guardó en la biblioteca mundial para su posterior reutilización.");
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: queryKeys.novels.novelWorld(novelId) }),
         queryClient.invalidateQueries({ queryKey: queryKeys.novels.worldSlice(novelId) }),
@@ -136,7 +136,7 @@ export function useNovelWorldSlice({
   const createManualNovelWorldMutation = useMutation({
     mutationFn: (payload: NovelWorldManualInput) => createManualNovelWorld(novelId, payload),
     onSuccess: async () => {
-      setWorldSliceMessage("本书自定义世界已创建并保存到世界库，可以继续补充规则、势力和故事舞台。");
+      setWorldSliceMessage("El mundo personalizado de este libro se creó y guardó en la biblioteca mundial, y se pueden seguir agregando reglas, fuerzas y etapas de la historia.");
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: queryKeys.novels.novelWorld(novelId) }),
         queryClient.invalidateQueries({ queryKey: queryKeys.novels.worldSlice(novelId) }),
@@ -150,7 +150,7 @@ export function useNovelWorldSlice({
   const saveNovelWorldToLibraryMutation = useMutation({
     mutationFn: (payload: NovelWorldSaveToLibraryInput) => saveNovelWorldToLibrary(novelId, payload),
     onSuccess: async () => {
-      setWorldSliceMessage("本书世界已保存到世界库。");
+      setWorldSliceMessage("El mundo de este libro se ha guardado en la base de datos mundial.");
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: queryKeys.novels.novelWorld(novelId) }),
         queryClient.invalidateQueries({ queryKey: queryKeys.novels.novelWorldSyncDiff(novelId) }),
@@ -166,10 +166,10 @@ export function useNovelWorldSlice({
     onSuccess: async (_response, payload) => {
       setWorldSliceMessage(
         payload.direction === "none"
-          ? "本书世界会保留为独立副本。"
+          ? "El mundo de este libro permanecerá como una copia separada."
           : payload.direction === "push"
-            ? "已将本书世界推送到世界库。"
-            : "已从世界库拉取更新到本书世界。",
+            ? "El mundo de este libro ha sido llevado a la biblioteca mundial."
+            : "El mundo de este libro ha sido actualizado desde la biblioteca mundial.",
       );
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: queryKeys.novels.novelWorld(novelId) }),

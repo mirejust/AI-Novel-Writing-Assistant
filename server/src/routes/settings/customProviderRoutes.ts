@@ -38,7 +38,7 @@ const createCustomProviderSchema = z.object({
   key: z.string().trim().optional(),
   model: z.string().trim().optional(),
   imageModel: z.string().trim().optional(),
-  baseURL: z.string().trim().url("API URL 格式不正确。"),
+  baseURL: z.string().trim().url("La URL de la API no tiene el formato correcto."),
   authMode: z.enum(PROVIDER_AUTH_MODES).optional(),
   isActive: z.boolean().optional(),
   reasoningEnabled: z.boolean().optional(),
@@ -49,7 +49,7 @@ const createCustomProviderSchema = z.object({
 
 const customProviderModelsSchema = z.object({
   key: z.string().trim().optional(),
-  baseURL: z.string().trim().url("API URL 格式不正确。"),
+  baseURL: z.string().trim().url("La URL de la API no tiene el formato correcto."),
   authMode: z.enum(PROVIDER_AUTH_MODES).optional(),
 });
 
@@ -120,7 +120,7 @@ export function registerCustomProviderRoutes(router: Router): void {
       try {
         const body = req.body as z.infer<typeof customProviderModelsSchema>;
         if (body.authMode === "x-api-key" && !normalizeOptionalText(body.key)) {
-          throw new AppError("x-api-key 鉴权需要填写 API Key。", 400);
+          throw new AppError("La autenticación x-api-key requiere completar la clave API.", 400);
         }
         const models = await refreshProviderModels(
           "custom_preview",
@@ -134,7 +134,7 @@ export function registerCustomProviderRoutes(router: Router): void {
             models,
             defaultModel: models[0] ?? "",
           },
-          message: `已获取 ${models.length} 个模型。`,
+          message: `Obtenido ${models.length} modelo.`,
         } satisfies ApiResponse<{
           models: string[];
           defaultModel: string;
@@ -160,21 +160,21 @@ export function registerCustomProviderRoutes(router: Router): void {
         const baseURL = body.baseURL.trim();
         const authMode = body.authMode ?? "bearer";
         if (authMode === "x-api-key" && !apiKey) {
-          throw new AppError("x-api-key 鉴权需要填写 API Key。", 400);
+          throw new AppError("La autenticación x-api-key requiere completar la clave API.", 400);
         }
         let model = normalizeOptionalText(body.model);
         let models = getFallbackModels(model);
-        let message = "自定义厂商已创建。";
+        let message = "Proveedor personalizado creado.";
 
         try {
           models = await refreshProviderModels(provider, apiKey, baseURL, authMode);
           model = model ?? models[0];
         } catch (error) {
           if (!model) {
-            const detail = error instanceof Error ? `：${error.message}` : "。";
-            throw new AppError(`未能获取模型列表，请检查 API URL，或手动填写一个默认模型${detail}`, 400);
+            const detail = error instanceof Error ? `:${error.message}` : ".";
+            throw new AppError(`No se pudo obtener la lista de modelos. Verifique la URL de la API o complete manualmente un modelo predeterminado.${detail}`, 400);
           }
-          message = "自定义厂商已创建，但模型列表刷新失败。可以稍后在厂商卡片中刷新。";
+          message = "Se creó el fabricante personalizado, pero falló la actualización de la lista de modelos. Se puede actualizar más tarde en la tarjeta de proveedor.";
         }
 
         const data = await secretStore.createProvider(provider, {
@@ -265,11 +265,11 @@ export function registerCustomProviderRoutes(router: Router): void {
       try {
         const { provider } = req.params as z.infer<typeof providerSchema>;
         if (isBuiltInProvider(provider)) {
-          throw new AppError("内置厂商不能删除。", 400);
+          throw new AppError("Los fabricantes integrados no se pueden eliminar.", 400);
         }
         const existing = await secretStore.getProvider(provider);
         if (!existing) {
-          throw new AppError("没有找到这个自定义厂商。", 404);
+          throw new AppError("Este fabricante personalizado no fue encontrado.", 404);
         }
         const [routeInUse, selection, ragSettings, ragRuntimeSettings] = await Promise.all([
           prisma.modelRouteConfig.findFirst({ where: { provider }, select: { taskType: true } }),
@@ -278,13 +278,13 @@ export function registerCustomProviderRoutes(router: Router): void {
           getRagRuntimeSettings(),
         ]);
         if (routeInUse) {
-          throw new AppError(`请先把模型路由 ${routeInUse.taskType} 改到其他厂商，再删除这个厂商。`, 400);
+          throw new AppError(`Enrute primero el modelo ${routeInUse.taskType} Cambie a otro fabricante y luego elimine este fabricante.`, 400);
         }
         if (selection?.provider === provider) {
-          throw new AppError("顶部默认模型正在使用这个厂商，请先切换默认模型。", 400);
+          throw new AppError("El modelo predeterminado superior utiliza este fabricante; cambie primero al modelo predeterminado.", 400);
         }
         if (ragRuntimeSettings.enabled && ragSettings.embeddingProvider === provider) {
-          throw new AppError("知识库正在使用这个向量服务，请先切换向量服务或暂停资料检索。", 400);
+          throw new AppError("La base de conocimientos utiliza este servicio vectorial. Primero cambie al servicio vectorial o suspenda la recuperación de datos.", 400);
         }
         await secretStore.deleteProvider(provider);
         await saveProviderImageModel(provider, null);
@@ -292,7 +292,7 @@ export function registerCustomProviderRoutes(router: Router): void {
         evictSharedLimiters(provider);
         res.status(200).json({
           success: true,
-          message: "自定义厂商已删除。",
+          message: "Proveedor personalizado eliminado.",
         } satisfies ApiResponse<null>);
       } catch (error) {
         next(error);

@@ -32,97 +32,97 @@ function link(id: string, title: string, artifact: string, destination: string, 
 
 export const stages: FlowStage[] = [
   {
-    id: "opening", coverStep: "directions", title: "开书定方向", description: "从一句想写的故事出发，挑出值得写成一本书的方向。",
+    id: "opening", coverStep: "directions", title: "Abre el libro y establece la dirección.", description: "Comienza con una historia que quieras escribir y elige una dirección que valga la pena escribir en un libro.",
     main: [
-      { id: "idea", title: "输入故事想法", artifact: "一句开书灵感", kind: "author", input: "想写的题材、人物，或一个挥之不去的场景。", output: "作为两套候选方向共同起点的开书想法。" },
-      ai("directions", "构思两条方向", "两条可比较的路线", "故事想法与作者希望保留的设定。", "两种会改变整本书走向的选择，各有自己的推进方式。", "novel.director.direction_pair"),
-      ai("candidates", "展开候选方案", "两套完整方案", "两条选定的故事路线。", "每套方案的主角、核心冲突、开篇和后续推进方式。", "novel.director.candidates"),
-      ai("titles", "为候选拟书名", "备选书名与推荐理由", "本套方案的故事细节，以及同轮另一套的方向。", "一组备选书名、取名理由和推荐书名。重做书名也使用这份提示词。", "novel.director.candidate_titles"),
-      { id: "choose", title: "选定开书方案", artifact: "选定的开书方案", kind: "author", input: "本轮候选及已采纳的修改。", output: "作者选定的一套故事方案，作为新书的起点。" },
+      { id: "idea", title: "Introduzca la idea de la historia", artifact: "Una frase de inspiración para abrir un libro.", kind: "author", input: "Un tema, personaje o escena persistente sobre el que quieras escribir.", output: "La idea de apertura del libro sirve como punto de partida común para ambos conjuntos de direcciones candidatas." },
+      ai("directions", "Piensa en dos direcciones", "Dos rutas comparables", "Ideas y escenarios de la historia que el autor desea preservar.", "Dos elecciones que cambiarán el rumbo de todo el libro, cada una a su manera.", "novel.director.direction_pair"),
+      ai("candidates", "Ampliar alternativas", "Dos planes completos", "Dos caminos de historia elegidos.", "El protagonista, conflicto central, apertura y seguimiento de avances de cada plan.", "novel.director.candidates"),
+      ai("titles", "Desarrollar títulos de libros para los candidatos.", "Títulos de libros alternativos y motivos de recomendación.", "La historia detalla este conjunto de planes y la dirección de otro conjunto en la misma ronda.", "Un conjunto de títulos de libros alternativos, motivos del título y títulos recomendados. El título del libro también se rehace usando este mensaje.", "novel.director.candidate_titles"),
+      { id: "choose", title: "Seleccionar plan de apertura de libro", artifact: "Plan de apertura de libros seleccionados.", kind: "author", input: "Candidatos y cambios adoptados para esta ronda.", output: "Un conjunto de planos de historias seleccionados por el autor como punto de partida para un nuevo libro." },
     ],
     branches: [
-      { from: "idea", label: "还没想好写什么", join: "directions", steps: [
-        { id: "inspiration", title: "寻找故事灵感", artifact: "可带回的故事种子", kind: "ai", input: "题材偏好或选中的故事元素。", output: "可带回开书输入的一句话灵感。",
-          templates: [["novel.director.idea_inspiration", "直接生成灵感"], ["novel.director.idea_constellation_options", "寻找故事元素"], ["novel.director.idea_constellation_compose", "组合选中元素"]] },
+      { from: "idea", label: "Aún no he decidido qué escribir", join: "directions", steps: [
+        { id: "inspiration", title: "Encuentra inspiración para la historia", artifact: "Semillas de historias que se pueden recuperar", kind: "ai", input: "Preferencias de tema o elementos de historia seleccionados.", output: "Se puede traer una frase de inspiración al libro para ingresar.",
+          templates: [["novel.director.idea_inspiration", "Genera inspiración directamente"], ["novel.director.idea_constellation_options", "Encuentra elementos de la historia"], ["novel.director.idea_constellation_compose", "Combina elementos seleccionados"]] },
       ] },
-      { from: "candidates", label: "两套都不合适", join: "candidates", steps: [
-        ai("new-directions", "重新构思方向", "新一轮故事路线", "上一轮方案与本轮希望改变的内容。", "新一轮的两条方向，供再次展开候选方案。", "next-direction-pair", "novel.director.direction_pair"),
+      { from: "candidates", label: "Ningún conjunto es adecuado", join: "candidates", steps: [
+        ai("new-directions", "Reinventar la dirección", "Una nueva ronda de historias", "La última ronda de planes y lo que esperamos cambiar en esta ronda.", "Las dos direcciones en la nueva ronda ofrecen candidatos para un mayor desarrollo.", "next-direction-pair", "novel.director.direction_pair"),
       ] },
-      { from: "titles", label: "想打磨其中一套", join: "choose", steps: [
-        ai("discuss", "讨论候选方案", "可采纳的修改建议", "当前方案、讨论历史和作者的问题。", "对方案的解释或可逐项采纳的修改建议。", "novel.director.candidate_dialogue"),
+      { from: "titles", label: "Quiero pulir uno de ellos", join: "choose", steps: [
+        ai("discuss", "Discutir alternativas", "Sugerencias de modificación adoptables", "Protocolos actuales, historial de discusiones y cuestiones de autor.", "Una explicación del plan o sugerencias de modificaciones que se puedan adoptar caso por caso.", "novel.director.candidate_dialogue"),
       ] },
-      { from: "titles", label: "只调整书名", join: "choose", steps: [
-        ai("retitle", "重做候选书名", "重新拟定的书名", "当前候选、已有书名和作者对书名的意见。", "供重新选择的一组候选书名。", "novel.director.candidate_titles"),
+      { from: "titles", label: "Ajustar solo el título del libro.", join: "choose", steps: [
+        ai("retitle", "Rehacer títulos de candidatos", "Título reescrito", "Candidatos actuales, títulos existentes y opiniones de autores sobre títulos.", "Un conjunto de títulos candidatos para la reselección.", "novel.director.candidate_titles"),
       ] },
     ],
   },
   {
-    id: "foundation", coverStep: "cast", title: "搭建全书", description: "确定故事靠什么向前走，以及人物能在怎样的世界里行动。",
+    id: "foundation", coverStep: "cast", title: "Construye todo el libro", description: "Determina cómo avanza la historia y en qué mundo pueden moverse los personajes.",
     main: [
-      ai("story", "规划全书主线", "矛盾、转折与回报", "选定的故事方向与开书设定。", "能支撑长篇的核心矛盾、推进方式与关键回报。", "novel.story_macro.decomposition"),
-      ai("contract", "确定全书创作约定", "全书创作约定", "开书方向、故事主线和目标篇幅。", "全书的读者期待、角色成长方向和创作边界。", "novel.director.book_contract"),
-      ai("world", "准备世界设定", "规则、势力与地点", "题材、故事主线和全书创作约定。", "生成本书需要的规则、势力与地点。", "novel.world.generate_from_theme"),
-      { id: "cast", title: "准备人物阵容", artifact: "人物阵容与关系", kind: "ai", input: "故事需要的角色职责与可用的世界设定。",
-        output: "主要人物、关系和约束后文的角色事实。已有阵容时可沿用。",
-        templates: [["novel.character.castAuto", "生成完整阵容"], ["novel.character.castAuto.members", "分步生成成员"], ["novel.character.castAuto.relations", "分步生成关系"]] },
+      ai("story", "Planificación de la línea principal del libro.", "Contradicciones, giros y recompensas.", "La dirección de la historia elegida y el escenario de apertura del libro.", "Puede respaldar la contradicción central, el método de avance y las recompensas clave de la novela.", "novel.story_macro.decomposition"),
+      ai("contract", "Determinar el acuerdo de escritura para todo el libro.", "Acuerdo de creación de libros", "Dirección de apertura del libro, argumento y duración objetivo.", "Expectativas de los lectores, dirección del crecimiento del personaje y límites creativos a lo largo del libro.", "novel.director.book_contract"),
+      ai("world", "Preparar la configuración mundial", "Reglas, poderes y lugares", "Tema, argumento principal y convenciones creativas de todo el libro.", "Las reglas, fuerzas y ubicaciones necesarias para generar este libro.", "novel.world.generate_from_theme"),
+      { id: "cast", title: "Preparar la alineación de personajes.", artifact: "Alineación de personajes y relaciones.", kind: "ai", input: "Las responsabilidades del personaje y el escenario mundial disponible requerido por la historia.",
+        output: "Personajes principales, relaciones y hechos de los personajes que limitan lo que sigue. Si ya tienes una alineación, puedes usarla.",
+        templates: [["novel.character.castAuto", "Generar alineación completa"], ["novel.character.castAuto.members", "Generar miembros paso a paso"], ["novel.character.castAuto.relations", "Generar relaciones paso a paso"]] },
     ],
-    branches: [{ from: "contract", label: "沿用或跳过", join: "cast", steps: [
-      { id: "reuse-world", title: "沿用或跳过世界", artifact: "选定的世界范围", kind: "system", input: "开书时选定的世界准备方式。", output: "使用已有世界资料，或按设定跳过世界生成。" },
-    ] }, { from: "cast", label: "逐人讨论", steps: [
-      ai("cast-discussion", "讨论一位角色", "可逐项采纳的人物修改", "选定的开书方向、当前角色与作者的问题。", "核对性格、行动目标或故事作用后继续分卷。", "novel.director.cast_dialogue"),
+    branches: [{ from: "contract", label: "Heredar o saltar", join: "cast", steps: [
+      { id: "reuse-world", title: "Sigue o salta el mundo", artifact: "Mundo seleccionado", kind: "system", input: "El método de preparación mundial seleccionado al abrir el libro.", output: "Utilice datos mundiales existentes u omita la generación mundial según la configuración." },
+    ] }, { from: "cast", label: "Discutir persona por persona", steps: [
+      ai("cast-discussion", "Hablar de un personaje", "Modificaciones de carácter que pueden adoptarse caso por caso", "La dirección del libro elegida, el personaje actual y las cuestiones del autor.", "Verifique el personaje, el objetivo de la acción o la función de la historia antes de continuar dividiendo el papel.", "novel.director.cast_dialogue"),
     ] }],
   },
   {
-    id: "volumes", coverStep: "skeleton", title: "分卷排章", description: "先安排每一卷要交付的故事，再把当前卷拆成连续的章节。",
+    id: "volumes", coverStep: "skeleton", title: "Organizar en volúmenes", description: "Primero organice las historias que se entregarán en cada volumen y luego divida el volumen actual en capítulos consecutivos.",
     main: [
-      ai("strategy", "制定分卷策略", "各卷职责与顺序", "全书主线、目标篇幅和角色阵容。", "全书的分卷数量、推进顺序和各卷职责。", "novel.volume.strategy"),
-      ai("critique", "检查分卷安排", "分卷评议意见", "分卷策略草稿。", "对重复、断层与回报节奏的评议。", "novel.volume.strategy.critique"),
-      ai("skeleton", "生成各卷骨架", "各卷的故事骨架", "分卷策略及评议结果。", "每卷的开场、压力、高潮和下一卷的承接。", "novel.volume.skeleton"),
-      ai("beats", "安排卷内节奏", "本卷的关键节奏段", "当前卷的目标、骨架和章节预算。", "按顺序展开的关键事件及其章节跨度。", "novel.volume.beat_sheet"),
-      { id: "chapter-list", title: "拆成章节列表", artifact: "章名、行动与出场安排", kind: "ai", input: "当前节奏段的目标、人物和前后承接。", output: "各章的标题、主要行动与出场安排。同卷章名过于相似时，可重新拟名。",
-        templates: [["novel.volume.chapter_list", "拆分章节列表"], ["novel.volume.chapter_title_repair", "调整相似章名"]] },
+      ai("strategy", "Desarrollar una estrategia de implementación", "Responsabilidades y orden de cada volumen.", "La trama principal del libro, la duración prevista y el elenco de personajes.", "El número de volúmenes del libro, el orden de avance y las responsabilidades de cada volumen.", "novel.volume.strategy"),
+      ai("critique", "Verifique la disposición del papel", "Comentarios sobre artículos", "Proyecto de estrategia de división.", "Una crítica de la repetición, la discontinuidad y el ritmo de la recompensa.", "novel.volume.strategy.critique"),
+      ai("skeleton", "Generar el esqueleto de cada volumen.", "El esqueleto de la historia de cada volumen.", "Estrategia de división de papel y resultados de evaluación.", "La apertura, presión, clímax de cada volumen y la continuación del siguiente volumen.", "novel.volume.skeleton"),
+      ai("beats", "Organizar el ritmo dentro del volumen.", "La sección rítmica clave de este volumen.", "Objetivos, esqueleto y presupuesto del capítulo para el volumen actual.", "Los acontecimientos clave se desarrollan en secuencia y la extensión de sus capítulos.", "novel.volume.beat_sheet"),
+      { id: "chapter-list", title: "Dividir en lista de capítulos", artifact: "Nombre del capítulo, acciones y arreglos de apariencia.", kind: "ai", input: "Los objetivos, personajes y continuidad de la sección rítmica actual.", output: "El título, acciones principales y disposición de aparición de cada capítulo. Si los nombres de los mismos volúmenes son demasiado similares, puede cambiarles el nombre.",
+        templates: [["novel.volume.chapter_list", "Lista de capítulos divididos"], ["novel.volume.chapter_title_repair", "Ajustar nombres de capítulos similares"]] },
     ],
-    branches: [{ from: "skeleton", label: "调整一卷", join: "beats", steps: [
-      ai("volume-discussion", "讨论一卷的卷纲", "可逐项采纳的卷纲修改", "当前卷的编辑稿、前后卷安排和作者的问题。", "核对本卷故事、读者期待、高潮或下卷引线后继续拆章。", "novel.director.volume_dialogue"),
+    branches: [{ from: "skeleton", label: "Ajustar un rollo", join: "beats", steps: [
+      ai("volume-discussion", "Discutir el esquema de un volumen.", "Modificaciones del plan de estudios que se pueden adoptar caso por caso", "Borrador editorial del volumen actual, disposición de los volúmenes anteriores y posteriores y preguntas del autor.", "Continúe abriendo capítulos después de comprobar la historia de este volumen, las expectativas de los lectores, el clímax o las pistas para el siguiente volumen.", "novel.director.volume_dialogue"),
     ] }],
   },
   {
-    id: "preparation", coverStep: "mission", title: "准备本章", description: "把章节安排细化成能落笔的场景，再备齐写作要用的材料。",
+    id: "preparation", coverStep: "mission", title: "Prepara este capítulo", description: "Perfeccione la disposición de los capítulos en escenarios que se puedan escribir y luego prepare todos los materiales necesarios para escribir.",
     main: [
-      ai("mission", "细化本章任务与场景", "任务单与场景卡", "章节列表、当前节奏段与相邻章节。", "本章目标、情节边界、写作任务单和场景安排。", "novel.volume.chapter_execution_contract"),
-      ai("check-mission", "检查任务单质量", "可执行性评估", "本章任务、场景安排和前章结果。", "任务是否可执行，以及需要调整的地方。", "novel.volume.chapter_task_sheet_quality"),
-      { id: "sync", title: "同步章节要求", artifact: "绑定到章节的写作要求", kind: "system", input: "已准备的章节任务与场景。", output: "将写作要求关联到对应章节，保留已有正文。" },
-      { id: "materials", title: "汇集写作材料", artifact: "本章写作材料", kind: "system", input: "本章任务、人物事实、世界规则、前文进展与写法偏好。", output: "写作提示词本次可引用的材料，由正文生成步骤使用。" },
+      ai("mission", "Refinar las tareas y escenarios en este capítulo.", "Hojas de tareas y tarjetas de escenas.", "Lista de capítulos, sección de ritmo actual y capítulos adyacentes.", "Objetivos del capítulo, límites de la trama, redacción de la lista de tareas y configuración.", "novel.volume.chapter_execution_contract"),
+      ai("check-mission", "Verificar la calidad del pedido de tareas", "Evaluación de aplicabilidad", "Tareas de este capítulo, disposición de la escena y resultados del capítulo anterior.", "Si la tarea es ejecutable y dónde se necesitan ajustes.", "novel.volume.chapter_task_sheet_quality"),
+      { id: "sync", title: "Requisitos del capítulo de sincronización", artifact: "Requisitos de redacción vinculados a los capítulos.", kind: "system", input: "Tareas y escenas del capítulo preparadas.", output: "Asociar los requisitos de redacción a los capítulos correspondientes y conservar el texto existente." },
+      { id: "materials", title: "Reúna materiales de escritura", artifact: "Materiales de escritura para este capítulo.", kind: "system", input: "Las tareas de este capítulo, los datos de los personajes, las reglas mundiales, el progreso previo y las preferencias de escritura.", output: "Escritura de palabras clave Los materiales que se pueden citar esta vez se utilizan en el paso de generación de texto." },
     ],
-    branches: [{ from: "check-mission", label: "调整一章", join: "sync", steps: [
-      ai("chapter-discussion", "讨论一章的任务与场景", "可逐项采纳的章节修改", "所选章的任务、场景和当前编辑稿。", "确认后把本批章节要求交给正文生成。", "novel.director.chapter_dialogue"),
+    branches: [{ from: "check-mission", label: "Ajustar un capítulo", join: "sync", steps: [
+      ai("chapter-discussion", "Discutir las tareas y escenarios de un capítulo.", "Cambios de capítulo que pueden adoptarse caso por caso", "Tareas, escenas y ediciones actuales del capítulo seleccionado.", "Después de la confirmación, envíe este lote de requisitos del capítulo a la generación de texto.", "novel.director.chapter_dialogue"),
     ] }],
   },
   {
-    id: "writing", coverStep: "finish", title: "写出正文", description: "写完一章，审读、选稿，把发生的变化带进下一章。",
+    id: "writing", coverStep: "finish", title: "Escribir texto", description: "Después de escribir un capítulo, revise y seleccione el manuscrito y lleve los cambios que se hayan producido al siguiente capítulo.",
     main: [
-      ai("draft", "生成本章初稿", "整章正文草稿", "章节任务、前文进展、人物事实与写法要求。", "一份完整的章节正文草稿。", "novel.chapter.writer"),
-      ai("review", "审校本章", "带原文依据的审校意见", "本章草稿、写作任务与前文事实。", "本章完成情况，以及有正文证据的质量问题。", "novel.chapter.acceptance_assessment"),
-      { id: "save", title: "选定并保存正文", artifact: "本章选定稿", kind: "system", input: "初稿及通过复核的可用修订稿。", output: "本章选定的正文版本，供提取故事变化。" },
-      ai("extract", "提取故事变化", "人物、事实与伏笔更新", "选定的正文及已有的故事记录。", "更新章节摘要、角色状态、事实与伏笔，供后文承接。", "novel.chapter.artifact_delta.extract"),
-      { id: "finish", title: "整本正文生成完成", artifact: "整本小说正文", kind: "system", input: "全书范围内各章的正文与处理结果。", output: "各章正文均已保存，整本小说可以连续阅读。" },
+      ai("draft", "Generar un primer borrador de este capítulo.", "Borrador del texto del capítulo completo", "Tareas del capítulo, progreso previo, datos del personaje y requisitos de escritura.", "Un borrador completo del texto del capítulo.", "novel.chapter.writer"),
+      ai("review", "Revisa este capítulo", "Revisar comentarios con base en texto original.", "Borrador del capítulo, trabajo escrito y hechos previos.", "Estado de finalización del capítulo y problemas de calidad con la evidencia textual.", "novel.chapter.acceptance_assessment"),
+      { id: "save", title: "Seleccionar y guardar texto", artifact: "Borrador seleccionado de este capítulo.", kind: "system", input: "Primer borrador y borrador revisado disponible para revisión.", output: "Versión de texto seleccionada de este capítulo para extraer variaciones de la historia." },
+      ai("extract", "Extraer cambios en la historia", "Personajes, hechos y actualizaciones de presagios", "Texto seleccionado y registros de historias existentes.", "Resúmenes de capítulos actualizados, estado de los personajes, hechos y presagios para capítulos posteriores.", "novel.chapter.artifact_delta.extract"),
+      { id: "finish", title: "Se genera el texto completo.", artifact: "El texto completo de la novela.", kind: "system", input: "El texto y los resultados del procesamiento de cada capítulo dentro del alcance del libro.", output: "El texto de cada capítulo se ha guardado y la novela completa se puede leer de forma continua." },
     ],
     branches: [
-      { from: "review", label: "需要修文", join: "save", steps: [
-        ai("repair", "局部修文", "局部修订稿", "原稿与明确的修复要求。", "只修改相关段落的候选稿。", "novel.review.patch"),
-        ai("verify", "复核修订稿", "修订稿复核意见", "修订稿、原审校问题与事实基线。", "对修订效果和事实保留情况的复核。", "verify-repair", "novel.chapter.acceptance_assessment"),
+      { from: "review", label: "Necesidad de revisar", join: "save", steps: [
+        ai("repair", "Revisión parcial", "Manuscrito parcialmente revisado", "Manuscrito original con requisitos claros de restauración.", "Revise sólo los borradores candidatos con párrafos relevantes.", "novel.review.patch"),
+        ai("verify", "Revisar el manuscrito revisado", "Revisar los comentarios sobre el borrador revisado.", "Manuscrito revisado, preguntas de revisión originales y base factual.", "Revisión de los efectos de las modificaciones y conservación de los hechos.", "verify-repair", "novel.chapter.acceptance_assessment"),
       ] },
-      { from:"finish",label:"检查后导出",steps:[
-        ai("final-inspection","全书完稿检查","可定位原文的问题","逐章正文、全书约定、邻章衔接与审校线索。","核对问题并逐段修订，确认后导出全书。","novel.director.final_inspection"),
+      { from:"finish",label:"Exportar después de verificar",steps:[
+        ai("final-inspection","Reseña completa del libro","Problemas que pueden localizar el texto original.","Texto capítulo por capítulo, convenciones de todo el libro, conexiones entre capítulos adyacentes y pistas de revisión.","Verifique las preguntas y revíselas párrafo por párrafo, y luego exporte el libro completo después de la confirmación.","novel.director.final_inspection"),
       ]},
-      { from:"extract",label:"核对本批正文",join:"finish",steps:[
-        ai("prose-discussion","讨论本章正文","逐段修改建议","所选章节正文、写作要求和当前编辑稿。","逐项采纳并确认后，按所选范围继续写作。","novel.director.prose_dialogue"),
+      { from:"extract",label:"Consulta el texto de este lote.",join:"finish",steps:[
+        ai("prose-discussion","Discuta el texto de este capítulo.","Modificar sugerencias párrafo por párrafo","Texto del capítulo seleccionado, requisitos de redacción y manuscrito editado actual.","Después de adoptar y confirmar cada elemento, continúe escribiendo según el rango seleccionado.","novel.director.prose_dialogue"),
       ]},
-      { from: "extract", label: "本卷未完", steps: [
-        link("next-chapter", "准备下一章", "下一章的写作任务", "mission", "本章保存后的进展。", "回到本章准备，细化下一章的任务与场景。"),
+      { from: "extract", label: "Este volumen aún no está terminado.", steps: [
+        link("next-chapter", "Prepárate para el próximo capítulo.", "Tarea de escritura para el próximo capítulo.", "mission", "Progreso después de guardar este capítulo.", "Vuelva a la preparación de este capítulo y perfeccione las tareas y escenarios para el próximo capítulo."),
       ] },
-      { from: "extract", label: "进入下一卷", steps: [
-        link("next-volume", "安排下一卷", "下一卷的节奏安排", "beats", "前卷结果与下一卷骨架。", "接回卷内节奏，继续安排下一卷的章节。"),
+      { from: "extract", label: "Ir al siguiente volumen", steps: [
+        link("next-volume", "Programar el próximo rollo", "El ritmo del próximo volumen.", "beats", "Los resultados del volumen anterior y el esqueleto del siguiente volumen.", "Coge el ritmo del volumen y continúa ordenando los capítulos del siguiente volumen."),
       ] },
     ],
   },

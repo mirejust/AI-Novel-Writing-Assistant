@@ -59,7 +59,7 @@ export class NovelDirectorCandidateRuntime {
     }
     const baseRequest = this.buildCandidateStageBaseRequest(taskId, input.directorTaskData);
     if (!baseRequest) {
-      throw new Error("自动导演候选阶段任务缺少恢复所需上下文。");
+      throw new Error("A la tarea automatizada de la etapa de candidato a director le falta el contexto necesario para la recuperación.");
     }
     const candidateStage = input.directorTaskData.candidateStage;
     const previousBatches = Array.isArray(input.directorTaskData.batches)
@@ -68,7 +68,7 @@ export class NovelDirectorCandidateRuntime {
     const feedback = candidateStage?.feedback?.trim();
     const mode = candidateStage?.mode ?? (previousBatches.length === 0 ? "generate" : "refine");
     if (!mode) {
-      throw new Error("自动导演候选阶段任务缺少恢复模式。");
+      throw new Error("A las tareas automáticas de la etapa de candidato a director les falta un modo de recuperación.");
     }
 
     this.deps.scheduleBackgroundRun(taskId, async () => {
@@ -77,7 +77,7 @@ export class NovelDirectorCandidateRuntime {
         return;
       }
       if (previousBatches.length === 0) {
-        throw new Error("自动导演候选阶段任务缺少候选批次上下文。");
+        throw new Error("A la tarea de etapa candidata de Autodirector le falta el contexto del lote candidato.");
       }
       if (mode === "refine") {
         await this.deps.candidateStageService.refineCandidates({
@@ -89,7 +89,7 @@ export class NovelDirectorCandidateRuntime {
         return;
       }
       if (!candidateStage?.batchId || !candidateStage?.candidateId || !feedback) {
-        throw new Error("自动导演候选阶段任务缺少定向修正所需上下文。");
+        throw new Error("A la tarea de la etapa candidata de Autodirector le falta el contexto necesario para la corrección de la orientación.");
       }
       if (mode === "patch_candidate") {
         await this.deps.candidateStageService.patchCandidate({
@@ -125,7 +125,7 @@ export class NovelDirectorCandidateRuntime {
         taskId,
         entrypoint: "candidate_stage",
         policyMode: "run_next_step",
-        summary: "自动导演候选阶段已进入统一运行时。",
+        summary: "La etapa automática de candidato a director ha entrado en el tiempo de ejecución unificado.",
       });
     }
     try {
@@ -141,7 +141,7 @@ export class NovelDirectorCandidateRuntime {
       return await this.deps.withWorkflowTaskUsage(workflowTaskId, runner);
     } catch (error) {
       if (taskId && !isDirectorRuntimeGateError(error)) {
-        const message = error instanceof Error ? error.message : "自动导演候选阶段执行失败。";
+        const message = error instanceof Error ? error.message : "Error en la ejecución de la fase candidata de Autodirector.";
         await new DirectorTaskStateWriter(this.deps.workflowService).markFailed(taskId, message);
       }
       throw error;

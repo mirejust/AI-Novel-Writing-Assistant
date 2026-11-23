@@ -69,7 +69,7 @@ export class NovelExportService {
     });
 
     if (!novel) {
-      throw new AppError("小说不存在。", 404);
+      throw new AppError("La novela no existe.", 404);
     }
 
     let confirmedManuscript = false;
@@ -85,8 +85,8 @@ export class NovelExportService {
           novelId, epoch: novel.directorEpoch, title: novel.title, description: novel.description, target: completion.targetChapters,
         }, novel.chapters);
         if (novel.finalReviewApproval?.confirmedVersion !== version) {
-          throw new AppError("请在导演台确认完稿检查，再导出全书。", 409, {
-            sourceRoute: `/lab/director/${encodeURIComponent(novelId)}?delivery=review`, sourceActionLabel: "打开完稿检查",
+          throw new AppError("Confirme el borrador final en el escritorio del director antes de exportar el libro completo.", 409, {
+            sourceRoute: `/lab/director/${encodeURIComponent(novelId)}?delivery=review`, sourceActionLabel: "Revisión de manuscrito abierto",
           });
         }
         confirmedManuscript = true;
@@ -109,7 +109,7 @@ export class NovelExportService {
   private async buildExportBundle(novelId: string): Promise<NovelExportBundle> {
     const rawNovel = await this.novelService.getNovelById(novelId);
     if (!rawNovel) {
-      throw new AppError("小说不存在。", 404);
+      throw new AppError("La novela no existe.", 404);
     }
     const novel = mapExportNovelDetail(rawNovel);
     const activeChapters = await readActiveManuscriptChapters(prisma as never, novelId);
@@ -251,7 +251,7 @@ export class NovelExportService {
   ): Promise<NovelExportResult> {
     if (format === "zip") {
       if (scope !== "full") {
-        throw new AppError("ZIP 导出仅支持整本书分章正文导出。", 400);
+        throw new AppError("La exportación ZIP solo admite la exportación del libro completo por capítulo.", 400);
       }
       const novel = await this.getTxtNovelRecord(novelId,true);
       return {
@@ -262,7 +262,7 @@ export class NovelExportService {
     }
     if (format === "txt") {
       if (scope !== "full") {
-        throw new AppError("TXT 导出仅支持整本书正文导出。", 400);
+        throw new AppError("La exportación TXT solo admite la exportación del texto completo del libro.", 400);
       }
       const novel = await this.getTxtNovelRecord(novelId,true);
       return buildNovelTxtExport(novel);
@@ -290,11 +290,11 @@ export class NovelExportService {
       ? Boolean(novel.shortStoryContent?.trim())
       : novel.chapters.some((chapter) => (chapter.content ?? "").trim().length > 0);
     if (!hasChapterContent) {
-      throw new AppError("当前小说还没有可诊断的章节正文。", 400);
+      throw new AppError("La novela actualmente no tiene texto de capítulo de diagnóstico.", 400);
     }
 
     return this.knowledgeService.createDocument({
-      title: `${novel.title}（诊断稿）`,
+      title: `${novel.title}(borrador de diagnóstico)`,
       fileName: `${safeFileNamePart(novel.title)}-diagnosis-${buildExportTimestamp()}.txt`,
       content: buildTxtContent(novel),
     });

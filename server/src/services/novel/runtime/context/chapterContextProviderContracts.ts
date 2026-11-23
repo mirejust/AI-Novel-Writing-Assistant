@@ -31,24 +31,24 @@ export function evaluateChapterContextProviderContracts(input: {
     if (!contract.stages.includes(input.stage)) continue;
     let applicable = true;
     let available = true;
-    let reason = "已提供";
+    let reason = "proporcionó";
     if (contract.id === "character_hard_facts") {
       applicable = input.contextPackage.characterRoster.length > 0;
       available = input.contextPackage.characterHardFacts.length > 0;
-      reason = available ? "角色硬事实已提供" : "适用章节缺少角色硬事实";
+      reason = available ? "Datos concretos del personaje proporcionados" : "El capítulo aplicable carece de hechos concretos";
     } else if (contract.id === "previous_chapter_result") {
       applicable = input.chapterOrder > 1;
       available = Boolean(input.contextPackage.previousChapterTail?.trim()) || input.contextPackage.previousChaptersSummary.length > 0;
-      reason = available ? "上一章实际结果已提供" : "当前章节缺少上一章实际结果";
+      reason = available ? "Se proporcionan los resultados reales del capítulo anterior." : "El capítulo actual carece de los resultados reales del capítulo anterior.";
     } else if (contract.id === "chapter_obligations") {
       available = Boolean(input.contextPackage.plan) && Boolean(input.contextPackage.chapterMission);
-      reason = available ? "章节义务已提供" : "章节规划或任务义务缺失";
+      reason = available ? "Obligaciones del capítulo previstas" : "Falta de planificación de capítulos u obligaciones de tareas";
     } else if (contract.id === "world_context") {
       available = Boolean(input.contextPackage.storyWorldSlice);
-      reason = available ? "世界上下文已提供" : "没有可用世界切片，按降级语义继续";
+      reason = available ? "Contexto mundial proporcionado" : "No hay un segmento mundial disponible; continúe con la semántica de degradación";
     } else if (contract.id === "rag_context") {
       available = Boolean(input.contextPackage.ragContext?.trim());
-      reason = available ? "知识库上下文已提供" : "知识库未返回匹配内容，按可选语义跳过";
+      reason = available ? "Contexto de la base de conocimientos proporcionado" : "La base de conocimientos no devolvió contenido coincidente, omitiendo según la semántica opcional";
     }
     if (applicable) decisions.push({ blockId: contract.id, tier: contract.tier, included: available, reason });
   }
@@ -57,5 +57,5 @@ export function evaluateChapterContextProviderContracts(input: {
 
 export function getBlockingChapterContextGaps(decisions: ContextGatingDecision[]): string[] {
   const required = new Set(CHAPTER_CONTEXT_PROVIDER_CONTRACTS.filter((item) => item.required).map((item) => item.id));
-  return decisions.filter((item) => required.has(item.blockId) && !item.included).map((item) => `${item.blockId}: ${item.reason ?? "必需上下文缺失"}`);
+  return decisions.filter((item) => required.has(item.blockId) && !item.included).map((item) => `${item.blockId}: ${item.reason ?? "Falta el contexto requerido"}`);
 }

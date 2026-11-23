@@ -140,7 +140,7 @@ function buildStructuredRiskSignals(input: {
   return [{
     code: input.riskLevel === "high" ? "resource_high_risk_commit" : "resource_medium_risk_commit",
     severity: input.riskLevel === "high" ? "high" : "medium",
-    summary: note || `${input.resourceName} 的资源变更需要后续写作谨慎处理。`,
+    summary: note || `${input.resourceName} Los cambios de recursos requieren un manejo cuidadoso en escritos posteriores.`,
   }];
 }
 
@@ -219,7 +219,7 @@ export class CharacterResourceLedgerService {
     const pendingProposalItems = pendingProposalRows.map(mapPendingProposalRow);
     const riskSignals = relevant.flatMap((item) => item.riskSignals.map((signal) => ({
       ...signal,
-      summary: `${item.name}：${signal.summary}`,
+      summary: `${item.name}:${signal.summary}`,
     }))).slice(0, 10);
 
     return {
@@ -361,7 +361,7 @@ export class CharacterResourceLedgerService {
       sourceRefsJson: stringifyJson([{
         kind: "chapter_content",
         refId: input.chapterId ?? null,
-        refLabel: input.chapterOrder ? `第${input.chapterOrder}章` : "章节内容",
+        refLabel: input.chapterOrder ? `Cap.${input.chapterOrder}cap.` : "Contenido del capítulo",
         chapterId: input.chapterId ?? null,
         chapterOrder: input.chapterOrder ?? null,
       }]),
@@ -414,18 +414,18 @@ export class CharacterResourceLedgerService {
     pendingProposalItems: CharacterResourceProposalSummary[];
   }): string {
     const parts = [
-      input.availableItems.length > 0 ? `可用关键资源 ${input.availableItems.length} 项` : "",
-      input.setupNeededItems.length > 0 ? `需要留意铺垫 ${input.setupNeededItems.length} 项` : "",
-      input.blockedItems.length > 0 ? `不可直接使用 ${input.blockedItems.length} 项` : "",
-      input.highRiskCommittedItems.length > 0 ? `高风险已入账资源 ${input.highRiskCommittedItems.length} 项` : "",
-      input.pendingProposalItems.length > 0 ? `待确认资源变更 ${input.pendingProposalItems.length} 条` : "",
+      input.availableItems.length > 0 ? `Recursos clave disponibles ${input.availableItems.length} artículo` : "",
+      input.setupNeededItems.length > 0 ? `Es necesario prestar atención al presagio. ${input.setupNeededItems.length} artículo` : "",
+      input.blockedItems.length > 0 ? `No disponible para uso directo ${input.blockedItems.length} artículo` : "",
+      input.highRiskCommittedItems.length > 0 ? `Recursos registrados de alto riesgo ${input.highRiskCommittedItems.length} artículo` : "",
+      input.pendingProposalItems.length > 0 ? `Cambios de recursos pendientes ${input.pendingProposalItems.length} banda` : "",
     ].filter(Boolean);
-    return parts.join("；") || "当前章节没有需要特别提示的角色资源。";
+    return parts.join(";") || "No hay recursos de personajes que requieran recordatorios especiales en el capítulo actual.";
   }
 
   private emptyContext(): CharacterResourceContext {
     return {
-      summary: "当前章节没有需要特别提示的角色资源。",
+      summary: "No hay recursos de personajes que requieran recordatorios especiales en el capítulo actual.",
       availableItems: [],
       setupNeededItems: [],
       blockedItems: [],

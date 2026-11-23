@@ -21,19 +21,19 @@ export const taskToolDefinitions: Partial<
 > = {
   list_tasks: {
     name: "list_tasks",
-    title: "列出系统任务",
-    description: "读取任务中心的统一任务列表、状态和恢复提示。",
+    title: "Listar tareas del sistema",
+    description: "Lea la lista de tareas unificadas, el estado y las indicaciones de recuperación en el Centro de tareas.",
     category: "read",
     riskLevel: "low",
     domainAgent: "Coordinator",
     resourceScopes: ["task", "agent_run", "generation_job"],
     parserHints: {
       intent: "query_task_status",
-      aliases: ["任务列表", "系统任务", "tasks"],
-      phrases: ["列出当前系统任务状态", "系统现在有哪些任务", "查看任务中心状态"],
+      aliases: ["lista de tareas", "Tareas del sistema", "tasks"],
+      phrases: ["Enumerar el estado actual de las tareas del sistema", "¿Qué tareas tiene actualmente el sistema?", "Ver el estado del centro de tareas"],
       requiresNovelContext: false,
-      whenToUse: "用户在查询任务中心、系统任务状态或任务列表。",
-      whenNotToUse: "用户是在追问某本小说的生产进度，这更接近 query_novel_production_status。",
+      whenToUse: "El usuario consulta el centro de tareas, el estado de las tareas del sistema o la lista de tareas.",
+      whenNotToUse: "El usuario pregunta sobre el progreso de producción de una determinada novela, que está más cerca de query_novel_production_status.",
     },
     inputSchema: listTasksInputSchema,
     outputSchema: listTasksOutputSchema,
@@ -52,14 +52,14 @@ export const taskToolDefinitions: Partial<
           failureSummary: item.failureSummary ?? item.lastError ?? null,
           recoveryHint: item.recoveryHint ?? null,
         })),
-        summary: `已读取 ${data.items.length} 个系统任务。`,
+        summary: `Leer ${data.items.length} tareas del sistema.`,
       });
     },
   },
   get_task_detail: {
     name: "get_task_detail",
-    title: "读取任务详情",
-    description: "读取统一任务详情、来源页面和失败诊断。",
+    title: "Leer detalles de la tarea",
+    description: "Lea los detalles unificados de la tarea, la página de origen y el diagnóstico de fallas.",
     category: "read",
     riskLevel: "low",
     domainAgent: "Coordinator",
@@ -84,14 +84,14 @@ export const taskToolDefinitions: Partial<
         failureSummary,
         failureDetails: detail.failureDetails ?? detail.lastError ?? null,
         recoveryHint: detail.recoveryHint ?? buildTaskRecoveryHint(detail.kind, detail.status),
-        summary: `已读取任务 ${detail.title}。`,
+        summary: `lectura de tarea ${detail.title}.`,
       });
     },
   },
   get_task_failure_reason: {
     name: "get_task_failure_reason",
-    title: "解释任务失败原因",
-    description: "解释统一任务的失败、排队、阻塞或等待审批原因。",
+    title: "Explica por qué falló la tarea.",
+    description: "Explique por qué las tareas unificadas fallan, están en cola, bloqueadas o esperan aprobación.",
     category: "inspect",
     riskLevel: "low",
     domainAgent: "Coordinator",
@@ -108,8 +108,8 @@ export const taskToolDefinitions: Partial<
       const failureSummary = normalizeFailureSummary(
         detail.failureSummary ?? detail.lastError,
         detail.status === "failed"
-          ? "任务失败，但没有记录明确错误。"
-          : `任务当前状态为 ${detail.status}。`,
+          ? "La tarea falló, pero no se registró ningún error explícito."
+          : `El estado actual de la tarea es ${detail.status}.`,
       );
       return getTaskFailureReasonOutputSchema.parse({
         kind: detail.kind,
@@ -124,8 +124,8 @@ export const taskToolDefinitions: Partial<
   },
   get_run_failure_reason: {
     name: "get_run_failure_reason",
-    title: "解释运行失败原因",
-    description: "读取 Agent run 的最后失败步骤、错误摘要和恢复建议。",
+    title: "Explica por qué falló la operación.",
+    description: "Lea el último paso fallido de la ejecución del agente, el resumen de errores y las recomendaciones de recuperación.",
     category: "inspect",
     riskLevel: "low",
     domainAgent: "Coordinator",
@@ -150,10 +150,10 @@ export const taskToolDefinitions: Partial<
       const failureSummary = normalizeFailureSummary(
         run.error ?? failedStep?.error,
         run.status === "failed"
-          ? "运行失败，但没有记录明确错误。"
+          ? "La ejecución falla, pero no se registra ningún error explícito."
           : run.status === "waiting_approval"
-            ? "运行正在等待审批。"
-            : `运行当前状态为 ${run.status}。`,
+            ? "Ejecutar pendiente de aprobación."
+            : `El estado de ejecución actual es ${run.status}.`,
       );
       return getRunFailureReasonOutputSchema.parse({
         runId: run.id,
@@ -168,8 +168,8 @@ export const taskToolDefinitions: Partial<
   },
   retry_task: {
     name: "retry_task",
-    title: "重试任务",
-    description: "对统一任务执行重试，并返回新的状态摘要。",
+    title: "Reintentar tarea",
+    description: "Realiza un reintento en la tarea unificada y devuelve un nuevo resumen de estado.",
     category: "run",
     riskLevel: "medium",
     domainAgent: "Coordinator",
@@ -183,14 +183,14 @@ export const taskToolDefinitions: Partial<
         kind: detail.kind,
         id: detail.id,
         status: detail.status,
-        summary: `已触发任务重试：${detail.title}。`,
+        summary: `Reintento de tarea activado:${detail.title}.`,
       });
     },
   },
   cancel_task: {
     name: "cancel_task",
-    title: "取消任务",
-    description: "取消统一任务，并返回最新状态。",
+    title: "Cancelar tarea",
+    description: "Cancele la tarea unificada y vuelva al estado más reciente.",
     category: "run",
     riskLevel: "medium",
     domainAgent: "Coordinator",
@@ -204,14 +204,14 @@ export const taskToolDefinitions: Partial<
         kind: detail.kind,
         id: detail.id,
         status: detail.status,
-        summary: `已取消任务：${detail.title}。`,
+        summary: `Tarea cancelada:${detail.title}.`,
       });
     },
   },
   explain_generation_blocker: {
     name: "explain_generation_blocker",
-    title: "解释章节生成阻塞",
-    description: "读取小说章节最近一次生成记录，解释失败、排队或阻塞原因。",
+    title: "Explicar el bloqueo de generación de capítulos.",
+    description: "Lea el registro de última generación del capítulo de la novela y explique los motivos del fallo, la cola o el bloqueo.",
     category: "inspect",
     riskLevel: "low",
     domainAgent: "NovelAgent",
@@ -257,10 +257,10 @@ export const taskToolDefinitions: Partial<
           chapterOrder: input.chapterOrder ?? null,
           blockerType: "none",
           status: null,
-          failureSummary: "当前没有找到与该章节相关的生成任务记录。",
+          failureSummary: "Actualmente no se han encontrado registros de tareas de generación relacionados con este capítulo.",
           failureDetails: null,
-          recoveryHint: "建议先确认是否已发起章节生成，或在任务中心检查是否存在对应流水线任务。",
-          summary: "当前没有找到与该章节相关的生成任务记录。",
+          recoveryHint: "Se recomienda confirmar primero si se ha iniciado la generación del capítulo o verificar si existe una tarea de canalización correspondiente en el centro de tareas.",
+          summary: "Actualmente no se han encontrado registros de tareas de generación relacionados con este capítulo.",
         });
       }
 
@@ -272,14 +272,14 @@ export const taskToolDefinitions: Partial<
             ? "pipeline_waiting"
             : "none";
       const failureSummary = job.status === "failed"
-        ? normalizeFailureSummary(job.error, "章节生成失败，但没有记录明确错误。")
+        ? normalizeFailureSummary(job.error, "Error al generar el capítulo, pero no se registró ningún error explícito.")
         : job.status === "running"
-          ? "章节生成仍在执行中。"
+          ? "La generación de capítulos aún está en progreso."
           : job.status === "queued"
-            ? "章节生成任务仍在排队。"
+            ? "Las tareas de generación de capítulos todavía están en cola."
             : job.status === "cancelled"
-              ? "章节生成任务已取消。"
-              : "最近一次章节生成任务已结束。";
+              ? "La tarea de generación de capítulos ha sido cancelada."
+              : "La última tarea de generación de capítulos ha finalizado.";
       return explainGenerationBlockerOutputSchema.parse({
         novelId: input.novelId,
         chapterOrder: input.chapterOrder ?? null,

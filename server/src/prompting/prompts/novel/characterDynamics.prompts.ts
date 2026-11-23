@@ -90,7 +90,7 @@ export const volumeDynamicsProjectionPrompt: PromptAsset<
   outputSchema: volumeDynamicsProjectionSchema,
   render: (input) => [
     new SystemMessage([
-      "你是长篇中文网文的角色动态规划器。",
+      "你是长篇西班牙语网文的角色动态规划器。",
       "你的任务是基于小说定位、卖点、前 30 章承诺、角色名单、关系结构和分卷规划，生成可执行的“分卷角色动态投射”。",
       "",
       "只输出一个合法 JSON 对象，不要输出 Markdown、解释、注释、代码块或任何额外文本。",
@@ -165,7 +165,7 @@ export const chapterDynamicsExtractionPrompt: PromptAsset<
     note: [
       "confidence 是可选字段。",
       "如果输出 confidence，必须是 0-1 数字。",
-      "不要输出 5、10、80、百分数、中文等级或字符串化置信度；拿不准就省略。",
+      "不要输出 5、10、80、百分数、西班牙语等级或字符串化置信度；拿不准就省略。",
     ].join(" "),
   },
   outputSchema: chapterDynamicExtractionSchema,
@@ -187,7 +187,7 @@ export const chapterDynamicsExtractionPrompt: PromptAsset<
       "3. 不要复述剧情，不要写成长段总结，只抽取结构化变化点。",
       "4. 所有角色必须使用明确姓名，不要使用“他”“她”“对方”等代词。",
       "5. confidence 是可选字段；如果填写，必须是 0-1 数字，拿不准就省略。",
-      "6. 不要输出 5、10、80、百分数、中文等级或字符串化置信度。",
+      "6. 不要输出 5、10、80、百分数、西班牙语等级或字符串化置信度。",
       "",
       "最小合法示例（无信息差时省略 characterKnowledgeStates）：",
       "{\"candidates\":[{\"proposedName\":\"老吴\",\"proposedRole\":\"杂役头目\",\"summary\":\"负责监工后院杂役。\",\"evidence\":[\"老吴负责监工\"],\"matchedCharacterName\":\"\",\"confidence\":0.8}],\"factionUpdates\":[],\"relationStages\":[{\"sourceCharacterName\":\"赵管事\",\"targetCharacterName\":\"程秩\",\"stageLabel\":\"监视升级\",\"stageSummary\":\"赵管事开始持续盯防程秩。\",\"nextTurnPoint\":\"程秩准备改换应对策略。\",\"confidence\":0.6}]}",

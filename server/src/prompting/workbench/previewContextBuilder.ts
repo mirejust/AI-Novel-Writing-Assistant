@@ -235,11 +235,11 @@ export async function prepareWorkbenchPreviewExecutionContext(input: {
           priority: 105,
           required: true,
           content: (() => {
-            if (!novel.writingPlatformSnapshotJson) return "沿用通用中文商业网文写法。";
+            if (!novel.writingPlatformSnapshotJson) return "沿用通用西班牙语商业网文写法。";
             try {
               const snapshot = JSON.parse(novel.writingPlatformSnapshotJson) as WritingPlatformSnapshot;
               return `${snapshot.label}（配置版本 ${snapshot.profileVersion}）：${snapshot.guidance.drafting}`;
-            } catch { return "沿用通用中文商业网文写法。"; }
+            } catch { return "沿用通用西班牙语商业网文写法。"; }
           })(),
         })],
       },

@@ -9,7 +9,7 @@ router.use(authMiddleware);
 router.get("/", (_req, res) => {
   const response: ApiResponse<null> = {
     success: false,
-    error: "占星模块暂未实现。",
+    error: "El módulo de astrología aún no está implementado.",
   };
   res.status(501).json(response);
 });

@@ -31,15 +31,15 @@ export const emptyForm: RuleFormState = {
 };
 
 export const typeLabels: Record<AntiAiRule["type"], string> = {
-  forbidden: "禁用",
-  risk: "风险",
-  encourage: "鼓励",
+  forbidden: "Desactivar",
+  risk: "Riesgo",
+  encourage: "Alentar",
 };
 
 export const severityLabels: Record<AntiAiRule["severity"], string> = {
-  low: "低",
-  medium: "中",
-  high: "高",
+  low: "Bajo",
+  medium: "Medio",
+  high: "Alto",
 };
 
 export function ruleToForm(rule: AntiAiRule): RuleFormState {

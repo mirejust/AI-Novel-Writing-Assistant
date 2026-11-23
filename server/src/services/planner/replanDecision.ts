@@ -255,78 +255,78 @@ function buildWindowOrders(
 }
 
 function formatOrders(orders: number[]): string {
-  return orders.map((order) => `第${order}章`).join("、");
+  return orders.map((order) => `Cap.${order}cap.`).join(",");
 }
 
 function buildTriggerReason(signal: ReplanSignal, input: ReplanDecisionInput, blockingIssues: AuditIssue[], blockingLedgerKeys: string[]): string {
   if (signal === "overdue_payoff") {
     const titles = uniqueStrings((input.snapshot?.narrative.overduePayoffs ?? []).map((item) => item.title)).slice(0, 2);
     return titles.length > 0
-      ? `canonical 状态显示 payoff 已逾期：${titles.join("；")}，作为章节级质量债继续跟进。`
-      : `canonical 状态显示存在逾期 payoff，作为章节级质量债继续跟进。`;
+      ? `El estado canónico muestra que el pago ha expirado:${titles.join(";")}, continúe con el seguimiento como deuda de calidad a nivel de capítulo.`
+      : `El estado canónico muestra que hay un pago vencido, al que se le dará seguimiento como una deuda de calidad a nivel de capítulo.`;
   }
   if (signal === "next_action_replan") {
-    return `状态驱动决策已切到 replan，说明当前章节目标与现有计划窗口失配。`;
+    return `Las decisiones impulsadas por el estado se han recortado para replanificar, lo que indica un desajuste entre los objetivos del capítulo actual y la ventana de planificación existente.`;
   }
   if (signal === "blocking_audit") {
     const topIssues = blockingIssues.slice(0, 2).map((issue) => issue.description);
     return topIssues.length > 0
-      ? `高优先级审计问题未解决：${topIssues.join("；")}。`
-      : `存在未解决的高优先级审计问题，需要先调整章节计划。`;
+      ? `Cuestiones de auditoría de alta prioridad sin resolver:${topIssues.join(";")}.`
+      : `Hay cuestiones de auditoría de alta prioridad sin resolver que requieren ajustes en el plan del capítulo primero.`;
   }
   if (signal === "manual_request") {
-    return input.reason?.trim() || "用户显式要求重规划当前窗口。";
+    return input.reason?.trim() || "El usuario solicita explícitamente que se reprograme la ventana actual.";
   }
   if (blockingLedgerKeys.length > 0) {
-    return `伏笔账本存在待处理风险，需要重新校准章节职责。`;
+    return `Hay riesgos pendientes en el libro de presagios que requieren una recalibración de las responsabilidades del capítulo.`;
   }
-  return "当前状态稳定，暂不建议重规划。";
+  return "El estado actual es estable y no se recomienda ninguna nueva planificación por el momento.";
 }
 
 function buildWindowReason(signal: ReplanSignal, anchorChapterOrder: number | null, affectedChapterOrders: number[], protectedSecrets: string[]): string {
-  const chapterLabel = anchorChapterOrder ? `第${anchorChapterOrder}章` : "当前章";
+  const chapterLabel = anchorChapterOrder ? `Cap.${anchorChapterOrder}cap.` : "Capítulo actual";
   const secretHint = protectedSecrets.length > 0
-    ? ` 同时要守住“${protectedSecrets.slice(0, 2).join("；")}”这类未公开信息。`
+    ? ` Al mismo tiempo, debemos mantener "${protectedSecrets.slice(0, 2).join(";")}"Este tipo de información no divulgada.`
     : "";
   if (signal === "overdue_payoff") {
     if (affectedChapterOrders.length === 0) {
-      return `${chapterLabel}只用于定位逾期承诺；系统不会仅凭逾期距离或当前章引用自动选择重规划窗口。${secretHint}`.trim();
+      return `${chapterLabel}Sólo se utiliza para localizar compromisos vencidos; el sistema no seleccionará automáticamente una ventana de replanificación basándose únicamente en la distancia vencida o la referencia del capítulo actual.${secretHint}`.trim();
     }
-    return `以${chapterLabel}为锚点，窗口覆盖 ${formatOrders(affectedChapterOrders)}，因为逾期 payoff 往往需要补铺垫、兑现和兑现后的余波连续联动。${secretHint}`.trim();
+    return `por${chapterLabel}Como punto de anclaje, las cubiertas de la ventana ${formatOrders(affectedChapterOrders)}, porque el pago atrasado a menudo requiere un vínculo continuo entre los preparativos, el cobro y las consecuencias del cobro.${secretHint}`.trim();
   }
   if (signal === "blocking_audit") {
-    return `以${chapterLabel}向后展开 ${formatOrders(affectedChapterOrders)}，先修正当前阻塞问题，再避免旧计划继续污染后续章节。${secretHint}`.trim();
+    return `por${chapterLabel}desplegarse hacia atrás ${formatOrders(affectedChapterOrders)}Primero corrija el problema de bloqueo actual y luego evite que el plan anterior continúe contaminando los capítulos posteriores.${secretHint}`.trim();
   }
   if (signal === "next_action_replan") {
-    return `以${chapterLabel}为锚点联动 ${formatOrders(affectedChapterOrders)}，让当前状态目标重新对齐邻近章节职责。${secretHint}`.trim();
+    return `por${chapterLabel}enlace para punto de anclaje ${formatOrders(affectedChapterOrders)}, permitiendo que los objetivos estatales actuales se realineen con las responsabilidades de los capítulos adyacentes.${secretHint}`.trim();
   }
   if (signal === "manual_request") {
-    return `本次按 ${formatOrders(affectedChapterOrders)} 执行手动重规划，优先围绕${chapterLabel}附近的连续章节收口。${secretHint}`.trim();
+    return `Presione esta vez ${formatOrders(affectedChapterOrders)} Realizar una replanificación manual, priorizando${chapterLabel}Cerca del final de capítulos consecutivos.${secretHint}`.trim();
   }
-  return `当前没有必须调整的窗口。`;
+  return `Actualmente no hay ventanas que deban ajustarse.`;
 }
 
 function buildWhyTheseChapters(signal: ReplanSignal, affectedChapterOrders: number[], chapterStateGoal?: ChapterStateGoal | null): string {
   if (affectedChapterOrders.length === 0) {
-    return "当前没有选中的重规划章节。";
+    return "Actualmente no hay capítulos de replanificación seleccionados.";
   }
   const ordersLabel = formatOrders(affectedChapterOrders);
   const goalHint = chapterStateGoal?.summary?.trim()
-    ? `，并围绕“${chapterStateGoal.summary.trim()}”重新分配章节职责`
+    ? `, y alrededor "${chapterStateGoal.summary.trim()}”Reasignar responsabilidades del capítulo`
     : "";
   if (affectedChapterOrders.length === 1) {
-    return `只调整${ordersLabel}，因为问题当前集中在单章范围内${goalHint}。`;
+    return `Ajustar solo${ordersLabel}, porque las preguntas actualmente se centran en un solo capítulo.${goalHint}.`;
   }
   if (signal === "overdue_payoff") {
-    return `选择${ordersLabel}，因为这组章节需要连续承担补铺垫、兑现逾期 payoff 和承接新盘面变化${goalHint}。`;
+    return `elegir${ordersLabel}, porque este grupo de capítulos necesita recuperar terreno continuamente, honrar los pagos atrasados ​​y emprender nuevos cambios en la junta directiva.${goalHint}.`;
   }
   if (signal === "blocking_audit") {
-    return `选择${ordersLabel}，因为高优先级问题已经进入当前章节，并会直接影响紧邻的后续推进${goalHint}。`;
+    return `elegir${ordersLabel}, porque cuestiones de alta prioridad han entrado en el capítulo actual y afectarán directamente el avance posterior inmediato.${goalHint}.`;
   }
   if (signal === "next_action_replan") {
-    return `选择${ordersLabel}，因为 canonical state 已判定现有窗口失配，需要从锚点章向前后联动收口${goalHint}。`;
+    return `elegir${ordersLabel}Debido a que el estado canónico ha determinado que la ventana existente no coincide, es necesario cerrarla desde el punto de anclaje hacia el frente y hacia atrás.${goalHint}.`;
   }
-  return `选择${ordersLabel}，因为这些章节与当前状态目标直接相邻，调整成本最低${goalHint}。`;
+  return `elegir${ordersLabel}, porque estos capítulos están directamente adyacentes al objetivo estatal actual y tienen el costo de ajuste más bajo${goalHint}.`;
 }
 
 export function buildReplanDecision(input: ReplanDecisionInput): ReplanDecision {
@@ -368,8 +368,8 @@ export function buildReplanDecision(input: ReplanDecisionInput): ReplanDecision 
     reason: recommended
       ? triggerReason
       : signal === "overdue_payoff"
-        ? "逾期承诺已记录为章节级质量债，后续章节继续执行。"
-        : "当前没有阻塞性状态信号，无需重规划后续章节。",
+        ? "Los compromisos vencidos se han registrado como deudas de calidad a nivel de capítulo y continuarán implementándose en capítulos posteriores."
+        : "Actualmente no hay señales de estado de bloqueo y no es necesario volver a planificar los capítulos siguientes.",
     blockingIssueIds,
     blockingLedgerKeys,
     affectedChapterOrders,

@@ -3,7 +3,7 @@ import { buildBookContractPayoffSources } from "../../../../../services/payoff/s
 import { InvalidProductionRequestError } from "../../../application";
 import type { PayoffExtractionDependencies } from "./extraction";
 
-const compact = (value: string | null | undefined) => value?.replace(/\s+/g, " ").trim() || "无";
+const compact = (value: string | null | undefined) => value?.replace(/\s+/g, " ").trim() || "Ninguno";
 function strings(raw: string | null | undefined): string[] {
   if (!raw) return [];
   const value: unknown = JSON.parse(raw);
@@ -30,19 +30,19 @@ export function createPayoffSourceReader(db: Pick<PrismaClient, "novel" | "chapt
     const macro: { major_payoffs?: unknown } = novel.storyMacroPlan?.decompositionJson ? JSON.parse(novel.storyMacroPlan.decompositionJson) : {};
     const major = Array.isArray(macro.major_payoffs) ? macro.major_payoffs.filter((item): item is string => typeof item === "string" && Boolean(item.trim())) : [];
     return { novelTitle: novel.title, bookContractPayoffs: buildBookContractPayoffSources(novel.bookContract),
-      activeVolumeSummary: active ? [`当前卷：第${active.sortOrder}卷《${active.title}》`, `卷摘要：${compact(active.summary)}`,
-        `卷 open payoffs：${strings(active.openPayoffsJson).join("；") || "无"}`,
-        active.chapters.length ? `卷章节范围：${active.chapters[0].chapterOrder}-${active.chapters.at(-1)!.chapterOrder}` : "卷章节范围：无"].join("\n")
-        : `当前暂无激活卷窗口。${volumes.length ? `已有卷：${volumes.map(volume => `第${volume.sortOrder}卷《${volume.title}》`).join("；")}` : ""}`,
-      latestChapterContext: [`当前章节序号：第${order}章`, snapshot?.sourceChapter ? `最新状态快照来源：第${snapshot.sourceChapter.order}章《${snapshot.sourceChapter.title}》` : "最新状态快照来源：无",
-        snapshot?.summary ? `状态快照摘要：${snapshot.summary}` : ""].filter(Boolean).join("\n"),
-      majorPayoffsText: major.map((item, index) => `${index + 1}. ${item}`).join("\n") || "无",
-      openPayoffsText: volumes.map(volume => { const values = strings(volume.openPayoffsJson); return values.length ? `【第${volume.sortOrder}卷 ${volume.title}】 ${values.map(compact).join("；")}` : ""; }).filter(Boolean).join("\n\n") || "无",
+      activeVolumeSummary: active ? [`Volumen actual: No.${active.sortOrder}rollo"${active.title}»`, `Resumen del volumen:${compact(active.summary)}`,
+        `Pagos abiertos por volumen:${strings(active.openPayoffsJson).join(";") || "Ninguno"}`,
+        active.chapters.length ? `Rango de capítulos de volumen:${active.chapters[0].chapterOrder}-${active.chapters.at(-1)!.chapterOrder}` : "Rango de capítulos de volumen: Ninguno"].join("\n")
+        : `Actualmente no hay ninguna ventana de volumen activa.${volumes.length ? `Ya tengo volúmenes:${volumes.map(volume => `Cap.${volume.sortOrder}rollo"${volume.title}»`).join(";")}` : ""}`,
+      latestChapterContext: [`Número de capítulo actual: Capítulo${order}cap.`, snapshot?.sourceChapter ? `Fuente de la última instantánea de estado: No.${snapshot.sourceChapter.order}capítulo"${snapshot.sourceChapter.title}»` : "Fuente de la última instantánea de estado: Ninguna",
+        snapshot?.summary ? `Resumen de instantáneas de estado:${snapshot.summary}` : ""].filter(Boolean).join("\n"),
+      majorPayoffsText: major.map((item, index) => `${index + 1}. ${item}`).join("\n") || "Ninguno",
+      openPayoffsText: volumes.map(volume => { const values = strings(volume.openPayoffsJson); return values.length ? `[No.${volume.sortOrder}rollo ${volume.title}] ${values.map(compact).join(";")}` : ""; }).filter(Boolean).join("\n\n") || "Ninguno",
       chapterPayoffRefsText: volumes.flatMap(volume => volume.chapters.map(item => { const refs = strings(item.payoffRefsJson);
-        return refs.length ? `第${item.chapterOrder}章《${item.title}》 | ${refs.map(compact).join("；")}` : ""; })).filter(Boolean).join("\n\n") || "无",
-      foreshadowStatesText: snapshot?.foreshadowStates.map(item => [`标题：${item.title}`, `状态：${compact(item.status)}`, item.summary ? `摘要：${item.summary}` : "",
-        item.setupChapterId ? `setupChapterId：${item.setupChapterId}` : "", item.payoffChapterId ? `payoffChapterId：${item.payoffChapterId}` : ""].filter(Boolean).join(" | ")).join("\n") || "无",
-      payoffConflictsText: conflicts.map(item => [`${item.conflictType}/${item.severity}：${item.title}`, compact(item.summary), item.resolutionHint ? `修复建议：${compact(item.resolutionHint)}` : ""].filter(Boolean).join(" | ")).join("\n") || "无",
-      payoffAuditIssuesText: reports.flatMap(report => report.issues.map(issue => `${issue.code} (${issue.severity})：${compact(issue.description)} | 证据：${compact(issue.evidence)}`)).join("\n") || "无" };
+        return refs.length ? `Cap.${item.chapterOrder}capítulo"${item.title}» | ${refs.map(compact).join(";")}` : ""; })).filter(Boolean).join("\n\n") || "Ninguno",
+      foreshadowStatesText: snapshot?.foreshadowStates.map(item => [`título:${item.title}`, `estado:${compact(item.status)}`, item.summary ? `resumen:${item.summary}` : "",
+        item.setupChapterId ? `ID de capítulo de configuración:${item.setupChapterId}` : "", item.payoffChapterId ? `ID del capítulo de pago:${item.payoffChapterId}` : ""].filter(Boolean).join(" | ")).join("\n") || "Ninguno",
+      payoffConflictsText: conflicts.map(item => [`${item.conflictType}/${item.severity}:${item.title}`, compact(item.summary), item.resolutionHint ? `Sugerencias de reparación:${compact(item.resolutionHint)}` : ""].filter(Boolean).join(" | ")).join("\n") || "Ninguno",
+      payoffAuditIssuesText: reports.flatMap(report => report.issues.map(issue => `${issue.code} (${issue.severity}):${compact(issue.description)} | Evidencia:${compact(issue.evidence)}`)).join("\n") || "Ninguno" };
   };
 }

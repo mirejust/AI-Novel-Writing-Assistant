@@ -19,11 +19,11 @@ export function VolumeRhythm({projectId, volume, chapters, version, disabled, on
     mutationFn: () => generateOutlineVolumeBeats(projectId,volume.nodeId,version,Number(count)),
     onSuccess: () => cache.invalidateQueries({queryKey:["outline-pending",projectId]}),
   });
-  return <section className="outline-passage" aria-label="本卷节奏"><h3>本卷节奏</h3>
-    {volume.beats ? <BeatList beats={volume.beats} chapters={chapters} onSelect={onSelect}/> : <p>安排本卷的转折，并确定每个章节主要推进哪一段。</p>}
+  return <section className="outline-passage" aria-label="Ritmo de este volumen."><h3>Ritmo de este volumen.</h3>
+    {volume.beats ? <BeatList beats={volume.beats} chapters={chapters} onSelect={onSelect}/> : <p>Planifique las transiciones del volumen y determine en qué párrafo avanzará principalmente cada capítulo.</p>}
     <form className="mt-3 flex flex-wrap items-center gap-3" onSubmit={event => {event.preventDefault(); if (!disabled && !pending) generate.mutate(undefined,{onSuccess:p => onOpen(p.id)});}}>
-      <label className="inline-flex items-center gap-2 text-sm">本卷预计章数<input className="outline-field w-20" type="number" required min={Math.max(1,chapters.length)} max={2000} value={count} onChange={e=>setCount(e.target.value)}/></label>
-      <Button size="sm" variant="secondary" disabled={disabled || pending}>{pending ? "正在规划本卷…" : volume.beats ? "重新拟定节奏建议" : "生成本卷节奏建议"}</Button>
+      <label className="inline-flex items-center gap-2 text-sm">Número estimado de capítulos de este volumen.<input className="outline-field w-20" type="number" required min={Math.max(1,chapters.length)} max={2000} value={count} onChange={e=>setCount(e.target.value)}/></label>
+      <Button size="sm" variant="secondary" disabled={disabled || pending}>{pending ? "Planificando este volumen..." : volume.beats ? "Sugerencias para cambiar el ritmo" : "Generar sugerencias de ritmo para este volumen"}</Button>
     </form>{generate.isError && <p role="alert">{generate.error.message}</p>}
   </section>;
 }

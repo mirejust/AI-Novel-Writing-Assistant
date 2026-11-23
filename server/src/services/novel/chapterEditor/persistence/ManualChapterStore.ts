@@ -11,7 +11,7 @@ export async function saveManualChapterContent(tx:Prisma.TransactionClient,exist
  const saved=await tx.chapter.update({where:{id:existing.id,novelId:existing.novelId,content:existing.content},data:{content,updatedAt:new Date(Math.max(Date.now(),existing.updatedAt.getTime()+1))}});
  if(content!==existing.content){await queueManualChapterSync(tx,saved);await queueManualChapterTimeline(tx,saved);}return saved;
 }
-async function rejectManuscriptLegacyWrite(novelId:string){if(await prisma.manuscriptProject.findUnique({where:{novelId},select:{id:true}}))throw new AppError("请在原稿修订工作区预览并确认修改，旧章节接口不会覆盖修订副本。",409);}
+async function rejectManuscriptLegacyWrite(novelId:string){if(await prisma.manuscriptProject.findUnique({where:{novelId},select:{id:true}}))throw new AppError("Obtenga una vista previa y confirme los cambios en el espacio de trabajo de revisión del manuscrito. La interfaz del capítulo anterior no sobrescribirá la copia revisada.",409);}
 /** Owns editor CAS and both durable synchronization obligations in one transaction. */
 export class ManualChapterStore {
   async createChapter(novelId: string, input: ChapterInput) {
@@ -53,13 +53,13 @@ export class ManualChapterStore {
     await rejectManuscriptLegacyWrite(novelId);
     const exists = await prisma.chapter.findFirst({ where: { id: chapterId, novelId }, select: { id: true, novelId:true, content: true, updatedAt: true } });
     if (!exists) {
-      throw new Error("章节不存在");
+      throw new Error("El capitulo no existe");
     }
     const bodyOnly = typeof input.content === "string" && input.expectedContent !== undefined
       && Object.keys(input).every(key => ["content", "expectedContent", "expectedUpdatedAt"].includes(key));
     const sameBody = (exists.content ?? "").replace(/\r\n?/g, "\n") === (input.expectedContent ?? "").replace(/\r\n?/g, "\n");
     if ((bodyOnly && !sameBody) || (!bodyOnly && input.expectedUpdatedAt && exists.updatedAt.getTime() !== new Date(input.expectedUpdatedAt).getTime())) {
-      throw new AppError("本章保存版本已变化。请先查看新内容，再合并你的修改。", 409);
+      throw new AppError("La versión guardada de este capítulo ha cambiado. Revise el nuevo contenido antes de fusionar los cambios.", 409);
     }
 
     const chapter = await prisma.$transaction(async (tx) => {
@@ -95,7 +95,7 @@ export class ManualChapterStore {
       return saved;
     }).catch((error: unknown) => {
       if (error && typeof error === "object" && "code" in error && error.code === "P2025") {
-        throw new AppError("本章保存版本已变化。请先查看新内容，再合并你的修改。", 409);
+        throw new AppError("La versión guardada de este capítulo ha cambiado. Revise el nuevo contenido antes de fusionar los cambios.", 409);
       }
       throw error;
     });
@@ -119,10 +119,10 @@ export class ManualChapterStore {
       },
     });
     if (!chapter) {
-      throw new Error("章节不存在");
+      throw new Error("El capitulo no existe");
     }
     if (!canRemoveManualChapter(chapter)) {
-      throw new Error("只能移除尚未进入写作或规划流程的空白手动章节");
+      throw new Error("Solo se pueden eliminar los capítulos del manual en blanco que aún no hayan entrado en el proceso de redacción o planificación.");
     }
     const deleted = await prisma.chapter.deleteMany({ where: {
       id: chapterId,
@@ -137,7 +137,7 @@ export class ManualChapterStore {
       riskFlags: chapter.riskFlags,
     } });
     if (deleted.count === 0) {
-      throw new AppError("本章内容或状态已变化，请刷新后再操作。", 409);
+      throw new AppError("El contenido o el estado de este capítulo ha cambiado; actualice antes de continuar.", 409);
     }
   }
 }

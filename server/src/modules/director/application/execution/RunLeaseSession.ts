@@ -1,7 +1,7 @@
 import type {DirectorWorkerRuntime, RunRepository} from "../ports";
 
 export class RunLeaseLostError extends Error {
-  constructor() {super("本次执行的租约已失效，已停止旧执行。"); this.name = "RunLeaseLostError";}
+  constructor() {super("El contrato de arrendamiento para esta ejecución expiró y la ejecución anterior se detuvo."); this.name = "RunLeaseLostError";}
 }
 
 /** Serial renewal and a separate expiry deadline; no detached rejected promises. */

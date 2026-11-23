@@ -3,12 +3,12 @@ import { validateOutlineDocument, type OutlineDocument } from "./outlineDocument
 const editableCollections = ["volumes", "chapters", "characters", "payoffs", "facts"] as const;
 
 function assertSameNodeIds(original: OutlineDocument, edited: OutlineDocument) {
-  if (original.story.nodeId !== edited.story.nodeId) throw new Error("导入确认不能替换总纲节点 ID");
+  if (original.story.nodeId !== edited.story.nodeId) throw new Error("La confirmación de importación no puede reemplazar la ID del nodo maestro");
   for (const collection of editableCollections) {
     const originalIds = original[collection].map(node => node.nodeId);
     const editedIds = new Set(edited[collection].map(node => node.nodeId));
     if (originalIds.length !== editedIds.size || originalIds.some(nodeId => !editedIds.has(nodeId))) {
-      throw new Error("导入确认只能调整解析出的节点，不能增删节点或替换节点 ID");
+      throw new Error("La confirmación de importación solo puede ajustar los nodos analizados y no puede agregar, eliminar nodos ni reemplazar ID de nodos.");
     }
   }
 }
@@ -18,7 +18,7 @@ function unique(ids: string[]) {
 }
 
 function assertTargets(ids: string[], allowed: Set<string>, label: string) {
-  for (const nodeId of ids) if (!allowed.has(nodeId)) throw new Error(`${label}包含无效的节点引用`);
+  for (const nodeId of ids) if (!allowed.has(nodeId)) throw new Error(`${label}Contiene una referencia de nodo no válida`);
 }
 
 export function applyOutlineImportEdits(originalInput: unknown, editedInput: unknown): OutlineDocument {
@@ -79,20 +79,20 @@ export function applyOutlineImportEdits(originalInput: unknown, editedInput: unk
     ...facts.map(node => node.nodeId),
   ]);
   for (const chapter of chapters) {
-    if (!volumeIds.has(chapter.volumeNodeId)) throw new Error("章节必须归属到一个已解析的卷");
-    assertTargets(chapter.characterNodeIds, characterIds, "章节人物");
-    assertTargets(chapter.payoffNodeIds, payoffIds, "章节伏笔");
+    if (!volumeIds.has(chapter.volumeNodeId)) throw new Error("Los capítulos deben pertenecer a un volumen analizado.");
+    assertTargets(chapter.characterNodeIds, characterIds, "Personajes del capítulo");
+    assertTargets(chapter.payoffNodeIds, payoffIds, "Capítulo presagio");
   }
-  for (const character of characters) assertTargets(character.appearanceNodeIds, new Set([...volumeIds, ...chapterIds]), "人物出场位置");
+  for (const character of characters) assertTargets(character.appearanceNodeIds, new Set([...volumeIds, ...chapterIds]), "Ubicación de la aparición del personaje.");
   for (const payoff of payoffs) {
-    assertTargets(payoff.setupChapterNodeIds, chapterIds, "伏笔埋设章节");
-    assertTargets(payoff.payoffChapterNodeIds, chapterIds, "伏笔回收章节");
-    assertTargets(payoff.relatedNodeIds, allNodeIds, "伏笔关联节点");
+    assertTargets(payoff.setupChapterNodeIds, chapterIds, "Capítulo de presagios");
+    assertTargets(payoff.payoffChapterNodeIds, chapterIds, "Capítulo de reciclaje que presagia");
+    assertTargets(payoff.relatedNodeIds, allNodeIds, "Presagio de nodos asociados");
   }
   for (const fact of facts) {
-    assertTargets(fact.relatedNodeIds, allNodeIds, "设定关联节点");
-    if (fact.scope.type === "volume" && (!fact.scope.nodeId || !volumeIds.has(fact.scope.nodeId))) throw new Error("固定设定的卷范围无效");
-    if (fact.scope.type === "chapter" && (!fact.scope.nodeId || !chapterIds.has(fact.scope.nodeId))) throw new Error("固定设定的章节范围无效");
+    assertTargets(fact.relatedNodeIds, allNodeIds, "Establecer nodos asociados");
+    if (fact.scope.type === "volume" && (!fact.scope.nodeId || !volumeIds.has(fact.scope.nodeId))) throw new Error("El rango de volumen establecido fijo no es válido");
+    if (fact.scope.type === "chapter" && (!fact.scope.nodeId || !chapterIds.has(fact.scope.nodeId))) throw new Error("El rango de capítulos fijo no es válido");
     if (fact.scope.type === "story") delete fact.scope.nodeId;
   }
 

@@ -129,7 +129,7 @@ export function registerNovelStoryMacroRoutes(input: RegisterNovelStoryMacroRout
         res.status(200).json({
           success: true,
           data,
-          message: "故事引擎原型已生成。",
+          message: "Se ha generado el prototipo del motor de historias.",
         } satisfies ApiResponse<typeof data>);
       } catch (error) {
         next(error);
@@ -147,7 +147,7 @@ export function registerNovelStoryMacroRoutes(input: RegisterNovelStoryMacroRout
         res.status(200).json({
           success: true,
           data,
-          message: "约束引擎已构建。",
+          message: "Se ha construido el motor de restricciones.",
         } satisfies ApiResponse<typeof data>);
       } catch (error) {
         next(error);
@@ -174,7 +174,7 @@ export function registerNovelStoryMacroRoutes(input: RegisterNovelStoryMacroRout
         res.status(200).json({
           success: true,
           data,
-          message: "故事宏观规划已保存。",
+          message: "Imagen general de la historia guardada.",
         } satisfies ApiResponse<typeof data>);
       } catch (error) {
         next(error);
@@ -192,7 +192,7 @@ export function registerNovelStoryMacroRoutes(input: RegisterNovelStoryMacroRout
         res.status(200).json({
           success: true,
           data,
-          message: "字段已重生成。",
+          message: "El campo ha sido regenerado.",
         } satisfies ApiResponse<typeof data>);
       } catch (error) {
         next(error);
@@ -207,7 +207,7 @@ export function registerNovelStoryMacroRoutes(input: RegisterNovelStoryMacroRout
       res.status(200).json({
         success: true,
         data,
-        message: "故事宏观规划状态已加载。",
+        message: "Estado de macro de historia cargado.",
       } satisfies ApiResponse<typeof data>);
     } catch (error) {
       next(error);
@@ -224,7 +224,7 @@ export function registerNovelStoryMacroRoutes(input: RegisterNovelStoryMacroRout
         res.status(200).json({
           success: true,
           data,
-          message: "故事宏观规划状态已更新。",
+          message: "Estado de la macro de la historia actualizado.",
         } satisfies ApiResponse<typeof data>);
       } catch (error) {
         next(error);

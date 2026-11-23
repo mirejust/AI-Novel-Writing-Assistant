@@ -7,7 +7,7 @@ import {
   QUALITY_DEBT_AUTO_PROMOTION_SETTING_KEYS,
 } from "./qualityDebtSettingKeys";
 
-export const QUALITY_DEBT_AUTO_PROMOTION_ACK_TEXT = "我已了解自动放行风险";
+export const QUALITY_DEBT_AUTO_PROMOTION_ACK_TEXT = "Entiendo los riesgos de la liberación automática";
 
 export interface QualityDebtAutoPromotionSettings {
   enabled: boolean;
@@ -158,10 +158,10 @@ export class QualityDebtSettingsService {
 
   private assertAcknowledged(input: SaveQualityDebtAutoPromotionSettingsInput): void {
     if (input.acknowledgedRisks !== true) {
-      throw new AppError("开启待确认状态自动放行前，需要先确认风险说明。", 400);
+      throw new AppError("Antes de activar la liberación automática en estado pendiente de confirmación, primero debe confirmar la descripción del riesgo.", 400);
     }
     if (normalizeOptionalText(input.confirmationText ?? undefined) !== QUALITY_DEBT_AUTO_PROMOTION_ACK_TEXT) {
-      throw new AppError(`请输入确认文本：${QUALITY_DEBT_AUTO_PROMOTION_ACK_TEXT}`, 400);
+      throw new AppError(`Por favor ingrese el texto de confirmación:${QUALITY_DEBT_AUTO_PROMOTION_ACK_TEXT}`, 400);
     }
   }
 

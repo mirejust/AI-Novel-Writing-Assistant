@@ -30,19 +30,19 @@ import { toast } from "@/components/ui/toast";
 import SelectControl from "@/components/common/SelectControl";
 
 const SCENE_TYPE_LABELS: Record<SceneType, string> = {
-  interior: "室内",
-  exterior: "室外",
-  landscape: "风景",
-  abstract: "抽象",
-  other: "其他",
+  interior: "Interior",
+  exterior: "al aire libre",
+  landscape: "Paisaje",
+  abstract: "Abstracto",
+  other: "Otros",
 };
 
 const BIBLE_FIELDS: Array<{ key: keyof SceneBible; label: string; placeholder: string }> = [
-  { key: "palette", label: "主色板", placeholder: "如：暗金与朱红" },
-  { key: "keyElements", label: "标志元素", placeholder: "如：盘龙石柱、悬空匾额、青铜香炉" },
-  { key: "materials", label: "材质", placeholder: "如：石材、木雕、金属" },
-  { key: "ambiance", label: "氛围光照", placeholder: "如：幽暗烛光" },
-  { key: "layout", label: "空间结构", placeholder: "如：纵深对称，高台居中" },
+  { key: "palette", label: "Paleta de colores principal", placeholder: "Tales como: oro oscuro y bermellón" },
+  { key: "keyElements", label: "Elemento de logotipo", placeholder: "Tales como: pilar de piedra Panlong, placa suspendida, quemador de incienso de bronce" },
+  { key: "materials", label: "Materiales", placeholder: "Tales como: piedra, tallado en madera, metal." },
+  { key: "ambiance", label: "Iluminación ambiental", placeholder: "Tales como: luz tenue de las velas" },
+  { key: "layout", label: "Estructura espacial", placeholder: "Por ejemplo: simétrico en profundidad, con la plataforma alta en el medio" },
 ];
 
 function parseBible(raw: string | null): SceneBible {
@@ -67,8 +67,8 @@ function SceneList({
   return (
     <aside className="overflow-hidden rounded-lg border bg-background">
       <div className="border-b px-3 py-3">
-        <p className="text-sm font-semibold">场景列表</p>
-        <p className="mt-0.5 text-xs text-muted-foreground">{scenes.length} 个场景</p>
+        <p className="text-sm font-semibold">Lista de escenas</p>
+        <p className="mt-0.5 text-xs text-muted-foreground">{scenes.length} Escenas</p>
       </div>
       <div className="max-h-[640px] overflow-y-auto p-2">
         <div className="space-y-1">
@@ -103,7 +103,7 @@ function SceneList({
                     <p className="truncate text-sm font-medium">{scene.name}</p>
                     <p className="mt-0.5 text-[10px] text-muted-foreground">
                       {SCENE_TYPE_LABELS[scene.sceneType]}
-                      {hasSheet && <span className="ml-1.5 text-primary">已有设定图</span>}
+                      {hasSheet && <span className="ml-1.5 text-primary">Ya tengo un diagrama de configuración.</span>}
                     </p>
                   </div>
                 </div>
@@ -139,7 +139,7 @@ function SceneDetail({
 
   const saveMut = useMutation({
     mutationFn: () => updateComicScene(scene.id, { name: name.trim(), sceneType, bible }),
-    onSuccess: () => { onChanged(); toast.success("场景已保存"); },
+    onSuccess: () => { onChanged(); toast.success("Escena guardada"); },
     onError: (e) => toast.error(String(e)),
   });
 
@@ -189,7 +189,7 @@ function SceneDetail({
         </div>
         <button
           type="button"
-          title="删除场景"
+          title="Borrar escena"
           disabled={deleteMut.isPending}
           className="shrink-0 rounded border p-1.5 text-muted-foreground/50 hover:bg-destructive/10 hover:text-destructive disabled:opacity-50"
           onClick={() => deleteMut.mutate()}
@@ -201,9 +201,9 @@ function SceneDetail({
       <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(280px,0.7fr)]">
         {/* 场景圣经编辑 */}
         <div className="min-w-0 space-y-3 border-b p-4 lg:border-b-0 lg:border-r">
-          <p className="text-sm font-medium">场景圣经</p>
+          <p className="text-sm font-medium">Biblia de escenarios</p>
           <p className="text-xs text-muted-foreground">
-            这些视觉约束会在生成该场景下每一格时注入提示词，锁定空间一致性。
+            Estas limitaciones visuales inyectan palabras clave en la generación de cada cuadrícula en la escena, asegurando la coherencia espacial.
           </p>
           {BIBLE_FIELDS.map((field) => (
             <div key={field.key} className="space-y-1">
@@ -223,17 +223,17 @@ function SceneDetail({
             onClick={() => saveMut.mutate()}
           >
             {saveMut.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-            保存场景圣经
+            guardar escena biblia
           </Button>
         </div>
 
         {/* 设定图 */}
         <aside className="min-w-0 p-4">
           <div className="mb-2 flex items-center justify-between">
-            <p className="text-sm font-medium">场景设定图</p>
+            <p className="text-sm font-medium">Diagrama de escenario</p>
             {sheet.origin && hasSheet && (
               <span className="text-[10px] text-muted-foreground">
-                {sheet.origin === "uploaded" ? "已上传" : "AI 生成"}
+                {sheet.origin === "uploaded" ? "Subido" : "IA generada"}
               </span>
             )}
           </div>
@@ -248,12 +248,12 @@ function SceneDetail({
             ) : generatingBusy ? (
               <div className="flex flex-col items-center gap-2 text-muted-foreground">
                 <Loader2 className="h-7 w-7 animate-spin" />
-                <span className="text-xs">设定图生成中</span>
+                <span className="text-xs">Se está generando el diagrama de configuración</span>
               </div>
             ) : (
               <div className="flex flex-col items-center gap-1.5 text-muted-foreground">
                 <ImageIcon className="h-8 w-8 opacity-30" />
-                <span className="text-xs">还没有设定图</span>
+                <span className="text-xs">Aún no hay imagen de configuración</span>
               </div>
             )}
           </div>
@@ -261,7 +261,7 @@ function SceneDetail({
             <p className="mt-1.5 text-[11px] text-destructive">{sheet.error}</p>
           )}
           <p className="mt-2 text-[11px] text-muted-foreground">
-            设定图会作为低权重参考图传给图像模型，只锁定色调/布局/材质，镜头仍按每格自由运镜。建议先保存场景圣经再生成。
+            La imagen de configuración se pasará al modelo de imagen como una imagen de referencia de bajo peso, y solo se bloqueará el tono/diseño/material, y la lente seguirá moviéndose libremente según cada fotograma. Se recomienda guardar la escena Biblia antes de generarla.
           </p>
           <div className="mt-2 flex gap-2">
             <Button
@@ -273,7 +273,7 @@ function SceneDetail({
               onClick={startGenerate}
             >
               {generatingBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-              {hasSheet ? "重新生成" : "AI 生成"}
+              {hasSheet ? "Regenerar" : "IA generada"}
             </Button>
             <Button
               type="button"
@@ -283,7 +283,7 @@ function SceneDetail({
               onClick={() => fileInputRef.current?.click()}
             >
               {uploadMut.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
-              上传
+              subir
             </Button>
           </div>
           <input
@@ -341,11 +341,11 @@ export function ScenesPanel({
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">
-          场景在生成分格脚本时自动识别，可在此编辑场景圣经并生成设定图，用于锁定跨格/跨话的空间一致性。
+          Las escenas se reconocen automáticamente al generar guiones de cuadrícula. Puede editar la Biblia de la escena aquí y generar diagramas de configuración para bloquear la coherencia espacial entre cuadrículas/charlas.
         </p>
         <Button type="button" size="sm" variant="outline" onClick={() => setShowAdd((v) => !v)}>
           <Plus className="h-4 w-4" />
-          添加场景
+          Agregar escena
         </Button>
       </div>
 
@@ -353,27 +353,27 @@ export function ScenesPanel({
         <div className="flex gap-2 rounded-md border bg-muted/20 p-3">
           <input
             className="flex-1 rounded border bg-background px-2 py-1 text-sm"
-            placeholder="场景名称（如：宗门大殿）"
+            placeholder="Nombre de la escena (por ejemplo: Salón Zongmen)"
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter" && newName.trim()) createMut.mutate(); }}
           />
           <Button type="button" size="sm" disabled={!newName.trim() || createMut.isPending} onClick={() => createMut.mutate()}>
-            确认
+            confirmar
           </Button>
           <Button type="button" size="sm" variant="outline" onClick={() => { setShowAdd(false); setNewName(""); }}>
-            取消
+            Cancelar
           </Button>
         </div>
       )}
 
       {isLoading ? (
-        <div className="py-12 text-center text-sm text-muted-foreground">加载中...</div>
+        <div className="py-12 text-center text-sm text-muted-foreground">Cargando...</div>
       ) : scenes.length === 0 ? (
         <div className="space-y-2 py-12 text-center text-sm text-muted-foreground">
           <MapPin className="mx-auto h-10 w-10 opacity-30" />
-          <p>暂无场景。</p>
-          <p className="text-xs">生成分格脚本后会自动识别场景，也可手动添加。</p>
+          <p>Aún no hay escenas.</p>
+          <p className="text-xs">La escena se reconocerá automáticamente después de generar el script de la cuadrícula o se puede agregar manualmente.</p>
         </div>
       ) : (
         <div className="grid gap-4 lg:grid-cols-[240px_minmax(0,1fr)]">

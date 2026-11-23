@@ -11,7 +11,7 @@ type PromptNode = Node<{ prompt: AtlasPrompt; from: Position; selected: boolean;
 type AtlasNode = TitleNode | PromptNode;
 
 function TopicHeading({ data }: NodeProps<TitleNode>) {
-  return <div className="atlas-topic-node"><StageImprint stage={data.stage} /><div><strong>{data.title}</strong><small>{data.total} 个提示词</small></div>
+  return <div className="atlas-topic-node"><StageImprint stage={data.stage} /><div><strong>{data.title}</strong><small>{data.total} Palabra rápida</small></div>
     <Handle type="source" position={Position.Bottom} /></div>;
 }
 function PromptLeaf({ data }: NodeProps<PromptNode>) {
@@ -20,7 +20,7 @@ function PromptLeaf({ data }: NodeProps<PromptNode>) {
     <Handle type="target" position={data.from} />
     <button className="nodrag nopan" data-prompt-id={prompt.id} type="button" aria-pressed={data.selected} onClick={() => data.select(prompt)}>
       <FileText size={17} /><span><strong>{prompt.title}</strong><small>
-        {prompt.versions[0].outputType === "text" ? "文本输出" : "结构化输出"} · {prompt.versions.length > 1 ? `${prompt.versions.length} 个版本` : prompt.versions[0].version}
+        {prompt.versions[0].outputType === "text" ? "Salida de texto" : "Salida estructurada"} · {prompt.versions.length > 1 ? `${prompt.versions.length} versiones` : prompt.versions[0].version}
       </small></span><ArrowUpRight size={14} /></button>
   </div>;
 }
@@ -86,15 +86,15 @@ export function AtlasCanvas({ stage, topic, prompts, selected, select }: {
         position: { x: spread ? (right ? leafWidth + 60 : 0) : 46, y: 104 + (spread ? Math.floor(i / 2) : i) * 74 },
         data: { prompt, from: right ? Position.Left : Position.Right, selected: selected === prompt.id, select } });
       edges.push({ id: "ref-" + prompt.id, source: "topic", target: prompt.id, type: "index", selectable: false, zIndex: selected === prompt.id ? 1 : 0,
-        ariaLabel: `${topic.title}收录的提示词：${prompt.title}`, className: selected === prompt.id ? "atlas-index-line chosen" : "atlas-index-line" });
+        ariaLabel: `${topic.title}Indicaciones incluidas:${prompt.title}`, className: selected === prompt.id ? "atlas-index-line chosen" : "atlas-index-line" });
     });
     return { nodes, edges };
   }, [stage, topic, prompts, selected, select, spread]);
-  return <div ref={ref} className={`flow-canvas atlas-index-canvas ${spread ? "" : "one-column"}`} role="region" aria-label={topic.title + "提示词分图"}>
+  return <div ref={ref} className={`flow-canvas atlas-index-canvas ${spread ? "" : "one-column"}`} role="region" aria-label={topic.title + "Mapa de palabras rápido"}>
     <ReactFlow<AtlasNode> id="prompt-atlas-index" key={topic.id + "-" + spread} nodes={nodes} edges={edges} nodeTypes={nodeTypes} edgeTypes={edgeTypes}
       minZoom={0.16} maxZoom={2.4} nodesDraggable={false} nodesConnectable={false} elementsSelectable={false} edgesFocusable={false}
       panOnScroll zoomOnScroll={false} zoomOnDoubleClick={false} proOptions={{ hideAttribution: true }}
-      ariaLabelConfig={{ "controls.zoomIn.ariaLabel": "放大分图", "controls.zoomOut.ariaLabel": "缩小分图", "controls.fitView.ariaLabel": "显示整个分图" }}>
+      ariaLabelConfig={{ "controls.zoomIn.ariaLabel": "Ampliar la imagen", "controls.zoomOut.ariaLabel": "Alejar", "controls.fitView.ariaLabel": "Mostrar imagen completa" }}>
       <Background variant={BackgroundVariant.Cross} gap={28} size={3} color="var(--atlas-hair)" />
       <PlaceIndex nodes={nodes} topic={topic.id} selected={selected} />
       <Controls showInteractive={false} position="bottom-right" fitViewOptions={fitOptions} />

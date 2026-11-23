@@ -36,7 +36,7 @@ export default function BookAnalysisDualPaneLayout({
 
   return (
     <WorkspaceColumns layoutId="book-analysis-reading" className="grid items-start gap-4 workspace-split" minCenter={230}
-      left={{ label: "调整原书阅读宽度", initial: "45%", min: 200 }}>
+      left={{ label: "Ajustar el ancho de lectura del libro original.", initial: "45%", min: 200 }}>
       <BookAnalysisChapterReader
         ref={readerRef}
         chapters={chapters}

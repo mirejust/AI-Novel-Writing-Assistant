@@ -137,7 +137,7 @@ export const novelCreateResourceRecommendationPrompt: PromptAsset<
       "{\"summary\":\"...\",\"genreId\":\"...\",\"genreReason\":\"...\",\"primaryStoryModeId\":\"...\",\"primaryStoryModeReason\":\"...\",\"secondaryStoryModeId\":\"...\",\"secondaryStoryModeReason\":\"...\",\"powerSystemMode\":\"none|soft|ranked\",\"powerSystemReason\":\"...\",\"caution\":\"...\"}",
       "",
       "字段要求：",
-      "1. summary：用简洁中文说明这套组合为什么适合作为当前开书默认底座。",
+      "1. summary：用简洁西班牙语说明这套组合为什么适合作为当前开书默认底座。",
       "2. genreReason：说明为什么这个题材基底适合当前故事方向与读者预期。",
       "3. primaryStoryModeReason：说明为什么这个主推进模式能稳定兑现核心阅读期待。",
       "4. secondaryStoryModeId / secondaryStoryModeReason：只有在确实有必要时才填写；否则返回空字符串或 null。",

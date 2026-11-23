@@ -51,40 +51,40 @@ interface NavGroup {
 
 const navGroups: NavGroup[] = [
   {
-    title: "创作",
+    title: "Crear",
     items: [
-      { to: "/", label: "首页", icon: House },
-      { to: "/help", label: "创作向导", icon: CircleHelp },
-      { to: "/market-radar", label: "热门题材雷达", icon: Radar },
-      { to: "/novels", label: "小说列表", icon: BookOpenText },
-      { to: "/outlines", label: "大纲", icon: FileText },
-      { to: "/drama", label: "短剧工作台", icon: MonitorPlay, disabled: true },
-      { to: "/comic", label: "漫画工作台", icon: SquareStack },
-      { to: "/creative-hub", label: "创作中枢", icon: LayoutDashboard },
-      { to: "/book-analysis", label: "拆书", icon: ScanSearch },
+      { to: "/", label: "Pagina de inicio", icon: House },
+      { to: "/help", label: "Asistente de creación", icon: CircleHelp },
+      { to: "/market-radar", label: "Radar de temas candentes", icon: Radar },
+      { to: "/novels", label: "Lista de novelas", icon: BookOpenText },
+      { to: "/outlines", label: "Esquema", icon: FileText },
+      { to: "/drama", label: "Banco de trabajo de drama corto", icon: MonitorPlay, disabled: true },
+      { to: "/comic", label: "Banco de trabajo cómico", icon: SquareStack },
+      { to: "/creative-hub", label: "Centro creativo", icon: LayoutDashboard },
+      { to: "/book-analysis", label: "Abre el libro", icon: ScanSearch },
     ],
   },
   {
-    title: "资产",
+    title: "Activos",
     items: [
-      { to: "/genres", label: "题材基底库", icon: Tags },
-      { to: "/story-modes", label: "推进模式库", icon: Workflow },
-      { to: "/titles", label: "标题工坊", icon: SquarePen },
-      { to: "/knowledge", label: "知识库", icon: Database },
-      { to: "/worlds", label: "世界样本库", icon: Globe2 },
-      { to: "/style-engine", label: "写法引擎", icon: WandSparkles },
-      { to: "/anti-ai-rules", label: "反 AI 规则", icon: ShieldCheck },
-      { to: "/base-characters", label: "基础角色库", icon: UsersRound },
-      { to: "#visual-assets", label: "视觉资源库", icon: Images, action: "visual_asset_library" },
+      { to: "/genres", label: "Biblioteca base de temas", icon: Tags },
+      { to: "/story-modes", label: "Biblioteca de patrones avanzada", icon: Workflow },
+      { to: "/titles", label: "Taller de titulo", icon: SquarePen },
+      { to: "/knowledge", label: "Base de conocimientos", icon: Database },
+      { to: "/worlds", label: "Biblioteca mundial de muestras", icon: Globe2 },
+      { to: "/style-engine", label: "Motor de escritura", icon: WandSparkles },
+      { to: "/anti-ai-rules", label: "Reglas anti-IA", icon: ShieldCheck },
+      { to: "/base-characters", label: "Biblioteca de personajes básicos", icon: UsersRound },
+      { to: "#visual-assets", label: "Biblioteca de recursos visuales", icon: Images, action: "visual_asset_library" },
     ],
   },
   {
-    title: "系统",
+    title: "Sistema",
     items: [
-      { to: "/tasks", label: "运行记录", icon: ListTodo },
-      { to: "/auto-director/follow-ups", label: "导演跟进", icon: Workflow },
-      { to: "/prompt-workbench", label: "提示词管理", icon: Braces },
-      { to: "/settings", label: "系统设置", icon: Settings2 },
+      { to: "/tasks", label: "Registro de operación", icon: ListTodo },
+      { to: "/auto-director/follow-ups", label: "Seguimiento del director", icon: Workflow },
+      { to: "/prompt-workbench", label: "Gestión rápida de palabras", icon: Braces },
+      { to: "/settings", label: "Ajustes del sistema", icon: Settings2 },
     ],
   },
 ];
@@ -149,7 +149,7 @@ export function ProjectNavigation({ collapsed = false, className, onNavigate, on
         <Badge
           variant="outline"
           className="ml-auto h-5 border-amber-300 bg-amber-50 px-1.5 text-[10px] font-medium text-amber-700"
-          title="漫画工作台仍在 Beta 阶段"
+          title="Comics Workbench todavía está en fase beta"
         >
           Beta
         </Badge>
@@ -204,7 +204,7 @@ export function ProjectNavigation({ collapsed = false, className, onNavigate, on
   };
 
   return (
-      <nav aria-label="全局导航" className={className}>
+      <nav aria-label="Navegación global" className={className}>
         {navGroups.map((group) => (
           <div key={group.title} className="space-y-1">
             {!collapsed ? (
@@ -241,7 +241,7 @@ export function ProjectNavigation({ collapsed = false, className, onNavigate, on
                 return (
                   <div
                     key={item.to}
-                    title={collapsed ? item.label : "即将推出"}
+                    title={collapsed ? item.label : "Muy pronto"}
                     className={cn(
                       "relative flex cursor-not-allowed items-center rounded-md text-sm opacity-40",
                       collapsed ? "justify-center px-2 py-2.5" : "py-2 pl-4 pr-2",
@@ -252,7 +252,7 @@ export function ProjectNavigation({ collapsed = false, className, onNavigate, on
                       <span className="truncate">{item.label}</span>
                     ) : null}
                     {!collapsed ? (
-                      <span className="ml-auto text-[10px] text-muted-foreground/60">即将推出</span>
+                      <span className="ml-auto text-[10px] text-muted-foreground/60">Muy pronto</span>
                     ) : null}
                   </div>
                 );
@@ -314,7 +314,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
     )}>
       <div className={cn("mb-4 flex items-center", collapsed ? "justify-center" : "justify-end")}>
         <Button type="button" variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground"
-          onClick={onToggle} aria-label={collapsed ? "展开导航栏" : "收起导航栏"} title={collapsed ? "展开导航栏" : "收起导航栏"}>
+          onClick={onToggle} aria-label={collapsed ? "Expandir la barra de navegación" : "Contraer barra de navegación"} title={collapsed ? "Expandir la barra de navegación" : "Contraer barra de navegación"}>
           {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
         </Button>
       </div>

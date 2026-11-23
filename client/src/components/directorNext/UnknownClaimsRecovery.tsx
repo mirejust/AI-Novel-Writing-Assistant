@@ -13,7 +13,7 @@ export default function UnknownClaimsRecovery({claims, runId, novelId, expectedV
   const [deferred, setDeferred] = useState(false);
   const queries = useQueryClient();
   const mutation = useMutation({mutationFn: () => {
-    if (!checked) throw new Error("请先打开本章检查正文，再确认重新执行。");
+    if (!checked) throw new Error("Abra este capítulo y verifique el texto primero, luego confirme y vuelva a ejecutar.");
     return submitDirectorCommand({type: "resume", runId, expectedVersion, idempotencyKey: commandKey,
       resolveUnknownClaims: {chapterId: claims.chapterId}});
   }, onSuccess: async () => {
@@ -26,17 +26,17 @@ export default function UnknownClaimsRecovery({claims, runId, novelId, expectedV
   }});
   const busy = disabled || mutation.isPending || mutation.isSuccess;
   if (deferred) return <section id="director-unknown-claims" className="space-y-3 py-4" role="status">
-    <p className="text-xs leading-5 text-muted-foreground">第 {claims.chapterOrder} 章保持暂停，进度已保存。检查正文后可随时回来确认。</p>
-    <Button size="sm" variant="ghost" disabled={disabled} onClick={() => setDeferred(false)}>查看待确认步骤</Button>
+    <p className="text-xs leading-5 text-muted-foreground">Cap. {claims.chapterOrder} El capítulo permanece en pausa y el progreso se guarda. Puedes volver en cualquier momento para confirmar después de comprobar el texto.</p>
+    <Button size="sm" variant="ghost" disabled={disabled} onClick={() => setDeferred(false)}>Ver pasos por confirmar</Button>
   </section>;
   return <section id="director-unknown-claims" aria-labelledby="unknown-claims-title" className="scroll-mt-4 space-y-3 border-t border-border/60 py-4">
-    <h3 id="unknown-claims-title" className="text-sm font-semibold">第 {claims.chapterOrder} 章有一步结果待确认</h3>
-    <p role="status" className="text-xs leading-5 text-muted-foreground">创作中断时，这一步的结果没能保存下来，也无法确认当时是否执行完成。为避免重复执行，创作停在这里等待你确认。</p>
-    <p className="text-xs leading-5 text-muted-foreground">请从左侧目录打开第 {claims.chapterOrder} 章检查正文：正文完整无误时，勾选下方确认，AI 会重新执行这一步并继续创作；正文有缺失或异常时，请先不要确认，保留暂停状态。</p>
+    <h3 id="unknown-claims-title" className="text-sm font-semibold">Cap. {claims.chapterOrder} Los resultados de un paso del capítulo aún no se han confirmado.</h3>
+    <p role="status" className="text-xs leading-5 text-muted-foreground">Cuando se interrumpió la creación, los resultados de este paso no se guardaron y fue imposible confirmar si la ejecución se completó en ese momento. Para evitar ejecuciones repetidas, la creación se detiene aquí esperando su confirmación.</p>
+    <p className="text-xs leading-5 text-muted-foreground">Abra la primera página del directorio de la izquierda. {claims.chapterOrder} Capítulo Verifique el texto: cuando el texto esté completo y sea correcto, marque la casilla a continuación para confirmar, y AI volverá a ejecutar este paso y continuará creando; Si falta el texto o es anormal, no lo confirme todavía y mantenga el estado de pausa.</p>
     <label className="flex items-start gap-2 text-xs leading-5"><input type="checkbox" className="mt-1" checked={checked} disabled={busy}
-      onChange={event => {setChecked(event.target.checked); setCommandKey(createDirectorCommandKey());}}/>我已检查第 {claims.chapterOrder} 章正文，确认正文完整无误</label>
-    <Button className="w-full" disabled={busy || !checked} onClick={() => mutation.mutate()}>{mutation.isPending ? "正在提交…" : mutation.isSuccess ? "已提交，正在恢复…" : "确认并重新执行这一步"}</Button>
-    <Button className="w-full" variant="ghost" disabled={busy} onClick={() => setDeferred(true)}>保持暂停</Button>
+      onChange={event => {setChecked(event.target.checked); setCommandKey(createDirectorCommandKey());}}/>He comprobado el {claims.chapterOrder} Texto del capítulo, confirme que el texto esté completo y sea correcto.</label>
+    <Button className="w-full" disabled={busy || !checked} onClick={() => mutation.mutate()}>{mutation.isPending ? "Enviando…" : mutation.isSuccess ? "Presentado, restaurando..." : "Confirma y vuelve a ejecutar este paso."}</Button>
+    <Button className="w-full" variant="ghost" disabled={busy} onClick={() => setDeferred(true)}>Permanecer en pausa</Button>
     {mutation.isError ? <p role="alert" className="text-xs text-destructive">{mutation.error.message}</p> : null}
   </section>;
 }

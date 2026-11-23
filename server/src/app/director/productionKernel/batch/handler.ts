@@ -11,7 +11,7 @@ export interface KernelChapterBatchDependencies {
   hashBatch(chapters: {id: string; order: number; content: string | null}[]): string;
 }
 const invalid = (debts: NonNullable<StepResult["debts"]> = []): StepResult => ({debts,
-  stopSignal:{kind:"data_integrity",action:"fail_task",source:"runtime",reason:"授权章节的正文与完成记录不一致，请返回章节页面检查。"}});
+  stopSignal:{kind:"data_integrity",action:"fail_task",source:"runtime",reason:"El texto del capítulo autorizado es inconsistente con el registro de finalización. Vuelva a la página del capítulo para comprobarlo."}});
 
 /** Caller-owned range execution. Saved outcomes may close chapters; a generated manuscript alone cannot. */
 export function createKernelChapterBatchHandler(deps: KernelChapterBatchDependencies): StepHandler {

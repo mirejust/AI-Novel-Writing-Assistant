@@ -32,10 +32,10 @@ const PLANNER_OBJECTIVE_KEYS = [
   "purpose",
   "mission",
   "target",
-  "目标",
-  "章节目标",
-  "规划目标",
-  "核心目标",
+  "Objetivo",
+  "Objetivo del capítulo",
+  "objetivos de planificación",
+  "objetivos centrales",
 ];
 
 const PLANNER_SCENE_OBJECTIVE_KEYS = [
@@ -46,9 +46,9 @@ const PLANNER_SCENE_OBJECTIVE_KEYS = [
   "purpose",
   "mission",
   "target",
-  "目标",
-  "场景目标",
-  "章节目标",
+  "Objetivo",
+  "objetivo de la escena",
+  "Objetivo del capítulo",
 ];
 
 function collectPlannerTextFragments(value: unknown): string[] {
@@ -68,12 +68,12 @@ function collectPlannerTextFragments(value: unknown): string[] {
   return [];
 }
 
-function toPlannerOptionalText(value: unknown, separator = "；"): string | null {
+function toPlannerOptionalText(value: unknown, separator = ";"): string | null {
   const parts = Array.from(new Set(collectPlannerTextFragments(value)));
   return parts.length > 0 ? parts.join(separator) : null;
 }
 
-function pickPlannerOptionalText(record: Record<string, unknown>, keys: string[], separator = "；"): string | null {
+function pickPlannerOptionalText(record: Record<string, unknown>, keys: string[], separator = ";"): string | null {
   for (const key of keys) {
     const value = toPlannerOptionalText(record[key], separator);
     if (value) {

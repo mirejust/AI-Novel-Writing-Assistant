@@ -12,7 +12,7 @@ router.get("/", (_req, res) => {
   res.status(200).json({
     success: true,
     data,
-    message: "能力目录加载成功。",
+    message: "El catálogo de capacidades se cargó correctamente.",
   } satisfies ApiResponse<typeof data>);
 });
 

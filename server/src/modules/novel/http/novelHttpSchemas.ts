@@ -199,7 +199,7 @@ export const volumeSyncSchema = z.object({
 });
 
 export const chapterSchema = z.object({
-  title: z.string().trim().min(1, "章节标题不能为空。"),
+  title: z.string().trim().min(1, "El título del capítulo no puede estar vacío."),
   order: z.number().int().nonnegative(),
   content: z.string().optional(),
   expectation: z.string().optional(),
@@ -241,8 +241,8 @@ export const updateChapterSchema = z.object({
 });
 
 export const characterSchema = z.object({
-  name: z.string().trim().min(1, "角色名称不能为空。"),
-  role: z.string().trim().min(1, "角色定位不能为空。"),
+  name: z.string().trim().min(1, "El nombre del rol no puede estar vacío."),
+  role: z.string().trim().min(1, "El posicionamiento de roles no puede estar vacío."),
   gender: z.enum(["male", "female", "other", "unknown"]).optional(),
   castRole: z.enum(["protagonist", "antagonist", "ally", "foil", "mentor", "love_interest", "pressure_source", "catalyst"]).optional(),
   storyFunction: z.string().optional(),
@@ -331,7 +331,7 @@ export const characterTimelineSyncSchema = z.object({
   }
   return true;
 }, {
-  message: "起始章节必须小于或等于结束章节。",
+  message: "El capítulo inicial debe ser menor o igual que el capítulo final.",
 });
 
 export const llmGenerateSchema = z.object({
@@ -358,35 +358,35 @@ export const volumeGenerateSchema = llmGenerateSchema.extend({
   if ((value.scope === "volume" || value.scope === "beat_sheet" || value.scope === "chapter_list" || value.scope === "rebalance") && !value.targetVolumeId) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
-      message: "按卷生成时必须提供目标卷。",
+      message: "El volumen objetivo debe proporcionarse al construir por volumen.",
       path: ["targetVolumeId"],
     });
   }
   if (value.scope === "chapter_list" && value.generationMode === "single_beat" && !value.targetBeatKey) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
-      message: "按节奏段重生章节标题时必须提供目标节奏段。",
+      message: "La sección de ritmo de destino debe proporcionarse al reaparecer títulos de capítulos por sección de ritmo.",
       path: ["targetBeatKey"],
     });
   }
   if (value.scope === "chapter_detail" && !value.targetVolumeId) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
-      message: "生成章节细化时必须提供目标卷。",
+      message: "Se debe proporcionar un volumen objetivo al generar refinamientos de capítulos.",
       path: ["targetVolumeId"],
     });
   }
   if (value.scope === "chapter_detail" && !value.targetChapterId) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
-      message: "生成章节细化时必须提供目标章节。",
+      message: "El capítulo de destino debe proporcionarse al generar mejoras del capítulo.",
       path: ["targetChapterId"],
     });
   }
   if (value.scope === "chapter_detail" && !value.detailMode) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
-      message: "生成章节细化时必须提供生成类型。",
+      message: "El tipo de generación debe proporcionarse al generar refinamientos de capítulo.",
       path: ["detailMode"],
     });
   }
@@ -416,7 +416,7 @@ export const pipelineRunSchema = llmGenerateSchema.extend({
   repairMode: z.enum(["detect_only", "light_repair", "heavy_repair", "continuity_only", "character_only", "ending_only"]).optional(),
   artifactSyncMode: z.enum(["adaptive", "deferred", "strict"]).optional(),
 }).refine((value) => value.startOrder <= value.endOrder, {
-  message: "起始章节必须小于或等于结束章节。",
+  message: "El capítulo inicial debe ser menor o igual que el capítulo final.",
 });
 
 const reviewIssueSchema = z.object({
@@ -468,7 +468,7 @@ export const rewritePreviewSchema = z.object({
     to: z.number().int().min(1),
     text: z.string().trim().min(1),
   }).refine((value) => value.to > value.from, {
-    message: "选区结束位置必须大于开始位置。",
+    message: "La posición final de la selección debe ser mayor que la posición inicial.",
     path: ["to"],
   }),
   context: z.object({
@@ -512,7 +512,7 @@ export const aiRevisionPreviewSchema = z.object({
     to: z.number().int().min(1),
     text: z.string().trim().min(1),
   }).refine((value) => value.to > value.from, {
-    message: "选区结束位置必须大于开始位置。",
+    message: "La posición final de la selección debe ser mayor que la posición inicial.",
     path: ["to"],
   }).optional(),
   context: z.object({
@@ -533,28 +533,28 @@ export const aiRevisionPreviewSchema = z.object({
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       path: ["presetOperation"],
-      message: "预设操作模式必须提供 presetOperation。",
+      message: "El modo de funcionamiento preestablecido debe proporcionar operación preestablecida.",
     });
   }
   if (value.source === "freeform" && !value.instruction?.trim()) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       path: ["instruction"],
-      message: "自然语言修正模式必须提供 instruction。",
+      message: "El modo de corrección del lenguaje natural debe proporcionar instrucción.",
     });
   }
   if (value.scope === "selection" && !value.selection) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       path: ["selection"],
-      message: "片段修正必须提供 selection。",
+      message: "Las correcciones de fragmentos deben proporcionar selección.",
     });
   }
   if (value.scope === "selection" && !value.context) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       path: ["context"],
-      message: "片段修正必须提供上下文窗口。",
+      message: "Las correcciones de fragmentos deben proporcionar una ventana de contexto.",
     });
   }
 });

@@ -33,7 +33,7 @@ export class OutlineRepository {
   findProposal(projectId: string, id: string) { return this.db.outlineProposal.findFirst({ where: { id, projectId } }); }
   async updateProposalStatus(id: string, status: string) {
     const result = await this.db.outlineProposal.updateMany({where: {id, status: "pending"}, data: {status}});
-    if (!result.count) throw new AppError("这份提案已处理，请刷新建议。", 409);
+    if (!result.count) throw new AppError("Esta propuesta ha sido procesada, actualice la propuesta.", 409);
     return this.db.outlineProposal.findUniqueOrThrow({where: {id}});
   }
   createProposal(data: Parameters<PrismaClient["outlineProposal"]["create"]>[0]["data"]) { return this.db.outlineProposal.create({ data }); }
@@ -67,7 +67,7 @@ export class OutlineRepository {
       if (proposal.kind === "character_impact" || proposal.kind === "chapter_edit") {
         const written = new Set(await readWrittenChapterIds(tx, projectId));
         if (operations.some(op => selected.has(op.operationId) && op.nodeId && written.has(op.nodeId))) {
-          throw new AppError("所选章节已有正文，请保留该章或重新分析后续章节。", 409);
+          throw new AppError("El capítulo seleccionado ya tiene texto. Conserve este capítulo o vuelva a analizar los capítulos siguientes.", 409);
         }
       }
       const doc = structuredClone(source) as any;
@@ -82,13 +82,13 @@ export class OutlineRepository {
           groups[op.nodeType].push({ nodeId: id, order: groups[op.nodeType].length, planningDepth: "rough", chapterNodeIds: [], characterNodeIds: [], payoffNodeIds: [], appearanceNodeIds: [], setupChapterNodeIds: [], payoffChapterNodeIds: [], relatedNodeIds: [], scope: { type: "story" }, immutable: false, ...fields });
         } else if (op.kind === "update_fields" && op.nodeId && op.fields) {
           const node = doc.story.nodeId === op.nodeId ? doc.story : Object.values(groups).flat().find(item=>item.nodeId===op.nodeId);
-          if (!node) throw new Error("提案目标节点不存在");
+          if (!node) throw new Error("El nodo de destino de la propuesta no existe");
           Object.assign(node, op.fields);
         } else if (op.kind === "remove_node" && op.nodeId) {
           for (const nodes of Object.values(groups)) { const index = nodes.findIndex(item=>item.nodeId===op.nodeId); if (index>=0) nodes.splice(index,1); }
         } else if (op.kind === "move_node" && op.nodeId && op.parentNodeId) {
           const chapter = doc.chapters.find((item:any)=>item.nodeId===op.nodeId);
-          if (!chapter) throw new Error("当前仅支持移动章节");
+          if (!chapter) throw new Error("Actualmente solo se admiten capítulos móviles");
           if (chapter.volumeNodeId !== op.parentNodeId) delete chapter.beatKey;
           chapter.volumeNodeId = op.parentNodeId;
         }
@@ -120,7 +120,7 @@ export class OutlineRepository {
       const revision = await tx.outlineRevision.create({ data: { id: randomUUID(), projectId, version: baseVersion+1, parentRevisionId: project.currentRevisionId, documentJson: JSON.stringify(document), sourceType: "initial_generation", sourceProposalId: proposalId } });
       const update = await tx.outlineProject.updateMany({ where: { id: projectId, status: "active", currentVersion: baseVersion }, data: { currentVersion: baseVersion+1, currentRevisionId: revision.id, title: document.story.title } });
       const decision = await tx.outlineProposal.updateMany({ where: { id: proposalId, projectId, status: "pending" }, data: { status: "applied" } });
-      if (!update.count || !decision.count) throw new AppError("大纲或提案已更新，请刷新后确认。", 409);
+      if (!update.count || !decision.count) throw new AppError("El esquema o propuesta ha sido actualizado, actualice y confirme.", 409);
       return { revision, document };
     });
   }

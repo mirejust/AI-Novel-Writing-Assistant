@@ -1,7 +1,7 @@
 export class DirectorRecoveryNotNeededError extends Error {
   readonly code = "director_recovery_not_needed";
 
-  constructor(message = "当前导演产物已经完整，无需继续自动导演。") {
+  constructor(message = "El producto director actual está completo y no es necesario continuar con la dirección automática.") {
     super(message);
     this.name = "DirectorRecoveryNotNeededError";
   }
@@ -20,7 +20,7 @@ export function isDirectorRecoveryNotNeededError(error: unknown): error is Direc
 export class DirectorTaskCancelledError extends Error {
   readonly code = "director_task_cancelled";
 
-  constructor(message = "当前自动导演任务已取消。") {
+  constructor(message = "La tarea actual del director automático ha sido cancelada.") {
     super(message);
     this.name = "DirectorTaskCancelledError";
   }

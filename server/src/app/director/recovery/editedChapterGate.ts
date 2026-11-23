@@ -9,7 +9,7 @@ import { ChapterArtifactSyncBoundaryError } from "../../../services/novel/runtim
 export const prepareEditedChapterGate: NonNullable<CommandServiceDeps["prepareGate"]> = async (contract, resolution, expectedVersion) => {
   if (resolution.decision === "regenerate" || !resolution.artifacts.some(row => row.type === "chapter_batch_closed")) return;
   const range = contract.chapterRange;
-  if (!range) throw new AppError("缺少正文授权范围。", 400);
+  if (!range) throw new AppError("Falta alcance de autorización de texto.", 400);
   if (resolution.proseReview) await prepareProseEdits(contract,resolution.proseReview,expectedVersion);
   const chapters = await prisma.chapter.findMany({ where: { novelId: contract.novelId,
     order: { gte: range.from, lte: range.to } }, orderBy: { order: "asc" }, select: { id: true } });

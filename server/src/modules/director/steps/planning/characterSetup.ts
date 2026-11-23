@@ -16,18 +16,18 @@ export function createCharacterSetupStepHandler<Input extends {storyInput: strin
   return async context => {
     const novelId = context.contract.novelId;
     const before = await dependencies.characterService.readCast(novelId);
-    if (before.characters.some(member => member.novelId !== novelId)) throw new Error("角色阵容不属于当前小说。");
+    if (before.characters.some(member => member.novelId !== novelId)) throw new Error("El elenco de personajes no pertenece a la novela actual.");
     const existing = before.characters.length > 0;
     let saved = before;
     if (!existing) {
       const input = await dependencies.inputProvider(context);
-      if (!input.storyInput.trim()) throw new Error("角色准备缺少故事想法。");
+      if (!input.storyInput.trim()) throw new Error("La preparación de personajes carece de ideas para la historia.");
       const created = await dependencies.characterService.prepareEmptyCast(novelId, input);
       saved = await dependencies.characterService.readCast(novelId);
       if (created.characterIds.length === 0 || new Set(created.characterIds).size !== created.characterIds.length
         || saved.characters.some(member => member.novelId !== novelId)
         || created.characterIds.some(id => !saved.characters.some(member => member.id === id))) {
-        return {stopSignal: {kind: "data_integrity", reason: "生成的角色阵容未完整保存，请检查角色资料。"}};
+        return {stopSignal: {kind: "data_integrity", reason: "La alineación de personajes generada no se guarda por completo, verifique la información de los personajes."}};
       }
     }
     return {artifact: {scope: context.contract.scope, status: existing ? "confirmed" : "draft", protectedUserContent: existing,

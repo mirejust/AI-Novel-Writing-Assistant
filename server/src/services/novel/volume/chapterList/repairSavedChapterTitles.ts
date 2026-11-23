@@ -35,10 +35,10 @@ export async function repairSavedChapterTitles(
       },
     });
     for (const { chapterOrder, title } of output.chapters) {
-      if (!orders.delete(chapterOrder)) throw new Error("章名修改包含重复或未指定的章节，请重试。");
+      if (!orders.delete(chapterOrder)) throw new Error("La modificación del nombre del capítulo contiene capítulos duplicados o no especificados. Inténtelo de nuevo.");
       replacements.set(chapterOrder, title);
     }
-    if (orders.size) throw new Error("部分章节缺少修改后的章名，请重试。");
+    if (orders.size) throw new Error("A algunos capítulos les faltan nombres de capítulos modificados, inténtelo de nuevo.");
   }
   return {
     ...document,

@@ -32,8 +32,8 @@ router.post("/", validate({ body: generateBodySchema }), async (req, res, next) 
     const body = req.body as z.infer<typeof generateBodySchema>;
     const data = await creativeCarryoverContractService.generate(body) as CreativeCarryoverGenerateResult;
     const message = data.status === "ready"
-      ? "创作承接方案已生成。"
-      : "拆书材料还不够，请先补齐缺失结论。";
+      ? "Se ha generado el plan de emprendimiento creativo."
+      : "El material para abrir el libro no es suficiente, primero complete las conclusiones que faltan.";
     res.status(200).json(ok(data, message));
   } catch (error) {
     next(error);

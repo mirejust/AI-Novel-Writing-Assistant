@@ -19,8 +19,8 @@ export function findOutlineSlot(state: OutlinePlanningState, order: number) {
 export function appendOutlineSlot(workspace: VolumePlanDocument, volumeId: string, order: number,
   proposed: {title: string; summary: string; beatKey: string; plannedCharacterIds?: string[]}, state: OutlinePlanningState) {
   const slot = findOutlineSlot(state, order);
-  if (!slot || slot.volumeId !== volumeId || order < state.range.from || order > state.range.to) throw new OutlineOpenBookError("OUTLINE_SLOT_CONFLICT", "候选章节超出确认的篇幅槽位。");
-  if (workspace.volumes.some(v => v.chapters.some(c => c.chapterOrder === order))) throw new OutlineOpenBookError("OUTLINE_SLOT_CONFLICT", "章槽已有规划，不能重新追加。");
+  if (!slot || slot.volumeId !== volumeId || order < state.range.from || order > state.range.to) throw new OutlineOpenBookError("OUTLINE_SLOT_CONFLICT", "El capítulo candidato supera el espacio de duración confirmado.");
+  if (workspace.volumes.some(v => v.chapters.some(c => c.chapterOrder === order))) throw new OutlineOpenBookError("OUTLINE_SLOT_CONFLICT", "El espacio del capítulo se ha planificado y no se puede volver a agregar.");
   const time = new Date(0).toISOString();
   return buildVolumeWorkspaceDocument({...workspace, volumes: workspace.volumes.map(v => v.id !== volumeId ? v : {...v, status: "chapter_list_partial", chapters: [...v.chapters,
     {id: randomUUID(), volumeId, chapterOrder: order, ...proposed, payoffRefs: [], createdAt: time, updatedAt: time}].sort((a,b) => a.chapterOrder-b.chapterOrder)})});
@@ -29,10 +29,10 @@ export function appendOutlineSlot(workspace: VolumePlanDocument, volumeId: strin
 export async function ensureOutlineRouteWindow(novelId: string, from: number, options: ChapterRouteWindowOptions,
   service: NovelVolumeService, state: OutlinePlanningState): Promise<ChapterRouteWindowResult> {
   return withOutlinePlanningState(state, async () => {
-    if (from !== state.range.from || state.range.to !== from) throw new OutlineOpenBookError("OUTLINE_SINGLE_CHAPTER_REQUIRED", "请逐章准备路线。", 422);
+    if (from !== state.range.from || state.range.to !== from) throw new OutlineOpenBookError("OUTLINE_SINGLE_CHAPTER_REQUIRED", "Por favor, prepara la ruta capítulo a capítulo.", 422);
     let workspace = await service.getVolumes(novelId, {hydrateCanonical: false});
     const existing = workspace.volumes.flatMap(v => v.chapters).filter(c => c.chapterOrder === from);
-    if (existing.length > 1) throw new Error("本章存在重复路线。");
+    if (existing.length > 1) throw new Error("Hay rutas duplicadas en este capítulo.");
     if (existing.length) {
       await service.appendMissingRoutes(novelId, workspace);
       return {availableRouteCount: 1, extended: false};
@@ -40,7 +40,7 @@ export async function ensureOutlineRouteWindow(novelId: string, from: number, op
     const slot = findOutlineSlot(state, from);
     const volume = workspace.volumes.find(v => v.id === slot?.volumeId);
     const sheet = workspace.beatSheets.find(s => s.volumeId === volume?.id);
-    if (!volume || !slot || !sheet?.beats.length) throw new Error("请先确认当前卷的篇幅与节奏安排。");
+    if (!volume || !slot || !sheet?.beats.length) throw new Error("Primero confirme la duración y el ritmo del volumen actual.");
     const localOrder = from - slot.from + 1;
     const beat = buildBeatGenerationPlans(sheet).find(plan => localOrder <= plan.chapterEndOrder)?.beat ?? sheet.beats.at(-1)!;
     const {novel, storyMacroPlan} = await loadGenerationContext({novelId, workspace, storyMacroPlanService: new StoryMacroPlanService()});
@@ -53,7 +53,7 @@ export async function ensureOutlineRouteWindow(novelId: string, from: number, op
       targetBeatLabel: beat.label, characterIds: novel.characters.map(c => c.id!)}), promptInput,
       contextBlocks: buildVolumeChapterListContextBlocks(promptInput), options: {...options, novelId, volumeId: volume.id, taskId: options.taskId, entrypoint: "director_next", scope: "outline_slot"}});
     await assertOutlineReference(prisma, novelId, state.ref);
-    if (generated.output.chapters.length !== 1) throw new Error("章槽候选数量不一致。");
+    if (generated.output.chapters.length !== 1) throw new Error("El número de candidatos a puestos de capítulo es inconsistente.");
     const next = appendOutlineSlot(workspace, volume.id, from, generated.output.chapters[0], state);
     await service.appendMissingRoutes(novelId, next);
     return {availableRouteCount: 1, extended: true};

@@ -81,12 +81,12 @@ const IMAGE_EXTS: Array<[string, string]> = [
 ];
 const EXPRESSION_ORDER: CharacterExpressionId[] = ["neutral", "happy", "angry", "sad", "surprised", "cold"];
 const EXPRESSION_LABELS: Record<CharacterExpressionId, string> = {
-  neutral: "正常",
-  happy: "开心",
-  angry: "愤怒",
-  sad: "悲伤",
-  surprised: "惊讶",
-  cold: "冷漠",
+  neutral: "normal",
+  happy: "feliz",
+  angry: "enojo",
+  sad: "triste",
+  surprised: "sorpresa",
+  cold: "indiferente",
 };
 
 function comicCharacterDir(charId: string): string {
@@ -146,7 +146,7 @@ function extractVisualDesc(visualAnchor: string | null | undefined): string {
       const signatures = typeof spec.signatureFeatures === "string" ? spec.signatureFeatures.trim() : "";
       // 完整外貌 + 标志特征（若与 appearance 不重叠）
       if (signatures && !spec.appearance.includes(signatures)) {
-        return `${spec.appearance}，${signatures}`;
+        return `${spec.appearance},${signatures}`;
       }
       return spec.appearance;
     }
@@ -325,7 +325,7 @@ export class ComicCharacterImageService {
       where: { id: charId },
       include: { project: { select: { stylePreset: true } } },
     });
-    if (!character) throw new AppError(`未找到漫画角色：${charId}`, 404);
+    if (!character) throw new AppError(`Personaje cómico no encontrado:${charId}`, 404);
 
     const styleKeywords = resolveComicStyleKeywords(character.project.stylePreset);
     const prompt = options.prompt?.trim()
@@ -370,7 +370,7 @@ export class ComicCharacterImageService {
     };
 
     const referenceImages: import("../image/runtime").GeneratedReferenceImageMeta[] = currentReference
-      ? [{ kind: "character_sheet", label: `${character.name} · 当前三视图`, url: sheetUrl(charId) }]
+      ? [{ kind: "character_sheet", label: `${character.name} · Tres vistas actuales`, url: sheetUrl(charId) }]
       : [];
 
     return {
@@ -379,7 +379,7 @@ export class ComicCharacterImageService {
       refImagePaths: currentReference ? [currentReference.filePath] : undefined,
       referenceImages,
       size: "1536x1024" as const,
-      title: `${options.prompt?.trim() ? "微调" : "生成"}三视图：${character.name}`,
+      title: `${options.prompt?.trim() ? "sintonia FINA" : "generar"}Tres vistas:${character.name}`,
     };
   }
 
@@ -423,7 +423,7 @@ export class ComicCharacterImageService {
 
   async getSheetData(charId: string): Promise<CharacterSheetData> {
     const character = await prisma.comicCharacter.findUnique({ where: { id: charId }, select: { sheetData: true } });
-    if (!character) throw new AppError(`未找到漫画角色：${charId}`, 404);
+    if (!character) throw new AppError(`Personaje cómico no encontrado:${charId}`, 404);
     return safeJsonParse<CharacterSheetData>(character.sheetData, { status: "idle" });
   }
 
@@ -438,13 +438,13 @@ export class ComicCharacterImageService {
       where: { id: charId },
       include: { project: { select: { stylePreset: true } } },
     });
-    if (!character) throw new AppError(`未找到漫画角色：${charId}`, 404);
+    if (!character) throw new AppError(`Personaje cómico no encontrado:${charId}`, 404);
 
     const styleKeywords = resolveComicStyleKeywords(character.project.stylePreset);
     const prompt = buildExpressionPrompt(character, styleKeywords);
     const sheetReference = await this.resolveSheetFile(charId);
     const referenceImages: import("../image/runtime").GeneratedReferenceImageMeta[] = sheetReference
-      ? [{ kind: "character_sheet", label: `${character.name} · 三视图`, url: sheetUrl(charId) }]
+      ? [{ kind: "character_sheet", label: `${character.name} ·Tres vistas`, url: sheetUrl(charId) }]
       : [];
 
     // Expression 状态嵌在 sheetData.assets.expression；adapter 负责读写嵌套位置。
@@ -477,7 +477,7 @@ export class ComicCharacterImageService {
       refImagePaths: sheetReference ? [sheetReference.filePath] : undefined,
       referenceImages,
       size: "1536x1024" as const,
-      title: `生成表情稿：${character.name}`,
+      title: `Generar emoticones:${character.name}`,
     };
   }
 
@@ -519,7 +519,7 @@ export class ComicCharacterImageService {
 
   async getExpressionData(charId: string): Promise<CharacterExpressionData> {
     const character = await prisma.comicCharacter.findUnique({ where: { id: charId }, select: { sheetData: true } });
-    if (!character) throw new AppError(`未找到漫画角色：${charId}`, 404);
+    if (!character) throw new AppError(`Personaje cómico no encontrado:${charId}`, 404);
     const data = safeJsonParse<CharacterSheetData>(character.sheetData, { status: "idle" });
     return data.assets?.expression ?? { status: "idle" };
   }

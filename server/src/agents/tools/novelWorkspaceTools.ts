@@ -39,19 +39,19 @@ export const novelWorkspaceToolDefinitions: Partial<
 > = {
   list_novels: {
     name: "list_novels",
-    title: "列出小说",
-    description: "列出当前系统中的小说列表，可按标题和项目状态筛选。",
+    title: "lista de novelas",
+    description: "Enumera las novelas actualmente en el sistema, filtrables por título y estado del proyecto.",
     category: "read",
     riskLevel: "low",
     domainAgent: "NovelAgent",
     resourceScopes: ["global", "novel"],
     parserHints: {
       intent: "list_novels",
-      aliases: ["小说列表", "书列表", "novels"],
-      phrases: ["列出当前的小说列表", "当前有多少本小说", "查看小说工作区"],
+      aliases: ["lista de novelas", "lista de libros", "novels"],
+      phrases: ["Listar novelas actuales", "¿Cuántas novelas hay actualmente?", "Ver el nuevo espacio de trabajo"],
       requiresNovelContext: false,
-      whenToUse: "用户在查询全局小说列表、数量或可切换的工作区。",
-      whenNotToUse: "用户已经锁定某本小说并在追问章节、角色或生产状态。",
+      whenToUse: "El usuario consulta la lista global de novelas, la cantidad o el espacio de trabajo conmutable.",
+      whenNotToUse: "El usuario se ha fijado en una novela y pregunta sobre los capítulos, los personajes o el estado de producción.",
     },
     inputSchema: listNovelsInput,
     outputSchema: listNovelsOutput,
@@ -94,19 +94,19 @@ export const novelWorkspaceToolDefinitions: Partial<
   },
   create_novel: {
     name: "create_novel",
-    title: "创建小说",
-    description: "创建一本新小说并返回基础工作区信息。",
+    title: "crear una novela",
+    description: "Crea una nueva novela y devuelve información básica del espacio de trabajo.",
     category: "mutate",
     riskLevel: "medium",
     domainAgent: "NovelAgent",
     resourceScopes: ["global", "novel"],
     parserHints: {
       intent: "create_novel",
-      aliases: ["创建小说", "新建小说", "create novel"],
-      phrases: ["创建一本小说《xxx》", "新建一本书", "创建新的小说工作区"],
+      aliases: ["crear una novela", "Crear una nueva novela", "create novel"],
+      phrases: ["Crea una novela \"xxx\"", "Crear un nuevo libro", "Crear un nuevo espacio de trabajo novedoso"],
       requiresNovelContext: false,
-      whenToUse: "用户只是在创建一部新小说。",
-      whenNotToUse: "用户要求创建后立刻开始整本生成，那更接近 produce_novel。",
+      whenToUse: "El usuario simplemente está creando una nueva novela.",
+      whenNotToUse: "Toda la generación del libro comienza inmediatamente después de que se crea la solicitud del usuario, lo que está más cerca de producir_novel.",
     },
     inputSchema: createNovelInput,
     outputSchema: createNovelOutput,
@@ -132,33 +132,33 @@ export const novelWorkspaceToolDefinitions: Partial<
       });
       const setup = await novelSetupStatusService.getNovelSetupStatus(novel.id);
       if (!setup) {
-        throw new AgentToolError("INTERNAL", "创建小说后未能读取初始化状态。");
+        throw new AgentToolError("INTERNAL", "No se pudo leer el estado de inicialización después de crear la novela.");
       }
       return createNovelOutput.parse({
         novelId: novel.id,
         title: novel.title,
         status: novel.status,
         chapterCount: 0,
-        summary: `已创建小说《${novel.title}》，当前进入初始化引导。`,
+        summary: `La novela "${novel.title}», actualmente ingresando al arranque de inicialización.`,
         setup,
       });
     },
   },
   select_novel_workspace: {
     name: "select_novel_workspace",
-    title: "选择小说工作区",
-    description: "按标题或 ID 选择小说，用于绑定创作中枢当前工作区。",
+    title: "Seleccione un espacio de trabajo novedoso",
+    description: "Seleccione una novela por título o ID para vincularla al espacio de trabajo actual del centro de creación.",
     category: "mutate",
     riskLevel: "low",
     domainAgent: "NovelAgent",
     resourceScopes: ["global", "novel"],
     parserHints: {
       intent: "select_novel_workspace",
-      aliases: ["切换小说", "选择工作区", "select workspace"],
-      phrases: ["把《xxx》设为当前工作区", "切换到某本小说", "打开这本小说的工作区"],
+      aliases: ["cambiar de novela", "Seleccionar espacio de trabajo", "select workspace"],
+      phrases: ["Establecer \"xxx\" como el espacio de trabajo actual", "Cambiar a una novela", "Abrir el espacio de trabajo para esta novela."],
       requiresNovelContext: false,
-      whenToUse: "用户想把某本小说绑定为当前创作工作区。",
-      whenNotToUse: "用户只是想查看所有小说，不是切换上下文。",
+      whenToUse: "El usuario desea vincular una novela como espacio de trabajo creativo actual.",
+      whenNotToUse: "El usuario sólo quiere ver todas las novelas, no cambiar de contexto.",
     },
     inputSchema: selectNovelWorkspaceInput,
     outputSchema: selectNovelWorkspaceOutput,
@@ -197,17 +197,17 @@ export const novelWorkspaceToolDefinitions: Partial<
         resolved = candidates.find((item) => item.title.trim() === input.title?.trim()) ?? candidates[0] ?? null;
       }
       if (!resolved) {
-        throw new AgentToolError("NOT_FOUND", "未找到要绑定的小说。");
+        throw new AgentToolError("NOT_FOUND", "No se encontró ninguna novela vinculante.");
       }
       const setup = await novelSetupStatusService.getNovelSetupStatus(resolved.id);
       if (!setup) {
-        throw new AgentToolError("INTERNAL", "切换工作区后未能读取初始化状态。");
+        throw new AgentToolError("INTERNAL", "No se pudo leer el estado de inicialización después de cambiar de espacio de trabajo.");
       }
       return selectNovelWorkspaceOutput.parse({
         novelId: resolved.id,
         title: resolved.title,
         chapterCount: resolved._count.chapters,
-        summary: `已切换到小说《${resolved.title}》的工作区。`,
+        summary: `Cambiado a la novela "${resolved.title}»espacio de trabajo.`,
         setup,
       });
     },

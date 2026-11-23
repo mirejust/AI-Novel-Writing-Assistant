@@ -135,9 +135,9 @@ function normalizeStrategyVolume(raw: unknown, index: number): VolumeStrategyVol
   return {
     sortOrder: Math.max(1, normalizeInteger(raw.sortOrder, index + 1)),
     planningMode,
-    roleLabel: normalizeString(raw.roleLabel, `第${index + 1}卷定位`),
-    coreReward: normalizeString(raw.coreReward, "待补全本卷读者回报。"),
-    escalationFocus: normalizeString(raw.escalationFocus, "待补全本卷升级焦点。"),
+    roleLabel: normalizeString(raw.roleLabel, `Cap.${index + 1}Ubicación del volumen`),
+    coreReward: normalizeString(raw.coreReward, "Los comentarios de los lectores de este volumen están pendientes."),
+    escalationFocus: normalizeString(raw.escalationFocus, "El enfoque de actualización de este volumen está por completarse."),
     uncertaintyLevel,
   };
 }
@@ -178,10 +178,10 @@ function normalizeStrategyPlan(raw: unknown, volumeCount: number): VolumeStrateg
   return {
     recommendedVolumeCount: Math.max(1, normalizeInteger(raw.recommendedVolumeCount, volumes.length || volumeCount || 1)),
     hardPlannedVolumeCount: Math.max(1, normalizeInteger(raw.hardPlannedVolumeCount, Math.min(volumes.length, 3))),
-    readerRewardLadder: normalizeString(raw.readerRewardLadder, "待补全读者回报梯度。"),
-    escalationLadder: normalizeString(raw.escalationLadder, "待补全升级梯度。"),
-    midpointShift: normalizeString(raw.midpointShift, "待补全中盘转向。"),
-    notes: normalizeString(raw.notes, "待补全卷战略备注。"),
+    readerRewardLadder: normalizeString(raw.readerRewardLadder, "Se completará el gradiente de comentarios del lector."),
+    escalationLadder: normalizeString(raw.escalationLadder, "Es necesario completar el gradiente de actualización."),
+    midpointShift: normalizeString(raw.midpointShift, "Se completará la dirección a mitad del juego."),
+    notes: normalizeString(raw.notes, "Notas de estrategia de volumen por completar."),
     volumes,
     uncertainties: Array.isArray(raw.uncertainties)
       ? raw.uncertainties
@@ -198,7 +198,7 @@ function normalizeBeat(raw: unknown): VolumeBeat | null {
   const rawKey = normalizeText(raw.key);
   const rawLabel = normalizeText(raw.label);
   const resolvedKey = resolveVolumeBeatSlotKey(rawKey) ?? resolveVolumeBeatSlotKey(rawLabel) ?? rawKey;
-  const roleLabel = getVolumeBeatRoleLabel(resolvedKey, rawLabel || "节奏段");
+  const roleLabel = getVolumeBeatRoleLabel(resolvedKey, rawLabel || "sección rítmica");
   let title = normalizeText(raw.title);
   if (!title && rawLabel && rawLabel !== roleLabel) {
     const prefix = `${roleLabel} · `;
@@ -397,17 +397,17 @@ export function buildVolumePlanningReadiness(input: {
   const { volumes, strategyPlan, critiqueReport, beatSheets } = input;
   const blockingReasons: string[] = [];
   if (!strategyPlan) {
-    blockingReasons.push("请先生成卷战略建议，再确认卷骨架。");
+    blockingReasons.push("Primero haga sugerencias estratégicas sobre cómo crear un volumen y luego confirme el esqueleto del volumen.");
   }
   const hasHighRiskCritique = critiqueReport?.overallRisk === "high";
   if (hasHighRiskCritique) {
-    blockingReasons.push("当前卷战略审查为高风险，请先重新生成或修订卷战略。");
+    blockingReasons.push("La revisión de la estrategia de volumen actual es de alto riesgo; primero regenere o revise la estrategia de volumen.");
   }
   if (volumes.length === 0) {
-    blockingReasons.push("当前还没有卷骨架。");
+    blockingReasons.push("Actualmente no existe un esqueleto de volumen.");
   }
   if (!beatSheets.some((sheet) => sheet.beats.length > 0)) {
-    blockingReasons.push("当前卷还没有节奏板，默认不能直接拆章节列表。");
+    blockingReasons.push("No hay un tablero de ritmo en el volumen actual, por lo que la lista de capítulos no se puede abrir directamente de forma predeterminada.");
   }
   return {
     canGenerateStrategy: true,

@@ -52,7 +52,7 @@ router.delete("/saved-topics/:id", validate({ params: idParamsSchema }), async (
 router.post("/scans", validate({ body: scanSchema }), async (req, res, next) => {
   try {
     const run = await marketRadarService.startScan(req.body.platforms);
-    res.status(run.status === "queued" || run.status === "running" ? 202 : 200).json(ok(run, "扫榜任务已准备。"));
+    res.status(run.status === "queued" || run.status === "running" ? 202 : 200).json(ok(run, "La tarea de barrer la lista está lista."));
   } catch (error) { next(error); }
 });
 
@@ -64,7 +64,7 @@ router.get("/scans/:id", validate({ params: idParamsSchema }), async (req, res, 
   try {
     const { id } = req.params as z.infer<typeof idParamsSchema>;
     const run = await marketRadarService.getScan(id);
-    if (!run) { res.status(404).json({ success: false, error: "扫榜任务不存在。" }); return; }
+    if (!run) { res.status(404).json({ success: false, error: "La tarea de borrar la lista no existe." }); return; }
     res.json(ok(run));
   } catch (error) { next(error); }
 });
@@ -74,7 +74,7 @@ router.post("/scans/:id/analysis", validate({ params: idParamsSchema, body: anal
     const { id } = req.params as z.infer<typeof idParamsSchema>;
     const run = await marketRadarService.startAnalysis(id, req.body as StartMarketRadarAnalysisRequest);
     const analysisStarted = run.status === "analyzing";
-    res.status(analysisStarted ? 202 : 200).json(ok(run, analysisStarted ? "AI分析已开始。" : "AI分析任务未重复启动。"));
+    res.status(analysisStarted ? 202 : 200).json(ok(run, analysisStarted ? "El análisis de la IA ha comenzado." : "La tarea de análisis de IA no se inició repetidamente."));
   } catch (error) { next(error); }
 });
 
@@ -87,7 +87,7 @@ router.get("/briefs/:id", validate({ params: idParamsSchema }), async (req, res,
   try {
     const { id } = req.params as z.infer<typeof idParamsSchema>;
     const brief = await marketRadarService.getBrief(id);
-    if (!brief) { res.status(404).json({ success: false, error: "市场创作简报不存在。" }); return; }
+    if (!brief) { res.status(404).json({ success: false, error: "El Informe de Creación de Mercado no existe." }); return; }
     res.json(ok(brief));
   } catch (error) { next(error); }
 });

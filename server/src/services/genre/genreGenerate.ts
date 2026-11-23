@@ -39,7 +39,7 @@ function toTrimmedString(value: unknown): string {
 
 function sanitizeGeneratedNode(value: unknown, depth = 1): GenreTreeDraft {
   if (typeof value !== "object" || value === null) {
-    throw new Error("模型输出异常：类型树节点不是合法对象。");
+    throw new Error("Excepción de salida del modelo: el nodo del árbol de tipos no es un objeto legal.");
   }
 
   const record = value as {
@@ -50,7 +50,7 @@ function sanitizeGeneratedNode(value: unknown, depth = 1): GenreTreeDraft {
 
   const name = toTrimmedString(record.name);
   if (!name) {
-    throw new Error("模型输出异常：类型名称为空。");
+    throw new Error("Excepción de salida del modelo: el nombre del tipo está vacío.");
   }
 
   const description = toTrimmedString(record.description);
@@ -118,7 +118,7 @@ export async function generateGenreTreeDraft(input: GenerateGenreTreeInput): Pro
   }
 
   if (lastError instanceof Error) {
-    throw new Error(`类型树生成失败：${lastError.message}`);
+    throw new Error(`Error en la generación del árbol de tipos:${lastError.message}`);
   }
-  throw new Error("类型树生成失败。");
+  throw new Error("Error en la generación del árbol de tipos.");
 }

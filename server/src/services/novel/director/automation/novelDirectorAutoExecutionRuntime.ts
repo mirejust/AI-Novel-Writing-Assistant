@@ -248,10 +248,10 @@ export class NovelDirectorAutoExecutionRuntime {
         }
         const job = await this.deps.novelService.getPipelineJobById(pipelineJobId);
         if (!job) {
-          throw new Error("自动执行章节批次时未能找到对应的批量任务。");
+          throw new Error("No se pudo encontrar la tarea por lotes correspondiente al ejecutar automáticamente lotes de capítulos.");
         }
         if (job.pendingManualRecovery) {
-          const failureMessage = job.error?.trim() || "章节批次已暂停，等待人工确认后继续。";
+          const failureMessage = job.error?.trim() || "El lote de capítulos ha sido suspendido y está esperando confirmación manual antes de continuar.";
           ({ range, autoExecution } = await resolveAutoExecutionRuntimeRangeAndState(this.deps, {
             novelId: input.novelId,
             existingState: autoExecution,
@@ -475,8 +475,8 @@ export class NovelDirectorAutoExecutionRuntime {
         const scopeLabel = buildDirectorAutoExecutionScopeLabelFromState(autoExecution, range.totalChapterCount);
         const failureMessage = job.error?.trim()
           || (job.status === "cancelled"
-            ? `${scopeLabel}自动执行已取消。`
-            : `${scopeLabel}自动执行未能全部通过质量要求。`);
+            ? `${scopeLabel}Ejecución automática cancelada.`
+            : `${scopeLabel}La ejecución automatizada no cumplió con todos los requisitos de calidad.`);
         if (
           isFullBookAutopilotRunMode(input.request.runMode)
           && isSkippableAutoExecutionReviewFailure(failureMessage)

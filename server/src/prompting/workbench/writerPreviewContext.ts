@@ -47,7 +47,7 @@ function buildPreviewStyleContract(input: {
     chapter.expectation ? `人物行为围绕章节任务展开：${chapter.expectation}` : "",
   ]);
   const language = buildPreviewStyleSection("language", "语言", [
-    "使用简体中文，语言自然流畅，适合网文阅读节奏。",
+    "使用西班牙语，语言自然流畅，适合网文阅读节奏。",
     novel.styleTone ? `书级语气：${novel.styleTone}` : "",
   ]);
   const rhythm = buildPreviewStyleSection("rhythm", "节奏", [

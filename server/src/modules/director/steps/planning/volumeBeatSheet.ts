@@ -34,10 +34,10 @@ export interface VolumeBeatSheetStepDependencies<Provider extends string, Docume
 }
 
 function requireTargetSheet<Document extends BeatSheetWorkspace>(document: Document, novelId: string, volumeId: string) {
-  if (document.novelId !== novelId) throw new Error("节奏板工作区不属于当前小说。");
+  if (document.novelId !== novelId) throw new Error("El espacio de trabajo de Rhythm Board no forma parte de la novela actual.");
   const sheet = document.beatSheets.find(sheet => sheet.volumeId === volumeId && sheet.beats.length > 0);
   if (!document.volumes.some(volume => volume.id === volumeId) || !sheet) {
-    throw new Error("目标卷节奏板没有可用的节奏段，不能完成本次规划。");
+    throw new Error("El tablero de ritmo del volumen objetivo no tiene secciones de ritmo disponibles, por lo que esta planificación no se puede completar.");
   }
   return sheet;
 }
@@ -46,9 +46,9 @@ export function createVolumeBeatSheetStepHandler<Provider extends string, Docume
   return async context => {
     const input = await dependencies.inputProvider(context);
     const novelId = context.contract.novelId;
-    if (input.workspace.novelId !== novelId) throw new Error("节奏板工作区不属于当前小说。");
+    if (input.workspace.novelId !== novelId) throw new Error("El espacio de trabajo de Rhythm Board no forma parte de la novela actual.");
     if (!input.workspace.volumes.some(volume => volume.id === input.targetVolumeId)) {
-      throw new Error("缺少待生成节奏板的目标卷。");
+      throw new Error("Falta el volumen objetivo para generar el tablero de ritmo.");
     }
     if (input.reuseSaved) {
       const sheet = requireTargetSheet(input.workspace, novelId, input.targetVolumeId);

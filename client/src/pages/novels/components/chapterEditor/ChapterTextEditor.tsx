@@ -180,11 +180,11 @@ function renderLoadingPreview(
 
       <div className="space-y-3">
         <div className="rounded-2xl border border-amber-200/80 bg-amber-50/80 p-4">
-          <div className="mb-2 text-xs font-medium text-amber-700">{isInsertion ? "待插入位置" : "待改写原文"}</div>
-          {isInsertion ? <div className="text-sm text-amber-950">光标所在位置将插入 AI 候选正文。</div> : <TextBlock text={preview.originalText} className="text-amber-950" />}
+          <div className="mb-2 text-xs font-medium text-amber-700">{isInsertion ? "Posición a insertar" : "Texto original a reescribir."}</div>
+          {isInsertion ? <div className="text-sm text-amber-950">El texto del candidato de IA se insertará en la posición del cursor.</div> : <TextBlock text={preview.originalText} className="text-amber-950" />}
         </div>
         <div className="rounded-2xl border border-dashed border-border/70 bg-background/80 p-4">
-          <div className="mb-2 text-xs font-medium text-muted-foreground">AI 正在生成候选版本</div>
+          <div className="mb-2 text-xs font-medium text-muted-foreground">La IA está generando candidatos de lanzamiento</div>
           <div className="space-y-2">
             <div className="h-4 w-11/12 rounded-full bg-muted/70" />
             <div className="h-4 w-full rounded-full bg-muted/60" />
@@ -216,13 +216,13 @@ function renderBlockPreview(
 
       <div className="space-y-3">
         <div className="rounded-2xl border border-rose-200/80 bg-rose-50/80 p-4">
-          <div className="mb-2 text-xs font-medium text-rose-700">{isInsertion ? "插入位置" : "原文"}</div>
-          {isInsertion ? <div className="text-sm text-rose-950">这里没有需要删除的原文，候选会作为新内容插入。</div> : <TextBlock text={preview.originalText} className="text-rose-950" />}
+          <div className="mb-2 text-xs font-medium text-rose-700">{isInsertion ? "Posición de inserción" : "Texto original"}</div>
+          {isInsertion ? <div className="text-sm text-rose-950">No hay ningún texto original que deba eliminarse, los candidatos se insertarán como contenido nuevo.</div> : <TextBlock text={preview.originalText} className="text-rose-950" />}
         </div>
         <div className="rounded-2xl border border-emerald-200/80 bg-emerald-50/90 p-4">
-          <div className="mb-2 text-xs font-medium text-emerald-700">本次将写回</div>
+          <div className="mb-2 text-xs font-medium text-emerald-700">Esta vez te responderé</div>
           {selectedText === preview.originalText || !selectedText.trim() ? (
-            <div className="text-sm text-emerald-950/70">当前没有选择要写回的改动。</div>
+            <div className="text-sm text-emerald-950/70">Actualmente no hay cambios seleccionados para ser reescritos.</div>
           ) : (
             <TextBlock text={selectedText} className="text-emerald-950" />
           )}
@@ -695,14 +695,14 @@ export default function ChapterTextEditor(props: ChapterTextEditorProps) {
   }, [diagnosticRanges, normalizedContent]);
 
   const helperText = preview?.mode === "inline"
-    ? "当前正在显示细节标记 diff，适合确认具体删改。"
+    ? "Actualmente se muestra la diferencia de marca detallada, adecuada para confirmar eliminaciones específicas."
     : preview?.mode === "loading"
-      ? "AI 正在基于选中内容生成候选版本，原文位置会持续保留。"
+      ? "La IA está generando versiones candidatas en función del contenido seleccionado y se seguirá conservando la ubicación del texto original."
       : preview?.mode === "block"
-        ? "当前正在显示段落 patch 对比，原文和改写会在正文原位置并排落成红绿块。"
+        ? "Actualmente se muestra la comparación de parches de párrafos. El texto original y el texto reescrito se colocarán uno al lado del otro en bloques rojos y verdes en la posición original del texto."
         : readOnly
-          ? "当前有待确认候选，正文暂时锁定，可在右侧切换候选或接受、拒绝。"
-      : "选中片段可用浮动工具条快速改写，也可在右侧 AI 操作区处理；点击定位光标可续写。";
+          ? "Actualmente hay candidatos por confirmar y el texto está bloqueado temporalmente. Puedes cambiar de candidato o aceptar o rechazar a la derecha."
+      : "El fragmento seleccionado se puede reescribir rápidamente usando la barra de herramientas flotante o se puede procesar en el área de operaciones de IA a la derecha; haga clic en el cursor de posicionamiento para continuar escribiendo.";
 
   useLayoutEffect(() => {
     const surface = surfaceRef.current;
@@ -812,7 +812,7 @@ export default function ChapterTextEditor(props: ChapterTextEditorProps) {
               isHighlighted ? "text-sky-700" : hasDiagnostic ? "text-amber-600" : "text-muted-foreground"
             }`}
             style={{ top: `${marker.top}px`, transform: "translateY(-50%)" }}
-            title={hasDiagnostic ? "这一段有待处理的问题，可在左侧问题卡查看" : undefined}
+            title={hasDiagnostic ? "Hay asuntos pendientes en esta sección, que se pueden ver en la tarjeta de asuntos a la izquierda." : undefined}
           >
             {hasDiagnostic ? <span className="mr-1 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500" /> : null}
             P{marker.index + 1}
@@ -838,7 +838,7 @@ export default function ChapterTextEditor(props: ChapterTextEditorProps) {
     >
       <div className="shrink-0 flex items-center justify-between gap-3 border-b border-border/70 px-4 py-3">
         <div className="flex min-w-0 items-center gap-2">
-          <div className="text-sm font-medium text-foreground">正文</div>
+          <div className="text-sm font-medium text-foreground">Texto</div>
           {headerExtra}
         </div>
         <div className="hidden min-w-0 flex-1 truncate text-right text-xs text-muted-foreground min-[1750px]:block">{helperText}</div>
@@ -846,14 +846,14 @@ export default function ChapterTextEditor(props: ChapterTextEditorProps) {
           <Button
             size="sm"
             variant={findOpen ? "default" : "ghost"}
-            title="在本章内查找替换（Ctrl+F）"
+            title="Buscar y reemplazar dentro de este capítulo (Ctrl+F)"
             disabled={readOnly || Boolean(preview)}
             onClick={() => setFindOpen((current) => !current)}
           >
-            查找
+            Encontrar
           </Button>
-          <Button size="sm" variant="ghost" title="编辑器设置" onClick={() => setSettingsOpen(true)}>
-            设置
+          <Button size="sm" variant="ghost" title="Configuración del editor" onClick={() => setSettingsOpen(true)}>
+            configuración
           </Button>
         </div>
       </div>
@@ -861,17 +861,17 @@ export default function ChapterTextEditor(props: ChapterTextEditorProps) {
       <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>编辑器设置</DialogTitle>
+            <DialogTitle>Configuración del editor</DialogTitle>
           </DialogHeader>
           <div className="space-y-5 py-2">
             {layoutMode && onLayoutModeChange ? (
               <div className="flex items-center justify-between gap-3">
                 <div>
-                  <div className="text-sm font-medium">布局</div>
-                  <div className="text-xs text-muted-foreground">宽正文收起左栏，沉浸只留正文</div>
+                  <div className="text-sm font-medium">Disposición</div>
+                  <div className="text-xs text-muted-foreground">Para texto amplio, cierre la columna de la izquierda y deje solo el texto principal para la inmersión.</div>
                 </div>
                 <div className="flex shrink-0 gap-1">
-                  {([["standard", "标准"], ["wide", "宽正文"], ["immersive", "沉浸"]] as const).map(([mode, label]) => (
+                  {([["standard", "Estándar"], ["wide", "Texto ancho"], ["immersive", "Sumergir"]] as const).map(([mode, label]) => (
                     <Button key={mode} size="sm" variant={layoutMode === mode ? "default" : "outline"} onClick={() => onLayoutModeChange(mode)}>
                       {label}
                     </Button>
@@ -881,8 +881,8 @@ export default function ChapterTextEditor(props: ChapterTextEditorProps) {
             ) : null}
             <div className="flex items-center justify-between gap-3">
               <div>
-                <div className="text-sm font-medium">字号</div>
-                <div className="text-xs text-muted-foreground">当前 {typography.fontSize}px</div>
+                <div className="text-sm font-medium">Tamaño de fuente</div>
+                <div className="text-xs text-muted-foreground">actual {typography.fontSize}px</div>
               </div>
               <div className="flex shrink-0 gap-1">
                 <Button size="sm" variant="outline" disabled={typography.fontSize <= FONT_SIZE_STEPS[0]} onClick={() => cycleTypography("fontSize", -1)}>A-</Button>
@@ -891,11 +891,11 @@ export default function ChapterTextEditor(props: ChapterTextEditorProps) {
             </div>
             <div className="flex items-center justify-between gap-3">
               <div>
-                <div className="text-sm font-medium">行距</div>
-                <div className="text-xs text-muted-foreground">段落呼吸感</div>
+                <div className="text-sm font-medium">Interlineado</div>
+                <div className="text-xs text-muted-foreground">párrafo sentido de la respiración</div>
               </div>
               <div className="flex shrink-0 gap-1">
-                {([["紧凑", 1.9], ["适中", 2.13], ["宽松", 2.4]] as const).map(([label, value]) => (
+                {([["Compacto", 1.9], ["Moderado", 2.13], ["Suelto", 2.4]] as const).map(([label, value]) => (
                   <Button
                     key={label}
                     size="sm"
@@ -909,20 +909,20 @@ export default function ChapterTextEditor(props: ChapterTextEditorProps) {
             </div>
             <div className="flex items-center justify-between gap-3">
               <div>
-                <div className="text-sm font-medium">专注模式</div>
-                <div className="text-xs text-muted-foreground">只突出正在编辑的段落</div>
+                <div className="text-sm font-medium">Modo de enfoque</div>
+                <div className="text-xs text-muted-foreground">Resalte solo el párrafo que se está editando</div>
               </div>
               <Button size="sm" variant={typography.focusMode ? "default" : "outline"} onClick={() => setTypography((current) => ({ ...current, focusMode: !current.focusMode }))}>
-                {typography.focusMode ? "已开启" : "开启"}
+                {typography.focusMode ? "Ya encendido" : "Encender"}
               </Button>
             </div>
             <div className="flex items-center justify-between gap-3">
               <div>
-                <div className="text-sm font-medium">续写建议</div>
-                <div className="text-xs text-muted-foreground">停在段落末尾时给出灰字提示，Tab 接受</div>
+                <div className="text-sm font-medium">Sugerencias para seguir escribiendo</div>
+                <div className="text-xs text-muted-foreground">Aparecerá un mensaje de texto gris al detenerse al final del párrafo y Tab lo aceptará.</div>
               </div>
               <Button size="sm" variant={ghostEnabled ? "default" : "outline"} disabled={!onGhostSuggest} onClick={() => setGhostEnabled((current) => !current)}>
-                {ghostEnabled ? "已开启" : "开启"}
+                {ghostEnabled ? "Ya encendido" : "Encender"}
               </Button>
             </div>
           </div>
@@ -944,25 +944,25 @@ export default function ChapterTextEditor(props: ChapterTextEditorProps) {
                 setFindOpen(false);
               }
             }}
-            placeholder="查找本章文字"
-            aria-label="查找本章文字"
+            placeholder="Encuentra texto en este capítulo."
+            aria-label="Encuentra texto en este capítulo."
             className="h-8 w-44 rounded-lg border border-input bg-background px-2 text-sm outline-none focus:ring-2 focus:ring-ring/30"
           />
           <input
             value={replaceValue}
             onChange={(event) => setReplaceValue(event.target.value)}
-            placeholder="替换为"
-            aria-label="替换为"
+            placeholder="Reemplazar con"
+            aria-label="Reemplazar con"
             className="h-8 w-36 rounded-lg border border-input bg-background px-2 text-sm outline-none focus:ring-2 focus:ring-ring/30"
           />
           <span className="text-xs text-muted-foreground">
-            {findQuery ? (findMatches.length === 0 ? "无结果" : `${Math.min(matchIndex + 1, findMatches.length)}/${findMatches.length}`) : ""}
+            {findQuery ? (findMatches.length === 0 ? "Sin resultados" : `${Math.min(matchIndex + 1, findMatches.length)}/${findMatches.length}`) : ""}
           </span>
-          <Button size="sm" variant="ghost" disabled={findMatches.length === 0} onClick={() => navigateToMatch(matchIndex - 1)}>上一个</Button>
-          <Button size="sm" variant="ghost" disabled={findMatches.length === 0} onClick={() => navigateToMatch(matchIndex + 1)}>下一个</Button>
-          <Button size="sm" variant="outline" disabled={findMatches.length === 0} onClick={replaceCurrentMatch}>替换</Button>
-          <Button size="sm" variant="outline" disabled={findMatches.length === 0} onClick={replaceAllMatches}>全部替换</Button>
-          <Button size="sm" variant="ghost" onClick={() => setFindOpen(false)}>关闭</Button>
+          <Button size="sm" variant="ghost" disabled={findMatches.length === 0} onClick={() => navigateToMatch(matchIndex - 1)}>Anterior</Button>
+          <Button size="sm" variant="ghost" disabled={findMatches.length === 0} onClick={() => navigateToMatch(matchIndex + 1)}>Próximo</Button>
+          <Button size="sm" variant="outline" disabled={findMatches.length === 0} onClick={replaceCurrentMatch}>Reemplazar</Button>
+          <Button size="sm" variant="outline" disabled={findMatches.length === 0} onClick={replaceAllMatches}>Reemplazar todo</Button>
+          <Button size="sm" variant="ghost" onClick={() => setFindOpen(false)}>Cerrar</Button>
         </div>
       ) : null}
 
@@ -1048,14 +1048,14 @@ export default function ChapterTextEditor(props: ChapterTextEditorProps) {
               }}
             >
               {ghost.text}
-              <span className="ml-2 rounded border border-border/70 px-1 align-middle text-[10px] leading-none text-muted-foreground/80">Tab 接受</span>
+              <span className="ml-2 rounded border border-border/70 px-1 align-middle text-[10px] leading-none text-muted-foreground/80">Tabulador aceptar</span>
             </span>
           ) : null}
 
           {quickBar && onQuickOperation && !preview && !readOnly ? (
             <div
               role="toolbar"
-              aria-label="选段快捷 AI 操作"
+              aria-label="Operación rápida de IA para la selección de segmentos"
               className="absolute z-20 rounded-2xl border border-border bg-background/95 p-1 shadow-md backdrop-blur"
               style={{ top: quickBar.top, left: quickBar.left, maxWidth: quickBar.maxWidth }}
               onMouseDown={(event) => {
@@ -1077,7 +1077,7 @@ export default function ChapterTextEditor(props: ChapterTextEditorProps) {
                       onQuickOperation(operation);
                     }}
                   >
-                    {operation === "polish" ? "AI 优化这段" : CHAPTER_EDITOR_OPERATION_LABELS[operation]}
+                    {operation === "polish" ? "La IA optimiza esta sección" : CHAPTER_EDITOR_OPERATION_LABELS[operation]}
                   </Button>
                 ))}
                 {onQuickInstruction ? (
@@ -1087,7 +1087,7 @@ export default function ChapterTextEditor(props: ChapterTextEditorProps) {
                     className="rounded-full"
                     onClick={() => setQuickPromptOpen((current) => !current)}
                   >
-                    按要求改…
+                    Cambie según sea necesario...
                   </Button>
                 ) : null}
               </div>
@@ -1113,8 +1113,8 @@ export default function ChapterTextEditor(props: ChapterTextEditorProps) {
                         setQuickPromptOpen(false);
                       }
                     }}
-                    placeholder="说一句你想怎么改，回车生成"
-                    aria-label="自定义修改要求"
+                    placeholder="Dime cómo quieres cambiarlo y presiona Enter para generarlo."
+                    aria-label="Requisitos de modificación personalizados"
                     maxLength={400}
                     className="h-8 min-w-0 flex-1 rounded-full border border-input bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring/30"
                   />
@@ -1133,7 +1133,7 @@ export default function ChapterTextEditor(props: ChapterTextEditorProps) {
                       onQuickInstruction(instruction);
                     }}
                   >
-                    改
+                    cambiar
                   </Button>
                 </div>
               ) : null}

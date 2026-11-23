@@ -28,7 +28,7 @@ export function createChapterRouteWindowStepHandler<Provider extends string, Cha
   return async context => {
     const range = context.contract.chapterRange;
     if (!range || !Number.isInteger(range.from) || !Number.isInteger(range.to) || range.from < 1 || range.to < range.from) {
-      throw new Error("准备正文路线需要明确的有效章节范围。");
+      throw new Error("La preparación de la ruta del texto requiere rangos de capítulos claros y válidos.");
     }
     const input = await dependencies.inputProvider(context);
     const novelId = context.contract.novelId;
@@ -38,20 +38,20 @@ export function createChapterRouteWindowStepHandler<Provider extends string, Cha
       min, target, provider: input.provider, model: input.model, temperature: input.temperature, taskId: context.runId,
     });
     const saved = await dependencies.volumeService.getVolumes(novelId, {hydrateCanonical: false});
-    if (saved.novelId !== novelId) throw new Error("已保存的章节路线不属于当前小说。");
+    if (saved.novelId !== novelId) throw new Error("La ruta del capítulo guardado no pertenece a la novela actual.");
     const selected = saved.volumes.find(volume => volume.id === input.targetVolumeId);
-    if (!selected?.chapters.some(chapter => chapter.chapterOrder === range.from)) throw new Error("授权起始章节缺少目标卷路线。");
+    if (!selected?.chapters.some(chapter => chapter.chapterOrder === range.from)) throw new Error("Al capítulo inicial autorizado le falta la ruta del volumen objetivo.");
     const candidates = saved.volumes.flatMap(volume => [...volume.chapters])
       .filter(chapter => chapter.chapterOrder >= range.from && chapter.chapterOrder < range.from+target)
       .sort((a,b) => a.chapterOrder-b.chapterOrder);
     const routes: Chapter[] = [];
     for (let order = range.from; order < range.from+target; order++) {
       const matches = candidates.filter(chapter => chapter.chapterOrder === order);
-      if (matches.length > 1) throw new Error("章节路线存在重复章序，请检查本书规划。");
+      if (matches.length > 1) throw new Error("Hay secuencias de capítulos duplicadas en la ruta del capítulo; consulte el plan del libro.");
       if (!matches.length) break;
       routes.push(matches[0]);
     }
-    if (routes.length < min) throw new Error("授权范围缺少连续的已保存章节路线。");
+    if (routes.length < min) throw new Error("Al alcance de la autorización le falta una ruta de capítulo guardada contigua.");
     return {artifact: {scope: context.contract.scope, status: "draft",
       protectedUserContent: Boolean(latestArtifact(context.facts, "volume_chapter_list", context.contract.scope)?.protectedUserContent),
       contentRef: 'volume_chapter_list:'+novelId+':'+input.targetVolumeId,

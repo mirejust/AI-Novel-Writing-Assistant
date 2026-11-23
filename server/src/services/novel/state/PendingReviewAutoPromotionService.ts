@@ -11,7 +11,7 @@ import {
 } from "./pendingReviewAutoPromotionPolicy";
 import { buildStateProposalSubjectKey } from "./stateProposalSubjectKey";
 
-const SUPERSEDED_REASON = "已被更新提案覆盖";
+const SUPERSEDED_REASON = "Cubierto por propuesta actualizada";
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
 type ProposalStatus = StateChangeProposal["status"];
@@ -517,7 +517,7 @@ export class PendingReviewAutoPromotionService {
       runId: input.options.runId ?? null,
       novelId: input.novelId,
       nodeKey: "state.pending_review_auto_promotion",
-      summary: `待确认状态自动放行：提交 ${input.promotedIds.length} 条，覆盖 ${input.supersededIds.length} 条，跳过 ${input.preview.conflictSkipped.length} 条。`,
+      summary: `Liberación automática pendiente de estado de confirmación: Enviar ${input.promotedIds.length} tira, cubierta ${input.supersededIds.length} barra, saltar ${input.preview.conflictSkipped.length} banda.`,
       affectedScope: input.promotedIds.length > 0
         ? `state_proposals:${input.promotedIds.join(",")}`
         : null,

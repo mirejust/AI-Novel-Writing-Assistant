@@ -1,6 +1,6 @@
 import type {ReactNode} from "react";
 
-export function SavedFields({fields, lead = false, empty = "这一部分尚未保存详细设定。"}: {fields: [string, string | null | undefined, ReactNode?][]; lead?: boolean; empty?: string}) {
+export function SavedFields({fields, lead = false, empty = "La configuración detallada aún no se ha guardado para esta sección."}: {fields: [string, string | null | undefined, ReactNode?][]; lead?: boolean; empty?: string}) {
   const saved = fields.filter(([,value]) => value?.trim());
   if (!saved.length) return <p className="text-sm leading-7 text-muted-foreground">{empty}</p>;
   return <dl className="grid grid-cols-1 gap-x-8 gap-y-5 [@container_(min-width:56rem)]:grid-cols-2">
@@ -24,7 +24,7 @@ export function SavedList({label, items}: {label: string; items?: string[]}) {
 
 export function AssetSection({title, count, open = false, children}: {title: string; count?: number; open?: boolean; children: ReactNode}) {
   return <details open={open} className="py-4"><summary className="cursor-pointer rounded-sm text-base font-semibold focus-visible:outline-ring">
-    {title}{count !== undefined ? <span className="ml-2 text-xs font-normal text-muted-foreground">{count} 项</span> : null}
+    {title}{count !== undefined ? <span className="ml-2 text-xs font-normal text-muted-foreground">{count} Artículo</span> : null}
   </summary><div className="mt-5 space-y-5">{children}</div></details>;
 }
 

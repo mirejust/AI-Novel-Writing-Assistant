@@ -10,7 +10,7 @@ import type { ArtifactLedger } from "../application/ports";
 
 export class InvalidArtifactStatusError extends FactIntegrityError {
   constructor(readonly status: string) {
-    super("创作结果状态异常，请保留运行记录以便排查。");
+    super("El estado del resultado de la creación es anormal; conserve los registros en ejecución para solucionar problemas.");
     this.name = "InvalidArtifactStatusError";
   }
 }

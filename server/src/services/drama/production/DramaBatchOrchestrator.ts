@@ -252,10 +252,10 @@ export class DramaBatchOrchestrator {
     try {
       const job = await prisma.dramaBatchJob.findUnique({ where: { id: jobId } });
       if (!job) {
-        throw new AppError(`未找到短剧批量任务：${jobId}`, 404);
+        throw new AppError(`No se encontró la tarea por lotes de drama corto:${jobId}`, 404);
       }
       if (!job.episodeId) {
-        throw new AppError("短剧批量任务缺少集数关联。", 400);
+        throw new AppError("Las tareas por lotes de dramas cortos carecen de correlación con el número de episodios.", 400);
       }
       const episode = await prisma.dramaEpisode.findUnique({
         where: { id: job.episodeId },
@@ -267,7 +267,7 @@ export class DramaBatchOrchestrator {
         },
       });
       if (!episode) {
-        throw new AppError(`未找到短剧批量任务关联的集数：${job.episodeId}`, 404);
+        throw new AppError(`No se encontró el número de episodios asociados con la tarea del lote de drama corto:${job.episodeId}`, 404);
       }
 
       const progress = readProgress(job.progress);
@@ -416,11 +416,11 @@ export class DramaBatchOrchestrator {
       },
     });
     if (!episode) {
-      throw new AppError(`未找到短剧第 ${order} 集。`, 404);
+      throw new AppError(`Número de drama corto no encontrado ${order} colocar.`, 404);
     }
     const shots = episode.storyboards[0]?.shots ?? [];
     if (!shots.length) {
-      throw new AppError(`第 ${order} 集还没有分镜，不能创建批量任务。`, 400);
+      throw new AppError(`Cap. ${order} El conjunto aún no tiene un guión gráfico y no se pueden crear tareas por lotes.`, 400);
     }
     const allowedShotIds = new Set(shots.map((shot) => shot.id));
     const targetShots = (input.failedShotIds?.length
@@ -428,7 +428,7 @@ export class DramaBatchOrchestrator {
       : shots)
       .filter((shot) => allowedShotIds.has(shot.id));
     if (!targetShots.length) {
-      throw new AppError("没有可处理的镜头。", 400);
+      throw new AppError("No hay tomas con las que trabajar.", 400);
     }
 
     const provider = input.provider?.trim() || this.defaultProviderForType(input.type);

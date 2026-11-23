@@ -15,8 +15,8 @@ export function VisualAssetLibraryDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <AppDialogContent
         onCloseAutoFocus={onCloseAutoFocus}
-        title={isPicker ? "选择视觉素材" : "视觉资源库"}
-        description={isPicker ? "从已有素材中选择，确认后带回当前创作。" : "查看并整理作品中的图片素材。"}
+        title={isPicker ? "Elige materiales visuales" : "Biblioteca de recursos visuales"}
+        description={isPicker ? "Seleccione entre los materiales existentes y recupere la creación actual después de la confirmación." : "Vea y organice los materiales ilustrados en su trabajo."}
         className="h-[min(88dvh,900px)] w-[min(90vw,1440px)] max-w-none"
         bodyClassName="overflow-hidden p-0"
       >

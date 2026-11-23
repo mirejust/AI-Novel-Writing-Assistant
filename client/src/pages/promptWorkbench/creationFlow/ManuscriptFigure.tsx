@@ -37,7 +37,7 @@ function FigureDrawing({ id }: { id: string }) {
     case "candidates": return <><g transform="rotate(-8 56 40)"><Leaf x={31} y={17} w={43} h={48} fill={tint}><Letter x={11} y={15}>A</Letter><Lines y={24} /></Leaf></g>
       <g transform="rotate(5 97 39)"><Leaf x={78} y={11} w={46} h={52}><Letter x={12} y={17}>B</Letter><Lines y={26} w={32} /></Leaf></g></>;
     case "titles": return <><Leaf x={29} y={13} w={86} h={16} fill={tint}><Lines x={7} y={8} w={66} rows={1} /></Leaf>
-      <Leaf x={39} y={32} w={90} h={20}><Letter x={45} y={15}>书　名</Letter></Leaf><path d="M33 60h72m-72 4h43" opacity=".5" /></>;
+      <Leaf x={39} y={32} w={90} h={20}><Letter x={45} y={15}>Título del libro</Letter></Leaf><path d="M33 60h72m-72 4h43" opacity=".5" /></>;
     case "choose": return <><Leaf x={44} y={14} w={69} h={52}><path d="M7 0v52M17 16h33m-33 7h24" /></Leaf>
       <path d="M94 12h10v24l-5-4-5 4Z" fill={ink} /><g transform="translate(72 47)">{tick}</g></>;
     case "story": return <><path d="M20 62h119" opacity=".35" /><path d="M22 56c12 0 15-24 29-24s14 16 25 12 20-28 33-28 15 7 25 2" strokeWidth="2.6" />
@@ -61,7 +61,7 @@ function FigureDrawing({ id }: { id: string }) {
     case "sync": return <><Leaf x={28} y={14} w={39}><Lines w={25} /></Leaf><Leaf x={94} y={17} w={40} fill={tint}><Lines w={26} /></Leaf>
       <path d="M58 42h41m-7-7 7 7-7 7" strokeWidth="2.4" /></>;
     case "materials": return <><path d="M26 26h32l6 6h62v29H26Z" fill={tint} /><Leaf x={50} y={10} w={49} h={40}><Lines w={32} /></Leaf><path d="M29 38h106l-10 26H22Z" fill={tint} /></>;
-    case "draft": return <><Leaf x={37} y={12} w={75} h={58}><Letter x={20} y={20} size={15}>章</Letter><Lines x={12} y={30} w={50} /></Leaf>
+    case "draft": return <><Leaf x={37} y={12} w={75} h={58}><Letter x={20} y={20} size={15}>Cap.</Letter><Lines x={12} y={30} w={50} /></Leaf>
       <path d="m97 44 25-27 5 5-25 27-9 3Z" fill={tint} /></>;
     case "save": return <Folios checked />;
     case "extract": return <><Leaf x={22} y={18} w={46} h={45}><Lines y={12} /></Leaf><path d="M68 41h12m0-20v39m0-39h20m-20 20h20m-20 19h20" />

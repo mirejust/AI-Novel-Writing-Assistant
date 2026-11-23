@@ -221,7 +221,7 @@ function prepareInspirationSource(source: string): PreparedInspirationSource {
   const normalized = normalizeInspirationText(source);
   if (!normalized) {
     return {
-      promptText: "一个模糊的世界观想法。",
+      promptText: "Una vaga idea de una cosmovisión.",
       originalLength: 0,
       chunkCount: 0,
       extracted: false,
@@ -240,10 +240,10 @@ function prepareInspirationSource(source: string): PreparedInspirationSource {
   const chunks = splitInspirationTextIntoChunks(normalized);
   const selectedIndexes = pickRepresentativeChunkIndexes(chunks);
   const excerptLines = selectedIndexes
-    .map((index) => `[片段 ${index + 1}/${chunks.length}] ${compactInspirationExcerpt(chunks[index])}`);
+    .map((index) => `[acortar ${index + 1}/${chunks.length}] ${compactInspirationExcerpt(chunks[index])}`);
 
   const digest = [
-    `原文长度：${normalized.length} 字符；分段：${chunks.length}；选取片段：${selectedIndexes.length}。`,
+    `Longitud original:${normalized.length} Personaje; segmento:${chunks.length};Seleccionar clips:${selectedIndexes.length}.`,
     ...excerptLines,
   ].join("\n");
 
@@ -313,32 +313,32 @@ export async function analyzeWorldInspiration(
   input: InspirationInput,
   onProgress?: (message: string) => void,
 ) {
-  onProgress?.(input.mode === "reference" ? "正在整理参考材料" : "正在整理灵感输入");
+  onProgress?.(input.mode === "reference" ? "Compilación de materiales de referencia." : "Organizar la entrada de inspiración");
   let nextInput = input;
   let seededConceptCard: InspirationConceptCard | null = null;
-  let inspirationSource = nextInput.input?.trim() || "一个模糊的世界观想法。";
+  let inspirationSource = nextInput.input?.trim() || "Una vaga idea de una cosmovisión.";
   let seededPreparedSource: PreparedInspirationSource | null = null;
 
   if (nextInput.mode === "random") {
     const randomTemplate = WORLD_TEMPLATES[Math.floor(Math.random() * WORLD_TEMPLATES.length)];
     const randomPool = [
-      "浮空群岛",
-      "死寂古城",
-      "禁忌实验室",
-      "裂隙之门",
-      "古老契约",
-      "血脉觉醒",
-      "记忆税",
-      "灵魂货币",
+      "islas flotantes",
+      "Ciudad antigua muerta",
+      "Laboratorio prohibido",
+      "Puerta de la grieta",
+      "contrato antiguo",
+      "Despertar del linaje",
+      "impuesto de memoria",
+      "moneda del alma",
     ];
     const pickedImagery = [...randomPool].sort(() => Math.random() - 0.5).slice(0, 4);
     seededConceptCard = {
       worldType: randomTemplate.worldType,
       templateKey: randomTemplate.key,
       coreImagery: pickedImagery,
-      tone: Math.random() > 0.5 ? "阴郁史诗" : "冒险史诗",
+      tone: Math.random() > 0.5 ? "epopeya sombría" : "aventura épica",
       keywords: pickedImagery,
-      summary: `这是一个${randomTemplate.name}世界，核心意象为${pickedImagery.join("、")}，整体气质鲜明且冲突张力充足。`,
+      summary: `esto es un${randomTemplate.name}mundo, la imagen central es${pickedImagery.join(",")}, el temperamento general es distintivo y la tensión del conflicto es suficiente.`,
     };
     inspirationSource = seededConceptCard.summary;
     seededPreparedSource = {
@@ -358,7 +358,7 @@ export async function analyzeWorldInspiration(
       ...nextInput,
       input: [
         nextInput.input?.trim(),
-        activeKnowledgeDocuments.map((item) => `知识文档：${item.title}\n${item.content}`).join("\n\n"),
+        activeKnowledgeDocuments.map((item) => `Documentos de conocimiento:${item.title}\n${item.content}`).join("\n\n"),
       ]
         .filter(Boolean)
         .join("\n\n"),
@@ -373,7 +373,7 @@ export async function analyzeWorldInspiration(
   let referenceAnchors: Array<{ id: string; label: string; content: string }> = [];
   let referenceSeeds = createEmptyWorldReferenceSeedBundle();
   if (nextInput.mode === "reference") {
-    onProgress?.("正在提取原作世界锚点");
+    onProgress?.("Extrayendo el punto de anclaje del mundo original");
     const referenceAnalysis = await generateReferenceInspirationAnalysis({
       sourceText: normalizedSource.promptText,
       worldTypeHint: nextInput.worldType,
@@ -391,16 +391,16 @@ export async function analyzeWorldInspiration(
     referenceAnchors = referenceAnalysis.anchors;
     referenceSeeds = referenceAnalysis.referenceSeeds;
   } else if (!resolvedConceptCard) {
-    onProgress?.("正在生成概念卡");
+    onProgress?.("Generando tarjeta conceptual");
     const conceptResult = await runStructuredPrompt({
       asset: worldInspirationConceptCardPrompt,
       promptInput: {
         mode: nextInput.mode ?? "free",
-        worldTypeHint: nextInput.worldType ?? "无",
+        worldTypeHint: nextInput.worldType ?? "Ninguno",
         promptText: normalizedSource.promptText,
         extracted: normalizedSource.extracted,
         originalLength: normalizedSource.originalLength,
-        ragContext: inspirationRagContext || "无",
+        ragContext: inspirationRagContext || "Ninguno",
         templateKeysText: WORLD_TEMPLATES.map((item) => item.key).join("|"),
       },
       options: {
@@ -418,12 +418,12 @@ export async function analyzeWorldInspiration(
       summary?: string;
     };
     const rawConceptCard: InspirationConceptCard = {
-      worldType: parsedConcept.worldType ?? nextInput.worldType ?? "自定义",
+      worldType: parsedConcept.worldType ?? nextInput.worldType ?? "Personalizar",
       templateKey: parsedConcept.templateKey
         ? getTemplateByKey(parsedConcept.templateKey).key
         : getTemplateByKey(undefined).key,
       coreImagery: parsedConcept.coreImagery ?? [],
-      tone: parsedConcept.tone ?? "中性",
+      tone: parsedConcept.tone ?? "neutral",
       keywords: parsedConcept.keywords ?? [],
       summary: parsedConcept.summary ?? compactInspirationExcerpt(inspirationSource, 360),
     };
@@ -436,7 +436,7 @@ export async function analyzeWorldInspiration(
   const resolvedTemplate = getTemplateByKey(resolvedConceptCard.templateKey);
   let generatedPropertyOptions: Awaited<ReturnType<typeof generateWorldPropertyOptions>> = [];
   try {
-    onProgress?.(nextInput.mode === "reference" ? "正在生成架空改造决策" : "正在生成前置属性选项");
+    onProgress?.(nextInput.mode === "reference" ? "Se están generando decisiones de renovación de gastos generales." : "Generando opciones previas a la propiedad");
     generatedPropertyOptions = await generateWorldPropertyOptions({
       provider: nextInput.provider,
       model: nextInput.model,
@@ -461,7 +461,7 @@ export async function analyzeWorldInspiration(
     });
   } catch (error) {
     const reason = error instanceof Error ? error.message : "unknown";
-    throw new Error(`前置世界属性生成失败：${reason}`);
+    throw new Error(`Error en la generación de atributos anteriores al mundo:${reason}`);
   }
 
   return {

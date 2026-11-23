@@ -13,7 +13,7 @@ export async function readChapterReviewPlans(db: Prisma.TransactionClient, contr
     range.from < 1 ||
     range.to < range.from
   ) {
-    throw new AppError("待确认章节缺少有效的授权范围。", 409);
+    throw new AppError("La sección a confirmar carece de alcance válido de autoridad.", 409);
   }
   const rows = await db.volumeChapterPlan.findMany({
     where: {
@@ -30,7 +30,7 @@ export async function readChapterReviewPlans(db: Prisma.TransactionClient, contr
         (contract.launchInput?.targetVolumeId && row.volumeId !== contract.launchInput.targetVolumeId),
     )
   ) {
-    throw new AppError("待确认计划缺少唯一的已保存目标卷章节。", 409);
+    throw new AppError("Al plan por confirmar le falta un capítulo de volumen objetivo guardado único.", 409);
   }
   return rows;
 }

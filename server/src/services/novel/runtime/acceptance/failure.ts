@@ -10,18 +10,18 @@ export function describeAcceptanceFailure(error: unknown): { code: string; messa
     return { code: `style_review_${error.code}`, message: error.message };
   }
   if (error instanceof ChapterRepairVerificationError) {
-    return { code: "repair_review_evidence_invalid", message: "修文复验的正文身份、证据或逐项核对未通过，保留原稿供复查。" };
+    return { code: "repair_review_evidence_invalid", message: "Si la identidad del texto, la evidencia o la verificación punto por punto del artículo revisado no supera el reexamen, se conservará el manuscrito original para su revisión." };
   }
   if (error instanceof StructuredOutputError) {
     return { code: `acceptance_${error.category}`, message: error.category === "transport_error"
-      ? "模型连接未完成，章节检查没有可用结果。"
+      ? "La conexión del modelo no está completa y no hay resultados disponibles de la verificación del capítulo."
       : ["empty_response", "reasoning_budget_exhausted", "output_budget_exhausted"].includes(error.category)
         ? error.message
-        : "模型返回的检查结果格式不符合要求，章节检查未完成。" };
+        : "El formato de los resultados de la verificación devueltos por el modelo no cumple con los requisitos y la verificación del capítulo no se completa." };
   }
   if (error && typeof error === "object" && "promptQualityFailureKind" in error
     && error.promptQualityFailureKind === "post_validate_failed") {
-    return { code: "acceptance_result_invalid", message: "模型检查结果未通过正文与合同核对，不能作为通过结论。" };
+    return { code: "acceptance_result_invalid", message: "El resultado de la verificación del modelo no pasa la verificación entre el texto y el contrato y no puede considerarse una conclusión aprobada." };
   }
-  return { code: "acceptance_invocation_failed", message: "章节检查调用未完成，请保留正文并从章节页面重新审校。" };
+  return { code: "acceptance_invocation_failed", message: "La llamada de verificación del capítulo no se ha completado, conserve el texto y revíselo nuevamente desde la página del capítulo." };
 }

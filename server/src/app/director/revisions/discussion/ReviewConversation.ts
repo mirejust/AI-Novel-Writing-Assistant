@@ -47,17 +47,17 @@ export class ReviewConversation<F extends string, R extends { base: Record<F, st
     validateSend?.();
     const fields = Object.keys(resource.base) as F[];
     if ([input.base, input.draft].some(form => Object.keys(form).length !== fields.length || fields.some(field => !Object.hasOwn(form, field)))) {
-      throw new AppError("编辑字段有变化，请重新打开确认页。", 409);
+      throw new AppError("Hay cambios en los campos de edición, vuelva a abrir la página de confirmación.", 409);
     }
     for (const field of fields) {
-      if (resource.base[field] !== input.base[field]) throw new AppError("资料有更新，请重新打开确认页再讨论。", 409);
-      if (input.draft[field] !== input.base[field] && input.draft[field].length > 12000) throw new AppError("每项修改最多 12000 字。", 400);
+      if (resource.base[field] !== input.base[field]) throw new AppError("La información se ha actualizado. Vuelva a abrir la página de confirmación para discutir nuevamente.", 409);
+      if (input.draft[field] !== input.base[field] && input.draft[field].length > 12000) throw new AppError("La extensión máxima de cada edición es de 12.000 palabras.", 400);
     }
     const scopeKey = this.scope(a);
     const previous = input.parentResultId ? await this.db.agentConversationTurn.findFirst({
       where: { scopeKey, resultId: input.parentResultId, status: "completed" }, select: { resultPayloadJson: true },
     }) : null;
-    if (input.parentResultId && !previous?.resultPayloadJson) throw new AppError("请从当前讨论中选择要追问的建议。", 409);
+    if (input.parentResultId && !previous?.resultPayloadJson) throw new AppError("Seleccione una sugerencia a seguir de la discusión actual.", 409);
     const priorProposal = previous?.resultPayloadJson ? this.subject.changes.parse(JSON.parse(previous.resultPayloadJson)) : null;
     const contextVersion = artifactContentHash([input.base, input.draft]);
     return this.store.startReply({ ...input, scopeKey, contextVersion }, async () => {
@@ -66,35 +66,35 @@ export class ReviewConversation<F extends string, R extends { base: Record<F, st
         runWithLlmUsageTracking({ directorNextRunId: runId, novelId: a.novelId, stage: options.stage }, () =>
           this.subject.generate(resource, input.draft, { storyInput, history, priorProposal, requestText: input.requestText }, { ...options, itemKey })));
       const { changes, replyText } = this.subject.reply.parse(reply);
-      if (changes.some(item => !Object.hasOwn(input.draft, item.field))) throw new AppError("建议涉及当前编辑稿以外的内容，请重新讨论。", 422);
+      if (changes.some(item => !Object.hasOwn(input.draft, item.field))) throw new AppError("La sugerencia involucra contenido distinto al borrador editorial actual; discútalo nuevamente.", 422);
       const edits = changes.filter(item => input.draft[item.field] !== item.value)
         .map(item => ({ ...item, before: input.draft[item.field] }));
       const unchanged = changes.length - edits.length;
       const visibleReply = unchanged ? [
         replyText,
-        edits.length ? `有 ${unchanged} 项建议与当前稿一致，另有 ${edits.length} 项修改可逐项选择。` : "本轮建议与当前稿一致，可以直接保留原文。",
+        edits.length ? `tener ${unchanged} Las recomendaciones son consistentes con el borrador actual y hay recomendaciones adicionales. ${edits.length} Las modificaciones se pueden seleccionar una por una.` : "Esta ronda de sugerencias es coherente con el borrador actual y el texto original se puede conservar directamente.",
       ].join("\n\n") : replyText;
       await this.db.$transaction(async tx => {
         const latest = await this.read(tx, a);
         if (Object.keys(latest.resource.base).length !== fields.length || fields.some(field => latest.resource.base[field] !== input.base[field])) {
-          throw new AppError("讨论期间资料有更新，请读取新稿再讨论。", 409);
+          throw new AppError("La información se actualizará durante la discusión; lea el nuevo borrador antes de discutir.", 409);
         }
         await AgentConversationStore.complete(tx, scopeKey, input.requestId, edits.length ? input.requestId : null,
           visibleReply, edits.length ? JSON.stringify(edits) : undefined);
       }, { isolationLevel: "Serializable" });
-    }, error => error instanceof AppError ? error.message : "本轮讨论未完成，可以用这条要求重试。");
+    }, error => error instanceof AppError ? error.message : "Esta ronda de discusión no se ha completado, puede intentarlo nuevamente con esta solicitud.");
   }
 
   async turnStatus(a: A, id: string) {
     await this.read(this.db, a);
     const turn = await this.db.agentConversationTurn.findFirst({ where: { scopeKey: this.scope(a), id }, select: { status: true } });
-    if (!turn) throw new AppError("找不到这条讨论。", 404);
+    if (!turn) throw new AppError("Esta discusión no se puede encontrar.", 404);
     return turn.status;
   }
 
   async interrupt(a: A, id: string) {
     await this.read(this.db, a);
-    await this.store.stop(this.scope(a), id, "interrupted", "本轮讨论已结束。");
+    await this.store.stop(this.scope(a), id, "interrupted", "Esta ronda de discusión ha terminado.");
     agentReplyLive.end(id);
   }
 }

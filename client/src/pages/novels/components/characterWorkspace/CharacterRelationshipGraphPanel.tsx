@@ -91,10 +91,10 @@ const MODE_OPTIONS: Array<{
   label: string;
   icon: typeof Network;
 }> = [
-  { value: "all", label: "全部关系", icon: Network },
-  { value: "current", label: "当前角色", icon: RadioTower },
-  { value: "tension", label: "高张力", icon: AlertTriangle },
-  { value: "dynamic", label: "动态阶段", icon: GitBranch },
+  { value: "all", label: "Todas las relaciones", icon: Network },
+  { value: "current", label: "Rol actual", icon: RadioTower },
+  { value: "tension", label: "Alta tensión", icon: AlertTriangle },
+  { value: "dynamic", label: "Etapa dinámica", icon: GitBranch },
 ];
 
 export default function CharacterRelationshipGraphPanel(props: CharacterRelationshipGraphPanelProps) {
@@ -154,7 +154,7 @@ export default function CharacterRelationshipGraphPanel(props: CharacterRelation
         target: item.target,
         sourceHandle: `source-${route.source}`,
         targetHandle: `target-${route.target}`,
-        ariaLabel: `${item.sourceName} → ${item.targetName}：${item.label}`,
+        ariaLabel: `${item.sourceName} → ${item.targetName}:${item.label}`,
         data: { graphEdge: item, route, highlighted },
         animated: item.isDynamic,
         markerEnd: {
@@ -198,15 +198,15 @@ export default function CharacterRelationshipGraphPanel(props: CharacterRelation
 
   return (
     <FullscreenView
-      title="角色关系网"
+      title="Red de roles"
       description={positions.size
-        ? "点击连线查看关系详情。点「恢复自动排列」可重排当前视图。"
-        : mode === "current" && selectedCharacterId ? "查看当前角色与其他人的直接关系。" : "按角色定位分排，同组按姓名排序。点击连线查看关系详情。"}
+        ? "Haga clic en una conexión para ver los detalles de la relación. Haga clic en \"Restaurar organización automática\" para reorganizar la vista actual."
+        : mode === "current" && selectedCharacterId ? "Vea cómo su función actual está directamente relacionada con la de los demás." : "Ordene por posición de rol y ordene por nombre en el mismo grupo. Haga clic en una conexión para ver los detalles de la relación."}
       meta={(
         <>
-          <Badge variant="outline">{model.nodes.length} 个角色</Badge>
-          <Badge variant="outline">{model.totalEdgeCount} 条关系</Badge>
-          {model.dynamicEdgeCount > 0 ? <Badge variant="secondary">{model.dynamicEdgeCount} 条动态阶段</Badge> : null}
+          <Badge variant="outline">{model.nodes.length} Role</Badge>
+          <Badge variant="outline">{model.totalEdgeCount} Relación</Badge>
+          {model.dynamicEdgeCount > 0 ? <Badge variant="secondary">{model.dynamicEdgeCount} Etapa dinámica</Badge> : null}
         </>
       )}
       actions={MODE_OPTIONS.map((option) => {
@@ -225,17 +225,17 @@ export default function CharacterRelationshipGraphPanel(props: CharacterRelation
           </Button>
         );
       })}
-      toggleLabel="全屏查看"
-      exitLabel="退出全屏"
+      toggleLabel="Ver pantalla completa"
+      exitLabel="Salir de pantalla completa"
       className="border-0 shadow-none"
-      columns={{ layoutId: "character-graph", gap: 0, right: { label: "调整人物关系详情宽度", initial: "var(--graph-details-width, 340px)", min: 188 } }}
+      columns={{ layoutId: "character-graph", gap: 0, right: { label: "Ajustar el ancho de los detalles de la relación de los personajes.", initial: "var(--graph-details-width, 340px)", min: 188 } }}
       bodyClassName="grid min-h-[560px] gap-0 xl:workspace-split"
       fullscreenBodyClassName="h-full min-h-0 workspace-split [--graph-details-width:360px]"
     >
       <div className="h-full min-h-[520px] min-w-0 border-b border-border/60 bg-[radial-gradient(circle_at_20%_20%,rgba(14,165,233,0.08),transparent_28%),linear-gradient(180deg,hsl(var(--background))_0%,hsl(var(--muted)/0.24)_100%)] xl:border-b-0 xl:border-r">
           {isLoading ? (
             <div className="flex h-full min-h-[520px] items-center justify-center text-sm text-muted-foreground">
-              正在读取角色关系网...
+              Lectura de la red de relaciones de personajes...
             </div>
           ) : flowNodes.length > 0 ? (
             <ReactFlow<RelationshipFlowNode, RelationshipFlowEdge>
@@ -282,18 +282,18 @@ export default function CharacterRelationshipGraphPanel(props: CharacterRelation
               <Background color="hsl(var(--border))" gap={28} size={1} />
               <Panel position="top-left" className="rounded-xl border border-border/70 bg-background/90 px-3 py-2 text-xs text-muted-foreground shadow-sm">
                 <div className="flex flex-wrap gap-3">
-                  <span className="inline-flex items-center gap-1.5"><span className="h-0.5 w-6 bg-slate-500" />普通关系</span>
-                  <span className="inline-flex items-center gap-1.5"><span className="h-0.5 w-6 bg-orange-500" />高张力</span>
-                  <span className="inline-flex items-center gap-1.5"><span className="h-0.5 w-6 border-t-2 border-dashed border-sky-600" />动态阶段</span>
+                  <span className="inline-flex items-center gap-1.5"><span className="h-0.5 w-6 bg-slate-500" />Relación ordinaria</span>
+                  <span className="inline-flex items-center gap-1.5"><span className="h-0.5 w-6 bg-orange-500" />Alta tensión</span>
+                  <span className="inline-flex items-center gap-1.5"><span className="h-0.5 w-6 border-t-2 border-dashed border-sky-600" />Etapa dinámica</span>
                 </div>
               </Panel>
               {mode === "current" && selectedCharacterId && !positions.size ? (
                 <Panel position="bottom-left" className="rounded-xl border border-border/70 bg-background/90 px-3 py-2 text-xs text-muted-foreground shadow-sm">
-                  当前角色在左侧，直接关系向右展开；点击连线查看关系细节。
+                  El papel actual es de izquierda y la relación directa se expande hacia la derecha; haga clic en la conexión para ver los detalles de la relación.
                 </Panel>
               ) : null}
               <Controls showInteractive={false} position="bottom-right">
-                <ControlButton title="恢复自动排列" aria-label="恢复自动排列" disabled={!positions.size}
+                <ControlButton title="Restaurar disposición automática" aria-label="Restaurar disposición automática" disabled={!positions.size}
                   onClick={() => {
                     reset();
                     requestAnimationFrame(() => { void canvas.current?.fitView(fitViewOptions); });
@@ -320,7 +320,7 @@ function CharacterRelationshipNode(props: NodeProps<RelationshipFlowNode>) {
   const character = graphNode.character;
   const isProtagonist = isProtagonistCharacter(character);
   const tone = getNodeTone(character);
-  const shortName = character.name.trim().slice(0, 2) || "角";
+  const shortName = character.name.trim().slice(0, 2) || "Ángulo";
 
   return (
     <div
@@ -359,23 +359,23 @@ function CharacterRelationshipNode(props: NodeProps<RelationshipFlowNode>) {
         {isProtagonist ? (
           <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-1.5 py-0.5 text-[10px] font-medium text-emerald-800">
             <Sparkles className="h-2.5 w-2.5" />
-            核心
+            centro
           </span>
         ) : null}
       </div>
       <div className="mt-3 line-clamp-2 min-h-[36px] text-xs leading-[18px] text-muted-foreground">
-        {character.currentGoal || character.storyFunction || character.relationToProtagonist || "待补全角色目标"}
+        {character.currentGoal || character.storyFunction || character.relationToProtagonist || "Objetivos del personaje a completar."}
       </div>
       <div className="absolute inset-x-3.5 bottom-2.5 flex flex-wrap gap-1.5">
         <span className={cn("rounded-full px-2 py-0.5 text-[10px] font-medium", tone.badge)}>
-          {isProtagonist ? "主角核心" : getCastRoleLabel(character.castRole)}
+          {isProtagonist ? "Núcleo protagonista" : getCastRoleLabel(character.castRole)}
         </span>
         <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] text-muted-foreground">
-          {graphNode.relationCount} 关系
+          {graphNode.relationCount} relación
         </span>
         {graphNode.dynamicCount > 0 ? (
           <span className="rounded-full bg-sky-50 px-2 py-0.5 text-[10px] text-sky-700">
-            {graphNode.dynamicCount} 动态
+            {graphNode.dynamicCount} dinámica
           </span>
         ) : null}
       </div>
@@ -439,7 +439,7 @@ function RelationshipDetailPanel(props: {
         <NodeDetail node={selectedNode} />
       ) : (
         <div className="flex h-full min-h-[320px] items-center justify-center rounded-2xl border border-dashed p-6 text-center text-sm text-muted-foreground">
-          点击角色或关系线查看详情。
+          Haga clic en un personaje o línea de relación para ver los detalles.
         </div>
       )}
     </aside>
@@ -459,17 +459,17 @@ function NodeDetail(props: { node: RelationshipGraphNode }) {
         <div className="flex flex-wrap items-center gap-2">
           <div className="text-base font-semibold">{character.name}</div>
           <Badge variant="secondary">{getCastRoleLabel(character.castRole)}</Badge>
-          {isProtagonist ? <Badge className="border-emerald-200 bg-emerald-50 text-emerald-800" variant="outline">叙事核心</Badge> : null}
+          {isProtagonist ? <Badge className="border-emerald-200 bg-emerald-50 text-emerald-800" variant="outline">Núcleo narrativo</Badge> : null}
         </div>
-        <div className="mt-2 text-sm leading-6 text-muted-foreground">{character.role || "未定义身份"}</div>
+        <div className="mt-2 text-sm leading-6 text-muted-foreground">{character.role || "Identidad indefinida"}</div>
       </div>
-      <DetailBlock title="当前目标" value={character.currentGoal} />
-      <DetailBlock title="当前状态" value={character.currentState} />
-      <DetailBlock title="故事作用" value={character.storyFunction} />
-      <DetailBlock title="与主角关系" value={character.relationToProtagonist} />
+      <DetailBlock title="Objetivo actual" value={character.currentGoal} />
+      <DetailBlock title="Estado actual" value={character.currentState} />
+      <DetailBlock title="Función en la historia" value={character.storyFunction} />
+      <DetailBlock title="Relación con el protagonista" value={character.relationToProtagonist} />
       <div className="grid grid-cols-2 gap-2 text-xs">
-        <MiniStat icon={<UsersRound className="h-3.5 w-3.5" />} label="关系数" value={String(props.node.relationCount)} />
-        <MiniStat icon={<GitBranch className="h-3.5 w-3.5" />} label="动态阶段" value={String(props.node.dynamicCount)} />
+        <MiniStat icon={<UsersRound className="h-3.5 w-3.5" />} label="Número de relación" value={String(props.node.relationCount)} />
+        <MiniStat icon={<GitBranch className="h-3.5 w-3.5" />} label="Etapa dinámica" value={String(props.node.dynamicCount)} />
       </div>
     </div>
   );
@@ -485,26 +485,26 @@ function EdgeDetail(props: { edge: RelationshipGraphEdge }) {
       <div className="rounded-2xl border border-border/70 bg-muted/10 p-4">
         <div className="flex flex-wrap items-center gap-2">
           <div className="text-base font-semibold">{edge.label}</div>
-          {edge.isDynamic ? <Badge variant="secondary">动态阶段</Badge> : null}
-          {edge.isHighTension ? <Badge variant="outline">高张力</Badge> : null}
+          {edge.isDynamic ? <Badge variant="secondary">Etapa dinámica</Badge> : null}
+          {edge.isHighTension ? <Badge variant="outline">Alta tensión</Badge> : null}
         </div>
         <div className="mt-2 text-sm text-muted-foreground">
           {getRelationNames(edge)}
         </div>
       </div>
-      <DetailBlock title="表层关系" value={relation?.surfaceRelation} />
-      <DetailBlock title="当前阶段" value={currentStage?.stageSummary ?? currentStage?.stageLabel} />
-      <DetailBlock title="隐藏张力" value={relation?.hiddenTension} />
-      <DetailBlock title="冲突来源" value={relation?.conflictSource} />
-      <DetailBlock title="秘密不对称" value={relation?.secretAsymmetry} />
-      <DetailBlock title="下一转折点" value={currentStage?.nextTurnPoint ?? relation?.nextTurnPoint} />
+      <DetailBlock title="Relación de superficie" value={relation?.surfaceRelation} />
+      <DetailBlock title="Etapa actual" value={currentStage?.stageSummary ?? currentStage?.stageLabel} />
+      <DetailBlock title="Tensión oculta" value={relation?.hiddenTension} />
+      <DetailBlock title="Fuente de conflicto" value={relation?.conflictSource} />
+      <DetailBlock title="Asimetría secreta" value={relation?.secretAsymmetry} />
+      <DetailBlock title="Próximo punto de inflexión" value={currentStage?.nextTurnPoint ?? relation?.nextTurnPoint} />
       <div className="grid grid-cols-2 gap-2 text-xs">
-        <MiniStat icon={<Sparkles className="h-3.5 w-3.5" />} label="阶段数" value={String(edge.dynamicStages.length)} />
-        <MiniStat icon={<AlertTriangle className="h-3.5 w-3.5" />} label="风险" value={edge.isHighTension ? "高" : "普通"} />
+        <MiniStat icon={<Sparkles className="h-3.5 w-3.5" />} label="Número de etapas" value={String(edge.dynamicStages.length)} />
+        <MiniStat icon={<AlertTriangle className="h-3.5 w-3.5" />} label="Riesgo" value={edge.isHighTension ? "Alto" : "Ordinario"} />
       </div>
       {currentStage?.chapterOrder ? (
         <div className="rounded-xl border border-border/70 bg-background p-3 text-xs text-muted-foreground">
-          最近推进：第 {currentStage.chapterOrder} 章
+          Avances recientes: No. {currentStage.chapterOrder} capítulo
         </div>
       ) : null}
     </div>
@@ -515,7 +515,7 @@ function DetailBlock(props: { title: string; value?: string | null }) {
   return (
     <div className="rounded-xl border border-border/70 bg-background p-3">
       <div className="text-xs font-medium text-muted-foreground">{props.title}</div>
-      <div className="mt-2 text-sm leading-6">{props.value || "待补全"}</div>
+      <div className="mt-2 text-sm leading-6">{props.value || "Pendiente"}</div>
     </div>
   );
 }
@@ -539,9 +539,9 @@ function EmptyGraphState() {
         <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-muted text-muted-foreground">
           <Network className="h-5 w-5" />
         </div>
-        <div className="mt-4 text-sm font-medium">关系网还没有可绘制内容</div>
+        <div className="mt-4 text-sm font-medium">La red de relaciones aún no tiene contenido dibujable.</div>
         <div className="mt-2 text-sm leading-6 text-muted-foreground">
-          先应用一套角色阵容，或完成几章后同步角色动态；系统会把表层关系、隐藏张力和动态阶段汇总到这里。
+          Aplique primero una alineación de personajes o sincronice la dinámica de los personajes después de completar algunos capítulos; El sistema resumirá aquí las relaciones superficiales, las tensiones ocultas y las etapas dinámicas.
         </div>
       </div>
     </div>
@@ -591,15 +591,15 @@ function getEdgeTone(edge?: RelationshipGraphEdge) {
 
 function getRelationNames(edge: RelationshipGraphEdge): string {
   if (edge.sourceName || edge.targetName) {
-    return `${edge.sourceName || "未知角色"} -> ${edge.targetName || "未知角色"}`;
+    return `${edge.sourceName || "Papel desconocido"} -> ${edge.targetName || "Papel desconocido"}`;
   }
   const staticRelation = edge.staticRelation;
   if (staticRelation?.sourceCharacterName || staticRelation?.targetCharacterName) {
-    return `${staticRelation.sourceCharacterName ?? "未知角色"} -> ${staticRelation.targetCharacterName ?? "未知角色"}`;
+    return `${staticRelation.sourceCharacterName ?? "Papel desconocido"} -> ${staticRelation.targetCharacterName ?? "Papel desconocido"}`;
   }
   const stage = edge.dynamicStages[0];
   if (stage) {
-    return `${stage.sourceCharacterName ?? "未知角色"} -> ${stage.targetCharacterName ?? "未知角色"}`;
+    return `${stage.sourceCharacterName ?? "Papel desconocido"} -> ${stage.targetCharacterName ?? "Papel desconocido"}`;
   }
-  return "角色关系";
+  return "Relación de rol";
 }

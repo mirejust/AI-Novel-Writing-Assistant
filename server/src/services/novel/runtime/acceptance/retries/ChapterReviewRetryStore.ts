@@ -18,7 +18,7 @@ export function createPersistedChapterReviewRetryBudget(input: {
         const row = await prisma.chapterArtifactSyncCheckpoint.findUnique({ where, select: { metadataJson: true } });
         return row ? chapterReviewRetryStateSchema.parse(JSON.parse(row.metadataJson ?? "null")) : null;
       } catch (error) {
-        throw new ReviewRetryPersistenceError("章节检查重试记录无法读取或核验，已停止继续。", { cause: error });
+        throw new ReviewRetryPersistenceError("No se pudo leer ni verificar el registro de reintento de verificación del capítulo y se detuvo la continuación.", { cause: error });
       }
     },
     update: async change => {
@@ -34,10 +34,10 @@ export function createPersistedChapterReviewRetryBudget(input: {
           });
           if (updated.count === 1) return next;
         }
-        throw new ReviewRetryPersistenceError("章节检查重试记录被并发修改，请从保存位置继续。");
+        throw new ReviewRetryPersistenceError("El registro de reintento de verificación del capítulo se modificó al mismo tiempo; continúe desde la ubicación guardada.");
       } catch (error) {
         if (error instanceof ReviewRetryExhaustedError) throw error;
-        throw new ReviewRetryPersistenceError("章节检查重试记录无法保存或核验，已停止调用。", { cause: error });
+        throw new ReviewRetryPersistenceError("El registro de reintento de verificación del capítulo no se puede guardar ni verificar y la llamada se ha detenido.", { cause: error });
       }
     },
   }, input.beforeRequest);

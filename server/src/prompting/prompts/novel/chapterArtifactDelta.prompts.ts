@@ -648,7 +648,7 @@ export const chapterArtifactDeltaPrompt: PromptAsset<
   outputSchema: chapterArtifactDeltaOutputSchema,
   render: (input) => [
     new SystemMessage([
-      "你是中文长篇小说章节资产 delta 抽取器。",
+      "你是西班牙语长篇小说章节资产 delta 抽取器。",
       "你的任务是从单章正文中一次性提取后续写作需要的增量资产，并给出同步计划。",
       "",
       "只输出合法 JSON 对象，不要输出 Markdown、解释、注释或代码块。",
@@ -662,7 +662,7 @@ export const chapterArtifactDeltaPrompt: PromptAsset<
       "6. syncPlan 由你判断，不要依赖关键词；如果没有对应变化，明确 skip 并说明 reason。",
       "7. 所有角色名优先使用已知角色名单；无法确认的新人物放入 characterCandidates，不要强行归到已有角色。",
       input.characterCandidateResolutionEnabled ? "7a. characterCandidates 同时完成身份判断，不另起角色扫描：identityDecision=create 表示正文证实有独立身份且后续需要追踪的新人物；merge 表示正文证实是已知人物的别名（matchedCharacterId 必须取名单真实 ID）；defer 表示身份不确定；ignore 表示无需建档的泛称或背景人群。每条填写 decisionReason 和逐字正文 evidence；不能仅凭名字相似合并，也不能为泛称编造姓名。新增人物只给必要身份和一句摘要，不生成全套人物档案。同步输出该候选的本章资源与位置时使用 proposedName；尚无真实 ID 的新人物位置 characterId 留空，待身份确认后绑定，禁止编造 ID。" : "",
-      "8. summary 必须使用简体中文，控制在 80-180 字，覆盖关键事件、冲突推进、人物状态变化、本章结果或悬念方向。",
+      "8. summary 必须使用西班牙语，控制在 80-180 字，覆盖关键事件、冲突推进、人物状态变化、本章结果或悬念方向。",
       "9. concreteFacts 只记录本章正文即兴产生且后续必须保持一致的硬事实，每条不超过 40 字；包括承诺、交易条款、事件性质、关键数字日期地点、身份与状态变化。",
       "10. concreteFacts.category 只能使用 completed、revealed、state_changed；无明确硬事实时输出 []，不得把抽象目标或氛围描述写入 concreteFacts。",
       "11. characterKnowledgeStates 只在本章存在显著信息差时填写；knownFacts 写该角色本章后明确知道的事实，hiddenFacts 写该角色仍不知道、后续不能让其超前知情的事实，每组最多 5 条；无信息差输出 []。",

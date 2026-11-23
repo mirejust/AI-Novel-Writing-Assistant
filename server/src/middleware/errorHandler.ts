@@ -33,45 +33,45 @@ function structuredErrorDetails(details: unknown): Record<string, unknown> {
 }
 
 const VALIDATION_FIELD_LABELS: Record<string, string> = {
-  id: "项目 ID",
-  field: "字段",
-  provider: "模型提供商",
-  model: "模型",
-  temperature: "温度",
-  storyInput: "故事想法输入",
-  expansion: "故事引擎原型",
-  decomposition: "推进与兑现摘要",
-  constraints: "叙事规则",
-  lockedFields: "锁定字段",
-  state: "故事状态",
-  expanded_premise: "扩展前提",
-  protagonist_core: "主角核心",
-  conflict_engine: "冲突引擎",
-  conflict_layers: "冲突层",
-  external: "外部压迫",
-  internal: "内部崩塌",
-  relational: "关系压力",
-  mystery_box: "核心未知",
-  emotional_line: "情绪线",
-  setpiece_seeds: "高张力场面种子",
-  tone_reference: "氛围参考",
-  selling_point: "卖点",
-  core_conflict: "核心冲突",
-  main_hook: "主钩子",
-  progression_loop: "推进循环",
-  growth_path: "成长路径",
-  major_payoffs: "关键兑现点",
-  ending_flavor: "结局风味",
-  currentPhase: "当前阶段",
-  progress: "进度",
-  protagonistState: "主角当前处境",
+  id: "ID del proyecto",
+  field: "Campo",
+  provider: "proveedor de modelos",
+  model: "Modelo",
+  temperature: "temperatura",
+  storyInput: "Entrada de ideas para la historia",
+  expansion: "Prototipo de motor de historia",
+  decomposition: "Resumen de avance y entrega",
+  constraints: "reglas narrativas",
+  lockedFields: "Bloquear campo",
+  state: "estado de la historia",
+  expanded_premise: "premisa extendida",
+  protagonist_core: "Núcleo protagonista",
+  conflict_engine: "motor de conflicto",
+  conflict_layers: "capa de conflicto",
+  external: "opresión externa",
+  internal: "colapso interno",
+  relational: "estrés en la relación",
+  mystery_box: "Núcleo desconocido",
+  emotional_line: "línea de humor",
+  setpiece_seeds: "semillas de escena de alta tensión",
+  tone_reference: "Referencia de atmósfera",
+  selling_point: "punto de venta",
+  core_conflict: "Conflicto central",
+  main_hook: "gancho principal",
+  progression_loop: "ciclo de avance",
+  growth_path: "camino de crecimiento",
+  major_payoffs: "Puntos de canje clave",
+  ending_flavor: "sabor final",
+  currentPhase: "etapa actual",
+  progress: "cronograma",
+  protagonistState: "La situación actual del protagonista.",
 };
 
 function formatValidationPath(path: PropertyKey[]): string {
   return path
     .map((segment) => {
       if (typeof segment === "number") {
-        return `第 ${segment + 1} 项`;
+        return `Cap. ${segment + 1} artículo`;
       }
       if (typeof segment === "symbol") {
         return segment.toString();
@@ -90,51 +90,51 @@ function formatZodIssueMessage(issue: ZodIssue): string {
   switch (code) {
     case "invalid_type":
       if (issueRecord.input === undefined) {
-        return "不能为空。";
+        return "No puede estar vacío.";
       }
       if (issueRecord.expected === "string") {
-        return "必须是文本。";
+        return "Debe ser texto.";
       }
       if (issueRecord.expected === "number") {
-        return "必须是数字。";
+        return "Debe ser un número.";
       }
       if (issueRecord.expected === "boolean") {
-        return "必须是布尔值。";
+        return "Debe ser un valor booleano.";
       }
-      return issue.message || "类型不正确。";
+      return issue.message || "Tipo incorrecto.";
     case "invalid_value":
-      return issue.message || "取值不合法。";
+      return issue.message || "El valor es ilegal.";
     case "too_small":
       if (origin === "array") {
-        return `至少需要 ${issueRecord.minimum} 项。`;
+        return `Al menos requerido ${issueRecord.minimum} artículo.`;
       }
       if (origin === "string") {
-        return issueRecord.minimum === 1 ? "不能为空。" : `至少 ${issueRecord.minimum} 个字符。`;
+        return issueRecord.minimum === 1 ? "No puede estar vacío." : `Al menos ${issueRecord.minimum} personajes.`;
       }
       if (origin === "number") {
-        return `不能小于 ${issueRecord.minimum}。`;
+        return `no puede ser menor que ${issueRecord.minimum}.`;
       }
-      return issue.message || "内容过短。";
+      return issue.message || "El contenido es demasiado corto.";
     case "too_big":
       if (origin === "array") {
-        return `最多只能填写 ${issueRecord.maximum} 项。`;
+        return `Sólo puedes completar como máximo ${issueRecord.maximum} artículo.`;
       }
       if (origin === "string") {
-        return `不能超过 ${issueRecord.maximum} 个字符。`;
+        return `no puede exceder ${issueRecord.maximum} personajes.`;
       }
       if (origin === "number") {
-        return `不能大于 ${issueRecord.maximum}。`;
+        return `no puede ser mayor que ${issueRecord.maximum}.`;
       }
-      return issue.message || "内容过长。";
+      return issue.message || "El contenido es demasiado largo.";
     default:
-      return issue.message || "格式不正确。";
+      return issue.message || "El formato es incorrecto.";
   }
 }
 
 function formatValidationIssue(issue: ZodIssue): string {
   const path = formatValidationPath(issue.path);
   const message = formatZodIssueMessage(issue);
-  return path ? `${path}：${message}` : message;
+  return path ? `${path}:${message}` : message;
 }
 
 function setRequestErrorMessage(
@@ -209,9 +209,9 @@ function formatUpstreamConnectionError(error: unknown): string | null {
   const cause = findConnectionCause(error);
   const target = cause?.host
     ? `${cause.host}${cause.port ? `:${cause.port}` : ""}`
-    : "上游模型服务";
-  const code = cause?.code ? `（${cause.code}）` : "";
-  return `上游模型服务连接失败：当前服务器无法连接到 ${target}${code}。请检查该提供商的网络连通性，或切换到其它可用模型提供商。`;
+    : "Servicio de modelo ascendente";
+  const code = cause?.code ? `(${cause.code})` : "";
+  return `Error en la conexión del servicio de modelo ascendente: el servidor actual no se puede conectar ${target}${code}. Verifique la conectividad de red con este proveedor o cambie a otro proveedor de modelo disponible.`;
 }
 
 export function errorHandler(
@@ -229,20 +229,20 @@ export function errorHandler(
     && "type" in error
     && (error as { type?: string }).type === "entity.too.large"
   ) {
-    setRequestErrorMessage(res, "请求体过大，请缩短文本或分段上传。");
+    setRequestErrorMessage(res, "El cuerpo de la solicitud es demasiado grande; acorte el texto o cárguelo en partes.");
     res.status(413).json({
       success: false,
-      error: "请求体过大，请缩短文本或分段上传。",
+      error: "El cuerpo de la solicitud es demasiado grande; acorte el texto o cárguelo en partes.",
     });
     return;
   }
 
   if (error instanceof ZodError) {
     const detail = error.issues.map((issue) => formatValidationIssue(issue)).join(" ");
-    setRequestErrorMessage(res, "请求参数校验失败。", detail);
+    setRequestErrorMessage(res, "Error en la verificación del parámetro de solicitud.", detail);
     res.status(400).json({
       success: false,
-      error: "请求参数校验失败。",
+      error: "Error en la verificación del parámetro de solicitud.",
       message: detail,
     });
     return;
@@ -265,7 +265,7 @@ export function errorHandler(
     return;
   }
 
-  const message = "服务器错误，请稍后重试。";
+  const message = "Error del servidor, inténtalo de nuevo más tarde.";
   const upstreamConnectionMessage = formatUpstreamConnectionError(error);
   if (upstreamConnectionMessage) {
     setRequestErrorMessage(res, upstreamConnectionMessage);

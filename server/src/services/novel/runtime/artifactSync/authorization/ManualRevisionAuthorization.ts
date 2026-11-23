@@ -13,7 +13,7 @@ export async function authorizeManualRevision(tx: Prisma.TransactionClient,
   input: ManualRevisionProof & {novelId: string; chapterId: string; content: string}): Promise<boolean> {
   if (!input.manualRevision && !input.revisionGuard) return false;
   const guard = input.revisionGuard;
-  const stale = () => new ChapterArtifactContentVersionError("正文修订已变化，已停止过期资料同步。");
+  const stale = () => new ChapterArtifactContentVersionError("La revisión del texto ha cambiado y se ha detenido la sincronización de datos caducados.");
   if (!input.manualRevision || !guard?.metadataJson || guard.novel?.directorVersion !== "v2") throw stale();
   let payload: {revision?: string; novelId?: string; chapterId?: string; contentHash?: string; attemptId?: string};
   try {payload = JSON.parse(guard.metadataJson);} catch {throw stale();}

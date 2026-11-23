@@ -14,12 +14,12 @@ interface AutoDirectorFollowUpBatchBarProps {
 
 function formatBatchActionLabel(actionCode: AutoDirectorMutationActionCode | null): string {
   if (actionCode === "continue_auto_execution") {
-    return "批量低风险继续";
+    return "El bajo riesgo del lote continúa";
   }
   if (actionCode === "retry_with_task_model") {
-    return "批量重试异常任务";
+    return "Reintentar tareas anormales en lotes";
   }
-  return "当前所选项没有共同批量动作";
+  return "No hay acciones masivas comunes para los elementos seleccionados actualmente";
 }
 
 function getSelectedSection(items: AutoDirectorFollowUpItem[]): AutoDirectorFollowUpSection | null {
@@ -39,24 +39,24 @@ export function AutoDirectorFollowUpBatchBar({
   }
   const selectedSection = getSelectedSection(selectedItems);
   const consequence = batchActionCode === "continue_auto_execution"
-    ? "只向所选导演任务分别提交继续命令，不会跨任务合并状态。"
+    ? "Solo los comandos de continuación se envían individualmente a las tareas del director seleccionado y el estado no se fusionará entre las tareas."
     : batchActionCode === "retry_with_task_model"
-      ? "每个任务都会使用各自保存的模型重试，并保持对应的导演任务身份。"
-      : "不会执行批量操作；请重新选择同一分区且具有共同动作的任务。";
+      ? "Cada misión se vuelve a intentar utilizando su propio modelo guardado y mantiene la identidad de misión del director correspondiente."
+      : "No se realizarán operaciones por lotes; Vuelva a seleccionar tareas en la misma partición con acciones comunes.";
 
   return (
     <div className={AUTO_DIRECTOR_MOBILE_CLASSES.followUpBatchBar}>
       <TaskQueueActionRow
-        title={`已选择 ${selectedItems.length} 项 · ${selectedSection === "pending" || selectedSection === "exception" ? formatBatchActionLabel(batchActionCode) : "该分区不提供批量动作"}`}
+        title={`Seleccionado ${selectedItems.length} Artículo · ${selectedSection === "pending" || selectedSection === "exception" ? formatBatchActionLabel(batchActionCode) : "Esta partición no proporciona acciones masivas."}`}
         consequence={consequence}
         tone={selectedSection === "exception" ? "danger" : "info"}
         action={(
           <div className="grid grid-cols-2 gap-2 md:flex">
           <Button variant="outline" size="sm" className="w-full md:w-auto" onClick={onClear} disabled={loading}>
-            清空
+            Claro
           </Button>
           <Button size="sm" className="w-full md:w-auto" onClick={() => void onExecute()} disabled={!batchActionCode || loading}>
-            执行批量动作
+            Ejecutar acciones por lotes
           </Button>
           </div>
         )}

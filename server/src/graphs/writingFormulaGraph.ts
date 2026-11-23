@@ -26,55 +26,55 @@ export type WritingFormulaGraphOutput = Pick<
 async function analyzeStyle(state: WritingFormulaGraphState, llm: BaseChatModel) {
   try {
     const result = await llm.invoke([
-      new SystemMessage("你是写作风格分析专家，请分析语言风格、叙事视角和节奏。"),
+      new SystemMessage("Eres un experto en análisis de estilo de escritura. Analice el estilo del lenguaje, la perspectiva narrativa y el ritmo."),
       new HumanMessage(state.sourceText),
     ]);
     const text = typeof result.content === "string" ? result.content : JSON.stringify(result.content);
     return { styleAnalysis: text };
   } catch (error) {
-    return { error: error instanceof Error ? error.message : "风格分析失败。" };
+    return { error: error instanceof Error ? error.message : "El análisis de estilo falló." };
   }
 }
 
 async function extractTechniques(state: WritingFormulaGraphState, llm: BaseChatModel) {
   try {
     const result = await llm.invoke([
-      new SystemMessage("请提取可复现的写作技巧并归纳规则。"),
+      new SystemMessage("Extraiga habilidades de escritura reproducibles y resuma las reglas."),
       new HumanMessage(
-        `风格分析：
+        `Análisis de estilo:
 ${state.styleAnalysis}
-关注维度：${state.focusAreas.join(", ")}`,
+Centrarse en las dimensiones:${state.focusAreas.join(", ")}`,
       ),
     ]);
     const text = typeof result.content === "string" ? result.content : JSON.stringify(result.content);
     return { techniqueExtraction: text };
   } catch (error) {
-    return { error: error instanceof Error ? error.message : "技巧提取失败。" };
+    return { error: error instanceof Error ? error.message : "Falló la extracción de la punta." };
   }
 }
 
 async function buildFormula(state: WritingFormulaGraphState, llm: BaseChatModel) {
   try {
     const result = await llm.invoke([
-      new SystemMessage("请将分析结果整理为 Markdown 写作公式文档。"),
+      new SystemMessage("Organice los resultados del análisis en un documento de fórmula de escritura de Markdown."),
       new HumanMessage(
-        `风格分析：
+        `Análisis de estilo:
 ${state.styleAnalysis}
 
-技巧提取：
+Extracción de puntas:
 ${state.techniqueExtraction}
 
-请按以下标题组织：
-## 整体风格定位
-## 核心写作技巧（含原文例句）
-## 可复现的写作公式
-## 应用指南（如何用这个公式写新文本）`,
+Por favor organice según los siguientes encabezados:
+## Posicionamiento de estilo general
+## Habilidades básicas de escritura (incluidos ejemplos de textos originales)
+## Fórmula de escritura reproducible
+## Guía de aplicación (cómo escribir texto nuevo usando esta fórmula)`,
       ),
     ]);
     const text = typeof result.content === "string" ? result.content : JSON.stringify(result.content);
     return { formulaMarkdown: text };
   } catch (error) {
-    return { error: error instanceof Error ? error.message : "公式文档构建失败。" };
+    return { error: error instanceof Error ? error.message : "Error al crear el documento de fórmula." };
   }
 }
 
@@ -91,14 +91,14 @@ async function structureFormula(state: WritingFormulaGraphState) {
   try {
     return {
       formulaStructured: {
-        style: extractSection(state.formulaMarkdown, "整体风格定位"),
-        formulaDescription: extractSection(state.formulaMarkdown, "核心写作技巧（含原文例句）"),
-        formulaSteps: extractSection(state.formulaMarkdown, "可复现的写作公式"),
-        applicationTips: extractSection(state.formulaMarkdown, "应用指南（如何用这个公式写新文本）"),
+        style: extractSection(state.formulaMarkdown, "posicionamiento general del estilo"),
+        formulaDescription: extractSection(state.formulaMarkdown, "Habilidades básicas de escritura (incluidos ejemplos de textos originales)"),
+        formulaSteps: extractSection(state.formulaMarkdown, "Fórmulas de escritura reproducibles"),
+        applicationTips: extractSection(state.formulaMarkdown, "Guía de aplicación (cómo escribir texto nuevo usando esta fórmula)"),
       },
     };
   } catch (error) {
-    return { error: error instanceof Error ? error.message : "公式结构化失败。" };
+    return { error: error instanceof Error ? error.message : "La estructuración de la fórmula falló." };
   }
 }
 

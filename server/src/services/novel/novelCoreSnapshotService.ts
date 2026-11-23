@@ -164,7 +164,7 @@ export class NovelCoreSnapshotService {
       where: { id: chapterId, novelId },
       select: { id: true, order: true },
     });
-    if (!chapter) throw new Error("章节不存在");
+    if (!chapter) throw new Error("El capitulo no existe");
 
     const snapshots = await prisma.novelSnapshot.findMany({
       where: { novelId },
@@ -193,14 +193,14 @@ export class NovelCoreSnapshotService {
       where: { id: chapterId, novelId },
       select: { id: true, order: true },
     });
-    if (!chapter) throw new Error("章节不存在");
+    if (!chapter) throw new Error("El capitulo no existe");
     const snapshot = await prisma.novelSnapshot.findFirst({
       where: { id: snapshotId, novelId },
       select: { id: true, novelId: true, label: true, triggerType: true, createdAt: true, snapshotData: true },
     });
-    if (!snapshot) throw new Error("版本不存在");
+    if (!snapshot) throw new Error("La versión no existe");
     const content = readChapterSnapshotContent(snapshot.snapshotData, chapter.id);
-    if (content === null) throw new Error("这个版本没有当前章节正文");
+    if (content === null) throw new Error("Esta versión no tiene el texto del capítulo actual.");
     return {
       id: snapshot.id,
       novelId: snapshot.novelId,

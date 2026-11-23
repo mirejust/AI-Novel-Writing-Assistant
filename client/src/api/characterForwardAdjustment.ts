@@ -12,7 +12,7 @@ export async function getCharacterForwardPreview(novelId: string, characterId: s
   const { data } = await apiClient.get<ApiResponse<CharacterForwardPreview>>(
     `${adjustmentPath(novelId, characterId)}/preview`, { errorPresentation: "inline" },
   );
-  if (!data.data) throw new Error("角色调整预览读取失败。");
+  if (!data.data) throw new Error("No se pudo leer la vista previa del ajuste de caracteres.");
   return data.data;
 }
 
@@ -20,6 +20,6 @@ export async function saveCharacterForwardAdjustment(novelId: string, characterI
   const { data } = await apiClient.post<ApiResponse<{ effectiveFromChapterOrder: number }>>(
     adjustmentPath(novelId, characterId), input, { errorPresentation: "inline" },
   );
-  if (!data.data) throw new Error("角色调整保存失败。");
+  if (!data.data) throw new Error("No se pudo guardar el ajuste de caracteres.");
   return data.data;
 }

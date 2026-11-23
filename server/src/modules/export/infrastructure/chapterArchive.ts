@@ -14,7 +14,7 @@ export function buildChapterArchive(novel: NovelTxtRecord): Promise<Buffer> {
 
     for (const chapter of chapters) {
       archive.append(
-        Buffer.from(`第${chapter.order}章 ${chapter.title}\n\n${chapterExportText(chapter.content ?? null, novel.confirmedManuscript)}\n`, "utf8"),
+        Buffer.from(`Cap.${chapter.order}capítulo ${chapter.title}\n\n${chapterExportText(chapter.content ?? null, novel.confirmedManuscript)}\n`, "utf8"),
         { name: `${String(chapter.order).padStart(4, "0")}-${safeFileNamePart(chapter.title)}.txt` },
       );
     }

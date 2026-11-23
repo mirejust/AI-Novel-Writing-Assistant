@@ -122,7 +122,7 @@ export class CharacterMindService {
   ): Promise<CharacterMindSnapshot> {
     const snapshots = await this.generateSnapshots(novelId, [characterId], "manual_refresh", options);
     if (snapshots.length === 0) {
-      throw new Error("AI 未能整理当前角色的思路线，请稍后重试。");
+      throw new Error("La IA no logró organizar la línea de pensamiento del personaje actual. Inténtelo de nuevo más tarde.");
     }
     return snapshots[0];
   }
@@ -201,7 +201,7 @@ export class CharacterMindService {
       return character ? [{ characterId: character.id, snapshot }] : [];
     });
     if (accepted.length === 0) {
-      throw new Error("角色思路线没有匹配到当前小说角色。");
+      throw new Error("La línea de pensamiento del personaje no coincide con el personaje de la novela actual.");
     }
     return this.persistSnapshots(novelId, accepted.map((item) => ({
       characterId: item.characterId,
@@ -237,7 +237,7 @@ export class CharacterMindService {
           select: { id: true },
         });
         if (!chapter) {
-          throw new ChapterArtifactContentVersionError("章节正文版本已变化，已拒绝写入过期角色思维快照。");
+          throw new ChapterArtifactContentVersionError("La versión de texto del capítulo ha cambiado y se ha rechazado escribir la instantánea mental del personaje obsoleta.");
         }
       }
       const chapterArtifactCharacterIds = items
@@ -364,55 +364,55 @@ export class CharacterMindService {
       }),
     ]);
     if (!novel || novel.characters.length === 0) {
-      throw new Error("当前小说没有可整理思路线的角色。");
+      throw new Error("La novela actual no tiene personajes cuyos pensamientos puedan ordenarse.");
     }
     const characters = novel.characters as CharacterRow[];
     const roster = characters.map((character) => [
-      `角色：${character.name}（${character.role}）`,
-      `戏剧功能：${compact(character.storyFunction, "未指定")}`,
-      `性格/背景/成长：${compact(character.personality, "待补全")}｜${compact(character.background, "待补全")}｜${compact(character.development, "待补全")}`,
-      `目标与处境：${compact(character.currentGoal, "待明确")}｜${compact(character.currentState, "待明确")}`,
-      `内在驱动：${compact(character.outerGoal, "")}｜${compact(character.innerNeed, "")}｜恐惧/伤口=${compact(character.fear || character.wound, "")}`,
-      `既有误判/秘密/底线：${compact(character.misbelief, "")}｜${compact(character.secret, "")}｜${compact(character.moralLine, "")}`,
+      `Role:${character.name}(${character.role})`,
+      `Características dramáticas:${compact(character.storyFunction, "No especificado")}`,
+      `Personalidad/Antecedentes/Crecimiento:${compact(character.personality, "Pendiente")}|${compact(character.background, "Pendiente")}|${compact(character.development, "Pendiente")}`,
+      `Metas y situación:${compact(character.currentGoal, "Por aclarar")}|${compact(character.currentState, "Por aclarar")}`,
+      `Unidad interna:${compact(character.outerGoal, "")}|${compact(character.innerNeed, "")}|Miedo/herida=${compact(character.fear || character.wound, "")}`,
+      `Errores de juicio/secretos/conclusión existentes:${compact(character.misbelief, "")}|${compact(character.secret, "")}|${compact(character.moralLine, "")}`,
     ].join("\n")).join("\n\n");
     const stateByCharacterId = new Map(latestState?.characterStates.map((state) => [state.characterId, state]) ?? []);
     const facts = [
-      `小说：${novel.title}`,
-      `书级卖点：${compact(novel.bookContract?.coreSellingPoint || novel.bible?.mainPromise, "待补全")}`,
-      `主线约束：${compact(novel.storyMacroPlan?.decompositionJson, "待补全")}`,
-      `世界与规则：${compact(novel.bible?.coreSetting, "待补全")}`,
-      latestState?.summary ? `最新正史状态：${compact(latestState.summary)}` : "",
+      `novedoso:${novel.title}`,
+      `Puntos de venta a nivel de libro:${compact(novel.bookContract?.coreSellingPoint || novel.bible?.mainPromise, "Pendiente")}`,
+      `Restricciones de la línea principal:${compact(novel.storyMacroPlan?.decompositionJson, "Pendiente")}`,
+      `Mundo y reglas:${compact(novel.bible?.coreSetting, "Pendiente")}`,
+      latestState?.summary ? `Último estado de la historia oficial:${compact(latestState.summary)}` : "",
       ...characters.map((character) => {
         const state = stateByCharacterId.get(character.id);
         return state
-          ? `正史角色状态：${character.name}｜目标=${compact(state.currentGoal, "未更新")}｜情绪=${compact(state.emotion, "未更新")}｜摘要=${compact(state.summary, "未更新")}`
+          ? `Estado del personaje canónico:${character.name}|Objetivo=${compact(state.currentGoal, "No actualizado")}|Emoción=${compact(state.emotion, "No actualizado")}|Resumen=${compact(state.summary, "No actualizado")}`
           : "";
       }),
     ].join("\n");
     const relations = [
       ...relationStages.map((stage) => (
-        `${stage.sourceCharacter.name} -> ${stage.targetCharacter.name}：当前阶段=${stage.stageLabel}；${stage.stageSummary}${stage.nextTurnPoint ? `；下一转折=${stage.nextTurnPoint}` : ""}`
+        `${stage.sourceCharacter.name} -> ${stage.targetCharacter.name}: etapa actual =${stage.stageLabel};${stage.stageSummary}${stage.nextTurnPoint ? `;Próximo giro=${stage.nextTurnPoint}` : ""}`
       )),
       ...novel.characterRelations.map((relation) => (
-      `${relation.sourceCharacter.name} -> ${relation.targetCharacter.name}：${relation.surfaceRelation}；隐藏张力=${compact(relation.hiddenTension, "无")}`
+      `${relation.sourceCharacter.name} -> ${relation.targetCharacter.name}:${relation.surfaceRelation};ocultar tensión =${compact(relation.hiddenTension, "Ninguno")}`
       )),
     ].filter(Boolean).slice(0, 12).join("\n");
     const recentEvents = novel.chapters.map((chapter) => (
-      `第${chapter.order}章《${chapter.title}》：${compact(chapter.content, "").slice(0, 900)}`
+      `Cap.${chapter.order}capítulo"${chapter.title}»:${compact(chapter.content, "").slice(0, 900)}`
     )).join("\n\n");
     const resourcesText = resources.map((resource) => (
-      `${resource.holderCharacterName || resource.ownerName || "角色"}持有/关联${resource.name}（${resource.status}）：${compact(resource.summary)}；约束=${compact(resource.constraintsJson, "无")}`
+      `${resource.holderCharacterName || resource.ownerName || "Personaje"}Mantener/Asociar${resource.name}(${resource.status}):${compact(resource.summary)};Restricción=${compact(resource.constraintsJson, "Ninguno")}`
     )).join("\n");
     const informationBoundaries = [
       ...(latestState?.informationStates.map((state) => (
-        `${state.holderType}${state.holderRefId ? `:${state.holderRefId}` : ""}｜${state.status}｜${state.fact}${state.summary ? `（${state.summary}）` : ""}`
+        `${state.holderType}${state.holderRefId ? `:${state.holderRefId}` : ""}|${state.status}|${state.fact}${state.summary ? `(${state.summary})` : ""}`
       )) ?? []),
       ...characters.flatMap((character) => {
         const state = stateByCharacterId.get(character.id);
         return state
           ? [
-            ...parseStringArray(state.knownFactsJson).map((fact) => `${character.name}已知：${fact}`),
-            ...parseStringArray(state.misbeliefsJson).map((fact) => `${character.name}既有误判：${fact}`),
+            ...parseStringArray(state.knownFactsJson).map((fact) => `${character.name}Conocido:${fact}`),
+            ...parseStringArray(state.misbeliefsJson).map((fact) => `${character.name}Ha habido errores de juicio:${fact}`),
           ]
           : [];
       }),

@@ -133,7 +133,7 @@ export class ComicSceneService {
       where: { id: input.projectId },
       select: { id: true },
     });
-    if (!project) throw new AppError(`项目不存在：${input.projectId}`, 404);
+    if (!project) throw new AppError(`El proyecto no existe:${input.projectId}`, 404);
 
     return prisma.comicScene.create({
       data: {
@@ -156,7 +156,7 @@ export class ComicSceneService {
 
   async getScene(sceneId: string) {
     const scene = await prisma.comicScene.findUnique({ where: { id: sceneId } });
-    if (!scene) throw new AppError(`场景不存在：${sceneId}`, 404);
+    if (!scene) throw new AppError(`La escena no existe:${sceneId}`, 404);
     return scene;
   }
 
@@ -213,7 +213,7 @@ export class ComicSceneService {
       where: { id: sceneId },
       include: { project: { select: { stylePreset: true } } },
     });
-    if (!scene) throw new AppError(`场景不存在：${sceneId}`, 404);
+    if (!scene) throw new AppError(`La escena no existe:${sceneId}`, 404);
 
     const stylePrefix = resolveComicStyleKeywords(scene.project.stylePreset);
     const bible = safeJsonParse<SceneBible>(scene.bible, {});
@@ -240,7 +240,7 @@ export class ComicSceneService {
       adapter,
       prompt,
       size: "1024x1024" as const,
-      title: `生成场景设定图：${scene.name}`,
+      title: `Generar diagrama de configuración de escena:${scene.name}`,
     };
   }
 
@@ -273,7 +273,7 @@ export class ComicSceneService {
 
   async serveSceneImage(sceneId: string): Promise<{ filePath: string; mimeType: string }> {
     const resolved = await resolveSceneFile(sceneId);
-    if (!resolved) throw new AppError(`场景图片未找到：${sceneId}`, 404);
+    if (!resolved) throw new AppError(`Imagen de la escena no encontrada:${sceneId}`, 404);
     return resolved;
   }
 }

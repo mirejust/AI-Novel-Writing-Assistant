@@ -101,11 +101,11 @@ export function normalizeScope(scope?: VolumeGenerationScopeInput): VolumeGenera
 export function getTargetVolume(document: VolumePlanDocument, targetVolumeId?: string): VolumePlan {
   const volumeId = targetVolumeId?.trim();
   if (!volumeId) {
-    throw new Error("缺少目标卷。");
+    throw new Error("Falta el volumen de destino.");
   }
   const targetVolume = document.volumes.find((volume) => volume.id === volumeId);
   if (!targetVolume) {
-    throw new Error("目标卷不存在。");
+    throw new Error("El volumen de destino no existe.");
   }
   return targetVolume;
 }
@@ -113,11 +113,11 @@ export function getTargetVolume(document: VolumePlanDocument, targetVolumeId?: s
 export function getTargetChapter(targetVolume: VolumePlan, targetChapterId?: string): VolumePlan["chapters"][number] {
   const chapterId = targetChapterId?.trim();
   if (!chapterId) {
-    throw new Error("缺少目标章节。");
+    throw new Error("Falta el capítulo objetivo.");
   }
   const targetChapter = targetVolume.chapters.find((chapter) => chapter.id === chapterId);
   if (!targetChapter) {
-    throw new Error("目标章节不存在。");
+    throw new Error("El capítulo de destino no existe.");
   }
   return targetChapter;
 }
@@ -220,16 +220,16 @@ export function assertScopeReadiness(
   }
   if (scope === "strategy_critique" || scope === "skeleton") {
     if (!document.strategyPlan) {
-      throw new Error("请先生成卷战略建议，再继续当前步骤。");
+      throw new Error("Cree un volumen de sugerencias estratégicas antes de continuar con el paso actual.");
     }
     if (scope === "skeleton" && document.critiqueReport?.overallRisk === "high") {
-      throw new Error("当前卷战略审查为高风险，请先重新生成或修订卷战略，再生成卷骨架。");
+      throw new Error("La revisión actual de la estrategia de volumen es de alto riesgo. Regenere o revise la estrategia de volumen antes de generar el esqueleto de volumen.");
     }
     return;
   }
   if (scope === "beat_sheet") {
     if (!document.strategyPlan) {
-      throw new Error("请先生成卷战略建议，再生成当前卷节奏板。");
+      throw new Error("Primero genere sugerencias de estrategia de volumen y luego genere el tablero de ritmo de volumen actual.");
     }
     getTargetVolume(document, targetVolumeId);
     return;
@@ -237,26 +237,26 @@ export function assertScopeReadiness(
   if (scope === "chapter_list") {
     const targetVolume = getTargetVolume(document, targetVolumeId);
     if (!getBeatSheet(document, targetVolume.id)) {
-      throw new Error("当前卷还没有节奏板，不能直接拆章节列表。");
+      throw new Error("No hay un tablero de ritmo en el volumen actual, por lo que la lista de capítulos no se puede abrir directamente.");
     }
     return;
   }
   if (scope === "rebalance") {
     const targetVolume = getTargetVolume(document, targetVolumeId);
     if (!document.strategyPlan) {
-      throw new Error("请先生成卷战略建议，再生成相邻卷再平衡建议。");
+      throw new Error("Primero genere sugerencias de estrategia de volumen y luego genere sugerencias de reequilibrio de volumen adyacentes.");
     }
     if (!getBeatSheet(document, targetVolume.id)) {
-      throw new Error("请先生成当前卷节奏板，再生成相邻卷再平衡建议。");
+      throw new Error("Primero genere el tablero de ritmo de volumen actual y luego genere sugerencias de reequilibrio de volumen adyacentes.");
     }
     if (targetVolume.chapters.length === 0) {
-      throw new Error("请先生成当前卷章节列表，再生成相邻卷再平衡建议。");
+      throw new Error("Primero genere una lista de capítulos para el volumen actual y luego genere sugerencias de reequilibrio para los volúmenes adyacentes.");
     }
     return;
   }
   const targetVolume = getTargetVolume(document, targetVolumeId);
   if (!getBeatSheet(document, targetVolume.id)) {
-    throw new Error("请先生成当前卷节奏板，再细化章节。");
+    throw new Error("Primero genere el tablero de ritmo para el volumen actual y luego refine los capítulos.");
   }
 }
 

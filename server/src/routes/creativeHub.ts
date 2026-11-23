@@ -146,7 +146,7 @@ router.get("/threads", async (_req, res, next) => {
     res.status(200).json({
       success: true,
       data,
-      message: "创作中枢线程列表加载成功。",
+      message: "La lista de subprocesos del centro de creación se cargó correctamente.",
     } satisfies ApiResponse<typeof data>);
   } catch (error) {
     next(error);
@@ -163,7 +163,7 @@ router.post("/threads", validate({ body: createThreadSchema }), async (req, res,
     res.status(201).json({
       success: true,
       data,
-      message: "创作中枢线程已创建。",
+      message: "Se ha creado el subproceso del centro de creación.",
     } satisfies ApiResponse<typeof data>);
   } catch (error) {
     next(error);
@@ -181,7 +181,7 @@ router.patch("/threads/:threadId", validate({
     res.status(200).json({
       success: true,
       data,
-      message: "创作中枢线程已更新。",
+      message: "El hilo del Centro de creación ha sido actualizado.",
     } satisfies ApiResponse<typeof data>);
   } catch (error) {
     next(error);
@@ -197,7 +197,7 @@ router.delete("/threads/:threadId", validate({
     res.status(200).json({
       success: true,
       data: null,
-      message: "创作中枢线程已删除。",
+      message: "El hilo del centro de autores ha sido eliminado.",
     } satisfies ApiResponse<null>);
   } catch (error) {
     next(error);
@@ -213,7 +213,7 @@ router.get("/threads/:threadId/state", validate({
     res.status(200).json({
       success: true,
       data,
-      message: "创作中枢线程状态加载成功。",
+      message: "El estado del hilo del centro de creación se cargó correctamente.",
     } satisfies ApiResponse<typeof data>);
   } catch (error) {
     next(error);
@@ -229,7 +229,7 @@ router.get("/threads/:threadId/history", validate({
     res.status(200).json({
       success: true,
       data,
-      message: "创作中枢线程历史加载成功。",
+      message: "El historial de subprocesos del centro de creación se cargó correctamente.",
     } satisfies ApiResponse<typeof data>);
   } catch (error) {
     next(error);
@@ -245,7 +245,7 @@ router.post("/threads/:threadId/generate-title", validate({
     res.status(200).json({
       success: true,
       data: { title },
-      message: "创作中枢线程标题已生成。",
+      message: "Se generó el título del hilo del centro de creación.",
     } satisfies ApiResponse<{ title: string }>);
   } catch (error) {
     next(error);
@@ -283,7 +283,7 @@ router.post("/threads/:threadId/runs/stream", validate({
     } catch (error) {
       writeCreativeHubFrame(res, {
         event: "creative_hub/error",
-        data: { message: error instanceof Error ? error.message : "创作中枢运行失败。" },
+        data: { message: error instanceof Error ? error.message : "El centro de creación no pudo ejecutarse." },
       });
     } finally {
       disposeHeartbeat();
@@ -316,7 +316,7 @@ router.post("/threads/:threadId/interrupts/:interruptId", validate({
     res.status(200).json({
       success: true,
       data,
-      message: body.action === "approve" ? "审批已通过，线程已更新。" : "审批已拒绝，线程已更新。",
+      message: body.action === "approve" ? "Aprobación aprobada y hilo actualizado." : "Aprobación rechazada, hilo actualizado.",
     } satisfies ApiResponse<typeof data>);
   } catch (error) {
     next(error);

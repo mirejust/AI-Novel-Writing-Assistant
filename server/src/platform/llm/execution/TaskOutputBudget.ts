@@ -4,7 +4,7 @@ export interface LlmTaskOutputBudget {provider: string; model: string; taskType:
 export class MissingTaskOutputBudgetError extends Error {
   readonly code = "llm_output_budget_capture_missing";
   constructor(provider: string, model: string, taskType: string | undefined) {
-    super(`缺少 ${provider}/${model} 的输出预算（任务 ${taskType ?? "未指定"}）。请回到导演台重新准备当前步骤后继续。`);
+    super(`Falta ${provider}/${model} presupuesto de salida (tarea ${taskType ?? "No especificado"}). Regrese al escritorio del director para volver a preparar el paso actual antes de continuar.`);
     this.name = "MissingTaskOutputBudgetError";
   }
 }

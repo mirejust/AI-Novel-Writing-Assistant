@@ -27,15 +27,15 @@ export function getSectionStageProgress(completed: number, total: number): numbe
 }
 
 export function formatCacheLookupLabel(): string {
-  return "查找 source notes 缓存";
+  return "Buscar caché de notas fuente";
 }
 
 export function formatCacheHitLabel(segmentCount: number): string {
-  return `片段缓存命中 · 共 ${segmentCount} 段`;
+  return `Aciertos de caché de fragmentos · total ${segmentCount} parte`;
 }
 
 export function formatSegmentProgressLabel(index: number, total: number, label: string): string {
-  return `片段 ${index}/${total} · ${label}`;
+  return `fragmento ${index}/${total} · ${label}`;
 }
 
 export function formatSectionProgressLabel(index: number, total: number, label: string): string {

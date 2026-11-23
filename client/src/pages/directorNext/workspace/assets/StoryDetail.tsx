@@ -4,8 +4,8 @@ import {AssetSection,SavedFields,SavedList} from "./sections";
 export function StoryDetail({materials}: {materials: DirectorWorkspaceMaterials}) {
   const {story} = materials;
   return <div className="divide-y divide-border/40">
-    <section className="py-4"><SavedFields lead fields={[["核心看点",story.coreSellingPoint],["故事简介",materials.description],["读者期待",story.readingPromise],["主角带来的体验",story.protagonistFantasy],["开篇方向",story.first30ChapterPromise]]}/></section>
-    <AssetSection title="阶段期待与成长路线"><SavedFields fields={[["前 3 章要兑现什么",story.chapter3Payoff],["前 10 章要兑现什么",story.chapter10Payoff],["前 30 章要兑现什么",story.chapter30Payoff],["冲突如何升级",story.escalationLadder],["重要关系怎样推进",story.relationshipMainline]]}/></AssetSection>
-    <AssetSection title="创作边界"><SavedList label="必须遵守的边界" items={story.absoluteRedLines}/>{!story.absoluteRedLines?.length ? <p className="text-sm text-muted-foreground">尚未保存创作边界。</p> : null}</AssetSection>
+    <section className="py-4"><SavedFields lead fields={[["Aspectos destacados principales",story.coreSellingPoint],["Introducción a la historia",materials.description],["los lectores esperan",story.readingPromise],["La experiencia que trae el protagonista.",story.protagonistFantasy],["Dirección de apertura",story.first30ChapterPromise]]}/></section>
+    <AssetSection title="Expectativas de etapa y ruta de crecimiento."><SavedFields fields={[["¿Qué intentan ofrecer los primeros 3 capítulos?",story.chapter3Payoff],["¿Qué intentan ofrecer los primeros 10 capítulos?",story.chapter10Payoff],["¿Qué intentan ofrecer los primeros 30 capítulos?",story.chapter30Payoff],["Cómo se intensifica el conflicto",story.escalationLadder],["Cómo avanzar en relaciones importantes",story.relationshipMainline]]}/></AssetSection>
+    <AssetSection title="Límites creativos"><SavedList label="Límites que deben respetarse" items={story.absoluteRedLines}/>{!story.absoluteRedLines?.length ? <p className="text-sm text-muted-foreground">El límite de creación no se ha guardado.</p> : null}</AssetSection>
   </div>;
 }

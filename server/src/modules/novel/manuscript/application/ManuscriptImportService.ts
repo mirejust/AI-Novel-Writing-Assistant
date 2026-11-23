@@ -86,7 +86,7 @@ export class ManuscriptImportService {
          const contents=units.map(unit=>session.source.sourceText.slice(unit.range.start,unit.range.end));
          const total=contents.reduce((sum,content)=>sum+content.replace(/\s+/gu,"").length,0);
          const novel=await tx.novel.create({data:{title:title.trim(),narrativeForm:"short_story",status:"draft",writingMode:"original"}});
-         const plan=await tx.shortStoryPlan.create({data:{novelId:novel.id,status:"imported",targetWordCount:total,endingPromise:"",structureJson:JSON.stringify({title:title.trim(),targetWordCount:total,endingPromise:"",segments:contents.map((content,index)=>({order:index+1,purpose:"导入原稿分节",targetWordCount:content.replace(/\s+/gu,"").length}))})}});
+         const plan=await tx.shortStoryPlan.create({data:{novelId:novel.id,status:"imported",targetWordCount:total,endingPromise:"",structureJson:JSON.stringify({title:title.trim(),targetWordCount:total,endingPromise:"",segments:contents.map((content,index)=>({order:index+1,purpose:"Importar secciones originales",targetWordCount:content.replace(/\s+/gu,"").length}))})}});
          for(const [index,unit] of units.entries()){
            const content=contents[index]!;
             const segment=await tx.shortStorySegment.create({data:{planId:plan.id,novelId:novel.id,order:index+1,targetWordCount:content.replace(/\s+/gu,"").length,content,status:"completed",generatedAt:null}});
@@ -97,7 +97,7 @@ export class ManuscriptImportService {
          if(!updated.count)throw new Error("IMPORT_VERSION_CONFLICT");
          return {projectId:session.projectId,novelId:novel.id,replayed:false,units:[]};
        }
-       const novel = await tx.novel.create({ data: { title: title.trim(), narrativeForm: "long_novel", status: "draft", writingMode: "original", directorVersion: "v1", chapters: { create: units.map((unit, index) => ({ title: unit.title || `第${index + 1}章`, order: index + 1, content: session.source.sourceText.slice(unit.range.start, unit.range.end), generationState: "drafted" })) } }, include: { chapters: { orderBy: { order: "asc" } } } });
+       const novel = await tx.novel.create({ data: { title: title.trim(), narrativeForm: "long_novel", status: "draft", writingMode: "original", directorVersion: "v1", chapters: { create: units.map((unit, index) => ({ title: unit.title || `Cap.${index + 1}cap.`, order: index + 1, content: session.source.sourceText.slice(unit.range.start, unit.range.end), generationState: "drafted" })) } }, include: { chapters: { orderBy: { order: "asc" } } } });
       const chapterByOrder = new Map(novel.chapters.map(chapter => [chapter.order, chapter]));
       for (const [index, unit] of units.entries()) await tx.manuscriptUnit.create({ data: { id: randomUUID(), projectId: session.projectId, sourceId: session.sourceId, sourceRangesJson: JSON.stringify([unit.range]), originalTitle: unit.title, sourceOrdinal: index + 1, workingRevision:1, displayOrder: index + 1, status: "active", chapterId: chapterByOrder.get(index + 1)!.id, contentHash: sha256(session.source.sourceText.slice(unit.range.start, unit.range.end)) } });
       await tx.manuscriptProject.update({ where: { id: session.projectId }, data: { novelId: novel.id, status: "confirmed", structureVersion: 1 } });

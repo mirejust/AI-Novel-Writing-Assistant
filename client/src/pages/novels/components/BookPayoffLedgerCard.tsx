@@ -16,19 +16,19 @@ interface BookPayoffLedgerCardProps {
 function payoffStatusLabel(status: string): string {
   switch (status) {
     case "setup":
-      return "已埋设";
+      return "Enterrado";
     case "hinted":
-      return "已提示";
+      return "Ya se le solicitó";
     case "pending_payoff":
-      return "待回收";
+      return "para ser reciclado";
     case "paid_off":
-      return "已回收";
+      return "Reciclado";
     case "failed":
-      return "已失效";
+      return "Venció";
     case "overdue":
-      return "已逾期";
+      return "Vencido";
     default:
-      return status || "未知";
+      return status || "Desconocido";
   }
 }
 
@@ -61,25 +61,25 @@ function formatWindow(item: PayoffLedgerItem): string {
     typeof item.targetStartChapterOrder === "number"
     && typeof item.targetEndChapterOrder === "number"
   ) {
-    return `第 ${item.targetStartChapterOrder}-${item.targetEndChapterOrder} 章`;
+    return `Cap. ${item.targetStartChapterOrder}-${item.targetEndChapterOrder}`;
   }
   if (typeof item.targetEndChapterOrder === "number") {
-    return `最晚第 ${item.targetEndChapterOrder} 章`;
+    return `el último ${item.targetEndChapterOrder}`;
   }
   if (typeof item.targetStartChapterOrder === "number") {
-    return `从第 ${item.targetStartChapterOrder} 章开始`;
+    return `desde el primero ${item.targetStartChapterOrder} Comienza el capítulo`;
   }
-  return "未限定";
+  return "Ilimitado";
 }
 
 function scopeLabel(scopeType: PayoffLedgerItem["scopeType"]): string {
   if (scopeType === "book") {
-    return "全书";
+    return "Libro completo";
   }
   if (scopeType === "volume") {
-    return "卷级";
+    return "Nivel de volumen";
   }
-  return "章节";
+  return "Capítulos";
 }
 
 function sourceSummary(item: PayoffLedgerItem): string {
@@ -87,7 +87,7 @@ function sourceSummary(item: PayoffLedgerItem): string {
     .map((source) => source.refLabel?.trim())
     .filter(Boolean)
     .slice(0, 3);
-  return labels.length > 0 ? labels.join(" / ") : "暂无来源摘要";
+  return labels.length > 0 ? labels.join(" / ") : "Aún no hay resumen de fuente";
 }
 
 export default function BookPayoffLedgerCard(props: BookPayoffLedgerCardProps) {
@@ -109,20 +109,20 @@ export default function BookPayoffLedgerCard(props: BookPayoffLedgerCardProps) {
         <details className="group">
           <summary className="cursor-pointer list-none p-5">
             <CollapsibleSummary
-              title="全书 Canonical 伏笔账本"
-              description="这块是整本书级别的 canonical 伏笔账本，不跟随当前卷切换。默认收起，需要检查整条伏笔链或整体回收压力时再展开。"
-              collapsedLabel="展开全书账本"
-              expandedLabel="收起全书账本"
+              title="Libro completo Libro de cuentas de presagios canónicos"
+              description="Este es un libro de contabilidad de presagios canónicos a nivel de libro que no sigue el cambio de volumen actual. Está contraído de forma predeterminada y se puede expandir cuando necesite verificar toda la cadena de presagio o la presión de recuperación general."
+              collapsedLabel="Ampliar el libro mayor completo"
+              expandedLabel="Cerrar todo el libro mayor"
               meta={(
                 <>
-                  <Badge variant="outline">待兑现 {ledgerSummary?.pendingCount ?? 0}</Badge>
+                  <Badge variant="outline">para ser cobrado {ledgerSummary?.pendingCount ?? 0}</Badge>
                   <Badge variant={ledgerSummary?.urgentCount ? "secondary" : "outline"}>
-                    紧急 {ledgerSummary?.urgentCount ?? 0}
+                    urgente {ledgerSummary?.urgentCount ?? 0}
                   </Badge>
                   <Badge variant={ledgerSummary?.overdueCount ? "secondary" : "outline"}>
-                    逾期 {ledgerSummary?.overdueCount ?? 0}
+                    Atrasado {ledgerSummary?.overdueCount ?? 0}
                   </Badge>
-                  <Badge variant="outline">已回收 {ledgerSummary?.paidOffCount ?? 0}</Badge>
+                  <Badge variant="outline">Reciclado {ledgerSummary?.paidOffCount ?? 0}</Badge>
                 </>
               )}
             />
@@ -131,11 +131,11 @@ export default function BookPayoffLedgerCard(props: BookPayoffLedgerCardProps) {
           <div className="space-y-3 border-t border-border/70 px-5 pb-5 pt-4">
             <div className="rounded-xl border border-border/70 bg-muted/20 p-4">
               <div className="flex items-center justify-between gap-2">
-                <div className="font-medium text-foreground">Canonical 伏笔账本</div>
+                <div className="font-medium text-foreground">Libro mayor de presagios canónicos</div>
                 <Badge variant="outline">{ledgerItems.length}</Badge>
               </div>
               <div className="mt-1 text-xs text-muted-foreground">
-                后续规划、写作、审查和修复优先消费这里的 canonical 结果，不再只盯某一处原始字段。
+                La planificación, redacción, revisión y reparación posteriores priorizan el consumo de los resultados canónicos aquí en lugar de centrarse únicamente en un determinado campo original.
               </div>
               <div className="mt-3 space-y-2 text-sm">
                 {hasCanonicalLedgerContent ? (
@@ -158,27 +158,27 @@ export default function BookPayoffLedgerCard(props: BookPayoffLedgerCardProps) {
                       <div className="mt-2 text-xs text-muted-foreground">{item.summary}</div>
                       <div className="mt-2 grid gap-2 text-xs text-muted-foreground sm:grid-cols-3">
                         <div>
-                          最近触碰：
+                          Tocado recientemente:
                           {typeof item.lastTouchedChapterOrder === "number"
-                            ? `第 ${item.lastTouchedChapterOrder} 章`
-                            : "暂无"}
+                            ? `Cap. ${item.lastTouchedChapterOrder}`
+                            : "Sin datos"}
                         </div>
-                        <div>来源摘要：{sourceSummary(item)}</div>
+                        <div>Resumen de la fuente:{sourceSummary(item)}</div>
                         <div>
-                          风险信号：
+                          Señales de riesgo:
                           {item.riskSignals.length > 0
                             ? ` ${item.riskSignals
                               .slice(0, 2)
                               .map((signal) => signal.summary)
-                              .join("；")}`
-                            : " 暂无"}
+                              .join(";")}`
+                            : " Ninguno todavía"}
                         </div>
                       </div>
                     </div>
                   ))
                 ) : (
                   <div className="rounded-lg border border-dashed border-border/70 bg-background p-3 text-xs text-muted-foreground">
-                    当前还没有可用的 canonical 伏笔账本。首次进入老项目时，系统会懒同步这份账本；如果现在仍为空，说明相关规划或状态材料还不够。
+                    Actualmente no existe ningún libro de contabilidad de presagios canónicos disponible. Al ingresar a un proyecto antiguo por primera vez, el sistema sincronizará lentamente este libro mayor; si todavía está vacío, significa que los materiales de planificación o estado relevantes no son suficientes.
                   </div>
                 )}
               </div>
@@ -186,11 +186,11 @@ export default function BookPayoffLedgerCard(props: BookPayoffLedgerCardProps) {
 
             <div className="rounded-xl border border-border/70 bg-muted/20 p-4">
               <div className="flex items-center justify-between gap-2">
-                <div className="font-medium text-foreground">全书最新状态快照</div>
+                <div className="font-medium text-foreground">Instantánea del último estado del libro.</div>
                 <Badge variant="outline">{snapshotForeshadows.length}</Badge>
               </div>
               <div className="mt-1 text-xs text-muted-foreground">
-                这里显示的是全书最新状态，不只限当前卷，用来辅助判断整体回收压力。
+                Lo que se muestra aquí es el estado más reciente de todo el libro, no solo el volumen actual, y se utiliza para ayudar a juzgar la presión de reciclaje general.
               </div>
               {latestStateSnapshot?.summary ? (
                 <div className="mt-3 rounded-lg border border-border/70 bg-background p-3 text-xs text-muted-foreground">
@@ -201,7 +201,7 @@ export default function BookPayoffLedgerCard(props: BookPayoffLedgerCardProps) {
                 {hasSnapshotContent ? (
                   <>
                     <div className="space-y-2">
-                      <div className="text-xs font-medium text-muted-foreground">待跟进</div>
+                      <div className="text-xs font-medium text-muted-foreground">Para ser seguido</div>
                       {pendingForeshadows.length > 0 ? (
                         pendingForeshadows.slice(0, 5).map((item) => (
                           <div
@@ -221,20 +221,20 @@ export default function BookPayoffLedgerCard(props: BookPayoffLedgerCardProps) {
                         ))
                       ) : (
                         <div className="rounded-lg border border-dashed border-border/70 bg-background p-3 text-xs text-muted-foreground">
-                          当前没有待跟进的伏笔状态。
+                          Actualmente no hay estados presagios a los que dar seguimiento.
                         </div>
                       )}
                     </div>
 
                     <div className="grid gap-2 sm:grid-cols-2">
                       <div className="rounded-lg border border-border/70 bg-background p-3">
-                        <div className="text-xs text-muted-foreground">已回收</div>
+                        <div className="text-xs text-muted-foreground">Reciclado</div>
                         <div className="mt-1 text-lg font-semibold text-foreground">
                           {paidOffForeshadows.length}
                         </div>
                       </div>
                       <div className="rounded-lg border border-border/70 bg-background p-3">
-                        <div className="text-xs text-muted-foreground">已失效</div>
+                        <div className="text-xs text-muted-foreground">Venció</div>
                         <div className="mt-1 text-lg font-semibold text-foreground">
                           {failedForeshadows.length}
                         </div>
@@ -243,7 +243,7 @@ export default function BookPayoffLedgerCard(props: BookPayoffLedgerCardProps) {
                   </>
                 ) : (
                   <div className="rounded-lg border border-dashed border-border/70 bg-background p-3 text-xs text-muted-foreground">
-                    还没有可用的伏笔状态快照。先执行章节生成或审计后，这里的状态会逐步充实。
+                    Aún no hay una instantánea del estado de presagio disponible. Después de realizar primero la generación de capítulos o la auditoría, el estado aquí se enriquecerá gradualmente.
                   </div>
                 )}
               </div>

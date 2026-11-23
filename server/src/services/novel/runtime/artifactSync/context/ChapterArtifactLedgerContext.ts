@@ -50,8 +50,8 @@ export function buildChapterArtifactLedgerContext(input: {
     ])).join("\n"),
     existingResourceText: resources.map(item => row([
       `- ${item.resourceKey}`,
-      `owner=${item.ownerType}:${item.ownerCharacterId ?? item.ownerId ?? "?"}:${item.ownerName ?? "未知"}`,
-      `holder=${item.holderCharacterId ?? "?"}:${item.holderCharacterName ?? "未知"}`,
+      `owner=${item.ownerType}:${item.ownerCharacterId ?? item.ownerId ?? "?"}:${item.ownerName ?? "Desconocido"}`,
+      `holder=${item.holderCharacterId ?? "?"}:${item.holderCharacterName ?? "Desconocido"}`,
       `status=${item.status}`,
       `readerKnows=${item.readerKnows}`, `holderKnows=${item.holderKnows}`,
       item.knownByCharacterIds.length > 0 && `knownBy=${JSON.stringify(ordered(item.knownByCharacterIds, id => id))}`,

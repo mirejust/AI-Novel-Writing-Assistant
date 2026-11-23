@@ -32,19 +32,19 @@ export default function CharacterProfileTab(props: CharacterProfileTabProps) {
     <div className="space-y-4">
       <section className="rounded-xl border border-border/70 bg-muted/10 p-4">
         <div className="mb-3">
-          <div className="text-sm font-medium">基础档案</div>
+          <div className="text-sm font-medium">Archivo básico</div>
           <div className="mt-1 text-xs leading-5 text-muted-foreground">
-            这里维护角色进入章节生成时最稳定的资料。当前状态和当前目标会影响后续章节行动判断。
+            Esto mantiene los datos más estables cuando el personaje ingresa a la generación del capítulo. El estado actual y los objetivos actuales afectarán el juicio de las acciones en los capítulos siguientes.
           </div>
         </div>
         <div className="grid gap-2 md:grid-cols-2">
           <Input
-            placeholder="角色名称"
+            placeholder="Nombre del personaje"
             value={characterForm.name}
             onChange={(event) => onCharacterFormChange("name", event.target.value)}
           />
           <Input
-            placeholder="角色定位"
+            placeholder="Posicionamiento de roles"
             value={characterForm.role}
             onChange={(event) => onCharacterFormChange("role", event.target.value)}
           />
@@ -53,24 +53,24 @@ export default function CharacterProfileTab(props: CharacterProfileTabProps) {
             value={characterForm.gender}
             onChange={(event) => onCharacterFormChange("gender", event.target.value)}
           >
-            <option value="unknown">性别：未知</option>
-            <option value="male">性别：男</option>
-            <option value="female">性别：女</option>
-            <option value="other">性别：其他</option>
+            <option value="unknown">Género: desconocido</option>
+            <option value="male">Género: Masculino</option>
+            <option value="female">Género: Mujer</option>
+            <option value="other">Género: otro</option>
           </SelectControl>
         </div>
       </section>
 
       <section className="rounded-xl border border-border/70 bg-background p-4">
-        <div className="mb-3 text-sm font-medium">当前处境</div>
+        <div className="mb-3 text-sm font-medium">Situación actual</div>
         <div className="grid gap-2 md:grid-cols-2">
           <Input
-            placeholder="当前状态（例如：重伤闭关）"
+            placeholder="Estado actual (por ejemplo, retirada de lesiones graves)"
             value={characterForm.currentState}
             onChange={(event) => onCharacterFormChange("currentState", event.target.value)}
           />
           <Input
-            placeholder="当前目标（例如：三个月内突破）"
+            placeholder="Objetivo actual (por ejemplo, avance en tres meses)"
             value={characterForm.currentGoal}
             onChange={(event) => onCharacterFormChange("currentGoal", event.target.value)}
           />
@@ -79,30 +79,30 @@ export default function CharacterProfileTab(props: CharacterProfileTabProps) {
 
       <section className="grid gap-3 xl:grid-cols-3">
         <TextAreaField
-          label="性格补充"
+          label="Suplemento de personaje"
           value={characterForm.personality}
           onChange={(value) => onCharacterFormChange("personality", value)}
         />
         <TextAreaField
-          label="背景补充"
+          label="Suplemento de antecedentes"
           value={characterForm.background}
           onChange={(value) => onCharacterFormChange("background", value)}
         />
         <TextAreaField
-          label="成长弧补充"
+          label="suplemento de arco de crecimiento"
           value={characterForm.development}
           onChange={(value) => onCharacterFormChange("development", value)}
         />
       </section>
 
       <section className="rounded-xl border border-border/70 bg-background p-4">
-        <div className="mb-3 text-sm font-medium">外显字段快速编辑</div>
+        <div className="mb-3 text-sm font-medium">Edición rápida de campos expuestos</div>
         <div className="grid gap-2 md:grid-cols-2">
           {VISIBLE_PROFILE_FIELDS.map((field) => (
             <textarea
               key={field.key}
               className="min-h-[72px] w-full rounded-md border bg-background p-2 text-sm"
-              placeholder={`${field.label}：${field.placeholder}`}
+              placeholder={`${field.label}:${field.placeholder}`}
               value={characterForm[field.key]}
               onChange={(event) => onCharacterFormChange(field.key, event.target.value)}
             />
@@ -112,16 +112,16 @@ export default function CharacterProfileTab(props: CharacterProfileTabProps) {
 
       <div className="flex flex-wrap gap-2 rounded-xl border border-border/70 bg-muted/10 p-3">
         <Button size="sm" onClick={onSaveCharacter} disabled={isSavingCharacter}>
-          {isSavingCharacter ? "保存中..." : "保存角色资产"}
+          {isSavingCharacter ? "Guardando..." : "Guardar recursos de personajes"}
         </Button>
         <AiButton size="sm" variant="outline" onClick={onSyncTimeline} disabled={isSyncingTimeline}>
-          {isSyncingTimeline ? "同步中..." : "同步角色时间线"}
+          {isSyncingTimeline ? "Sincronizando..." : "Sincronizar líneas de tiempo de personajes"}
         </AiButton>
         <AiButton size="sm" variant="outline" onClick={onSyncAllTimeline} disabled={isSyncingAllTimeline}>
-          {isSyncingAllTimeline ? "同步中..." : "同步全部角色时间线"}
+          {isSyncingAllTimeline ? "Sincronizando..." : "Sincroniza todas las líneas de tiempo de los personajes."}
         </AiButton>
         <AiButton size="sm" variant="outline" onClick={onWorldCheck} disabled={isCheckingWorld}>
-          {isCheckingWorld ? "检查中..." : "检查世界一致性"}
+          {isCheckingWorld ? "Comprobando..." : "Comprueba la coherencia mundial"}
         </AiButton>
       </div>
     </div>

@@ -50,7 +50,7 @@ export async function applyChapterQualityClosure(input: {
   const applyDecision = async (decision: DirectorIssueDecision) => {
     input.onIssueDecision?.(decision);
     if (decision.action === "auto_retry") {
-      throw new Error("章节质量闭环已耗尽本章自动处理预算，不能登记未执行的自动重试。");
+      throw new Error("El bucle cerrado de calidad del capítulo ha agotado el presupuesto de procesamiento automático para este capítulo y no puede registrar reintentos automáticos no ejecutados.");
     }
     if (decision.action === "pause_for_manual" || decision.action === "fail_task") {
       shouldStopAfterCurrentChapter = true;
@@ -59,7 +59,7 @@ export async function applyChapterQualityClosure(input: {
   };
 
   if (runtimePayload.autoReview && !chapterResult.reviewExecuted && !chapterResult.reviewRetries?.exhausted) {
-    const detail = `第${chapter.order}章接收检查未能执行，正文已保留并等待后续复查。`;
+    const detail = `Cap.${chapter.order}No se pudo realizar la verificación de aceptación del capítulo y el texto principal se mantuvo y espera una revisión posterior.`;
     if (!input.qualityAlertDetails.includes(detail)) input.qualityAlertDetails.push(detail);
     await reportPipelineIssue({
       governance: input.governance,
@@ -82,9 +82,9 @@ export async function applyChapterQualityClosure(input: {
 
   if (chapterResult.recoverableRepairFailure && !chapterResult.reviewRetries?.exhausted) {
     input.recoverableRepairDetails.push(
-      `第${chapter.order}章需要后续修复：${chapterResult.recoverableRepairFailure.message}`,
+      `Cap.${chapter.order}El capítulo necesita reparación posterior:${chapterResult.recoverableRepairFailure.message}`,
     );
-    logPipelineWarn("章节局部修复未安全应用，已记录并继续后续章节", {
+    logPipelineWarn("La reparación parcial del capítulo no se aplicó de forma segura. Ha sido grabado y continuado en capítulos posteriores.", {
       jobId: input.jobId,
       order: chapter.order,
       reason: chapterResult.recoverableRepairFailure.message,
@@ -127,7 +127,7 @@ export async function applyChapterQualityClosure(input: {
       qualityDebtAttribution: chapterResult.qualityDebtAttribution ?? null,
       repairSelection: chapterResult.repairSelection ?? null,
     }).catch((error) => {
-      logPipelineError("记录章节质量闭环状态失败", {
+      logPipelineError("No se pudo registrar el estado del circuito cerrado de calidad del capítulo", {
         jobId: input.jobId,
         novelId: input.novelId,
         chapterId: chapter.id,
@@ -138,7 +138,7 @@ export async function applyChapterQualityClosure(input: {
 
   const retries = chapterResult.reviewRetries;
   if (retries?.exhausted && !chapterResult.pass && replanRecommendation?.scope !== "global_book") {
-    const detail = `第${chapter.order}章检查重试已用 ${retries.used}/${retries.maxRetries} 次，正文已保留，${retries.onExhausted === "pause_for_manual" ? "等待确认后继续" : "检查未完成，继续后续章节"}。`;
+    const detail = `Cap.${chapter.order}Reintento de verificación de capítulo utilizado ${retries.used}/${retries.maxRetries} veces, el texto se ha mantenido,${retries.onExhausted === "pause_for_manual" ? "Espere la confirmación antes de continuar." : "La verificación no se completa, continúe con los capítulos siguientes."}.`;
     if (!input.qualityAlertDetails.includes(detail)) input.qualityAlertDetails.push(detail);
     const policy = { ...(input.governance?.policy ?? { maxAutomaticRetries: 0, issueActions: {} }),
       issueActions: { ...input.governance?.policy.issueActions, "quality.loop_exhausted": retries.onExhausted } };
@@ -157,9 +157,9 @@ export async function applyChapterQualityClosure(input: {
 
   if (chapterResult.reviewExecuted && !chapterResult.pass) {
     input.qualityAlertDetails.push(
-      `第${chapter.order}章（coherence=${final.score.coherence}, repetition=${final.score.repetition}, engagement=${final.score.engagement}）`,
+      `Cap.${chapter.order}Capítulo(coherencia=${final.score.coherence}, repetition=${final.score.repetition}, engagement=${final.score.engagement})`,
     );
-    logPipelineWarn("章节最终未达标", {
+    logPipelineWarn("El capítulo finalmente no cumplió con los estándares", {
       jobId: input.jobId,
       order: chapter.order,
       score: final.score,
@@ -171,7 +171,7 @@ export async function applyChapterQualityClosure(input: {
       jobId: input.jobId,
       issueCode: "quality.chapter_below_threshold",
       stage: "chapter_review",
-      summary: `第${chapter.order}章质量分未达到 ${input.qualityThreshold} 分。`,
+      summary: `Cap.${chapter.order}Puntuación de calidad del capítulo no alcanzada ${input.qualityThreshold} punto.`,
       chapterId: chapter.id,
       chapterOrder: chapter.order,
       attempt: exhaustedAttempt,
@@ -201,9 +201,9 @@ export async function applyChapterQualityClosure(input: {
     return { shouldStopAfterCurrentChapter: false, stopAction: null };
   }
   const impactedOrders = replanRecommendation.affectedChapterOrders?.length
-    ? `影响章节=${replanRecommendation.affectedChapterOrders.join(",")}`
-    : `锚点章节=${replanRecommendation.anchorChapterOrder ?? chapter.order}`;
-  const detail = `第${chapter.order}章${replanRecommendation.scope === "global_book" ? "需要书级重规划" : "正在调整后续章节安排"}（${impactedOrders}；原因=${replanRecommendation.triggerReason ?? replanRecommendation.reason}）`;
+    ? `Capítulo de Impacto =${replanRecommendation.affectedChapterOrders.join(",")}`
+    : `Capítulo ancla=${replanRecommendation.anchorChapterOrder ?? chapter.order}`;
+  const detail = `Cap.${chapter.order}cap.${replanRecommendation.scope === "global_book" ? "Requiere una nueva planificación a nivel de libro" : "Se está adaptando la disposición de los capítulos siguientes."}(${impactedOrders};razón=${replanRecommendation.triggerReason ?? replanRecommendation.reason})`;
   if (replanRecommendation.scope !== "global_book") {
     try {
       const result = await input.runLocalReplan({
@@ -213,12 +213,12 @@ export async function applyChapterQualityClosure(input: {
         windowSize: Math.max(1, replanRecommendation.affectedChapterOrders?.length ?? 3),
         reason: replanRecommendation.triggerReason ?? replanRecommendation.reason,
       });
-      const plannedOrders = result.affectedChapterOrders.join(",") || "后续未完成章节";
-      const completedDetail = `第${chapter.order}章已调整后续章节安排（已刷新=${plannedOrders}）。`;
+      const plannedOrders = result.affectedChapterOrders.join(",") || "Capítulos posteriores inacabados";
+      const completedDetail = `Cap.${chapter.order}Se ha ajustado la disposición de los capítulos siguientes (actualizado =${plannedOrders}).`;
       if (!input.qualityAlertDetails.includes(completedDetail)) input.qualityAlertDetails.push(completedDetail);
       return { shouldStopAfterCurrentChapter: false, stopAction: null };
     } catch (error) {
-      const failureDetail = `第${chapter.order}章后续章节调整失败，已保留正文并继续：${error instanceof Error ? error.message : String(error)}`;
+      const failureDetail = `Cap.${chapter.order}El ajuste de los capítulos siguientes fracasó, el texto se mantuvo y continuó:${error instanceof Error ? error.message : String(error)}`;
       if (!input.recoverableRepairDetails.includes(failureDetail)) input.recoverableRepairDetails.push(failureDetail);
       await reportPipelineIssue({
         governance: input.governance,

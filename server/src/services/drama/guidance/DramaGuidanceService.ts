@@ -46,10 +46,10 @@ function buildTrackCatalog(): string {
   return rhythmEngine
     .listTracks()
     .map((track) => [
-      `- ${track.id}｜${track.label}`,
-      `  描述：${track.description}`,
-      `  爽点节奏：${track.rhythmNote}`,
-      `  禁忌：${track.taboos.join("；")}`,
+      `- ${track.id}|${track.label}`,
+      `  describir:${track.description}`,
+      `  Anímate al ritmo:${track.rhythmNote}`,
+      `  Tabú:${track.taboos.join(";")}`,
     ].join("\n"))
     .join("\n");
 }
@@ -68,7 +68,7 @@ export class DramaGuidanceService {
       promptInput: {
         title: input.title,
         sourceType: input.sourceType,
-        sourceDigest: input.sourceDigest?.trim() || "用户尚未提供详细素材，请基于标题、来源和题材做保守推荐。",
+        sourceDigest: input.sourceDigest?.trim() || "El usuario no ha proporcionado materiales detallados, así que haga una recomendación conservadora basada en el título, la fuente y el tema.",
         theme: input.theme,
         targetEpisodes: input.targetEpisodes ?? 80,
         trackCatalog: buildTrackCatalog(),
@@ -92,20 +92,20 @@ export class DramaGuidanceService {
       },
     });
     if (!project) {
-      throw new Error(`未找到短剧项目：${projectId}`);
+      throw new Error(`Elementos dramáticos cortos no encontrados:${projectId}`);
     }
     if (!project.sourceBundle) {
-      throw new Error("请先整理来源素材，再生成补充建议。");
+      throw new Error("Primero clasifique los materiales originales y luego genere sugerencias adicionales.");
     }
 
     const beats = safeJson<unknown[]>(project.sourceBundle.beats, []);
     const facts = safeJson<unknown[]>(project.sourceBundle.hardFacts, []);
     const qualitySnapshot = [
-      `梗概：${project.sourceBundle.synopsis?.trim() ? "已提供" : "缺少"}`,
-      `节拍数量：${beats.length}`,
-      `角色数量：${project.characters.length}`,
-      `硬事实数量：${facts.length}`,
-      `目标集数：${project.targetEpisodes}`,
+      `Resumen:${project.sourceBundle.synopsis?.trim() ? "proporcionó" : "Falta"}`,
+      `Número de latidos:${beats.length}`,
+      `Número de caracteres:${project.characters.length}`,
+      `Número de hechos concretos:${facts.length}`,
+      `Número de conjuntos de objetivos:${project.targetEpisodes}`,
     ].join("\n");
 
     const result = await runStructuredPrompt({

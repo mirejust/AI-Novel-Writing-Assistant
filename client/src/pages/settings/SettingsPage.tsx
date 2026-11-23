@@ -26,15 +26,15 @@ function formatConnectionTestResult(response: Awaited<ReturnType<typeof testLLMC
   const structured = response.data?.structured;
   const plainText = plain
     ? plain.ok
-      ? `普通连通正常${plain.latency != null ? ` (${plain.latency}ms)` : ""}`
-      : `普通连通失败${plain.error ? `：${plain.error}` : ""}`
-    : "普通连通未检测";
+      ? `Conexión normal${plain.latency != null ? ` (${plain.latency}ms)` : ""}`
+      : `Fallo de conexión normal${plain.error ? `:${plain.error}` : ""}`
+    : "Conectividad normal no detectada";
   const structuredText = structured
     ? structured.ok
-      ? `结构化正常${structured.strategy ? `，策略 ${structured.strategy}` : ""}${structured.reasoningForcedOff ? "，已强制关闭 thinking" : ""}`
-      : `结构化失败${structured.errorCategory ? `，分类 ${structured.errorCategory}` : ""}${structured.error ? `：${structured.error}` : ""}`
-    : "结构化未检测";
-  return `连接成功，总耗时 ${latency}ms · ${plainText} · ${structuredText}`;
+      ? `Normal estructurado${structured.strategy ? `,Estrategia ${structured.strategy}` : ""}${structured.reasoningForcedOff ? ", el pensamiento ha sido cerrado a la fuerza" : ""}`
+      : `Fracaso estructurado${structured.errorCategory ? `,Clasificación ${structured.errorCategory}` : ""}${structured.error ? `:${structured.error}` : ""}`
+    : "Estructurado no detectado";
+  return `Conexión exitosa, tiempo total empleado ${latency}ms · ${plainText} · ${structuredText}`;
 }
 
 export default function SettingsPage({ embedded = false }: { embedded?: boolean }) {
@@ -153,11 +153,11 @@ export default function SettingsPage({ embedded = false }: { embedded?: boolean 
       }),
     onSuccess: async (response) => {
       resetDialogState();
-      setActionResult(response.message ?? "保存成功。");
+      setActionResult(response.message ?? "Guardado exitosamente.");
       await invalidateProviderQueries();
     },
     onError: (error) => {
-      setActionResult(error instanceof Error ? error.message : "保存失败。");
+      setActionResult(error instanceof Error ? error.message : "Error al guardar.");
     },
   });
 
@@ -174,11 +174,11 @@ export default function SettingsPage({ embedded = false }: { embedded?: boolean 
     }) => createCustomProvider(payload),
     onSuccess: async (response) => {
       resetDialogState();
-      setActionResult(response.message ?? "自定义厂商创建成功。");
+      setActionResult(response.message ?? "El fabricante personalizado se creó correctamente.");
       await invalidateProviderQueries();
     },
     onError: (error) => {
-      setActionResult(error instanceof Error ? error.message : "创建自定义厂商失败。");
+      setActionResult(error instanceof Error ? error.message : "No se pudo crear un proveedor personalizado.");
     },
   });
 
@@ -187,7 +187,7 @@ export default function SettingsPage({ embedded = false }: { embedded?: boolean 
     onSuccess: (response) => {
       const models = response.data?.models ?? [];
       setPreviewModels(models);
-      setPreviewModelsResult(response.message ?? `已获取 ${models.length} 个模型。`);
+      setPreviewModelsResult(response.message ?? `Obtenido ${models.length} modelo.`);
       setForm((prev) => ({
         ...prev,
         model: prev.model.trim() || models[0] || "",
@@ -195,7 +195,7 @@ export default function SettingsPage({ embedded = false }: { embedded?: boolean 
     },
     onError: (error) => {
       setPreviewModels([]);
-      setPreviewModelsResult(error instanceof Error ? error.message : "获取模型列表失败。");
+      setPreviewModelsResult(error instanceof Error ? error.message : "No se pudo obtener la lista de modelos.");
     },
   });
 
@@ -203,11 +203,11 @@ export default function SettingsPage({ embedded = false }: { embedded?: boolean 
     mutationFn: (provider: LLMProvider) => deleteCustomProvider(provider),
     onSuccess: async (response) => {
       resetDialogState();
-      setActionResult(response.message ?? "自定义厂商已删除。");
+      setActionResult(response.message ?? "Proveedor personalizado eliminado.");
       await invalidateProviderQueries();
     },
     onError: (error) => {
-      setActionResult(error instanceof Error ? error.message : "删除自定义厂商失败。");
+      setActionResult(error instanceof Error ? error.message : "No se pudo eliminar el proveedor personalizado.");
     },
   });
 
@@ -219,11 +219,11 @@ export default function SettingsPage({ embedded = false }: { embedded?: boolean 
       return saveAPIKeySetting(provider.provider, { isActive: false });
     },
     onSuccess: async (response, provider) => {
-      setActionResult(response.message ?? (provider.kind === "builtin" ? "厂商已从列表移除。" : "自定义厂商已删除。"));
+      setActionResult(response.message ?? (provider.kind === "builtin" ? "El fabricante ha sido eliminado de la lista." : "Proveedor personalizado eliminado."));
       await invalidateProviderQueries();
     },
     onError: (error) => {
-      setActionResult(error instanceof Error ? error.message : "移除厂商失败。");
+      setActionResult(error instanceof Error ? error.message : "No se pudo eliminar el proveedor.");
     },
   });
 
@@ -239,11 +239,11 @@ export default function SettingsPage({ embedded = false }: { embedded?: boolean 
       if (response.data) {
         updateProviderModelsInCache(response.data.provider, response.data.models, response.data.currentModel);
       }
-      setActionResult(`${providerName} 模型列表已刷新（${count} 个）。`);
+      setActionResult(`${providerName} La lista de modelos se ha actualizado (${count} individual).`);
       await invalidateProviderAuxiliaryQueries();
     },
     onError: (error) => {
-      setActionResult(error instanceof Error ? error.message : "刷新模型列表失败。");
+      setActionResult(error instanceof Error ? error.message : "No se pudo actualizar la lista de modelos.");
     },
   });
 
@@ -261,11 +261,11 @@ export default function SettingsPage({ embedded = false }: { embedded?: boolean 
     }),
     onSuccess: async (_response, variables) => {
       const providerName = providerConfigs.find((item) => item.provider === variables.provider)?.name ?? variables.provider;
-      setActionResult(`${providerName}：${variables.message}`);
+      setActionResult(`${providerName}:${variables.message}`);
       await invalidateProviderQueries();
     },
     onError: (error) => {
-      setActionResult(error instanceof Error ? error.message : "更新模型设置失败。");
+      setActionResult(error instanceof Error ? error.message : "No se pudo actualizar la configuración del modelo.");
     },
   });
 
@@ -273,11 +273,11 @@ export default function SettingsPage({ embedded = false }: { embedded?: boolean 
     mutationFn: (provider: LLMProvider) => refreshProviderBalance(provider),
     onSuccess: async (response, provider) => {
       const providerName = providerConfigs.find((item) => item.provider === provider)?.name ?? provider;
-      setActionResult(response.message ?? `${providerName} 余额已刷新。`);
+      setActionResult(response.message ?? `${providerName} El saldo se ha actualizado.`);
       await queryClient.invalidateQueries({ queryKey: queryKeys.settings.apiKeyBalances });
     },
     onError: (error) => {
-      setActionResult(error instanceof Error ? error.message : "刷新余额失败。");
+      setActionResult(error instanceof Error ? error.message : "No se pudo actualizar el saldo.");
     },
   });
 
@@ -388,7 +388,7 @@ export default function SettingsPage({ embedded = false }: { embedded?: boolean 
         onError: (error) => {
           setProviderTestResults((prev) => ({
             ...prev,
-            [provider.provider]: error instanceof Error ? error.message : "连接测试失败。",
+            [provider.provider]: error instanceof Error ? error.message : "La prueba de conexión falló.",
           }));
         },
       },
@@ -410,7 +410,7 @@ export default function SettingsPage({ embedded = false }: { embedded?: boolean 
           setDialogTestResult(formatConnectionTestResult(response));
         },
         onError: (error) => {
-          setDialogTestResult(error instanceof Error ? error.message : "连接测试失败。");
+          setDialogTestResult(error instanceof Error ? error.message : "La prueba de conexión falló.");
         },
       },
     );
@@ -420,15 +420,15 @@ export default function SettingsPage({ embedded = false }: { embedded?: boolean 
     if (!editingProvider || !editingConfig) {
       return;
     }
-    if (!window.confirm(`确认删除自定义厂商 ${editingConfig.name} 吗？`)) {
+    if (!window.confirm(`Confirmar la eliminación del fabricante personalizado ${editingConfig.name} ?`)) {
       return;
     }
     deleteCustomProviderMutation.mutate(editingProvider);
   };
 
   const handleRemoveProvider = (provider: APIKeyStatus) => {
-    const label = provider.kind === "builtin" ? "从列表移除" : "删除";
-    if (!window.confirm(`确认${label} ${provider.name} 吗？`)) {
+    const label = provider.kind === "builtin" ? "Eliminar de la lista" : "Eliminar";
+    if (!window.confirm(`Confirmar${label} ${provider.name} ?`)) {
       return;
     }
     removeProviderMutation.mutate(provider);
@@ -441,7 +441,7 @@ export default function SettingsPage({ embedded = false }: { embedded?: boolean 
     || (isCustomDialog && !form.displayName.trim())
     || (isCreatingCustomProvider && !form.baseURL.trim())
     || (!isCustomDialog && editingConfig?.requiresApiKey !== false && !form.key.trim() && !editingConfig?.isConfigured);
-  const providerSubmitLabel = isSavingProvider ? "保存中..." : isCreatingCustomProvider ? "创建厂商" : "保存";
+  const providerSubmitLabel = isSavingProvider ? "Guardando..." : isCreatingCustomProvider ? "Crear un proveedor" : "Guardar";
 
   return (
     <div className={AUTO_DIRECTOR_MOBILE_CLASSES.settingsPageRoot}>
@@ -470,12 +470,12 @@ export default function SettingsPage({ embedded = false }: { embedded?: boolean 
           }}
           onSetReasoning={(provider, reasoningEnabled, reasoningEffort) => {
             setActionResult("");
-            const effortLabel = reasoningEffort === "low" ? "低" : reasoningEffort === "max" ? "最大" : "高";
+            const effortLabel = reasoningEffort === "low" ? "Bajo" : reasoningEffort === "max" ? "Máximo" : "Alto";
             modelControlsMutation.mutate({
               provider,
               reasoningEnabled,
               reasoningEffort,
-              message: reasoningEnabled ? `思考深度设为${effortLabel}。` : "思考功能已关闭。",
+              message: reasoningEnabled ? `La profundidad del pensamiento se establece en${effortLabel}.` : "La función de pensamiento está desactivada.",
             });
           }}
           onSetHiddenModels={(provider, hiddenModels, message) => {
@@ -513,7 +513,7 @@ export default function SettingsPage({ embedded = false }: { embedded?: boolean 
         testResult={dialogTestResult}
         onDeleteCustomProvider={handleDeleteCustomProvider}
         deleteDisabled={deleteCustomProviderMutation.isPending}
-        deleteLabel={deleteCustomProviderMutation.isPending ? "删除中..." : "删除"}
+        deleteLabel={deleteCustomProviderMutation.isPending ? "Eliminando..." : "Eliminar"}
       />
     </div>
   );

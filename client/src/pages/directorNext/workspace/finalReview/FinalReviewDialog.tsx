@@ -28,16 +28,16 @@ export function FinalReviewDialog(props: Props) {
         if (!open) props.onClose();
       }}
     >
-      <AppDialogContent title="全书完稿检查">
+      <AppDialogContent title="Reseña completa del libro">
         {query.isError ? (
           <>
             <p role="alert">{query.error.message}</p>
             <Button variant="outline" onClick={() => void query.refetch()}>
-              重新读取
+              releer
             </Button>
           </>
         ) : (
-          <p role="status">正在读取全书稿件…</p>
+          <p role="status">Leyendo el manuscrito completo...</p>
         )}
       </AppDialogContent>
     </Dialog>
@@ -138,11 +138,11 @@ function ReviewEditor({ novelId, onClose, book: loaded }: Props & { book: FinalR
       }}
     >
       <AppDialogContent
-        title="全书完稿检查"
+        title="Reseña completa del libro"
         description={
           confirmed
-            ? "全书确认稿可下载为 TXT。"
-            : "逐章核对正文和前后章的衔接。遇到问题可以和助手讨论，保留原文或逐段采纳改法。"
+            ? "El manuscrito confirmado de todo el libro se puede descargar como TXT."
+            : "Capítulo por capítulo, verifique la conexión entre el texto principal y los capítulos anteriores y siguientes. Si tiene problemas, puede discutirlo con su asistente y conservar el texto original o adoptar métodos revisados ​​párrafo por párrafo."
         }
         className="lg:h-[min(50rem,90dvh)] lg:max-w-6xl"
         bodyClassName="grid gap-6 lg:grid-cols-2 lg:overflow-hidden"
@@ -150,31 +150,31 @@ function ReviewEditor({ novelId, onClose, book: loaded }: Props & { book: FinalR
           <>
             {discard ? (
               <>
-                <p className="mr-auto text-sm">放弃尚未确认的段落修改和输入？</p>
+                <p className="mr-auto text-sm">¿Abandonar las modificaciones y entradas de párrafos no confirmados?</p>
                 <Button variant="ghost" onClick={() => setDiscard(false)}>
-                  继续核对
+                  Continuar comprobando
                 </Button>
                 <Button variant="outline" onClick={onClose}>
-                  放弃并关闭
+                  rendirse y cerrar
                 </Button>
               </>
             ) : (
               <>
                 <Button variant="ghost" onClick={close} disabled={busy}>
-                  返回
+                  devolver
                 </Button>
                 {confirmed && book.confirmedVersion === confirmed && (
                   <Button variant="outline" disabled={busy} onClick={() => setConfirmed(null)}>
-                    继续核对正文
+                    Continuar revisando el texto.
                   </Button>
                 )}
                 {confirmed || complete ? (
                   <Button disabled={busy} onClick={() => download.mutate()}>
-                    {busy ? "正在准备全书 TXT…" : confirmed ? "下载已确认全书" : "确认稿件并导出全书 TXT"}
+                    {busy ? "Preparando libro completo TXT..." : confirmed ? "Descarga el libro confirmado" : "Confirme el manuscrito y exporte el libro completo a TXT"}
                   </Button>
                 ) : (
                   <Button disabled={scan.isPending} onClick={() => scan.mutate()}>
-                    {scan.isPending ? "正在检查…" : checked || scan.isError ? "继续检查剩余章节" : "开始检查全书"}
+                    {scan.isPending ? "De cheques…" : checked || scan.isError ? "Continúe revisando los capítulos restantes." : "Empiece a consultar todo el libro."}
                   </Button>
                 )}
               </>
@@ -185,9 +185,9 @@ function ReviewEditor({ novelId, onClose, book: loaded }: Props & { book: FinalR
         <section className="min-w-0 space-y-4 lg:overflow-y-auto lg:pr-3">
           <p role="status" className="text-sm text-muted-foreground">
             {confirmed
-              ? `全书共 ${book.chapters.length} 章`
-              : `已检查 ${checked} / ${book.chapters.length} 章 · ${issueCount} 项问题`}
-            {checking !== null && ` · 正在读第 ${checking} 章`}
+              ? `Todo el libro contiene ${book.chapters.length}`
+              : `comprobado ${checked} / ${book.chapters.length} Capítulo · ${issueCount} pregunta`}
+            {checking !== null && ` · Lectura del capítulo ${checking}`}
           </p>
           {scan.isError && (
             <p role="alert" className="text-sm text-destructive">
@@ -200,7 +200,7 @@ function ReviewEditor({ novelId, onClose, book: loaded }: Props & { book: FinalR
             </p>
           )}
           <label className="grid gap-1 text-sm">
-            选择章节
+            Seleccionar capítulo
             <select
               disabled={busy}
               className="rounded-md border border-input bg-background px-3 py-2"
@@ -212,14 +212,14 @@ function ReviewEditor({ novelId, onClose, book: loaded }: Props & { book: FinalR
             >
               {book.chapters.map((c) => (
                 <option key={c.id} value={c.id}>
-                  第 {c.order} 章 · {c.title}
+                  Cap. {c.order} capítulo · {c.title}
                   {confirmed
                     ? ""
                     : reports[c.id] === null
-                      ? " · 待检查"
+                      ? " · Para ser inspeccionado"
                       : reports[c.id]?.length
-                        ? ` · ${reports[c.id]?.length} 项问题`
-                        : " · 未发现问题"}
+                        ? ` · ${reports[c.id]?.length} pregunta`
+                        : " · No se encontró ningún problema"}
                 </option>
               ))}
             </select>
@@ -234,14 +234,14 @@ function ReviewEditor({ novelId, onClose, book: loaded }: Props & { book: FinalR
                 setFocus(0);
               }}
             >
-              查看第 {nextIssue.order} 章的问题
+              Ver el {nextIssue.order} pregunta del capitulo
             </Button>
           )}
           {report &&
             !confirmed &&
             (report.length ? (
               <fieldset className="space-y-2">
-                <legend className="mb-1 font-medium">选择要讨论的问题</legend>
+                <legend className="mb-1 font-medium">Elija un tema para discutir</legend>
                 {report.map((item, i) => (
                   <label key={i} className="flex cursor-pointer items-start gap-2 border-b border-border/40 py-2">
                     <input
@@ -254,7 +254,7 @@ function ReviewEditor({ novelId, onClose, book: loaded }: Props & { book: FinalR
                     />
                     <span className="space-y-1 text-sm">
                       <span className="block font-medium">
-                        第 {item.paragraph} 段 · {item.problem}
+                        Cap. {item.paragraph} parte · {item.problem}
                       </span>
                       <q className="block text-muted-foreground">{item.quote}</q>
                       <span className="block">{item.advice}</span>
@@ -263,10 +263,10 @@ function ReviewEditor({ novelId, onClose, book: loaded }: Props & { book: FinalR
                 ))}
               </fieldset>
             ) : (
-              <p className="text-sm">本章未发现需要修改的问题。</p>
+              <p className="text-sm">No se encontraron problemas que requieran revisión en este capítulo.</p>
             ))}
           <h3 className="font-medium">
-            第 {chapter.order} 章 · {chapter.title}
+            Cap. {chapter.order} capítulo · {chapter.title}
           </h3>
           {Object.entries(draft).map(([key, value]) => (
             <div key={key} className="space-y-1">
@@ -280,7 +280,7 @@ function ReviewEditor({ novelId, onClose, book: loaded }: Props & { book: FinalR
                     setDrafts((prev) => ({ ...prev, [selected]: { ...prev[selected], [key]: form.fields[key] } }))
                   }
                 >
-                  撤回第 {key} 段修改
+                  retirar el primero {key} Modificación de sección
                 </Button>
               )}
             </div>
@@ -291,7 +291,7 @@ function ReviewEditor({ novelId, onClose, book: loaded }: Props & { book: FinalR
             key={issueKey}
             novelId={novelId}
             scope={{ type: "final_review", sourceHash: chapter.sourceHash, finding }}
-            subject={{ id: selected, title: `第 ${chapter.order} 章 · ${chapter.title}` }}
+            subject={{ id: selected, title: `Cap. ${chapter.order} Capítulo · ${chapter.title}` }}
             fieldLabels={form.labels}
             base={form.fields}
             draft={draft}
@@ -306,7 +306,7 @@ function ReviewEditor({ novelId, onClose, book: loaded }: Props & { book: FinalR
             }
           />
         ) : !confirmed ? (
-          <p className="text-sm text-muted-foreground">本章检查完成后，可在这里讨论检查意见。</p>
+          <p className="text-sm text-muted-foreground">Una vez completada la inspección de este capítulo, los comentarios de la inspección se pueden discutir aquí.</p>
         ) : null}
       </AppDialogContent>
     </Dialog>
